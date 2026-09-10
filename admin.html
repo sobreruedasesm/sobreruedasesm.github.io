@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Administración - Sobre Ruedas</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="config.js"></script>
 
     <style>
 
@@ -19,956 +23,1689 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            color: #222;
+            background: #f4f7f5;
+            color: #17352b;
         }
 
         header {
-            background: #111;
+            background: #087f5b;
             color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
 
-        .logo {
-            font-size: 21px;
-            font-weight: bold;
+        header h1 {
+            margin: 0;
+            text-align: center;
+        }
+
+        header p {
+            text-align: center;
+            margin: 7px 0 0;
+            opacity: 0.9;
         }
 
         .contenedor {
+            width: 94%;
             max-width: 1000px;
-            margin: 25px auto;
-            padding: 0 15px 50px;
+            margin: 30px auto 60px;
         }
 
-        .panel {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
+        .volver {
+            display: inline-block;
             margin-bottom: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,.06);
+            color: #087f5b;
+            text-decoration: none;
+            font-weight: bold;
         }
 
-        h1,
-        h2 {
+        .seccion {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .seccion h2 {
             margin-top: 0;
+            color: #087f5b;
+            border-bottom: 1px solid #e1e8e4;
+            padding-bottom: 12px;
+        }
+
+        .campo {
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
             font-weight: bold;
-            margin-top: 12px;
-            margin-bottom: 5px;
+            margin-bottom: 7px;
         }
 
         input,
-        select,
-        textarea {
+        textarea,
+        select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccd7d2;
             border-radius: 8px;
             font-size: 15px;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #087f5b;
         }
 
         textarea {
-            min-height: 80px;
+            min-height: 100px;
             resize: vertical;
         }
 
-        .subir {
-            border: 2px dashed #aaa;
-            padding: 30px;
-            text-align: center;
-            border-radius: 12px;
-            margin-top: 10px;
-            background: #fafafa;
-        }
-
-        .subir input {
+        .boton {
             border: none;
-        }
-
-        #preview {
-            max-width: 100%;
-            max-height: 350px;
-            margin-top: 15px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        button {
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .btn {
-            border: none;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-        .btn-analizar {
-            background: #673ab7;
+        .boton-principal {
+            background: #087f5b;
             color: white;
         }
 
-        .btn-publicar {
-            background: #25a244;
-            color: white;
-            width: 100%;
-            padding: 16px;
-            font-size: 16px;
+        .boton-principal:hover {
+            background: #066b4c;
         }
 
-        .btn-agregar {
-            background: #ff9800;
-            color: white;
+        .boton-secundario {
+            background: #e6f5ef;
+            color: #087f5b;
         }
 
-        .btn-eliminar {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 8px 10px;
-            border-radius: 6px;
+        .boton-peligro {
+            background: #fdecea;
+            color: #a93226;
         }
 
-        .producto-form {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 10px;
-            align-items: end;
-            margin-bottom: 12px;
-            padding: 12px;
-            background: #f7f7f7;
-            border-radius: 8px;
+        .boton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .producto-form label {
-            margin-top: 0;
-        }
-
-        .producto-form input {
-            background: white;
-        }
-
-        .mensaje {
-            padding: 15px;
-            border-radius: 8px;
+        .preview {
             margin-top: 15px;
             display: none;
         }
 
-        .exito {
-            background: #d8f3dc;
-            border: 1px solid #95d5b2;
+        .preview img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #d9e2de;
         }
 
-        .nota {
-            background: #fff3cd;
-            border: 1px solid #ffe69c;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .producto-editor {
+            border: 1px solid #dce5e0;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            background: #fafcfb;
         }
 
-        .config-grid {
+        .producto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .producto-header strong {
+            color: #087f5b;
+        }
+
+        .producto-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: 15px;
         }
 
-        @media(max-width: 700px) {
+        .producto-imagen {
+            margin-top: 15px;
+        }
 
-            .producto-form {
-                grid-template-columns: 1fr;
-            }
+        .producto-preview {
+            margin-top: 10px;
+            display: none;
+        }
 
-            .config-grid {
+        .producto-preview img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .mensaje {
+            display: none;
+            padding: 15px;
+            border-radius: 9px;
+            margin-top: 20px;
+        }
+
+        .mensaje.exito {
+            display: block;
+            background: #e6f5ef;
+            color: #145c43;
+            border: 1px solid #9dd2bd;
+        }
+
+        .mensaje.error {
+            display: block;
+            background: #fdecea;
+            color: #8a2d24;
+            border: 1px solid #f3b6af;
+        }
+
+        .restaurantes-lista {
+            margin-top: 20px;
+        }
+
+        .restaurante-item {
+            padding: 15px;
+            border: 1px solid #dce5e0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: #fafcfb;
+        }
+
+        .restaurante-item strong {
+            color: #087f5b;
+        }
+
+        .estado {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .estado.activo {
+            background: #e6f5ef;
+            color: #087f5b;
+        }
+
+        .estado.inactivo {
+            background: #fdecea;
+            color: #a93226;
+        }
+
+        .info {
+            background: #eef7f3;
+            border-left: 4px solid #087f5b;
+            padding: 13px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 700px) {
+
+            .producto-grid {
                 grid-template-columns: 1fr;
             }
 
         }
 
     </style>
-
 </head>
-
 
 <body>
 
-
 <header>
 
-    <div class="logo">
-        🛵 Sobre Ruedas - Administración
-    </div>
+    <h1>🛵 Sobre Ruedas</h1>
 
-    <button
-        class="btn"
-        onclick="window.location.href='index.html'"
-    >
-        Ver sitio
-    </button>
+    <p>
+        Panel de administración
+    </p>
 
 </header>
 
 
-<main class="contenedor">
+<div class="contenedor">
+
+    <a
+        href="index.html"
+        class="volver"
+    >
+        ← Volver a Sobre Ruedas
+    </a>
 
 
-    <h1>
-        ⚙️ Panel de administración
-    </h1>
+    <!-- =====================================================
+         CONFIGURACIÓN
+    ====================================================== -->
 
-
-    <div class="nota">
-
-        <strong>
-            🤖 Carga de menú
-        </strong>
-
-        <p>
-            Sube el banner del restaurante.
-            En esta primera versión puedes revisar
-            y completar los datos detectados antes
-            de publicar.
-        </p>
-
-        <p>
-            La integración con IA permitirá posteriormente
-            leer automáticamente los nombres y precios
-            desde el banner.
-        </p>
-
-    </div>
-
-
-    <!-- CONFIGURACIÓN -->
-
-    <section class="panel">
+    <div class="seccion">
 
         <h2>
-            💰 Configuración
+            ⚙️ Configuración
         </h2>
 
-        <div class="config-grid">
+        <div class="info">
 
-            <div>
+            Estos valores corresponden a la configuración
+            general de Sobre Ruedas.
 
-                <label>
-                    Tarifa por carrera
-                </label>
-
-                <input
-                    type="number"
-                    id="tarifa"
-                    step="0.01"
-                    min="0"
-                >
-
-            </div>
+        </div>
 
 
-            <div>
+        <div class="campo">
 
-                <label>
-                    WhatsApp Business
-                </label>
+            <label for="tarifaDelivery">
+                Tarifa de delivery por carrera
+            </label>
 
-                <input
-                    type="text"
-                    id="whatsapp"
-                >
+            <input
+                type="number"
+                id="tarifaDelivery"
+                min="0"
+                step="0.01"
+            >
 
-            </div>
+        </div>
+
+
+        <div class="campo">
+
+            <label for="whatsappNegocio">
+                WhatsApp del negocio
+            </label>
+
+            <input
+                type="text"
+                id="whatsappNegocio"
+            >
 
         </div>
 
 
         <button
-            class="btn btn-agregar"
+            class="boton boton-principal"
             onclick="guardarConfiguracion()"
         >
             Guardar configuración
         </button>
 
-    </section>
+
+        <div
+            id="mensajeConfiguracion"
+            class="mensaje"
+        ></div>
+
+    </div>
 
 
-    <!-- RESTAURANTE -->
+    <!-- =====================================================
+         CREAR RESTAURANTE
+    ====================================================== -->
 
-    <section class="panel">
+    <div class="seccion">
 
         <h2>
-            🏪 Nuevo restaurante
+            🏪 Crear restaurante
         </h2>
 
 
-        <label>
-            Nombre del restaurante
-        </label>
+        <div class="campo">
 
-        <input
-            type="text"
-            id="nombreRestaurante"
-            placeholder="Ej. Pollos El Sabor"
-        >
-
-
-        <label>
-            Categoría
-        </label>
-
-        <select id="categoria">
-
-            <option value="Hamburguesas">
-                Hamburguesas
-            </option>
-
-            <option value="Pizza">
-                Pizza
-            </option>
-
-            <option value="Pollo">
-                Pollo
-            </option>
-
-            <option value="Bebidas">
-                Bebidas
-            </option>
-
-            <option value="Tiendas">
-                Tiendas
-            </option>
-
-            <option value="Otros">
-                Otros
-            </option>
-
-        </select>
-
-
-        <label>
-            Descripción
-        </label>
-
-        <textarea
-            id="descripcion"
-            placeholder="Descripción del restaurante"
-        ></textarea>
-
-
-        <label>
-            Banner del restaurante
-        </label>
-
-
-        <div class="subir">
-
-            <p>
-                📷 Selecciona el banner
-            </p>
+            <label for="nombreRestaurante">
+                Nombre del restaurante *
+            </label>
 
             <input
-                type="file"
-                id="banner"
-                accept="image/*"
-                onchange="mostrarBanner(event)"
-            >
-
-            <img
-                id="preview"
-                alt="Vista previa"
+                type="text"
+                id="nombreRestaurante"
+                placeholder="Ej. Don Pepe"
             >
 
         </div>
 
 
-        <button
-            class="btn btn-analizar"
-            onclick="analizarBanner()"
+        <div class="campo">
+
+            <label for="categoriaRestaurante">
+                Categoría *
+            </label>
+
+            <select
+                id="categoriaRestaurante"
+            >
+
+                <option value="">
+                    Seleccionar categoría
+                </option>
+
+                <option value="Hamburguesas">
+                    Hamburguesas
+                </option>
+
+                <option value="Pizza">
+                    Pizza
+                </option>
+
+                <option value="Pollo">
+                    Pollo
+                </option>
+
+                <option value="Bebidas">
+                    Bebidas
+                </option>
+
+                <option value="Tiendas">
+                    Tiendas
+                </option>
+
+                <option value="Otros">
+                    Otros
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="campo">
+
+            <label for="descripcionRestaurante">
+                Descripción
+            </label>
+
+            <textarea
+                id="descripcionRestaurante"
+                placeholder="Describe brevemente el restaurante..."
+            ></textarea>
+
+        </div>
+
+
+        <!-- =================================================
+             BANNER
+        ================================================== -->
+
+        <div class="campo">
+
+            <label for="bannerRestaurante">
+                Banner del restaurante
+            </label>
+
+            <input
+                type="file"
+                id="bannerRestaurante"
+                accept="image/*"
+                onchange="mostrarBanner()"
+            >
+
+        </div>
+
+
+        <div
+            id="previewBanner"
+            class="preview"
         >
-            🤖 Analizar banner
-        </button>
 
-    </section>
+            <img
+                id="imagenBanner"
+                alt="Vista previa del banner"
+            >
+
+        </div>
 
 
-    <!-- PRODUCTOS -->
+        <!-- =================================================
+             PRODUCTOS
+        ================================================== -->
 
-    <section class="panel">
+        <h2 style="margin-top:30px;">
 
-        <h2>
             🍔 Productos
+
         </h2>
 
 
-        <div id="productos"></div>
+        <div class="info">
+
+            Agrega los productos que vende el restaurante.
+            Más adelante conectaremos esta sección con
+            la IA para leer automáticamente los productos
+            desde el banner.
+
+        </div>
+
+
+        <div
+            id="listaProductos"
+        ></div>
+
+
+        <div class="acciones">
+
+            <button
+                class="boton boton-secundario"
+                onclick="agregarProducto()"
+            >
+                + Agregar producto
+            </button>
+
+        </div>
+
+
+        <br>
 
 
         <button
-            class="btn btn-agregar"
-            onclick="agregarProducto()"
-        >
-            + Agregar producto
-        </button>
-
-    </section>
-
-
-    <!-- PUBLICAR -->
-
-    <section class="panel">
-
-        <button
-            class="btn btn-publicar"
+            id="btnPublicar"
+            class="boton boton-principal"
             onclick="publicarRestaurante()"
         >
-            ✅ PUBLICAR RESTAURANTE Y MENÚ
+            🚀 Publicar restaurante
         </button>
 
 
         <div
-            id="mensaje"
-            class="mensaje exito"
+            id="mensajePublicacion"
+            class="mensaje"
         ></div>
 
-    </section>
+    </div>
 
 
-</main>
+    <!-- =====================================================
+         RESTAURANTES EXISTENTES
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            🏪 Restaurantes registrados
+        </h2>
 
 
-<script src="config.js"></script>
+        <button
+            class="boton boton-secundario"
+            onclick="cargarRestaurantes()"
+        >
+            🔄 Actualizar lista
+        </button>
+
+
+        <div
+            id="restaurantesLista"
+            class="restaurantes-lista"
+        >
+            Cargando...
+        </div>
+
+    </div>
+
+</div>
 
 
 <script>
 
+    /*
+     * ========================================================
+     * VARIABLES
+     * ========================================================
+     */
 
-let productos = [];
+    let productos = [];
 
-let bannerBase64 = "";
-
-
-document.getElementById("tarifa")
-    .value = CONFIG.tarifaDelivery.toFixed(2);
-
-document.getElementById("whatsapp")
-    .value = CONFIG.whatsappNegocio;
-
-
-function guardarConfiguracion() {
-
-    const tarifa =
-        Number(
-            document.getElementById("tarifa").value
-        );
-
-
-    const whatsapp =
-        document.getElementById("whatsapp")
-            .value.trim();
-
-
-    if (isNaN(tarifa) || tarifa < 0) {
-
-        alert("Ingresa una tarifa válida.");
-        return;
-
-    }
+    let bannerArchivo = null;
 
 
     /*
-       Como GitHub Pages no permite modificar
-       config.js desde el navegador, guardamos
-       temporalmente la configuración en localStorage.
-    */
+     * ========================================================
+     * INICIO
+     * ========================================================
+     */
 
-    localStorage.setItem(
-        "configSobreRuedas",
-        JSON.stringify({
+    document.addEventListener(
+        "DOMContentLoaded",
+        async function() {
 
-            tarifaDelivery: tarifa,
+            cargarConfiguracion();
 
-            whatsappNegocio: whatsapp
+            agregarProducto();
 
-        })
-    );
+            await cargarRestaurantes();
 
-
-    alert(
-        "Configuración guardada para este navegador."
-    );
-
-}
-
-
-function obtenerConfiguracionLocal() {
-
-    const guardada =
-        JSON.parse(
-            localStorage.getItem(
-                "configSobreRuedas"
-            )
-        );
-
-
-    if (!guardada) {
-
-        return CONFIG;
-
-    }
-
-
-    return {
-
-        ...CONFIG,
-        ...guardada
-
-    };
-
-}
-
-
-function mostrarBanner(event) {
-
-    const archivo =
-        event.target.files[0];
-
-
-    if (!archivo) return;
-
-
-    const lector =
-        new FileReader();
-
-
-    lector.onload = function(e) {
-
-        bannerBase64 =
-            e.target.result;
-
-
-        const preview =
-            document.getElementById("preview");
-
-
-        preview.src =
-            bannerBase64;
-
-        preview.style.display =
-            "block";
-
-    };
-
-
-    lector.readAsDataURL(archivo);
-
-}
-
-
-function analizarBanner() {
-
-    if (!bannerBase64) {
-
-        alert(
-            "Primero selecciona un banner."
-        );
-
-        return;
-
-    }
-
-
-    alert(
-        "🤖 El módulo de IA está preparado para esta etapa. " +
-        "La siguiente integración conectará el banner con " +
-        "un modelo de visión para detectar automáticamente " +
-        "restaurante, productos y precios."
+        }
     );
 
 
     /*
-       Aquí posteriormente conectaremos:
-
-       bannerBase64
-             ↓
-       API de IA
-             ↓
-       restaurante
-             ↓
-       productos
-             ↓
-       precios
-
-       Por ahora agregamos un producto
-       de ejemplo para mostrar el flujo.
-    */
-
-
-    if (productos.length === 0) {
-
-        agregarProducto(
-            "Producto detectado",
-            0
-        );
-
-    }
-
-}
-
-
-function agregarProducto(
-    nombre = "",
-    precio = 0
-) {
-
-    productos.push({
-
-        nombre: nombre,
-
-        precio: precio,
-
-        imagen: ""
-
-    });
-
-
-    mostrarProductos();
-
-}
-
-
-function mostrarProductos() {
-
-    const contenedor =
-        document.getElementById("productos");
-
-    contenedor.innerHTML = "";
-
-
-    productos.forEach((producto, index) => {
-
-        const div =
-            document.createElement("div");
-
-
-        div.className =
-            "producto-form";
-
-
-        div.innerHTML = `
-
-            <div>
-
-                <label>
-                    Producto
-                </label>
-
-                <input
-                    type="text"
-                    value="${producto.nombre}"
-                    onchange="actualizarProducto(
-                        ${index},
-                        'nombre',
-                        this.value
-                    )"
-                    placeholder="Nombre del plato"
-                >
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    Precio
-                </label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value="${producto.precio}"
-                    onchange="actualizarProducto(
-                        ${index},
-                        'precio',
-                        this.value
-                    )"
-                >
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    Imagen
-                </label>
-
-                <input
-                    type="file"
-                    accept="image/*"
-                    onchange="cargarImagenProducto(
-                        event,
-                        ${index}
-                    )"
-                >
-
-            </div>
-
-
-            <button
-                class="btn-eliminar"
-                onclick="eliminarProducto(${index})"
-            >
-                🗑
-            </button>
-
-        `;
-
-
-        contenedor.appendChild(div);
-
-    });
-
-}
-
-
-function actualizarProducto(
-    index,
-    campo,
-    valor
-) {
-
-    productos[index][campo] =
-        campo === "precio"
-            ? Number(valor)
-            : valor;
-
-}
-
-
-function cargarImagenProducto(
-    event,
-    index
-) {
-
-    const archivo =
-        event.target.files[0];
-
-
-    if (!archivo) return;
-
-
-    const lector =
-        new FileReader();
-
-
-    lector.onload =
-        function(e) {
-
-            productos[index].imagen =
-                e.target.result;
-
-        };
-
-
-    lector.readAsDataURL(archivo);
-
-}
-
-
-function eliminarProducto(index) {
-
-    productos.splice(index, 1);
-
-    mostrarProductos();
-
-}
-
-
-function publicarRestaurante() {
-
-    const nombre =
-        document.getElementById(
-            "nombreRestaurante"
-        ).value.trim();
-
-
-    const categoria =
-        document.getElementById(
-            "categoria"
-        ).value;
-
-
-    const descripcion =
-        document.getElementById(
-            "descripcion"
-        ).value.trim();
-
-
-    if (!nombre) {
-
-        alert(
-            "Ingresa el nombre del restaurante."
-        );
-
-        return;
-
-    }
-
-
-    if (productos.length === 0) {
-
-        alert(
-            "Agrega al menos un producto."
-        );
-
-        return;
-
-    }
-
-
-    for (const producto of productos) {
+     * ========================================================
+     * UTILIDADES
+     * ========================================================
+     */
+
+    function escaparHTML(texto) {
 
         if (
-            !producto.nombre ||
-            Number(producto.precio) <= 0
+            texto === null ||
+            texto === undefined
+        ) {
+            return "";
+        }
+
+        return String(texto)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    function mostrarMensaje(
+        elementoId,
+        texto,
+        tipo
+    ) {
+
+        const elemento =
+            document.getElementById(
+                elementoId
+            );
+
+        elemento.textContent = texto;
+
+        elemento.className =
+            "mensaje " + tipo;
+
+    }
+
+
+    /*
+     * ========================================================
+     * CONFIGURACIÓN
+     * ========================================================
+     */
+
+    function cargarConfiguracion() {
+
+        document.getElementById(
+            "tarifaDelivery"
+        ).value =
+            Number(
+                CONFIG.tarifaDelivery
+            ).toFixed(2);
+
+
+        document.getElementById(
+            "whatsappNegocio"
+        ).value =
+            CONFIG.whatsappNegocio || "";
+
+    }
+
+
+    function guardarConfiguracion() {
+
+        const tarifa =
+            Number(
+                document.getElementById(
+                    "tarifaDelivery"
+                ).value
+            );
+
+
+        const whatsapp =
+            document.getElementById(
+                "whatsappNegocio"
+            ).value
+            .trim();
+
+
+        if (
+            Number.isNaN(tarifa) ||
+            tarifa < 0
         ) {
 
-            alert(
-                "Todos los productos deben tener nombre y precio."
+            mostrarMensaje(
+                "mensajeConfiguracion",
+                "Ingresa una tarifa válida.",
+                "error"
             );
 
             return;
 
         }
 
-    }
+
+        /*
+         * Por ahora guardamos la configuración
+         * localmente.
+         *
+         * En una siguiente etapa también la
+         * migraremos completamente a Supabase.
+         */
+
+        const configuracion = {
+
+            tarifaDelivery:
+                tarifa,
+
+            whatsappNegocio:
+                whatsapp
+
+        };
 
 
-    const restaurantes =
-        JSON.parse(
-            localStorage.getItem(
-                "restaurantes"
+        localStorage.setItem(
+            "configSobreRuedas",
+            JSON.stringify(
+                configuracion
             )
-        ) || {};
-
-
-    restaurantes[nombre] = {
-
-        categoria:
-            categoria,
-
-        descripcion:
-            descripcion,
-
-        banner:
-            bannerBase64
-
-    };
-
-
-    localStorage.setItem(
-        "restaurantes",
-        JSON.stringify(restaurantes)
-    );
-
-
-    const productosGuardados =
-        JSON.parse(
-            localStorage.getItem(
-                "productos"
-            )
-        ) || {};
-
-
-    productosGuardados[nombre] =
-        productos;
-
-
-    localStorage.setItem(
-        "productos",
-        JSON.stringify(
-            productosGuardados
-        )
-    );
-
-
-    mostrarMensaje(
-        `✅ ${nombre} fue publicado correctamente.`
-    );
-
-
-    limpiarFormulario();
-
-}
-
-
-function mostrarMensaje(texto) {
-
-    const mensaje =
-        document.getElementById(
-            "mensaje"
         );
 
 
-    mensaje.textContent =
-        texto;
+        mostrarMensaje(
+            "mensajeConfiguracion",
+            "Configuración guardada correctamente.",
+            "exito"
+        );
+
+    }
 
 
-    mensaje.style.display =
-        "block";
+    /*
+     * ========================================================
+     * BANNER
+     * ========================================================
+     */
+
+    function mostrarBanner() {
+
+        const input =
+            document.getElementById(
+                "bannerRestaurante"
+            );
 
 
-    setTimeout(() => {
-
-        mensaje.style.display =
-            "none";
-
-    }, 5000);
-
-}
+        const archivo =
+            input.files[0];
 
 
-function limpiarFormulario() {
+        if (!archivo) {
 
-    document.getElementById(
-        "nombreRestaurante"
-    ).value = "";
+            bannerArchivo = null;
 
+            document.getElementById(
+                "previewBanner"
+            ).style.display = "none";
 
-    document.getElementById(
-        "descripcion"
-    ).value = "";
+            return;
 
-
-    document.getElementById(
-        "banner"
-    ).value = "";
+        }
 
 
-    document.getElementById(
-        "preview"
-    ).style.display = "none";
+        bannerArchivo = archivo;
 
 
-    productos = [];
-
-    bannerBase64 = "";
-
-    mostrarProductos();
-
-}
+        const lector =
+            new FileReader();
 
 
-mostrarProductos();
+        lector.onload = function(e) {
+
+            document.getElementById(
+                "imagenBanner"
+            ).src = e.target.result;
+
+
+            document.getElementById(
+                "previewBanner"
+            ).style.display = "block";
+
+        };
+
+
+        lector.readAsDataURL(
+            archivo
+        );
+
+    }
+
+
+    /*
+     * ========================================================
+     * PRODUCTOS
+     * ========================================================
+     */
+
+    function agregarProducto(
+        nombre = "",
+        precio = 0
+    ) {
+
+        productos.push({
+
+            nombre:
+                nombre,
+
+            precio:
+                Number(precio) || 0,
+
+            imagenArchivo:
+                null,
+
+            imagenPreview:
+                ""
+
+        });
+
+
+        mostrarProductos();
+
+    }
+
+
+    function mostrarProductos() {
+
+        const contenedor =
+            document.getElementById(
+                "listaProductos"
+            );
+
+
+        contenedor.innerHTML = "";
+
+
+        productos.forEach(
+            (producto, indice) => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "producto-editor";
+
+
+                div.innerHTML = `
+
+                    <div class="producto-header">
+
+                        <strong>
+                            Producto ${indice + 1}
+                        </strong>
+
+                        <button
+                            type="button"
+                            class="boton boton-peligro"
+                            onclick="eliminarProducto(
+                                ${indice}
+                            )"
+                        >
+                            🗑️ Eliminar
+                        </button>
+
+                    </div>
+
+
+                    <div class="producto-grid">
+
+                        <div class="campo">
+
+                            <label>
+                                Nombre del producto *
+                            </label>
+
+                            <input
+                                type="text"
+                                value="${escaparHTML(
+                                    producto.nombre
+                                )}"
+                                placeholder="Ej. Hamburguesa clásica"
+                                oninput="actualizarNombreProducto(
+                                    ${indice},
+                                    this.value
+                                )"
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label>
+                                Precio *
+                            </label>
+
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value="${producto.precio}"
+                                oninput="actualizarPrecioProducto(
+                                    ${indice},
+                                    this.value
+                                )"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="producto-imagen">
+
+                        <label>
+                            Imagen del producto
+                        </label>
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onchange="seleccionarImagenProducto(
+                                ${indice},
+                                this
+                            )"
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="previewProducto-${indice}"
+                        class="producto-preview"
+                    >
+
+                        <img
+                            id="imagenProducto-${indice}"
+                            alt="Vista previa"
+                        >
+
+                    </div>
+
+                `;
+
+
+                contenedor.appendChild(
+                    div
+                );
+
+
+                if (
+                    producto.imagenPreview
+                ) {
+
+                    const preview =
+                        document.getElementById(
+                            `previewProducto-${indice}`
+                        );
+
+                    const imagen =
+                        document.getElementById(
+                            `imagenProducto-${indice}`
+                        );
+
+                    imagen.src =
+                        producto.imagenPreview;
+
+                    preview.style.display =
+                        "block";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    function actualizarNombreProducto(
+        indice,
+        valor
+    ) {
+
+        if (
+            !productos[indice]
+        ) {
+            return;
+        }
+
+        productos[indice].nombre =
+            valor;
+
+    }
+
+
+    function actualizarPrecioProducto(
+        indice,
+        valor
+    ) {
+
+        if (
+            !productos[indice]
+        ) {
+            return;
+        }
+
+        productos[indice].precio =
+            Number(valor) || 0;
+
+    }
+
+
+    function eliminarProducto(
+        indice
+    ) {
+
+        if (
+            indice < 0 ||
+            indice >= productos.length
+        ) {
+            return;
+        }
+
+
+        productos.splice(
+            indice,
+            1
+        );
+
+
+        mostrarProductos();
+
+    }
+
+
+    function seleccionarImagenProducto(
+        indice,
+        input
+    ) {
+
+        if (
+            !input.files ||
+            !input.files[0]
+        ) {
+            return;
+        }
+
+
+        const archivo =
+            input.files[0];
+
+
+        productos[indice]
+            .imagenArchivo =
+            archivo;
+
+
+        const lector =
+            new FileReader();
+
+
+        lector.onload = function(e) {
+
+            productos[indice]
+                .imagenPreview =
+                e.target.result;
+
+
+            mostrarProductos();
+
+        };
+
+
+        lector.readAsDataURL(
+            archivo
+        );
+
+    }
+
+
+    /*
+     * ========================================================
+     * SUBIR IMAGEN A SUPABASE STORAGE
+     * ========================================================
+     */
+
+    async function subirImagen(
+        archivo,
+        carpeta
+    ) {
+
+        if (!archivo) {
+            return null;
+        }
+
+
+        const extension =
+            archivo.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        const nombreArchivo =
+            `${carpeta}/${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(2, 10)}.${extension}`;
+
+
+        const {
+            error
+        } = await supabaseClient
+            .storage
+            .from("restaurantes")
+            .upload(
+                nombreArchivo,
+                archivo,
+                {
+                    cacheControl:
+                        "3600",
+
+                    upsert:
+                        false,
+
+                    contentType:
+                        archivo.type
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Error subiendo imagen:",
+                error
+            );
+
+            throw new Error(
+                "No se pudo subir una imagen: " +
+                error.message
+            );
+
+        }
+
+
+        const {
+            data
+        } =
+            supabaseClient
+                .storage
+                .from("restaurantes")
+                .getPublicUrl(
+                    nombreArchivo
+                );
+
+
+        return data.publicUrl;
+
+    }
+
+
+    /*
+     * ========================================================
+     * PUBLICAR RESTAURANTE
+     * ========================================================
+     */
+
+    async function publicarRestaurante() {
+
+        const boton =
+            document.getElementById(
+                "btnPublicar"
+            );
+
+
+        const nombre =
+            document.getElementById(
+                "nombreRestaurante"
+            )
+            .value
+            .trim();
+
+
+        const categoria =
+            document.getElementById(
+                "categoriaRestaurante"
+            )
+            .value;
+
+
+        const descripcion =
+            document.getElementById(
+                "descripcionRestaurante"
+            )
+            .value
+            .trim();
+
+
+        /*
+         * VALIDACIONES
+         */
+
+        if (!nombre) {
+
+            mostrarMensaje(
+                "mensajePublicacion",
+                "Ingresa el nombre del restaurante.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!categoria) {
+
+            mostrarMensaje(
+                "mensajePublicacion",
+                "Selecciona una categoría.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            productos.length === 0
+        ) {
+
+            mostrarMensaje(
+                "mensajePublicacion",
+                "Agrega al menos un producto.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        for (
+            let i = 0;
+            i < productos.length;
+            i++
+        ) {
+
+            if (
+                !productos[i].nombre.trim()
+            ) {
+
+                mostrarMensaje(
+                    "mensajePublicacion",
+                    `El producto ${i + 1} no tiene nombre.`,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number(productos[i].precio) < 0
+            ) {
+
+                mostrarMensaje(
+                    "mensajePublicacion",
+                    `El precio del producto ${i + 1} no es válido.`,
+                    "error"
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /*
+         * DESACTIVAR BOTÓN
+         */
+
+        boton.disabled = true;
+
+        boton.textContent =
+            "⏳ Publicando...";
+
+
+        try {
+
+            /*
+             * ================================================
+             * 1. SUBIR BANNER
+             * ================================================
+             */
+
+            let bannerUrl = null;
+
+
+            if (bannerArchivo) {
+
+                bannerUrl =
+                    await subirImagen(
+                        bannerArchivo,
+                        "banners"
+                    );
+
+            }
+
+
+            /*
+             * ================================================
+             * 2. CREAR RESTAURANTE
+             * ================================================
+             */
+
+            const {
+                data: restaurante,
+                error:
+                    errorRestaurante
+            } =
+                await supabaseClient
+                    .from("restaurantes")
+                    .insert({
+
+                        nombre:
+                            nombre,
+
+                        categoria:
+                            categoria,
+
+                        descripcion:
+                            descripcion,
+
+                        banner_url:
+                            bannerUrl,
+
+                        activo:
+                            true
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (
+                errorRestaurante
+            ) {
+
+                throw new Error(
+                    "No se pudo crear el restaurante: " +
+                    errorRestaurante.message
+                );
+
+            }
+
+
+            /*
+             * ================================================
+             * 3. SUBIR IMÁGENES DE PRODUCTOS
+             * ================================================
+             */
+
+            const productosParaInsertar =
+                [];
+
+
+            for (
+                let i = 0;
+                i < productos.length;
+                i++
+            ) {
+
+                const producto =
+                    productos[i];
+
+
+                let imagenUrl =
+                    null;
+
+
+                if (
+                    producto.imagenArchivo
+                ) {
+
+                    imagenUrl =
+                        await subirImagen(
+                            producto.imagenArchivo,
+                            `productos/${restaurante.id}`
+                        );
+
+                }
+
+
+                productosParaInsertar.push({
+
+                    restaurante_id:
+                        restaurante.id,
+
+                    nombre:
+                        producto.nombre.trim(),
+
+                    descripcion:
+                        null,
+
+                    precio:
+                        Number(
+                            producto.precio
+                        ) || 0,
+
+                    imagen_url:
+                        imagenUrl,
+
+                    activo:
+                        true
+
+                });
+
+            }
+
+
+            /*
+             * ================================================
+             * 4. INSERTAR PRODUCTOS
+             * ================================================
+             */
+
+            const {
+                error:
+                    errorProductos
+            } =
+                await supabaseClient
+                    .from("productos")
+                    .insert(
+                        productosParaInsertar
+                    );
+
+
+            if (
+                errorProductos
+            ) {
+
+                /*
+                 * Si falla la creación de productos,
+                 * intentamos desactivar el restaurante
+                 * para evitar dejarlo publicado
+                 * incompleto.
+                 */
+
+                await supabaseClient
+                    .from("restaurantes")
+                    .update({
+                        activo: false
+                    })
+                    .eq(
+                        "id",
+                        restaurante.id
+                    );
+
+
+                throw new Error(
+                    "No se pudieron guardar los productos: " +
+                    errorProductos.message
+                );
+
+            }
+
+
+            /*
+             * ================================================
+             * 5. ÉXITO
+             * ================================================
+             */
+
+            mostrarMensaje(
+                "mensajePublicacion",
+
+                `Restaurante "${nombre}" publicado correctamente en Supabase.`,
+
+                "exito"
+            );
+
+
+            /*
+             * Limpiar formulario
+             */
+
+            limpiarFormulario();
+
+
+            /*
+             * Actualizar lista
+             */
+
+            await cargarRestaurantes();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error publicando restaurante:",
+                error
+            );
+
+
+            mostrarMensaje(
+                "mensajePublicacion",
+                error.message ||
+                "Ocurrió un error al publicar.",
+                "error"
+            );
+
+        } finally {
+
+            boton.disabled = false;
+
+            boton.textContent =
+                "🚀 Publicar restaurante";
+
+        }
+
+    }
+
+
+    /*
+     * ========================================================
+     * LIMPIAR FORMULARIO
+     * ========================================================
+     */
+
+    function limpiarFormulario() {
+
+        document.getElementById(
+            "nombreRestaurante"
+        ).value = "";
+
+
+        document.getElementById(
+            "categoriaRestaurante"
+        ).value = "";
+
+
+        document.getElementById(
+            "descripcionRestaurante"
+        ).value = "";
+
+
+        document.getElementById(
+            "bannerRestaurante"
+        ).value = "";
+
+
+        document.getElementById(
+            "previewBanner"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "imagenBanner"
+        ).src = "";
+
+
+        bannerArchivo = null;
+
+
+        productos = [];
+
+
+        agregarProducto();
+
+    }
+
+
+    /*
+     * ========================================================
+     * LISTAR RESTAURANTES
+     * ========================================================
+     */
+
+    async function cargarRestaurantes() {
+
+        const contenedor =
+            document.getElementById(
+                "restaurantesLista"
+            );
+
+
+        contenedor.innerHTML =
+            "Cargando restaurantes...";
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("restaurantes")
+                    .select(
+                        "id,nombre,categoria,descripcion,activo,creado_en"
+                    )
+                    .order(
+                        "creado_en",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                contenedor.innerHTML =
+                    "<p>No existen restaurantes registrados.</p>";
+
+                return;
+
+            }
+
+
+            contenedor.innerHTML =
+                data.map(
+                    restaurante => `
+
+                        <div class="restaurante-item">
+
+                            <strong>
+                                ${escaparHTML(
+                                    restaurante.nombre
+                                )}
+                            </strong>
+
+                            <br>
+
+                            Categoría:
+                            ${escaparHTML(
+                                restaurante.categoria ||
+                                "Sin categoría"
+                            )}
+
+                            <br>
+
+                            <span
+                                class="estado ${
+                                    restaurante.activo
+                                        ? "activo"
+                                        : "inactivo"
+                                }"
+                            >
+                                ${
+                                    restaurante.activo
+                                        ? "ACTIVO"
+                                        : "INACTIVO"
+                                }
+                            </span>
+
+                        </div>
+
+                    `
+                ).join("");
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            contenedor.innerHTML = `
+
+                <p style="color:#a93226;">
+
+                    Error cargando restaurantes:
+                    ${escaparHTML(
+                        error.message
+                    )}
+
+                </p>
+
+            `;
+
+        }
+
+    }
 
 </script>
 
