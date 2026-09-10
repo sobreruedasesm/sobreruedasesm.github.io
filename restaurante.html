@@ -4,307 +4,300 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-    <title>Restaurante - Pide Esmeraldas</title>
+<title>Sobre Ruedas</title>
 
-    <style>
+<style>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f6f8;
-            color: #222;
-            padding-bottom: 90px;
-        }
+body{
+font-family:Arial,sans-serif;
+background:#f5f6f8;
+color:#222;
+padding-bottom:90px;
+}
 
-        /* CABECERA */
+header{
 
-        header {
-            background: #111827;
-            color: white;
-            padding: 16px 20px;
+background:#111827;
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+color:white;
 
-        .logo {
-            font-size: 22px;
-            font-weight: bold;
-        }
+padding:16px 20px;
 
-        .logo span {
-            color: #22c55e;
-        }
+display:flex;
 
-        .cart-button {
-            background: #22c55e;
-            border: none;
-            color: white;
+justify-content:space-between;
 
-            padding: 10px 15px;
+align-items:center;
+}
 
-            border-radius: 20px;
+.logo{
+font-size:22px;
+font-weight:bold;
+}
 
-            font-weight: bold;
+.logo span{
+color:#22c55e;
+}
 
-            cursor: pointer;
-        }
+.cart-button{
 
+background:#22c55e;
 
-        /* RESTAURANTE */
+border:none;
 
-        .restaurant-header {
+color:white;
 
-            background: white;
+padding:10px 15px;
 
-            padding: 30px 20px;
+border-radius:20px;
 
-            text-align: center;
+font-weight:bold;
 
-            border-bottom: 1px solid #ddd;
-        }
+cursor:pointer;
+}
 
-        .restaurant-icon {
+.restaurant-header{
 
-            font-size: 70px;
+background:white;
 
-            margin-bottom: 10px;
-        }
+padding:30px 20px;
 
-        .restaurant-header h1 {
+text-align:center;
 
-            font-size: 30px;
+border-bottom:1px solid #ddd;
+}
 
-            margin-bottom: 8px;
-        }
+.restaurant-icon{
 
-        .restaurant-header p {
+font-size:70px;
 
-            color: #666;
+margin-bottom:10px;
+}
 
-            margin-bottom: 10px;
-        }
+.restaurant-header h1{
 
-        .rating {
+font-size:30px;
 
-            color: #f59e0b;
+margin-bottom:8px;
+}
 
-            font-weight: bold;
-        }
+.restaurant-header p{
 
+color:#666;
 
-        /* CONTENEDOR */
+margin-bottom:10px;
+}
 
-        .container {
+.rating{
 
-            max-width: 1000px;
+color:#f59e0b;
 
-            margin: 30px auto;
+font-weight:bold;
+}
 
-            padding: 0 20px;
-        }
+.container{
 
-        .section-title {
+max-width:1000px;
 
-            font-size: 25px;
+margin:30px auto;
 
-            margin-bottom: 20px;
-        }
+padding:0 20px;
+}
 
+.section-title{
 
-        /* PRODUCTOS */
+font-size:25px;
 
-        .products {
+margin-bottom:20px;
+}
 
-            display: grid;
+.products{
 
-            grid-template-columns:
-                repeat(auto-fit, minmax(260px, 1fr));
+display:grid;
 
-            gap: 20px;
-        }
+grid-template-columns:
+repeat(
+auto-fit,
+minmax(260px,1fr)
+);
 
+gap:20px;
+}
 
-        .product {
+.product{
 
-            background: white;
+background:white;
 
-            border-radius: 15px;
+border-radius:15px;
 
-            padding: 20px;
+padding:20px;
 
-            box-shadow:
-                0 3px 12px rgba(0,0,0,0.08);
-        }
+box-shadow:
+0 3px 12px
+rgba(0,0,0,.08);
+}
 
-        .product-image {
+.product-image{
 
-            height: 130px;
+height:130px;
 
-            background: #e5e7eb;
+background:#e5e7eb;
 
-            border-radius: 10px;
+border-radius:10px;
 
-            display: flex;
+display:flex;
 
-            justify-content: center;
+justify-content:center;
 
-            align-items: center;
+align-items:center;
 
-            font-size: 55px;
+font-size:55px;
 
-            margin-bottom: 15px;
-        }
+margin-bottom:15px;
+}
 
-        .product h3 {
+.product h3{
 
-            margin-bottom: 8px;
-        }
+margin-bottom:8px;
+}
 
-        .product-description {
+.product-description{
 
-            color: #666;
+color:#666;
 
-            font-size: 14px;
+font-size:14px;
 
-            min-height: 38px;
+min-height:38px;
 
-            margin-bottom: 12px;
-        }
+margin-bottom:12px;
+}
 
-        .price {
+.price{
 
-            color: #16a34a;
+color:#16a34a;
 
-            font-size: 20px;
+font-size:20px;
 
-            font-weight: bold;
+font-weight:bold;
 
-            margin-bottom: 15px;
-        }
+margin-bottom:15px;
+}
 
-        .add-button {
+.add-button{
 
-            width: 100%;
+width:100%;
 
-            border: none;
+border:none;
 
-            background: #22c55e;
+background:#22c55e;
 
-            color: white;
+color:white;
 
-            padding: 12px;
+padding:12px;
 
-            border-radius: 8px;
+border-radius:8px;
 
-            font-weight: bold;
+font-weight:bold;
 
-            cursor: pointer;
+cursor:pointer;
 
-            font-size: 15px;
-        }
+font-size:15px;
+}
 
-        .add-button:hover {
+.add-button:hover{
 
-            background: #16a34a;
-        }
+background:#16a34a;
+}
 
+.cart-bar{
 
-        /* CARRITO INFERIOR */
+position:fixed;
 
-        .cart-bar {
+bottom:0;
 
-            position: fixed;
+left:0;
 
-            bottom: 0;
+right:0;
 
-            left: 0;
+background:white;
 
-            right: 0;
+border-top:1px solid #ddd;
 
-            background: white;
+padding:15px 20px;
 
-            border-top: 1px solid #ddd;
+display:flex;
 
-            padding: 15px 20px;
+justify-content:center;
+}
 
-            display: flex;
+.cart-bar button{
 
-            justify-content: center;
-        }
+background:#111827;
 
-        .cart-bar button {
+color:white;
 
-            background: #111827;
+border:none;
 
-            color: white;
+padding:15px 30px;
 
-            border: none;
+border-radius:10px;
 
-            padding: 15px 30px;
+font-weight:bold;
 
-            border-radius: 10px;
+font-size:16px;
 
-            font-weight: bold;
+cursor:pointer;
 
-            font-size: 16px;
+min-width:280px;
+}
 
-            cursor: pointer;
+.mensaje{
 
-            min-width: 280px;
-        }
+position:fixed;
 
+top:80px;
 
-        /* MENSAJE */
+right:20px;
 
-        .mensaje {
+background:#111827;
 
-            position: fixed;
+color:white;
 
-            top: 80px;
+padding:15px 20px;
 
-            right: 20px;
+border-radius:10px;
 
-            background: #111827;
+display:none;
 
-            color: white;
+z-index:1000;
+}
 
-            padding: 15px 20px;
+@media(max-width:600px){
 
-            border-radius: 10px;
+.restaurant-header h1{
 
-            display: none;
+font-size:25px;
+}
 
-            z-index: 1000;
-        }
+.products{
 
+grid-template-columns:1fr;
+}
 
-        @media(max-width:600px) {
+}
 
-            .restaurant-header h1 {
-
-                font-size: 25px;
-            }
-
-            .products {
-
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
+</style>
 
 </head>
 
@@ -312,278 +305,114 @@
 <body>
 
 
-<!-- CABECERA -->
-
 <header>
 
-    <div class="logo">
 
-        🛵 <span>Pide</span> Esmeraldas
+<div class="logo">
 
-    </div>
+🛵 <span>Sobre</span> Ruedas
 
-    <button
-        class="cart-button"
-        onclick="verCarrito()">
+</div>
 
-        🛒
-        <span id="cantidadCarrito">0</span>
 
-    </button>
+<button
+class="cart-button"
+onclick="irAlCarrito()">
+
+🛒
+<span id="cantidadCarrito">0</span>
+
+</button>
+
 
 </header>
 
 
 
-<!-- INFORMACIÓN DEL RESTAURANTE -->
-
 <section class="restaurant-header">
 
-    <div class="restaurant-icon">
 
-        🍔
+<div
+class="restaurant-icon"
+id="iconoRestaurante">
 
-    </div>
+🍔
 
-    <h1 id="nombreRestaurante">
+</div>
 
-        Hamburguesas Don Pepe
 
-    </h1>
+<h1
+id="nombreRestaurante">
 
-    <p>
+Hamburguesas Don Pepe
 
-        Hamburguesas, papas y bebidas
+</h1>
 
-    </p>
 
-    <div class="rating">
+<p
+id="descripcionRestaurante">
 
-        ⭐⭐⭐⭐⭐ 4.8
+Hamburguesas, papas y bebidas
 
-    </div>
+</p>
+
+
+<div class="rating">
+
+⭐⭐⭐⭐⭐ 4.8
+
+</div>
+
 
 </section>
 
 
 
-<!-- PRODUCTOS -->
-
 <div class="container">
 
-    <h2 class="section-title">
 
-        Menú
+<h2 class="section-title">
 
-    </h2>
+Menú
 
+</h2>
 
-    <div class="products">
 
+<div
+class="products"
+id="productos"
+>
 
-        <!-- PRODUCTO 1 -->
-
-        <div class="product">
-
-            <div class="product-image">
-
-                🍔
-
-            </div>
-
-            <h3>
-
-                Hamburguesa Clásica
-
-            </h3>
-
-            <p class="product-description">
-
-                Carne, queso, lechuga,
-                tomate y salsa especial.
-
-            </p>
-
-            <div class="price">
-
-                $4.00
-
-            </div>
-
-            <button
-                class="add-button"
-                onclick="agregarProducto(
-                    'Hamburguesa Clásica',
-                    4
-                )">
-
-                ➕ Agregar al pedido
-
-            </button>
-
-        </div>
-
-
-
-        <!-- PRODUCTO 2 -->
-
-        <div class="product">
-
-            <div class="product-image">
-
-                🍔
-
-            </div>
-
-            <h3>
-
-                Hamburguesa Especial
-
-            </h3>
-
-            <p class="product-description">
-
-                Carne doble, queso,
-                tocino y salsa especial.
-
-            </p>
-
-            <div class="price">
-
-                $5.50
-
-            </div>
-
-            <button
-                class="add-button"
-                onclick="agregarProducto(
-                    'Hamburguesa Especial',
-                    5.5
-                )">
-
-                ➕ Agregar al pedido
-
-            </button>
-
-        </div>
-
-
-
-        <!-- PRODUCTO 3 -->
-
-        <div class="product">
-
-            <div class="product-image">
-
-                🍟
-
-            </div>
-
-            <h3>
-
-                Papas Fritas
-
-            </h3>
-
-            <p class="product-description">
-
-                Papas fritas crujientes
-                con salsa de la casa.
-
-            </p>
-
-            <div class="price">
-
-                $2.00
-
-            </div>
-
-            <button
-                class="add-button"
-                onclick="agregarProducto(
-                    'Papas Fritas',
-                    2
-                )">
-
-                ➕ Agregar al pedido
-
-            </button>
-
-        </div>
-
-
-
-        <!-- PRODUCTO 4 -->
-
-        <div class="product">
-
-            <div class="product-image">
-
-                🥤
-
-            </div>
-
-            <h3>
-
-                Coca-Cola
-
-            </h3>
-
-            <p class="product-description">
-
-                Coca-Cola fría de 500 ml.
-
-            </p>
-
-            <div class="price">
-
-                $1.25
-
-            </div>
-
-            <button
-                class="add-button"
-                onclick="agregarProducto(
-                    'Coca-Cola',
-                    1.25
-                )">
-
-                ➕ Agregar al pedido
-
-            </button>
-
-        </div>
-
-
-    </div>
 
 </div>
 
 
+</div>
 
-<!-- BARRA DEL CARRITO -->
+
 
 <div class="cart-bar">
 
-    <button onclick="verCarrito()">
 
-        🛒 Ver pedido
+<button
+onclick="irAlCarrito()">
 
-        (<span id="cantidadCarrito2">0</span>)
+🛒 Ver pedido
 
-    </button>
+(<span id="cantidadCarrito2">0</span>)
+
+</button>
+
 
 </div>
 
 
 
-<!-- MENSAJE -->
-
 <div
-    class="mensaje"
-    id="mensaje">
+class="mensaje"
+id="mensaje">
 
-    Producto agregado ✅
+Producto agregado ✅
 
 </div>
 
@@ -592,93 +421,368 @@
 <script>
 
 
-/* CARGAR CARRITO */
+/* DATOS DE RESTAURANTES */
+
+const restaurantes = {
+
+"Hamburguesas Don Pepe": {
+
+icono:"🍔",
+
+descripcion:
+"Hamburguesas, papas y bebidas.",
+
+productos:[
+
+{
+nombre:"Hamburguesa Clásica",
+descripcion:
+"Carne, queso, lechuga, tomate y salsa especial.",
+precio:4
+},
+
+{
+nombre:"Hamburguesa Especial",
+descripcion:
+"Carne doble, queso, tocino y salsa especial.",
+precio:5.50
+},
+
+{
+nombre:"Papas Fritas",
+descripcion:
+"Papas fritas crujientes con salsa de la casa.",
+precio:2
+},
+
+{
+nombre:"Coca-Cola",
+descripcion:
+"Coca-Cola fría de 500 ml.",
+precio:1.25
+}
+
+]
+
+},
+
+
+"Pizza Esmeraldas": {
+
+icono:"🍕",
+
+descripcion:
+"Pizzas familiares y personales.",
+
+productos:[
+
+{
+nombre:"Pizza Personal",
+descripcion:
+"Pizza personal con queso y tus ingredientes favoritos.",
+precio:5
+},
+
+{
+nombre:"Pizza Familiar",
+descripcion:
+"Pizza familiar para compartir.",
+precio:12
+},
+
+{
+nombre:"Pizza Especial",
+descripcion:
+"Pizza con jamón, pepperoni, champiñones y queso.",
+precio:14
+},
+
+{
+nombre:"Coca-Cola",
+descripcion:
+"Coca-Cola fría de 500 ml.",
+precio:1.25
+}
+
+]
+
+},
+
+
+"Pollo El Sabor": {
+
+icono:"🍗",
+
+descripcion:
+"Pollo asado, combos y bebidas.",
+
+productos:[
+
+{
+nombre:"Pollo Entero",
+descripcion:
+"Pollo asado acompañado de papas y ensalada.",
+precio:12
+},
+
+{
+nombre:"Medio Pollo",
+descripcion:
+"Medio pollo asado con papas.",
+precio:7
+},
+
+{
+nombre:"Combo Familiar",
+descripcion:
+"Pollo, papas, arroz y bebidas.",
+precio:18
+},
+
+{
+nombre:"Coca-Cola",
+descripcion:
+"Coca-Cola fría de 500 ml.",
+precio:1.25
+}
+
+]
+
+}
+
+};
+
+
+
+/* OBTENER RESTAURANTE */
+
+const parametros =
+new URLSearchParams(
+window.location.search
+);
+
+
+const nombre =
+parametros.get(
+"restaurante"
+) || "Hamburguesas Don Pepe";
+
+
+const restaurante =
+restaurantes[nombre];
+
+
+if(restaurante){
+
+document.getElementById(
+"nombreRestaurante"
+).textContent =
+nombre;
+
+
+document.getElementById(
+"descripcionRestaurante"
+).textContent =
+restaurante.descripcion;
+
+
+document.getElementById(
+"iconoRestaurante"
+).textContent =
+restaurante.icono;
+
+
+mostrarProductos(
+restaurante.productos
+);
+
+}
+
+
+
+/* MOSTRAR PRODUCTOS */
+
+function mostrarProductos(productos){
+
+const contenedor =
+document.getElementById(
+"productos"
+);
+
+
+contenedor.innerHTML="";
+
+
+productos.forEach(
+function(producto){
+
+const tarjeta =
+document.createElement(
+"div"
+);
+
+
+tarjeta.className =
+"product";
+
+
+tarjeta.innerHTML = `
+
+<div class="product-image">
+${obtenerIcono(producto.nombre)}
+</div>
+
+<h3>
+${producto.nombre}
+</h3>
+
+<p class="product-description">
+${producto.descripcion}
+</p>
+
+<div class="price">
+$${producto.precio.toFixed(2)}
+</div>
+
+<button
+class="add-button"
+onclick="agregarProducto(
+'${producto.nombre}',
+${producto.precio}
+)">
+
+➕ Agregar al pedido
+
+</button>
+
+`;
+
+
+contenedor.appendChild(
+tarjeta
+);
+
+});
+
+}
+
+
+
+/* ICONOS */
+
+function obtenerIcono(nombre){
+
+if(nombre.includes("Pizza"))
+return "🍕";
+
+if(nombre.includes("Pollo"))
+return "🍗";
+
+if(nombre.includes("Papas"))
+return "🍟";
+
+if(nombre.includes("Coca"))
+return "🥤";
+
+if(nombre.includes("Combo"))
+return "🍱";
+
+return "🍔";
+
+}
+
+
+
+/* AGREGAR */
+
+function agregarProducto(
+nombre,
+precio
+){
 
 let carrito =
-    JSON.parse(
-        localStorage.getItem("carrito")
-    ) || [];
+JSON.parse(
+localStorage.getItem(
+"carrito"
+)
+) || [];
 
 
-
-/* AGREGAR PRODUCTO */
-
-function agregarProducto(nombre, precio) {
-
-    let productoExistente =
-        carrito.find(
-            producto =>
-                producto.nombre === nombre
-        );
+let existente =
+carrito.find(
+producto =>
+producto.nombre === nombre
+);
 
 
-    if (productoExistente) {
+if(existente){
 
-        productoExistente.cantidad++;
+existente.cantidad++;
 
-    } else {
+}else{
 
-        carrito.push({
+carrito.push({
 
-            nombre: nombre,
+nombre:nombre,
 
-            precio: precio,
+precio:precio,
 
-            cantidad: 1
+cantidad:1
 
-        });
+});
 
-    }
+}
 
 
-    guardarCarrito();
+localStorage.setItem(
 
-    actualizarCarrito();
+"carrito",
 
-    mostrarMensaje();
+JSON.stringify(
+carrito
+)
+
+);
+
+
+actualizarCarrito();
+
+mostrarMensaje();
 
 }
 
 
 
-/* GUARDAR */
+/* CARRITO */
 
-function guardarCarrito() {
+function actualizarCarrito(){
 
-    localStorage.setItem(
-
-        "carrito",
-
-        JSON.stringify(carrito)
-
-    );
-
-}
+let carrito =
+JSON.parse(
+localStorage.getItem(
+"carrito"
+)
+) || [];
 
 
-
-/* ACTUALIZAR CANTIDAD */
-
-function actualizarCarrito() {
-
-    let cantidad = carrito.reduce(
-
-        (total, producto) =>
-            total + producto.cantidad,
-
-        0
-
-    );
+let cantidad =
+carrito.reduce(
+(total,producto)=>
+total + producto.cantidad,
+0
+);
 
 
-    document.getElementById(
-        "cantidadCarrito"
-    ).textContent = cantidad;
+document.getElementById(
+"cantidadCarrito"
+).textContent =
+cantidad;
 
 
-    document.getElementById(
-        "cantidadCarrito2"
-    ).textContent = cantidad;
+document.getElementById(
+"cantidadCarrito2"
+).textContent =
+cantidad;
 
 }
 
@@ -686,80 +790,41 @@ function actualizarCarrito() {
 
 /* MENSAJE */
 
-function mostrarMensaje() {
+function mostrarMensaje(){
 
-    let mensaje =
-        document.getElementById("mensaje");
-
-
-    mensaje.style.display = "block";
-
-
-    setTimeout(function() {
-
-        mensaje.style.display = "none";
-
-    }, 1500);
-
-}
+const mensaje =
+document.getElementById(
+"mensaje"
+);
 
 
-
-/* VER CARRITO */
-
-function verCarrito() {
-
-    if (carrito.length === 0) {
-
-        alert(
-            "Tu pedido está vacío."
-        );
-
-        return;
-
-    }
+mensaje.style.display =
+"block";
 
 
-    let texto =
-        "TU PEDIDO\n\n";
+setTimeout(
+function(){
 
-    let total = 0;
+mensaje.style.display =
+"none";
 
-
-    carrito.forEach(function(producto) {
-
-        let subtotal =
-            producto.precio *
-            producto.cantidad;
-
-
-        total += subtotal;
-
-
-        texto +=
-
-            producto.cantidad +
-            " x " +
-            producto.nombre +
-            " = $" +
-            subtotal.toFixed(2) +
-            "\n";
-
-    });
-
-
-    texto +=
-        "\nTOTAL: $" +
-        total.toFixed(2);
-
-
-    alert(texto);
+},
+1500
+);
 
 }
 
 
 
-/* INICIAR */
+/* IR AL CARRITO */
+
+function irAlCarrito(){
+
+window.location.href =
+"menu.html";
+
+}
+
 
 actualizarCarrito();
 
@@ -770,3 +835,4 @@ actualizarCarrito();
 
 </html>
 ```
+
