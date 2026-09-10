@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Administración - Sobre Ruedas</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #222;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 0 15px 50px;
+        }
+
+        .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        }
+
+        h1,
+        h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .subir {
+            border: 2px dashed #aaa;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            margin-top: 10px;
+            background: #fafafa;
+        }
+
+        .subir input {
+            border: none;
+        }
+
+        #preview {
+            max-width: 100%;
+            max-height: 350px;
+            margin-top: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .btn-analizar {
+            background: #673ab7;
+            color: white;
+        }
+
+        .btn-publicar {
+            background: #25a244;
+            color: white;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        .btn-agregar {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-eliminar {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+        }
+
+        .producto-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .producto-form label {
+            margin-top: 0;
+        }
+
+        .producto-form input {
+            background: white;
+        }
+
+        .mensaje {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .exito {
+            background: #d8f3dc;
+            border: 1px solid #95d5b2;
+        }
+
+        .nota {
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media(max-width: 700px) {
+
+            .producto-form {
+                grid-template-columns: 1fr;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        🛵 Sobre Ruedas - Administración
+    </div>
+
+    <button
+        class="btn"
+        onclick="window.location.href='index.html'"
+    >
+        Ver sitio
+    </button>
+
+</header>
+
+
+<main class="contenedor">
+
+
+    <h1>
+        ⚙️ Panel de administración
+    </h1>
+
+
+    <div class="nota">
+
+        <strong>
+            🤖 Carga de menú
+        </strong>
+
+        <p>
+            Sube el banner del restaurante.
+            En esta primera versión puedes revisar
+            y completar los datos detectados antes
+            de publicar.
+        </p>
+
+        <p>
+            La integración con IA permitirá posteriormente
+            leer automáticamente los nombres y precios
+            desde el banner.
+        </p>
+
+    </div>
+
+
+    <!-- CONFIGURACIÓN -->
+
+    <section class="panel">
+
+        <h2>
+            💰 Configuración
+        </h2>
+
+        <div class="config-grid">
+
+            <div>
+
+                <label>
+                    Tarifa por carrera
+                </label>
+
+                <input
+                    type="number"
+                    id="tarifa"
+                    step="0.01"
+                    min="0"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    WhatsApp Business
+                </label>
+
+                <input
+                    type="text"
+                    id="whatsapp"
+                >
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="btn btn-agregar"
+            onclick="guardarConfiguracion()"
+        >
+            Guardar configuración
+        </button>
+
+    </section>
+
+
+    <!-- RESTAURANTE -->
+
+    <section class="panel">
+
+        <h2>
+            🏪 Nuevo restaurante
+        </h2>
+
+
+        <label>
+            Nombre del restaurante
+        </label>
+
+        <input
+            type="text"
+            id="nombreRestaurante"
+            placeholder="Ej. Pollos El Sabor"
+        >
+
+
+        <label>
+            Categoría
+        </label>
+
+        <select id="categoria">
+
+            <option value="Hamburguesas">
+                Hamburguesas
+            </option>
+
+            <option value="Pizza">
+                Pizza
+            </option>
+
+            <option value="Pollo">
+                Pollo
+            </option>
+
+            <option value="Bebidas">
+                Bebidas
+            </option>
+
+            <option value="Tiendas">
+                Tiendas
+            </option>
+
+            <option value="Otros">
+                Otros
+            </option>
+
+        </select>
+
+
+        <label>
+            Descripción
+        </label>
+
+        <textarea
+            id="descripcion"
+            placeholder="Descripción del restaurante"
+        ></textarea>
+
+
+        <label>
+            Banner del restaurante
+        </label>
+
+
+        <div class="subir">
+
+            <p>
+                📷 Selecciona el banner
+            </p>
+
+            <input
+                type="file"
+                id="banner"
+                accept="image/*"
+                onchange="mostrarBanner(event)"
+            >
+
+            <img
+                id="preview"
+                alt="Vista previa"
+            >
+
+        </div>
+
+
+        <button
+            class="btn btn-analizar"
+            onclick="analizarBanner()"
+        >
+            🤖 Analizar banner
+        </button>
+
+    </section>
+
+
+    <!-- PRODUCTOS -->
+
+    <section class="panel">
+
+        <h2>
+            🍔 Productos
+        </h2>
+
+
+        <div id="productos"></div>
+
+
+        <button
+            class="btn btn-agregar"
+            onclick="agregarProducto()"
+        >
+            + Agregar producto
+        </button>
+
+    </section>
+
+
+    <!-- PUBLICAR -->
+
+    <section class="panel">
+
+        <button
+            class="btn btn-publicar"
+            onclick="publicarRestaurante()"
+        >
+            ✅ PUBLICAR RESTAURANTE Y MENÚ
+        </button>
+
+
+        <div
+            id="mensaje"
+            class="mensaje exito"
+        ></div>
+
+    </section>
+
+
+</main>
+
+
+<script src="config.js"></script>
+
+
+<script>
+
+
+let productos = [];
+
+let bannerBase64 = "";
+
+
+document.getElementById("tarifa")
+    .value = CONFIG.tarifaDelivery.toFixed(2);
+
+document.getElementById("whatsapp")
+    .value = CONFIG.whatsappNegocio;
+
+
+function guardarConfiguracion() {
+
+    const tarifa =
+        Number(
+            document.getElementById("tarifa").value
+        );
+
+
+    const whatsapp =
+        document.getElementById("whatsapp")
+            .value.trim();
+
+
+    if (isNaN(tarifa) || tarifa < 0) {
+
+        alert("Ingresa una tarifa válida.");
+        return;
+
+    }
+
+
+    /*
+       Como GitHub Pages no permite modificar
+       config.js desde el navegador, guardamos
+       temporalmente la configuración en localStorage.
+    */
+
+    localStorage.setItem(
+        "configSobreRuedas",
+        JSON.stringify({
+
+            tarifaDelivery: tarifa,
+
+            whatsappNegocio: whatsapp
+
+        })
+    );
+
+
+    alert(
+        "Configuración guardada para este navegador."
+    );
+
+}
+
+
+function obtenerConfiguracionLocal() {
+
+    const guardada =
+        JSON.parse(
+            localStorage.getItem(
+                "configSobreRuedas"
+            )
+        );
+
+
+    if (!guardada) {
+
+        return CONFIG;
+
+    }
+
+
+    return {
+
+        ...CONFIG,
+        ...guardada
+
+    };
+
+}
+
+
+function mostrarBanner(event) {
+
+    const archivo =
+        event.target.files[0];
+
+
+    if (!archivo) return;
+
+
+    const lector =
+        new FileReader();
+
+
+    lector.onload = function(e) {
+
+        bannerBase64 =
+            e.target.result;
+
+
+        const preview =
+            document.getElementById("preview");
+
+
+        preview.src =
+            bannerBase64;
+
+        preview.style.display =
+            "block";
+
+    };
+
+
+    lector.readAsDataURL(archivo);
+
+}
+
+
+function analizarBanner() {
+
+    if (!bannerBase64) {
+
+        alert(
+            "Primero selecciona un banner."
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "🤖 El módulo de IA está preparado para esta etapa. " +
+        "La siguiente integración conectará el banner con " +
+        "un modelo de visión para detectar automáticamente " +
+        "restaurante, productos y precios."
+    );
+
+
+    /*
+       Aquí posteriormente conectaremos:
+
+       bannerBase64
+             ↓
+       API de IA
+             ↓
+       restaurante
+             ↓
+       productos
+             ↓
+       precios
+
+       Por ahora agregamos un producto
+       de ejemplo para mostrar el flujo.
+    */
+
+
+    if (productos.length === 0) {
+
+        agregarProducto(
+            "Producto detectado",
+            0
+        );
+
+    }
+
+}
+
+
+function agregarProducto(
+    nombre = "",
+    precio = 0
+) {
+
+    productos.push({
+
+        nombre: nombre,
+
+        precio: precio,
+
+        imagen: ""
+
+    });
+
+
+    mostrarProductos();
+
+}
+
+
+function mostrarProductos() {
+
+    const contenedor =
+        document.getElementById("productos");
+
+    contenedor.innerHTML = "";
+
+
+    productos.forEach((producto, index) => {
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "producto-form";
+
+
+        div.innerHTML = `
+
+            <div>
+
+                <label>
+                    Producto
+                </label>
+
+                <input
+                    type="text"
+                    value="${producto.nombre}"
+                    onchange="actualizarProducto(
+                        ${index},
+                        'nombre',
+                        this.value
+                    )"
+                    placeholder="Nombre del plato"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Precio
+                </label>
+
+                <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value="${producto.precio}"
+                    onchange="actualizarProducto(
+                        ${index},
+                        'precio',
+                        this.value
+                    )"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Imagen
+                </label>
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    onchange="cargarImagenProducto(
+                        event,
+                        ${index}
+                    )"
+                >
+
+            </div>
+
+
+            <button
+                class="btn-eliminar"
+                onclick="eliminarProducto(${index})"
+            >
+                🗑
+            </button>
+
+        `;
+
+
+        contenedor.appendChild(div);
+
+    });
+
+}
+
+
+function actualizarProducto(
+    index,
+    campo,
+    valor
+) {
+
+    productos[index][campo] =
+        campo === "precio"
+            ? Number(valor)
+            : valor;
+
+}
+
+
+function cargarImagenProducto(
+    event,
+    index
+) {
+
+    const archivo =
+        event.target.files[0];
+
+
+    if (!archivo) return;
+
+
+    const lector =
+        new FileReader();
+
+
+    lector.onload =
+        function(e) {
+
+            productos[index].imagen =
+                e.target.result;
+
+        };
+
+
+    lector.readAsDataURL(archivo);
+
+}
+
+
+function eliminarProducto(index) {
+
+    productos.splice(index, 1);
+
+    mostrarProductos();
+
+}
+
+
+function publicarRestaurante() {
+
+    const nombre =
+        document.getElementById(
+            "nombreRestaurante"
+        ).value.trim();
+
+
+    const categoria =
+        document.getElementById(
+            "categoria"
+        ).value;
+
+
+    const descripcion =
+        document.getElementById(
+            "descripcion"
+        ).value.trim();
+
+
+    if (!nombre) {
+
+        alert(
+            "Ingresa el nombre del restaurante."
+        );
+
+        return;
+
+    }
+
+
+    if (productos.length === 0) {
+
+        alert(
+            "Agrega al menos un producto."
+        );
+
+        return;
+
+    }
+
+
+    for (const producto of productos) {
+
+        if (
+            !producto.nombre ||
+            Number(producto.precio) <= 0
+        ) {
+
+            alert(
+                "Todos los productos deben tener nombre y precio."
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    const restaurantes =
+        JSON.parse(
+            localStorage.getItem(
+                "restaurantes"
+            )
+        ) || {};
+
+
+    restaurantes[nombre] = {
+
+        categoria:
+            categoria,
+
+        descripcion:
+            descripcion,
+
+        banner:
+            bannerBase64
+
+    };
+
+
+    localStorage.setItem(
+        "restaurantes",
+        JSON.stringify(restaurantes)
+    );
+
+
+    const productosGuardados =
+        JSON.parse(
+            localStorage.getItem(
+                "productos"
+            )
+        ) || {};
+
+
+    productosGuardados[nombre] =
+        productos;
+
+
+    localStorage.setItem(
+        "productos",
+        JSON.stringify(
+            productosGuardados
+        )
+    );
+
+
+    mostrarMensaje(
+        `✅ ${nombre} fue publicado correctamente.`
+    );
+
+
+    limpiarFormulario();
+
+}
+
+
+function mostrarMensaje(texto) {
+
+    const mensaje =
+        document.getElementById(
+            "mensaje"
+        );
+
+
+    mensaje.textContent =
+        texto;
+
+
+    mensaje.style.display =
+        "block";
+
+
+    setTimeout(() => {
+
+        mensaje.style.display =
+            "none";
+
+    }, 5000);
+
+}
+
+
+function limpiarFormulario() {
+
+    document.getElementById(
+        "nombreRestaurante"
+    ).value = "";
+
+
+    document.getElementById(
+        "descripcion"
+    ).value = "";
+
+
+    document.getElementById(
+        "banner"
+    ).value = "";
+
+
+    document.getElementById(
+        "preview"
+    ).style.display = "none";
+
+
+    productos = [];
+
+    bannerBase64 = "";
+
+    mostrarProductos();
+
+}
+
+
+mostrarProductos();
+
+</script>
+
+</body>
+</html>
