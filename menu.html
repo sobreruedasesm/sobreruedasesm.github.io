@@ -1,1158 +1,911 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
-```
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>Carrito - Sobre Ruedas</title>
-
-<style>
-
-    * {
-        box-sizing: border-box;
-    }
-
-    :root {
-        --verde: #087f5b;
-        --verde-oscuro: #075c43;
-        --verde-claro: #e7f7f1;
-        --verde-hover: #066b4d;
-        --negro: #10201b;
-        --gris: #5f6f69;
-        --fondo: #f4f7f6;
-        --blanco: #ffffff;
-        --borde: #dfe8e4;
-        --rojo: #d93025;
-        --sombra: 0 8px 25px rgba(0, 50, 35, 0.08);
-    }
-
-    body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: var(--fondo);
-        color: var(--negro);
-    }
-
-    /* =========================
-       HEADER
-    ========================= */
-
-    header {
-        background: var(--blanco);
-        color: var(--negro);
-
-        padding: 14px 20px;
-
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        border-bottom: 1px solid var(--borde);
-
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
-
-    .logo {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--verde);
-    }
-
-    .volver {
-        background: transparent;
-
-        border: 1px solid var(--verde);
-
-        color: var(--verde);
-
-        padding: 9px 13px;
-
-        border-radius: 8px;
-
-        cursor: pointer;
-
-        font-weight: bold;
-    }
-
-    .volver:hover {
-        background: var(--verde-claro);
-    }
-
-    /* =========================
-       CONTENEDOR
-    ========================= */
-
-    .contenedor {
-        max-width: 950px;
-
-        margin: 25px auto;
-
-        padding: 0 15px 60px;
-    }
-
-    .titulo {
-        margin-bottom: 20px;
-    }
-
-    .titulo h1 {
-        margin: 0;
-
-        font-size: 30px;
-    }
-
-    .titulo p {
-        margin: 7px 0 0;
-
-        color: var(--gris);
-    }
-
-    /* =========================
-       INFORMACION
-    ========================= */
-
-    .info {
-        background: var(--verde-claro);
-
-        border: 1px solid #b9e5d6;
-
-        padding: 17px;
-
-        border-radius: 12px;
-
-        margin-bottom: 22px;
-    }
-
-    .info strong {
-        color: var(--verde-oscuro);
-    }
-
-    .info p {
-        margin: 7px 0;
-
-        line-height: 1.5;
-    }
-
-    /* =========================
-       CARRERA
-    ========================= */
-
-    .carrera {
-        background: var(--blanco);
-
-        border-radius: 15px;
-
-        margin-bottom: 20px;
-
-        padding: 20px;
-
-        border: 1px solid var(--borde);
-
-        box-shadow: var(--sombra);
-    }
-
-    .carrera-header {
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-
-        gap: 10px;
-
-        margin-bottom: 10px;
-    }
-
-    .restaurante-nombre {
-        margin: 0;
-
-        color: var(--verde-oscuro);
-
-        font-size: 20px;
-    }
-
-    .badge-carrera {
-        background: var(--verde-claro);
-
-        color: var(--verde);
-
-        padding: 5px 10px;
-
-        border-radius: 20px;
-
-        font-size: 12px;
-
-        font-weight: bold;
-
-        white-space: nowrap;
-    }
-
-    /* =========================
-       PRODUCTOS
-    ========================= */
-
-    .producto {
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-
-        gap: 15px;
-
-        border-bottom: 1px solid #edf1ef;
-
-        padding: 14px 0;
-    }
-
-    .producto:last-child {
-        border-bottom: none;
-    }
-
-    .producto-info {
-        flex: 1;
-    }
-
-    .producto-nombre {
-        font-weight: bold;
-
-        font-size: 16px;
-    }
-
-    .producto-precio {
-        color: var(--gris);
-
-        margin-top: 5px;
-
-        font-size: 14px;
-    }
-
-    /* =========================
-       CONTROLES
-    ========================= */
-
-    .controles {
-        display: flex;
-
-        gap: 6px;
-
-        align-items: center;
-    }
-
-    .controles button {
-        border: none;
-
-        width: 32px;
-        height: 32px;
-
-        border-radius: 8px;
-
-        cursor: pointer;
-
-        font-size: 18px;
-
-        font-weight: bold;
-    }
-
-    .menos {
-        background: #edf1ef;
-
-        color: var(--negro);
-    }
-
-    .menos:hover {
-        background: #dfe6e2;
-    }
-
-    .mas {
-        background: var(--verde);
-
-        color: white;
-    }
-
-    .mas:hover {
-        background: var(--verde-hover);
-    }
-
-    .cantidad {
-        min-width: 25px;
-
-        text-align: center;
-
-        font-weight: bold;
-    }
-
-    .eliminar {
-        background: #feeceb !important;
-
-        color: var(--rojo);
-
-        margin-left: 5px;
-    }
-
-    .eliminar:hover {
-        background: #fbd6d3 !important;
-    }
-
-    /* =========================
-       TOTALES CARRERA
-    ========================= */
-
-    .totales-carrera {
-        border-top: 1px solid var(--borde);
-
-        margin-top: 12px;
-
-        padding-top: 15px;
-    }
-
-    .fila {
-        display: flex;
-
-        justify-content: space-between;
-
-        margin: 7px 0;
-
-        color: var(--gris);
-    }
-
-    .fila strong {
-        color: var(--negro);
-    }
-
-    .total-carrera {
-        display: flex;
-
-        justify-content: space-between;
-
-        margin-top: 12px;
-
-        padding-top: 12px;
-
-        border-top: 1px dashed var(--borde);
-
-        font-size: 18px;
-
-        font-weight: bold;
-
-        color: var(--verde-oscuro);
-    }
-
-    /* =========================
-       RESUMEN GENERAL
-    ========================= */
-
-    .resumen {
-        background:
-            linear-gradient(
-                135deg,
-                var(--verde-oscuro),
-                var(--verde)
-            );
-
-        color: white;
-
-        padding: 23px;
-
-        border-radius: 15px;
-
-        margin-top: 25px;
-
-        box-shadow: var(--sombra);
-    }
-
-    .resumen .fila {
-        color: #d9eee7;
-
-        margin: 9px 0;
-    }
-
-    .resumen .fila strong {
-        color: white;
-    }
-
-    .total-general {
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-
-        border-top: 1px solid rgba(255,255,255,.3);
-
-        padding-top: 17px;
-
-        margin-top: 17px;
-
-        font-size: 25px;
-
-        font-weight: bold;
-    }
-
-    /* =========================
-       FORMULARIO
-    ========================= */
-
-    .formulario {
-        background: white;
-
-        padding: 23px;
-
-        border-radius: 15px;
-
-        margin-top: 22px;
-
-        border: 1px solid var(--borde);
-
-        box-shadow: var(--sombra);
-    }
-
-    .formulario h2 {
-        margin-top: 0;
-
-        margin-bottom: 20px;
-    }
-
-    .campo {
-        margin-bottom: 15px;
-    }
-
-    .campo label {
-        display: block;
-
-        margin-bottom: 6px;
-
-        font-weight: bold;
-
-        font-size: 14px;
-    }
-
-    .formulario input,
-    .formulario textarea {
-        width: 100%;
-
-        padding: 13px;
-
-        border: 1px solid #d6dfdb;
-
-        border-radius: 9px;
-
-        font-size: 15px;
-
-        outline: none;
-
-        font-family: inherit;
-    }
-
-    .formulario input:focus,
-    .formulario textarea:focus {
-        border-color: var(--verde);
-
-        box-shadow:
-            0 0 0 3px rgba(8,127,91,.10);
-    }
-
-    .formulario textarea {
-        min-height: 90px;
-
-        resize: vertical;
-    }
-
-    .obligatorio {
-        color: var(--rojo);
-    }
-
-    /* =========================
-       BOTON CONFIRMAR
-    ========================= */
-
-    .confirmar {
-        width: 100%;
-
-        background: var(--verde);
-
-        color: white;
-
-        border: none;
-
-        padding: 16px;
-
-        border-radius: 10px;
-
-        font-size: 17px;
-
-        font-weight: bold;
-
-        cursor: pointer;
-
-        margin-top: 8px;
-
-        transition: .2s;
-    }
-
-    .confirmar:hover {
-        background: var(--verde-hover);
-
-        transform: translateY(-1px);
-    }
-
-    .confirmar:disabled {
-        background: #9bbdb2;
-
-        cursor: not-allowed;
-
-        transform: none;
-    }
-
-    /* =========================
-       CARRITO VACIO
-    ========================= */
-
-    .vacio {
-        background: white;
-
-        padding: 50px 25px;
-
-        text-align: center;
-
-        border-radius: 15px;
-
-        border: 1px solid var(--borde);
-
-        box-shadow: var(--sombra);
-    }
-
-    .vacio-icono {
-        font-size: 55px;
-    }
-
-    .vacio h2 {
-        margin-bottom: 8px;
-    }
-
-    .vacio p {
-        color: var(--gris);
-    }
-
-    .btn-ver-restaurantes {
-        background: var(--verde);
-
-        color: white;
-
-        border: none;
-
-        padding: 13px 20px;
-
-        border-radius: 9px;
-
-        font-weight: bold;
-
-        cursor: pointer;
-
-        margin-top: 10px;
-    }
-
-    /* =========================
-       RESULTADO
-    ========================= */
-
-    #resultado {
-        margin-top: 25px;
-    }
-
-    .pedido-generado {
-        background: #e8f5e9;
-
-        border: 1px solid #a5d6a7;
-
-        padding: 22px;
-
-        border-radius: 13px;
-    }
-
-    .pedido-generado h2 {
-        margin-top: 0;
-
-        color: #176b32;
-    }
-
-    .numero-pedido {
-        font-size: 25px;
-
-        font-weight: 800;
-
-        color: var(--verde-oscuro);
-
-        margin: 10px 0;
-    }
-
-    .carrera-generada {
-        background: white;
-
-        margin-top: 12px;
-
-        padding: 15px;
-
-        border-radius: 9px;
-
-        border: 1px solid #d8e6da;
-    }
-
-    .estado {
-        display: inline-block;
-
-        background: #fff3cd;
-
-        color: #7a5a00;
-
-        padding: 5px 9px;
-
-        border-radius: 15px;
-
-        font-size: 12px;
-
-        font-weight: bold;
-
-        margin-top: 7px;
-    }
-
-    /* =========================
-       ERROR
-    ========================= */
-
-    .error {
-        background: #fff5f5;
-
-        border: 1px solid #f0caca;
-
-        color: #9d2929;
-
-        padding: 18px;
-
-        border-radius: 10px;
-
-        margin-top: 20px;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 600px) {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mi pedido - Sobre Ruedas</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="config.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f5;
+            color: #17352b;
+        }
 
         header {
-            padding: 12px 15px;
+            background: #087f5b;
+            color: white;
+            padding: 18px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
 
-        .logo {
-            font-size: 19px;
-        }
-
-        .volver {
-            padding: 8px 10px;
-
-            font-size: 13px;
-        }
-
-        .contenedor {
-            margin-top: 18px;
-        }
-
-        .titulo h1 {
+        header h1 {
+            margin: 0;
             font-size: 26px;
         }
 
+        header p {
+            margin: 6px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .contenedor {
+            width: 92%;
+            max-width: 900px;
+            margin: 25px auto 50px;
+        }
+
+        .boton-volver {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #087f5b;
+            font-weight: bold;
+        }
+
+        .titulo {
+            margin-bottom: 20px;
+        }
+
+        .titulo h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .titulo p {
+            margin-top: 6px;
+            color: #66756e;
+        }
+
         .carrera {
-            padding: 16px;
+            background: white;
+            border-radius: 14px;
+            margin-bottom: 22px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid #087f5b;
         }
 
         .carrera-header {
-            align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
 
-            flex-direction: column;
+        .carrera-header h3 {
+            margin: 0;
+            color: #087f5b;
+            font-size: 20px;
+        }
+
+        .carrera-header span {
+            font-size: 13px;
+            background: #e6f5ef;
+            color: #087f5b;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: bold;
         }
 
         .producto {
-            align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 13px 0;
+            border-bottom: 1px solid #e6ebe8;
+        }
+
+        .producto:last-child {
+            border-bottom: none;
+        }
+
+        .producto-info {
+            flex: 1;
+        }
+
+        .producto-nombre {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .producto-precio {
+            color: #66756e;
+            font-size: 14px;
         }
 
         .controles {
-            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .total-general {
-            font-size: 22px;
+        .btn-cantidad {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: #087f5b;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
         }
 
-    }
+        .btn-cantidad:hover {
+            background: #066b4c;
+        }
 
-</style>
-```
+        .cantidad {
+            min-width: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
 
+        .btn-eliminar {
+            margin-left: 5px;
+            border: none;
+            background: transparent;
+            color: #c0392b;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .resumen-carrera {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dfe7e3;
+        }
+
+        .fila {
+            display: flex;
+            justify-content: space-between;
+            margin: 7px 0;
+        }
+
+        .fila.total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #dfe7e3;
+            font-size: 18px;
+            font-weight: bold;
+            color: #087f5b;
+        }
+
+        .formulario {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-top: 25px;
+        }
+
+        .formulario h3 {
+            margin-top: 0;
+            color: #087f5b;
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .campo input,
+        .campo textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd7d2;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .campo textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .campo input:focus,
+        .campo textarea:focus {
+            outline: none;
+            border-color: #087f5b;
+        }
+
+        .resumen-final {
+            background: #e6f5ef;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .resumen-final .fila.total {
+            border-top-color: #b9d8cc;
+        }
+
+        .btn-confirmar {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #087f5b;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-confirmar:hover {
+            background: #066b4c;
+        }
+
+        .vacio {
+            background: white;
+            padding: 40px 25px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .vacio h2 {
+            margin-top: 0;
+            color: #087f5b;
+        }
+
+        .vacio a {
+            display: inline-block;
+            margin-top: 15px;
+            background: #087f5b;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .mensaje {
+            display: none;
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 10px;
+            background: #e6f5ef;
+            border: 1px solid #9dd2bd;
+            color: #145c43;
+        }
+
+        .mensaje.error {
+            background: #fdecea;
+            border-color: #f3b6af;
+            color: #8a2d24;
+        }
+
+        .pedido-generado {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-top: 25px;
+            display: none;
+        }
+
+        .pedido-generado h2 {
+            color: #087f5b;
+            margin-top: 0;
+        }
+
+        .carrera-confirmada {
+            background: #f4f7f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 12px 0;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                width: 94%;
+            }
+
+            .producto {
+                align-items: flex-start;
+            }
+
+            .controles {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .carrera-header {
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-
-```
-<div class="logo">
-    🛵 Sobre Ruedas
-</div>
-
-<button
-    class="volver"
-    onclick="seguirComprando()"
->
-    ← Seguir comprando
-</button>
-```
-
+    <h1>🛵 Sobre Ruedas</h1>
+    <p>Tu comida. Tu ciudad. Tu delivery.</p>
 </header>
 
-<main class="contenedor">
+<div class="contenedor">
 
-```
-<div class="titulo">
+    <a href="index.html" class="boton-volver">
+        ← Seguir comprando
+    </a>
 
-    <h1>
-        🛒 Tu pedido
-    </h1>
-
-    <p>
-        Revisa tus productos antes de confirmar.
-    </p>
-
-</div>
-
-
-<div class="info">
-
-    <strong>
-        ℹ️ Compra en diferentes restaurantes
-    </strong>
-
-    <p>
-        Puedes comprar productos de diferentes
-        restaurantes en un mismo pedido.
-    </p>
-
-    <p>
-        Cada restaurante genera una
-        <strong>carrera independiente</strong>
-        y cada carrera tiene un delivery de
-        <strong id="textoTarifa">$1.50</strong>.
-    </p>
-
-</div>
-
-
-<div id="carrito"></div>
-
-
-<div id="formulario" style="display:none;">
-
-    <div class="formulario">
-
-        <h2>
-            📍 Datos de entrega
-        </h2>
-
-
-        <div class="campo">
-
-            <label>
-                Nombre
-                <span class="obligatorio">*</span>
-            </label>
-
-            <input
-                type="text"
-                id="nombre"
-                placeholder="Ej. Juan Pérez"
-                autocomplete="name"
-            >
-
-        </div>
-
-
-        <div class="campo">
-
-            <label>
-                Teléfono
-                <span class="obligatorio">*</span>
-            </label>
-
-            <input
-                type="tel"
-                id="telefono"
-                placeholder="Ej. 0987654321"
-                autocomplete="tel"
-            >
-
-        </div>
-
-
-        <div class="campo">
-
-            <label>
-                Dirección de entrega
-                <span class="obligatorio">*</span>
-            </label>
-
-            <textarea
-                id="direccion"
-                placeholder="Ej. Calle Bolívar y 10 de Agosto"
-                autocomplete="street-address"
-            ></textarea>
-
-        </div>
-
-
-        <div class="campo">
-
-            <label>
-                Referencia
-            </label>
-
-            <input
-                type="text"
-                id="referencia"
-                placeholder="Ej. Frente al parque"
-            >
-
-        </div>
-
-
-        <button
-            id="btnConfirmar"
-            class="confirmar"
-            onclick="confirmarPedido()"
-        >
-            🛵 CONFIRMAR PEDIDO
-        </button>
-
+    <div class="titulo">
+        <h2>🛒 Mi pedido</h2>
+        <p>Revisa tus productos antes de confirmar.</p>
     </div>
 
-</div>
-
-
-<div id="resultado"></div>
-```
-
-</main>
-
-<!-- =========================
-     SUPABASE
-========================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<script src="config.js"></script>
-
-<script>
-
-/* =========================================
-   VARIABLES
-========================================= */
-
-let carrito =
-    JSON.parse(localStorage.getItem("carrito")) || [];
-
-let nombresRestaurantes = {};
-
-/* =========================================
-   CONFIGURACIÓN
-========================================= */
-
-const tarifaDelivery =
-    Number(CONFIG.tarifaDelivery) || 1.50;
-
-document.getElementById("textoTarifa")
-    .textContent =
-        "$" + tarifaDelivery.toFixed(2);
-
-/* =========================================
-   OBTENER NOMBRE DEL RESTAURANTE
-========================================= */
-
-function obtenerNombreRestaurante(producto) {
-
-    return (
-        producto.restaurante_nombre ||
-        producto.restaurante ||
-        producto.nombre_restaurante ||
-        (
-            producto.restaurante_id &&
-            nombresRestaurantes[producto.restaurante_id]
-        ) ||
-        "Restaurante"
-    );
-
-}
-
-/* =========================================
-   CARGAR NOMBRES DESDE SUPABASE
-========================================= */
-
-async function cargarNombresRestaurantes() {
-
-    if (typeof supabaseClient === "undefined") {
-
-        mostrarCarrito();
-
-        return;
-
-    }
-
-    const ids =
-        [
-            ...new Set(
-                carrito
-                    .map(producto => producto.restaurante_id)
-                    .filter(id => id !== undefined && id !== null)
-            )
-        ];
-
-    if (ids.length === 0) {
-
-        mostrarCarrito();
-
-        return;
-
-    }
-
-    const { data, error } =
-        await supabaseClient
-            .from("restaurantes")
-            .select("id,nombre")
-            .in("id", ids);
-
-    if (error) {
-
-        console.error(
-            "No se pudieron cargar los restaurantes:",
-            error
-        );
-
-        mostrarCarrito();
-
-        return;
-
-    }
-
-    (data || []).forEach(restaurante => {
-
-        nombresRestaurantes[
-            restaurante.id
-        ] = restaurante.nombre;
-
-    });
-
-    mostrarCarrito();
-
-}
-
-/* =========================================
-   AGRUPAR POR RESTAURANTE
-========================================= */
-
-function agruparPorRestaurante() {
-
-    const grupos = {};
-
-    carrito.forEach(producto => {
-
-        const nombre =
-            obtenerNombreRestaurante(producto);
-
-        const id =
-            producto.restaurante_id ||
-            "nombre_" + nombre;
-
-        const clave =
-            String(id);
-
-        if (!grupos[clave]) {
-
-            grupos[clave] = {
-
-                nombre:
-                    nombre,
-
-                restaurante_id:
-                    producto.restaurante_id || null,
-
-                productos:
-                    []
-
-            };
-
-        }
-
-        grupos[clave].productos.push(producto);
-
-    });
-
-    return grupos;
-
-}
-
-/* =========================================
-   MOSTRAR CARRITO
-========================================= */
-
-function mostrarCarrito() {
-
-    const contenedor =
-        document.getElementById("carrito");
-
-    contenedor.innerHTML = "";
-
-    if (carrito.length === 0) {
-
-        contenedor.innerHTML = `
-
-            <div class="vacio">
-
-                <div class="vacio-icono">
-                    🛒
+    <div id="contenedorCarrito"></div>
+
+    <div id="formularioPedido" style="display:none;">
+
+        <div class="formulario">
+
+            <h3>📍 Datos de entrega</h3>
+
+            <div class="campo">
+                <label for="clienteNombre">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    id="clienteNombre"
+                    placeholder="Ej. Juan Pérez"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="clienteTelefono">
+                    Teléfono
+                </label>
+
+                <input
+                    type="tel"
+                    id="clienteTelefono"
+                    placeholder="Ej. 0981234567"
+                >
+            </div>
+
+            <div class="campo">
+                <label for="clienteDireccion">
+                    Dirección de entrega
+                </label>
+
+                <textarea
+                    id="clienteDireccion"
+                    placeholder="Ej. Calle 10 de Agosto y Bolívar"
+                ></textarea>
+            </div>
+
+            <div class="campo">
+                <label for="clienteReferencia">
+                    Referencia
+                </label>
+
+                <textarea
+                    id="clienteReferencia"
+                    placeholder="Ej. Casa blanca junto a la farmacia"
+                ></textarea>
+            </div>
+
+            <div class="resumen-final">
+
+                <div class="fila">
+                    <span>Total productos</span>
+                    <strong id="totalProductos">$0.00</strong>
                 </div>
 
-                <h2>
-                    Tu carrito está vacío
-                </h2>
+                <div class="fila">
+                    <span>Delivery</span>
+                    <strong id="totalDelivery">$0.00</strong>
+                </div>
 
-                <p>
-                    Agrega productos para comenzar
-                    tu pedido.
-                </p>
-
-                <button
-                    class="btn-ver-restaurantes"
-                    onclick="seguirComprando()"
-                >
-                    Ver restaurantes
-                </button>
+                <div class="fila total">
+                    <span>Total a pagar</span>
+                    <strong id="totalGeneral">$0.00</strong>
+                </div>
 
             </div>
 
-        `;
+            <button
+                class="btn-confirmar"
+                onclick="confirmarPedido()"
+            >
+                Confirmar pedido
+            </button>
 
-        document.getElementById("formulario")
-            .style.display = "none";
+            <div id="mensaje" class="mensaje"></div>
 
-        return;
+        </div>
+
+    </div>
+
+    <div id="pedidoGenerado" class="pedido-generado"></div>
+
+</div>
+
+<script>
+
+    let carrito = [];
+    let nombresRestaurantes = {};
+
+    const tarifaDelivery =
+        Number(CONFIG.tarifaDelivery) || 1.50;
+
+
+    /* =========================================================
+       UTILIDADES
+    ========================================================= */
+
+    function escaparHTML(texto) {
+
+        if (texto === null || texto === undefined) {
+            return "";
+        }
+
+        return String(texto)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function dinero(valor) {
+
+        return Number(valor || 0).toLocaleString(
+            "en-US",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+    }
+
+
+    /* =========================================================
+       CARGAR CARRITO
+    ========================================================= */
+
+    function cargarCarrito() {
+
+        try {
+
+            const carritoGuardado =
+                JSON.parse(
+                    localStorage.getItem("carrito")
+                );
+
+            carrito =
+                Array.isArray(carritoGuardado)
+                    ? carritoGuardado
+                    : [];
+
+        } catch (error) {
+
+            console.error(
+                "Error leyendo carrito:",
+                error
+            );
+
+            carrito = [];
+        }
+
+        normalizarCarrito();
 
     }
 
-    const grupos =
-        agruparPorRestaurante();
 
-    let totalProductosGeneral = 0;
+    /* =========================================================
+       NORMALIZAR Y CONSOLIDAR PRODUCTOS
+    ========================================================= */
 
-    let totalDeliveryGeneral = 0;
+    function normalizarCarrito() {
 
-    let totalGeneral = 0;
+        const productosConsolidados = [];
 
-    let htmlGeneral = "";
+        carrito.forEach(producto => {
 
-    const claves =
-        Object.keys(grupos);
+            if (!producto) {
+                return;
+            }
 
-    claves.forEach(
-        (clave, indice) => {
+            const restauranteId =
+                producto.restaurante_id ??
+                producto.id_restaurante ??
+                null;
 
-            const grupo =
-                grupos[clave];
+            const productoId =
+                producto.producto_id ??
+                producto.id_producto ??
+                producto.id ??
+                null;
 
-            const productos =
-                grupo.productos;
+            const nombre =
+                producto.nombre ??
+                producto.producto_nombre ??
+                "Producto";
 
-            let subtotal =
-                0;
+            const precio =
+                Number(
+                    producto.precio ??
+                    producto.precio_unitario ??
+                    0
+                );
 
-            let htmlProductos = "";
+            const cantidad =
+                Math.max(
+                    1,
+                    Number(producto.cantidad) || 1
+                );
 
-            productos.forEach(producto => {
+            const restauranteNombre =
+                producto.restaurante_nombre ??
+                producto.restaurante ??
+                producto.nombre_restaurante ??
+                (
+                    restauranteId !== null
+                        ? nombresRestaurantes[restauranteId]
+                        : null
+                ) ??
+                "Restaurante";
+
+            /*
+             * La combinación producto_id + restaurante_id
+             * identifica de manera única al producto.
+             */
+
+            const clave =
+                `${restauranteId}|${productoId}|${nombre}`;
+
+            const existente =
+                productosConsolidados.find(
+                    item => item.__clave === clave
+                );
+
+            if (existente) {
+
+                existente.cantidad += cantidad;
+
+            } else {
+
+                productosConsolidados.push({
+
+                    producto_id: productoId,
+
+                    restaurante_id: restauranteId,
+
+                    restaurante_nombre:
+                        restauranteNombre,
+
+                    nombre: nombre,
+
+                    descripcion:
+                        producto.descripcion ?? "",
+
+                    precio: precio,
+
+                    imagen_url:
+                        producto.imagen_url ??
+                        producto.imagen ??
+                        "",
+
+                    cantidad: cantidad,
+
+                    __clave: clave
+
+                });
+
+            }
+
+        });
+
+        carrito =
+            productosConsolidados.map(producto => {
+
+                delete producto.__clave;
+
+                return producto;
+
+            });
+
+        guardarCarrito();
+
+    }
+
+
+    function guardarCarrito() {
+
+        localStorage.setItem(
+            "carrito",
+            JSON.stringify(carrito)
+        );
+
+    }
+
+
+    /* =========================================================
+       CARGAR NOMBRES DE RESTAURANTES
+    ========================================================= */
+
+    async function cargarNombresRestaurantes() {
+
+        const ids = [
+            ...new Set(
+                carrito
+                    .map(producto =>
+                        producto.restaurante_id
+                    )
+                    .filter(id =>
+                        id !== null &&
+                        id !== undefined &&
+                        id !== ""
+                    )
+            )
+        ];
+
+        if (ids.length === 0) {
+            return;
+        }
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("restaurantes")
+                .select("id,nombre")
+                .in("id", ids);
+
+            if (error) {
+
+                console.error(
+                    "Error cargando restaurantes:",
+                    error
+                );
+
+                return;
+            }
+
+            (data || []).forEach(restaurante => {
+
+                nombresRestaurantes[
+                    restaurante.id
+                ] = restaurante.nombre;
+
+            });
+
+            /*
+             * Actualizamos nombres que no los tenían.
+             */
+
+            carrito.forEach(producto => {
+
+                if (
+                    producto.restaurante_id !== null &&
+                    nombresRestaurantes[
+                        producto.restaurante_id
+                    ]
+                ) {
+
+                    producto.restaurante_nombre =
+                        nombresRestaurantes[
+                            producto.restaurante_id
+                        ];
+
+                }
+
+            });
+
+            guardarCarrito();
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    /* =========================================================
+       AGRUPAR POR RESTAURANTE
+    ========================================================= */
+
+    function agruparPorRestaurante() {
+
+        const grupos = {};
+
+        carrito.forEach(producto => {
+
+            const restauranteId =
+                producto.restaurante_id ??
+                "sin-restaurante";
+
+            if (!grupos[restauranteId]) {
+
+                grupos[restauranteId] = {
+
+                    restaurante_id:
+                        producto.restaurante_id,
+
+                    nombre:
+                        producto.restaurante_nombre ||
+                        nombresRestaurantes[
+                            producto.restaurante_id
+                        ] ||
+                        "Restaurante",
+
+                    productos: []
+
+                };
+
+            }
+
+            grupos[restauranteId]
+                .productos
+                .push(producto);
+
+        });
+
+        return Object.values(grupos);
+
+    }
+
+
+    /* =========================================================
+       MOSTRAR CARRITO
+    ========================================================= */
+
+    function mostrarCarrito() {
+
+        const contenedor =
+            document.getElementById(
+                "contenedorCarrito"
+            );
+
+        if (carrito.length === 0) {
+
+            contenedor.innerHTML = `
+                <div class="vacio">
+                    <h2>🛒 Tu carrito está vacío</h2>
+
+                    <p>
+                        Agrega productos de nuestros
+                        restaurantes para comenzar.
+                    </p>
+
+                    <a href="index.html">
+                        Ver restaurantes
+                    </a>
+                </div>
+            `;
+
+            document.getElementById(
+                "formularioPedido"
+            ).style.display = "none";
+
+            return;
+
+        }
+
+        const grupos =
+            agruparPorRestaurante();
+
+        let html = "";
+
+        let totalProductosGeneral = 0;
+        let totalDeliveryGeneral = 0;
+        let totalGeneral = 0;
+
+
+        grupos.forEach((grupo, indiceGrupo) => {
+
+            let subtotal = 0;
+
+            let productosHTML = "";
+
+
+            grupo.productos.forEach(producto => {
+
+                const indice =
+                    carrito.indexOf(producto);
+
+                const cantidad =
+                    Number(producto.cantidad) || 1;
 
                 const precio =
                     Number(producto.precio) || 0;
 
-                const cantidad =
-                    Number(producto.cantidad) || 0;
-
-                const totalProducto =
+                const subtotalProducto =
                     precio * cantidad;
 
-                subtotal +=
-                    totalProducto;
+                subtotal += subtotalProducto;
 
-                htmlProductos += `
+
+                productosHTML += `
 
                     <div class="producto">
 
                         <div class="producto-info">
 
                             <div class="producto-nombre">
-                                ${escapeHTML(
-                                    producto.nombre ||
-                                    "Producto"
+                                ${escaparHTML(
+                                    producto.nombre
                                 )}
                             </div>
 
                             <div class="producto-precio">
-                                $${precio.toFixed(2)}
-                                × ${cantidad}
+                                $${dinero(precio)}
+                                c/u
                             </div>
 
                         </div>
 
+
                         <div class="controles">
 
                             <button
-                                class="menos"
-                                onclick="cambiarCantidadPorId(
-                                    ${obtenerIndiceProducto(producto)},
+                                class="btn-cantidad"
+                                onclick="cambiarCantidadPorIndice(
+                                    ${indice},
                                     -1
                                 )"
-                                aria-label="Disminuir"
                             >
                                 −
                             </button>
+
 
                             <span class="cantidad">
                                 ${cantidad}
                             </span>
 
+
                             <button
-                                class="mas"
-                                onclick="cambiarCantidadPorId(
-                                    ${obtenerIndiceProducto(producto)},
+                                class="btn-cantidad"
+                                onclick="cambiarCantidadPorIndice(
+                                    ${indice},
                                     1
                                 )"
-                                aria-label="Aumentar"
                             >
                                 +
                             </button>
 
+
                             <button
-                                class="eliminar"
-                                onclick="eliminarProductoPorId(
-                                    ${obtenerIndiceProducto(producto)}
+                                class="btn-eliminar"
+                                title="Eliminar producto"
+                                onclick="eliminarProductoPorIndice(
+                                    ${indice}
                                 )"
-                                aria-label="Eliminar"
                             >
-                                🗑
+                                🗑️
                             </button>
 
                         </div>
@@ -1163,54 +916,55 @@ function mostrarCarrito() {
 
             });
 
+
             const delivery =
                 tarifaDelivery;
 
             const totalCarrera =
                 subtotal + delivery;
 
-            totalProductosGeneral +=
-                subtotal;
 
-            totalDeliveryGeneral +=
-                delivery;
+            totalProductosGeneral += subtotal;
+            totalDeliveryGeneral += delivery;
+            totalGeneral += totalCarrera;
 
-            totalGeneral +=
-                totalCarrera;
 
-            htmlGeneral += `
+            html += `
 
                 <div class="carrera">
 
                     <div class="carrera-header">
 
-                        <h3 class="restaurante-nombre">
-                            🏪 ${escapeHTML(
+                        <h3>
+                            🏪 ${escaparHTML(
                                 grupo.nombre
                             )}
                         </h3>
 
-                        <span class="badge-carrera">
-                            Carrera ${indice + 1}
+                        <span>
+                            Carrera ${indiceGrupo + 1}
                         </span>
 
                     </div>
 
-                    ${htmlProductos}
 
-                    <div class="totales-carrera">
+                    ${productosHTML}
+
+
+                    <div class="resumen-carrera">
 
                         <div class="fila">
 
                             <span>
-                                Productos
+                                Subtotal
                             </span>
 
                             <strong>
-                                $${subtotal.toFixed(2)}
+                                $${dinero(subtotal)}
                             </strong>
 
                         </div>
+
 
                         <div class="fila">
 
@@ -1219,20 +973,21 @@ function mostrarCarrito() {
                             </span>
 
                             <strong>
-                                $${delivery.toFixed(2)}
+                                $${dinero(delivery)}
                             </strong>
 
                         </div>
 
-                        <div class="total-carrera">
+
+                        <div class="fila total">
 
                             <span>
                                 Total carrera
                             </span>
 
-                            <span>
-                                $${totalCarrera.toFixed(2)}
-                            </span>
+                            <strong>
+                                $${dinero(totalCarrera)}
+                            </strong>
 
                         </div>
 
@@ -1242,604 +997,620 @@ function mostrarCarrito() {
 
             `;
 
-        }
-    );
+        });
 
-    const cantidadCarreras =
-        claves.length;
 
-    htmlGeneral += `
+        contenedor.innerHTML = html;
 
-        <div class="resumen">
 
-            <div class="fila">
+        document.getElementById(
+            "formularioPedido"
+        ).style.display = "block";
 
-                <span>
-                    Productos
-                </span>
 
-                <strong>
-                    $${totalProductosGeneral.toFixed(2)}
-                </strong>
+        document.getElementById(
+            "totalProductos"
+        ).textContent =
+            "$" + dinero(totalProductosGeneral);
 
-            </div>
 
-            <div class="fila">
+        document.getElementById(
+            "totalDelivery"
+        ).textContent =
+            "$" + dinero(totalDeliveryGeneral);
 
-                <span>
-                    Delivery
-                </span>
 
-                <strong>
-                    $${totalDeliveryGeneral.toFixed(2)}
-                </strong>
-
-            </div>
-
-            <div class="fila">
-
-                <span>
-                    Carreras
-                </span>
-
-                <strong>
-                    ${cantidadCarreras}
-                </strong>
-
-            </div>
-
-            <div class="total-general">
-
-                <span>
-                    TOTAL
-                </span>
-
-                <span>
-                    $${totalGeneral.toFixed(2)}
-                </span>
-
-            </div>
-
-        </div>
-
-    `;
-
-    contenedor.innerHTML =
-        htmlGeneral;
-
-    document.getElementById("formulario")
-        .style.display = "block";
-
-}
-
-/* =========================================
-   OBTENER INDICE REAL DEL PRODUCTO
-========================================= */
-
-function obtenerIndiceProducto(producto) {
-
-    return carrito.indexOf(producto);
-
-}
-
-/* =========================================
-   CAMBIAR CANTIDAD
-========================================= */
-
-function cambiarCantidadPorId(
-    indice,
-    cambio
-) {
-
-    if (
-        indice < 0 ||
-        indice >= carrito.length
-    ) {
-
-        return;
+        document.getElementById(
+            "totalGeneral"
+        ).textContent =
+            "$" + dinero(totalGeneral);
 
     }
 
-    const producto =
-        carrito[indice];
 
-    const cantidadActual =
-        Number(producto.cantidad) || 0;
+    /* =========================================================
+       CAMBIAR CANTIDAD
+    ========================================================= */
 
-    const nuevaCantidad =
-        cantidadActual + cambio;
+    function cambiarCantidadPorIndice(
+        indice,
+        cambio
+    ) {
 
-    if (nuevaCantidad <= 0) {
-
-        carrito.splice(
-            indice,
-            1
-        );
-
-    } else {
+        if (
+            indice < 0 ||
+            indice >= carrito.length
+        ) {
+            return;
+        }
 
         carrito[indice].cantidad =
-            nuevaCantidad;
+            Number(carrito[indice].cantidad) +
+            cambio;
+
+
+        if (
+            carrito[indice].cantidad <= 0
+        ) {
+
+            carrito.splice(indice, 1);
+
+        }
+
+
+        guardarCarrito();
+
+        mostrarCarrito();
 
     }
 
-    guardarCarrito();
 
-}
+    /* =========================================================
+       ELIMINAR PRODUCTO
+    ========================================================= */
 
-/* =========================================
-   ELIMINAR PRODUCTO
-========================================= */
-
-function eliminarProductoPorId(indice) {
-
-    if (
-        indice < 0 ||
-        indice >= carrito.length
+    function eliminarProductoPorIndice(
+        indice
     ) {
 
-        return;
+        if (
+            indice < 0 ||
+            indice >= carrito.length
+        ) {
+            return;
+        }
+
+        carrito.splice(indice, 1);
+
+        guardarCarrito();
+
+        mostrarCarrito();
 
     }
 
-    carrito.splice(
-        indice,
-        1
-    );
 
-    guardarCarrito();
+    /* =========================================================
+       GENERAR NÚMERO DE PEDIDO
+    ========================================================= */
 
-}
+    function generarNumeroPedido() {
 
-/* =========================================
-   GUARDAR CARRITO
-========================================= */
-
-function guardarCarrito() {
-
-    localStorage.setItem(
-        "carrito",
-        JSON.stringify(carrito)
-    );
-
-    mostrarCarrito();
-
-}
-
-/* =========================================
-   GENERAR NUMERO DE PEDIDO
-========================================= */
-
-function generarNumeroPedido() {
-
-    return (
-        "SR-" +
-        String(
+        const ahora =
             Date.now()
-        ).slice(-6)
-    );
+                .toString()
+                .slice(-6);
 
-}
-
-/* =========================================
-   CONFIRMAR PEDIDO
-========================================= */
-
-function confirmarPedido() {
-
-    if (carrito.length === 0) {
-
-        alert(
-            "El carrito está vacío."
-        );
-
-        return;
+        return "SR-" + ahora;
 
     }
 
-    const nombre =
-        document.getElementById("nombre")
-            .value.trim();
 
-    const telefono =
-        document.getElementById("telefono")
-            .value.trim();
+    /* =========================================================
+       MOSTRAR MENSAJE
+    ========================================================= */
 
-    const direccion =
-        document.getElementById("direccion")
-            .value.trim();
+    function mostrarMensaje(
+        texto,
+        esError = false
+    ) {
 
-    const referencia =
-        document.getElementById("referencia")
-            .value.trim();
+        const mensaje =
+            document.getElementById("mensaje");
 
-    if (!nombre) {
+        mensaje.textContent = texto;
 
-        alert(
-            "Ingresa tu nombre."
-        );
+        mensaje.className =
+            esError
+                ? "mensaje error"
+                : "mensaje";
 
-        document.getElementById("nombre")
-            .focus();
-
-        return;
+        mensaje.style.display = "block";
 
     }
 
-    if (!telefono) {
 
-        alert(
-            "Ingresa tu teléfono."
-        );
+    /* =========================================================
+       CONFIRMAR PEDIDO
+    ========================================================= */
 
-        document.getElementById("telefono")
-            .focus();
+    function confirmarPedido() {
 
-        return;
+        if (carrito.length === 0) {
 
-    }
+            mostrarMensaje(
+                "Tu carrito está vacío.",
+                true
+            );
 
-    if (!direccion) {
+            return;
 
-        alert(
-            "Ingresa tu dirección de entrega."
-        );
+        }
 
-        document.getElementById("direccion")
-            .focus();
 
-        return;
+        const nombre =
+            document
+                .getElementById(
+                    "clienteNombre"
+                )
+                .value
+                .trim();
 
-    }
 
-    const grupos =
-        agruparPorRestaurante();
+        const telefono =
+            document
+                .getElementById(
+                    "clienteTelefono"
+                )
+                .value
+                .trim();
 
-    const numeroGeneral =
-        generarNumeroPedido();
 
-    const carreras = [];
+        const direccion =
+            document
+                .getElementById(
+                    "clienteDireccion"
+                )
+                .value
+                .trim();
 
-    let numeroCarrera = 1;
 
-    Object.keys(grupos)
-        .forEach(clave => {
+        const referencia =
+            document
+                .getElementById(
+                    "clienteReferencia"
+                )
+                .value
+                .trim();
 
-            const grupo =
-                grupos[clave];
 
-            const productos =
-                grupo.productos;
+        if (!nombre) {
 
-            let subtotal = 0;
+            mostrarMensaje(
+                "Ingresa tu nombre.",
+                true
+            );
 
-            const detalleProductos =
-                productos.map(producto => {
+            return;
 
-                    const precio =
-                        Number(producto.precio) || 0;
+        }
 
-                    const cantidad =
-                        Number(producto.cantidad) || 0;
 
-                    const subtotalProducto =
-                        precio * cantidad;
+        if (!telefono) {
 
-                    subtotal +=
-                        subtotalProducto;
+            mostrarMensaje(
+                "Ingresa tu número de teléfono.",
+                true
+            );
 
-                    return {
+            return;
 
-                        producto_id:
-                            producto.producto_id ||
-                            producto.id ||
-                            null,
+        }
 
-                        nombre:
-                            producto.nombre,
 
-                        precio_unitario:
-                            precio,
+        if (!direccion) {
 
-                        cantidad:
-                            cantidad,
+            mostrarMensaje(
+                "Ingresa la dirección de entrega.",
+                true
+            );
 
-                        subtotal:
-                            subtotalProducto
+            return;
 
-                    };
+        }
 
-                });
 
-            const delivery =
-                tarifaDelivery;
+        const grupos =
+            agruparPorRestaurante();
 
-            const totalCarrera =
-                subtotal + delivery;
 
-            carreras.push({
+        const numeroGeneral =
+            generarNumeroPedido();
 
-                id:
-                    numeroGeneral +
-                    "-C" +
-                    numeroCarrera,
 
-                restaurante:
-                    grupo.nombre,
+        let numeroCarrera = 1;
 
-                restaurante_id:
-                    grupo.restaurante_id,
+        let totalProductosGeneral = 0;
+        let totalDeliveryGeneral = 0;
+        let totalGeneral = 0;
 
-                productos:
-                    detalleProductos,
 
-                subtotal:
-                    subtotal,
+        const carreras =
+            grupos.map(grupo => {
 
-                delivery:
-                    delivery,
+                let subtotal = 0;
 
-                totalCarrera:
-                    totalCarrera,
 
-                estado:
-                    "Pendiente de asignación",
+                const detalleProductos =
+                    grupo.productos.map(
+                        producto => {
 
-                repartidor:
-                    null,
+                            const precio =
+                                Number(
+                                    producto.precio
+                                ) || 0;
 
-                moto:
-                    null
+                            const cantidad =
+                                Number(
+                                    producto.cantidad
+                                ) || 1;
+
+                            const subtotalProducto =
+                                precio *
+                                cantidad;
+
+
+                            subtotal +=
+                                subtotalProducto;
+
+
+                            return {
+
+                                producto_id:
+                                    producto.producto_id,
+
+                                nombre:
+                                    producto.nombre,
+
+                                precio_unitario:
+                                    precio,
+
+                                cantidad:
+                                    cantidad,
+
+                                subtotal:
+                                    subtotalProducto
+
+                            };
+
+                        }
+                    );
+
+
+                const delivery =
+                    tarifaDelivery;
+
+
+                const totalCarrera =
+                    subtotal + delivery;
+
+
+                totalProductosGeneral +=
+                    subtotal;
+
+                totalDeliveryGeneral +=
+                    delivery;
+
+                totalGeneral +=
+                    totalCarrera;
+
+
+                const carrera = {
+
+                    id:
+                        numeroGeneral +
+                        "-C" +
+                        numeroCarrera,
+
+                    restaurante:
+                        grupo.nombre,
+
+                    restaurante_id:
+                        grupo.restaurante_id,
+
+                    productos:
+                        detalleProductos,
+
+                    subtotal:
+                        subtotal,
+
+                    delivery:
+                        delivery,
+
+                    total:
+                        totalCarrera,
+
+                    estado:
+                        "Pendiente de asignación",
+
+                    repartidor:
+                        null,
+
+                    moto:
+                        null
+
+                };
+
+
+                numeroCarrera++;
+
+                return carrera;
 
             });
 
-            numeroCarrera++;
 
-        });
+        const pedido = {
 
-    const totalProductos =
-        carreras.reduce(
-            (suma, carrera) =>
-                suma + carrera.subtotal,
-            0
+            numero:
+                numeroGeneral,
+
+            cliente: {
+
+                nombre:
+                    nombre,
+
+                telefono:
+                    telefono,
+
+                direccion:
+                    direccion,
+
+                referencia:
+                    referencia
+
+            },
+
+            total_productos:
+                totalProductosGeneral,
+
+            total_delivery:
+                totalDeliveryGeneral,
+
+            total:
+                totalGeneral,
+
+            estado:
+                "Pedido recibido",
+
+            carreras:
+                carreras,
+
+            creado_en:
+                new Date().toISOString()
+
+        };
+
+
+        /*
+         * TEMPORAL
+         *
+         * Por ahora guardamos el pedido localmente.
+         *
+         * En el siguiente paso de backend,
+         * este objeto será enviado a una
+         * Supabase Edge Function.
+         */
+
+        localStorage.setItem(
+            "ultimoPedido",
+            JSON.stringify(pedido)
         );
 
-    const totalDelivery =
-        carreras.reduce(
-            (suma, carrera) =>
-                suma + carrera.delivery,
-            0
+
+        mostrarPedidoGenerado(
+            pedido
         );
 
-    const total =
-        totalProductos +
-        totalDelivery;
 
-    const pedido = {
+        carrito = [];
 
-        numero:
-            numeroGeneral,
+        guardarCarrito();
 
-        cliente: {
 
-            nombre:
-                nombre,
+        document.getElementById(
+            "formularioPedido"
+        ).style.display = "none";
 
-            telefono:
-                telefono,
 
-            direccion:
-                direccion,
+        document.getElementById(
+            "contenedorCarrito"
+        ).innerHTML = "";
 
-            referencia:
-                referencia
+    }
 
-        },
 
-        totalProductos:
-            totalProductos,
+    /* =========================================================
+       MOSTRAR PEDIDO GENERADO
+    ========================================================= */
 
-        totalDelivery:
-            totalDelivery,
+    function mostrarPedidoGenerado(
+        pedido
+    ) {
 
-        total:
-            total,
+        const contenedor =
+            document.getElementById(
+                "pedidoGenerado"
+            );
 
-        cantidadCarreras:
-            carreras.length,
 
-        carreras:
-            carreras,
+        let carrerasHTML = "";
 
-        estado:
-            "Pedido recibido",
 
-        fecha:
-            new Date().toISOString()
+        pedido.carreras.forEach(
+            carrera => {
 
-    };
+                carrerasHTML += `
 
-    /* =========================
-       GUARDAR PEDIDO LOCAL
-    ========================= */
+                    <div class="carrera-confirmada">
 
-    localStorage.setItem(
-        "ultimoPedido",
-        JSON.stringify(pedido)
-    );
+                        <strong>
+                            ${escaparHTML(
+                                carrera.id
+                            )}
+                        </strong>
 
-    mostrarResultado(pedido);
+                        <br>
 
-}
+                        Restaurante:
+                        ${escaparHTML(
+                            carrera.restaurante
+                        )}
 
-/* =========================================
-   MOSTRAR RESULTADO
-========================================= */
+                        <br>
 
-function mostrarResultado(pedido) {
+                        Total:
+                        <strong>
+                            $${dinero(
+                                carrera.total
+                            )}
+                        </strong>
 
-    const resultado =
-        document.getElementById("resultado");
+                        <br>
 
-    let carrerasHTML = "";
+                        Estado:
+                        ${escaparHTML(
+                            carrera.estado
+                        )}
 
-    pedido.carreras.forEach(carrera => {
+                    </div>
 
-        carrerasHTML += `
+                `;
 
-            <div class="carrera-generada">
+            }
+        );
 
-                <strong>
-                    ${escapeHTML(
-                        carrera.id
-                    )}
-                </strong>
 
-                <br><br>
-
-                🏪
-                ${escapeHTML(
-                    carrera.restaurante
-                )}
-
-                <br><br>
-
-                Productos:
-                $${carrera.subtotal.toFixed(2)}
-
-                <br>
-
-                Delivery:
-                $${carrera.delivery.toFixed(2)}
-
-                <br>
-
-                <strong>
-                    Total:
-                    $${carrera.totalCarrera.toFixed(2)}
-                </strong>
-
-                <br>
-
-                <span class="estado">
-                    🟡 ${escapeHTML(
-                        carrera.estado
-                    )}
-                </span>
-
-            </div>
-
-        `;
-
-    });
-
-    resultado.innerHTML = `
-
-        <div class="pedido-generado">
+        contenedor.innerHTML = `
 
             <h2>
-                ✅ Pedido preparado
+                ✅ Pedido recibido
             </h2>
 
-            <div class="numero-pedido">
-                ${escapeHTML(
-                    pedido.numero
-                )}
-            </div>
-
             <p>
-                Hemos recibido la información
-                de tu pedido.
+                Tu número de pedido es:
+                <strong>
+                    ${escaparHTML(
+                        pedido.numero
+                    )}
+                </strong>
             </p>
+
 
             <p>
                 Se generaron
                 <strong>
-                    ${pedido.cantidadCarreras}
-                    ${pedido.cantidadCarreras === 1
-                        ? "carrera"
-                        : "carreras"}
-                </strong>.
+                    ${pedido.carreras.length}
+                </strong>
+                carrera(s).
             </p>
+
 
             ${carrerasHTML}
 
-            <h2 style="margin-top:20px;">
-                Total:
-                $${pedido.total.toFixed(2)}
-            </h2>
 
-            <p>
-                <strong>
-                    Estado:
-                </strong>
-                🟡 Pedido recibido
+            <div class="resumen-final">
+
+                <div class="fila">
+
+                    <span>
+                        Total productos
+                    </span>
+
+                    <strong>
+                        $${dinero(
+                            pedido.total_productos
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="fila">
+
+                    <span>
+                        Delivery
+                    </span>
+
+                    <strong>
+                        $${dinero(
+                            pedido.total_delivery
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="fila total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                        $${dinero(
+                            pedido.total
+                        )}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <p style="
+                margin-top:20px;
+                color:#66756e;
+            ">
+                El pedido quedó registrado
+                temporalmente en este navegador.
+                La conexión real con Supabase
+                y WhatsApp la implementaremos
+                en el siguiente paso.
             </p>
 
-        </div>
+        `;
 
-    `;
 
-    /* =========================
-       LIMPIAR CARRITO
-    ========================= */
+        contenedor.style.display = "block";
 
-    localStorage.removeItem(
-        "carrito"
-    );
 
-    carrito = [];
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-    document.getElementById("formulario")
-        .style.display = "none";
+    }
 
-    window.scrollTo({
 
-        top:
-            document.body.scrollHeight,
+    /* =========================================================
+       INICIALIZAR
+    ========================================================= */
 
-        behavior:
-            "smooth"
+    async function iniciar() {
 
-    });
+        cargarCarrito();
 
-}
+        await cargarNombresRestaurantes();
 
-/* =========================================
-   SEGUIR COMPRANDO
-========================================= */
+        normalizarCarrito();
 
-function seguirComprando() {
+        mostrarCarrito();
 
-    window.location.href =
-        "index.html";
+    }
 
-}
 
-/* =========================================
-   SEGURIDAD HTML
-========================================= */
-
-function escapeHTML(texto) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        texto ?? "";
-
-    return div.innerHTML;
-
-}
-
-/* =========================================
-   INICIO
-========================================= */
-
-cargarNombresRestaurantes();
+    iniciar();
 
 </script>
 
 </body>
-
 </html>
