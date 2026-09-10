@@ -166,6 +166,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            gap: 10px;
         }
 
         .producto-header strong {
@@ -176,22 +177,6 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 15px;
-        }
-
-        .producto-imagen {
-            margin-top: 15px;
-        }
-
-        .producto-preview {
-            margin-top: 10px;
-            display: none;
-        }
-
-        .producto-preview img {
-            width: 150px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
         }
 
         .acciones {
@@ -263,6 +248,18 @@
             border-radius: 6px;
             margin-bottom: 20px;
             line-height: 1.5;
+        }
+
+        .banner-info {
+            margin-top: 10px;
+            color: #536b61;
+            font-size: 14px;
+        }
+
+        .producto-sin-imagen {
+            margin-top: 8px;
+            color: #536b61;
+            font-size: 13px;
         }
 
         @media (max-width: 700px) {
@@ -453,7 +450,7 @@
         <div class="campo">
 
             <label for="bannerRestaurante">
-                Banner del restaurante
+                🖼️ Banner del restaurante
             </label>
 
             <input
@@ -462,6 +459,14 @@
                 accept="image/*"
                 onchange="mostrarBanner()"
             >
+
+            <div class="banner-info">
+
+                Este será el banner del restaurante.
+                Se utilizará también como imagen de los productos
+                que no tengan una imagen individual.
+
+            </div>
 
         </div>
 
@@ -492,10 +497,14 @@
 
         <div class="info">
 
-            Agrega los productos que vende el restaurante.
-            Más adelante conectaremos esta sección con
-            la IA para leer automáticamente los productos
-            desde el banner.
+            Agrega los productos solamente con
+            <strong>nombre y precio</strong>.
+
+            <br><br>
+
+            No necesitas subir una imagen para cada producto.
+            El banner del restaurante será utilizado
+            automáticamente como imagen del producto.
 
         </div>
 
@@ -702,14 +711,6 @@
         }
 
 
-        /*
-         * Por ahora guardamos la configuración
-         * localmente.
-         *
-         * En una siguiente etapa también la
-         * migraremos completamente a Supabase.
-         */
-
         const configuracion = {
 
             tarifaDelivery:
@@ -814,13 +815,7 @@
                 nombre,
 
             precio:
-                Number(precio) || 0,
-
-            imagenArchivo:
-                null,
-
-            imagenPreview:
-                ""
+                Number(precio) || 0
 
         });
 
@@ -920,33 +915,10 @@
                     </div>
 
 
-                    <div class="producto-imagen">
+                    <div class="producto-sin-imagen">
 
-                        <label>
-                            Imagen del producto
-                        </label>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onchange="seleccionarImagenProducto(
-                                ${indice},
-                                this
-                            )"
-                        >
-
-                    </div>
-
-
-                    <div
-                        id="previewProducto-${indice}"
-                        class="producto-preview"
-                    >
-
-                        <img
-                            id="imagenProducto-${indice}"
-                            alt="Vista previa"
-                        >
+                        🖼️ Este producto utilizará
+                        automáticamente el banner del restaurante.
 
                     </div>
 
@@ -956,29 +928,6 @@
                 contenedor.appendChild(
                     div
                 );
-
-
-                if (
-                    producto.imagenPreview
-                ) {
-
-                    const preview =
-                        document.getElementById(
-                            `previewProducto-${indice}`
-                        );
-
-                    const imagen =
-                        document.getElementById(
-                            `imagenProducto-${indice}`
-                        );
-
-                    imagen.src =
-                        producto.imagenPreview;
-
-                    preview.style.display =
-                        "block";
-
-                }
 
             }
         );
@@ -1043,51 +992,6 @@
     }
 
 
-    function seleccionarImagenProducto(
-        indice,
-        input
-    ) {
-
-        if (
-            !input.files ||
-            !input.files[0]
-        ) {
-            return;
-        }
-
-
-        const archivo =
-            input.files[0];
-
-
-        productos[indice]
-            .imagenArchivo =
-            archivo;
-
-
-        const lector =
-            new FileReader();
-
-
-        lector.onload = function(e) {
-
-            productos[indice]
-                .imagenPreview =
-                e.target.result;
-
-
-            mostrarProductos();
-
-        };
-
-
-        lector.readAsDataURL(
-            archivo
-        );
-
-    }
-
-
     /*
      * ========================================================
      * SUBIR IMAGEN A SUPABASE STORAGE
@@ -1146,7 +1050,7 @@
             );
 
             throw new Error(
-                "No se pudo subir una imagen: " +
+                "No se pudo subir el banner: " +
                 error.message
             );
 
@@ -1236,6 +1140,19 @@
         }
 
 
+        if (!bannerArchivo) {
+
+            mostrarMensaje(
+                "mensajePublicacion",
+                "Selecciona un banner para el restaurante.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
         if (
             productos.length === 0
         ) {
@@ -1307,18 +1224,11 @@
              * ================================================
              */
 
-            let bannerUrl = null;
-
-
-            if (bannerArchivo) {
-
-                bannerUrl =
-                    await subirImagen(
-                        bannerArchivo,
-                        "banners"
-                    );
-
-            }
+            const bannerUrl =
+                await subirImagen(
+                    bannerArchivo,
+                    "banners"
+                );
 
 
             /*
@@ -1370,66 +1280,38 @@
 
             /*
              * ================================================
-             * 3. SUBIR IMÁGENES DE PRODUCTOS
+             * 3. PREPARAR PRODUCTOS
+             *
+             * Todos utilizan el mismo banner.
              * ================================================
              */
 
             const productosParaInsertar =
-                [];
+                productos.map(
+                    producto => ({
 
+                        restaurante_id:
+                            restaurante.id,
 
-            for (
-                let i = 0;
-                i < productos.length;
-                i++
-            ) {
+                        nombre:
+                            producto.nombre.trim(),
 
-                const producto =
-                    productos[i];
+                        descripcion:
+                            null,
 
+                        precio:
+                            Number(
+                                producto.precio
+                            ) || 0,
 
-                let imagenUrl =
-                    null;
+                        imagen_url:
+                            bannerUrl,
 
+                        activo:
+                            true
 
-                if (
-                    producto.imagenArchivo
-                ) {
-
-                    imagenUrl =
-                        await subirImagen(
-                            producto.imagenArchivo,
-                            `productos/${restaurante.id}`
-                        );
-
-                }
-
-
-                productosParaInsertar.push({
-
-                    restaurante_id:
-                        restaurante.id,
-
-                    nombre:
-                        producto.nombre.trim(),
-
-                    descripcion:
-                        null,
-
-                    precio:
-                        Number(
-                            producto.precio
-                        ) || 0,
-
-                    imagen_url:
-                        imagenUrl,
-
-                    activo:
-                        true
-
-                });
-
-            }
+                    })
+                );
 
 
             /*
@@ -1455,9 +1337,7 @@
 
                 /*
                  * Si falla la creación de productos,
-                 * intentamos desactivar el restaurante
-                 * para evitar dejarlo publicado
-                 * incompleto.
+                 * desactivamos el restaurante.
                  */
 
                 await supabaseClient
@@ -1488,7 +1368,7 @@
             mostrarMensaje(
                 "mensajePublicacion",
 
-                `Restaurante "${nombre}" publicado correctamente en Supabase.`,
+                `Restaurante "${nombre}" publicado correctamente con ${productos.length} producto(s).`,
 
                 "exito"
             );
