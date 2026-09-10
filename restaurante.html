@@ -1,253 +1,156 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<title>Sobre Ruedas</title>
+    <title>Menú - Sobre Ruedas</title>
 
-<style>
+    <style>
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f6f8;
-    color: #222;
-    padding-bottom: 90px;
-}
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
 
-header {
-    background: #111827;
-    color: white;
-    padding: 16px 20px;
+        header {
+            background: #111;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+        }
 
-.logo {
-    font-size: 22px;
-    font-weight: bold;
-}
+        button {
+            cursor: pointer;
+        }
 
-.logo span {
-    color: #22c55e;
-}
+        .btn-carrito {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
 
-.header-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        .volver {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
 
-.back-button {
-    background: white;
-    color: #111827;
-    border: none;
-    padding: 10px 14px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .cabecera-restaurante {
+            background: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
 
-.back-button:hover {
-    background: #e5e7eb;
-}
+        .banner-restaurante {
+            max-width: 900px;
+            margin: auto;
+            max-height: 280px;
+            overflow: hidden;
+            border-radius: 15px;
+        }
 
-.cart-button {
-    background: #22c55e;
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .banner-restaurante img {
+            width: 100%;
+            max-height: 280px;
+            object-fit: cover;
+        }
 
-.restaurant-header {
-    background: white;
-    padding: 30px 20px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
+        .productos {
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 0 15px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
 
-.restaurant-icon {
-    font-size: 70px;
-    margin-bottom: 10px;
-}
+        .producto {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,.08);
+        }
 
-.restaurant-header h1 {
-    font-size: 30px;
-    margin-bottom: 8px;
-}
+        .producto-imagen {
+            height: 150px;
+            background: #eee;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 55px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
 
-.restaurant-header p {
-    color: #666;
-    margin-bottom: 10px;
-}
+        .producto-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.rating {
-    color: #f59e0b;
-    font-weight: bold;
-}
+        .producto h3 {
+            margin: 5px 0;
+        }
 
-.container {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
+        .precio {
+            font-size: 21px;
+            font-weight: bold;
+            color: #ff5722;
+            margin: 10px 0;
+        }
 
-.section-title {
-    font-size: 25px;
-    margin-bottom: 20px;
-}
+        .btn-agregar {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #ff9800;
+            color: white;
+            font-weight: bold;
+        }
 
-.products {
-    display: grid;
-    grid-template-columns:
-        repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-}
+        .mensaje {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 200;
+        }
 
-.product {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,0.08);
-}
-
-.product-image {
-    height: 130px;
-    background: #e5e7eb;
-    border-radius: 10px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 55px;
-    margin-bottom: 15px;
-}
-
-.product h3 {
-    margin-bottom: 8px;
-}
-
-.product-description {
-    color: #666;
-    font-size: 14px;
-    min-height: 38px;
-    margin-bottom: 12px;
-}
-
-.price {
-    color: #16a34a;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.add-button {
-    width: 100%;
-    border: none;
-    background: #22c55e;
-    color: white;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.add-button:hover {
-    background: #16a34a;
-}
-
-.cart-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    background: white;
-    border-top: 1px solid #ddd;
-    padding: 15px 20px;
-
-    display: flex;
-    justify-content: center;
-}
-
-.cart-bar button {
-    background: #111827;
-    color: white;
-    border: none;
-
-    padding: 15px 30px;
-    border-radius: 10px;
-
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-
-    min-width: 280px;
-}
-
-.mensaje {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-
-    background: #111827;
-    color: white;
-
-    padding: 15px 20px;
-    border-radius: 10px;
-
-    display: none;
-
-    z-index: 1000;
-}
-
-@media(max-width:600px) {
-
-    .restaurant-header h1 {
-        font-size: 25px;
-    }
-
-    .products {
-        grid-template-columns: 1fr;
-    }
-
-    .header-buttons {
-        gap: 5px;
-    }
-
-    .back-button {
-        padding: 8px 10px;
-        font-size: 12px;
-    }
-
-    .cart-button {
-        padding: 8px 10px;
-    }
-
-}
-
-</style>
+    </style>
 
 </head>
+
 
 <body>
 
@@ -255,32 +158,24 @@ header {
 <header>
 
     <div class="logo">
-
-        🛵 <span>Sobre</span> Ruedas
-
+        🛵 Sobre Ruedas
     </div>
 
-
-    <div class="header-buttons">
+    <div>
 
         <button
-            class="back-button"
+            class="volver"
             onclick="volverRestaurantes()"
         >
-
             ← Restaurantes
-
         </button>
 
-
         <button
-            class="cart-button"
+            class="btn-carrito"
             onclick="irAlCarrito()"
         >
-
-            🛒
-            <span id="cantidadCarrito">0</span>
-
+            🛒 Carrito
+            (<span id="cantidadCarrito">0</span>)
         </button>
 
     </div>
@@ -288,298 +183,270 @@ header {
 </header>
 
 
-
-<section class="restaurant-header">
+<section class="cabecera-restaurante">
 
     <div
-        class="restaurant-icon"
-        id="iconoRestaurante"
-    >
-        🍔
-    </div>
-
+        id="bannerRestaurante"
+        class="banner-restaurante"
+    ></div>
 
     <h1 id="nombreRestaurante">
-        Hamburguesas Don Pepe
+        Restaurante
     </h1>
 
-
-    <p id="descripcionRestaurante">
-        Hamburguesas, papas y bebidas.
-    </p>
-
-
-    <div class="rating">
-        ⭐⭐⭐⭐⭐ 4.8
-    </div>
+    <p id="descripcionRestaurante"></p>
 
 </section>
 
 
-
-<div class="container">
-
-    <h2 class="section-title">
-        Menú
-    </h2>
+<main>
 
     <div
-        class="products"
         id="productos"
-    >
-    </div>
+        class="productos"
+    ></div>
 
+</main>
+
+
+<div id="mensaje" class="mensaje">
+    Producto agregado
 </div>
 
 
-
-<div class="cart-bar">
-
-    <button onclick="irAlCarrito()">
-
-        🛒 Ver pedido
-
-        (<span id="cantidadCarrito2">0</span>)
-
-    </button>
-
-</div>
-
-
-
-<div
-    class="mensaje"
-    id="mensaje"
->
-    Producto agregado ✅
-</div>
-
-
+<script src="config.js"></script>
 
 <script>
 
 
-const restaurantes = {
+const productosBase = {
+
+    "Hamburguesas Don Pepe": [
+
+        {
+            nombre: "Hamburguesa Clásica",
+            precio: 4,
+            icono: "🍔"
+        },
+
+        {
+            nombre: "Hamburguesa Especial",
+            precio: 5.50,
+            icono: "🍔"
+        },
+
+        {
+            nombre: "Papas Fritas",
+            precio: 2,
+            icono: "🍟"
+        },
+
+        {
+            nombre: "Coca-Cola",
+            precio: 1.25,
+            icono: "🥤"
+        }
+
+    ],
 
 
-    "Hamburguesas Don Pepe": {
+    "Pizza Esmeraldas": [
 
-        icono: "🍔",
+        {
+            nombre: "Pizza Personal",
+            precio: 5,
+            icono: "🍕"
+        },
 
-        descripcion:
-            "Hamburguesas, papas y bebidas.",
+        {
+            nombre: "Pizza Familiar",
+            precio: 12,
+            icono: "🍕"
+        },
 
-        productos: [
+        {
+            nombre: "Pizza Especial",
+            precio: 14,
+            icono: "🍕"
+        },
 
-            {
-                nombre: "Hamburguesa Clásica",
-                descripcion:
-                    "Carne, queso, lechuga, tomate y salsa especial.",
-                precio: 4
-            },
+        {
+            nombre: "Coca-Cola",
+            precio: 1.25,
+            icono: "🥤"
+        }
 
-            {
-                nombre: "Hamburguesa Especial",
-                descripcion:
-                    "Carne doble, queso, tocino y salsa especial.",
-                precio: 5.50
-            },
-
-            {
-                nombre: "Papas Fritas",
-                descripcion:
-                    "Papas fritas crujientes con salsa de la casa.",
-                precio: 2
-            },
-
-            {
-                nombre: "Coca-Cola",
-                descripcion:
-                    "Coca-Cola fría de 500 ml.",
-                precio: 1.25
-            }
-
-        ]
-
-    },
+    ],
 
 
-    "Pizza Esmeraldas": {
+    "Pollo El Sabor": [
 
-        icono: "🍕",
+        {
+            nombre: "Pollo Entero",
+            precio: 12,
+            icono: "🍗"
+        },
 
-        descripcion:
-            "Pizzas familiares y personales.",
+        {
+            nombre: "Medio Pollo",
+            precio: 7,
+            icono: "🍗"
+        },
 
-        productos: [
+        {
+            nombre: "Combo Familiar",
+            precio: 18,
+            icono: "🍗"
+        },
 
-            {
-                nombre: "Pizza Personal",
-                descripcion:
-                    "Pizza personal con queso y tus ingredientes favoritos.",
-                precio: 5
-            },
+        {
+            nombre: "Coca-Cola",
+            precio: 1.25,
+            icono: "🥤"
+        }
 
-            {
-                nombre: "Pizza Familiar",
-                descripcion:
-                    "Pizza familiar para compartir.",
-                precio: 12
-            },
-
-            {
-                nombre: "Pizza Especial",
-                descripcion:
-                    "Jamón, pepperoni, champiñones y queso.",
-                precio: 14
-            },
-
-            {
-                nombre: "Coca-Cola",
-                descripcion:
-                    "Coca-Cola fría de 500 ml.",
-                precio: 1.25
-            }
-
-        ]
-
-    },
-
-
-    "Pollo El Sabor": {
-
-        icono: "🍗",
-
-        descripcion:
-            "Pollo asado, combos y bebidas.",
-
-        productos: [
-
-            {
-                nombre: "Pollo Entero",
-                descripcion:
-                    "Pollo asado acompañado de papas y ensalada.",
-                precio: 12
-            },
-
-            {
-                nombre: "Medio Pollo",
-                descripcion:
-                    "Medio pollo asado con papas.",
-                precio: 7
-            },
-
-            {
-                nombre: "Combo Familiar",
-                descripcion:
-                    "Pollo, papas, arroz y bebidas.",
-                precio: 18
-            },
-
-            {
-                nombre: "Coca-Cola",
-                descripcion:
-                    "Coca-Cola fría de 500 ml.",
-                precio: 1.25
-            }
-
-        ]
-
-    }
+    ]
 
 };
 
 
+function obtenerProductos(restaurante) {
 
-const parametros =
-    new URLSearchParams(
-        window.location.search
-    );
+    const productosGuardados =
+        JSON.parse(localStorage.getItem("productos")) || {};
 
+    if (productosGuardados[restaurante]) {
 
-const nombre =
-    parametros.get("restaurante")
-    || "Hamburguesas Don Pepe";
+        return productosGuardados[restaurante];
 
+    }
 
-const restaurante =
-    restaurantes[nombre];
-
-
-if (restaurante) {
-
-    document.getElementById(
-        "nombreRestaurante"
-    ).textContent = nombre;
-
-
-    document.getElementById(
-        "descripcionRestaurante"
-    ).textContent =
-        restaurante.descripcion;
-
-
-    document.getElementById(
-        "iconoRestaurante"
-    ).textContent =
-        restaurante.icono;
-
-
-    mostrarProductos(
-        restaurante.productos
-    );
+    return productosBase[restaurante] || [];
 
 }
 
 
+function obtenerRestaurante() {
 
-function mostrarProductos(productos) {
+    const params =
+        new URLSearchParams(window.location.search);
+
+    return params.get("restaurante");
+
+}
+
+
+function cargarRestaurante() {
+
+    const nombre =
+        obtenerRestaurante();
+
+    if (!nombre) {
+
+        window.location.href = "index.html";
+        return;
+
+    }
+
+    const restaurantes =
+        JSON.parse(localStorage.getItem("restaurantes")) || {};
+
+    const datos =
+        restaurantes[nombre] || {};
+
+    document.getElementById("nombreRestaurante")
+        .textContent = nombre;
+
+    document.getElementById("descripcionRestaurante")
+        .textContent =
+            datos.descripcion ||
+            "Deliciosos productos para ti.";
+
+
+    if (datos.banner) {
+
+        document.getElementById("bannerRestaurante")
+            .innerHTML = `
+                <img
+                    src="${datos.banner}"
+                    alt="${nombre}"
+                >
+            `;
+
+    } else {
+
+        document.getElementById("bannerRestaurante")
+            .innerHTML = "🍽️";
+
+    }
+
+
+    mostrarProductos(nombre);
+
+}
+
+
+function mostrarProductos(restaurante) {
+
+    const productos =
+        obtenerProductos(restaurante);
 
     const contenedor =
         document.getElementById("productos");
 
-
     contenedor.innerHTML = "";
 
 
-    productos.forEach(function(producto) {
+    if (productos.length === 0) {
+
+        contenedor.innerHTML = `
+            <div>
+                No hay productos disponibles.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    productos.forEach(producto => {
 
         const tarjeta =
             document.createElement("div");
 
+        tarjeta.className = "producto";
 
-        tarjeta.className = "product";
+
+        const imagen =
+            producto.imagen
+                ? `<img src="${producto.imagen}" alt="${producto.nombre}">`
+                : producto.icono || "🍽️";
 
 
         tarjeta.innerHTML = `
 
-            <div class="product-image">
-                ${obtenerIcono(producto.nombre)}
+            <div class="producto-imagen">
+                ${imagen}
             </div>
 
             <h3>
                 ${producto.nombre}
             </h3>
 
-            <p class="product-description">
-                ${producto.descripcion}
-            </p>
-
-            <div class="price">
-                $${producto.precio.toFixed(2)}
+            <div class="precio">
+                $${Number(producto.precio).toFixed(2)}
             </div>
 
             <button
-                class="add-button"
+                class="btn-agregar"
                 onclick="agregarProducto(
-                    '${producto.nombre}',
+                    '${escapeTexto(producto.nombre)}',
                     ${producto.precio},
-                    '${nombre}'
+                    '${escapeTexto(restaurante)}'
                 )"
             >
-
-                ➕ Agregar al pedido
-
+                + Agregar
             </button>
 
         `;
@@ -592,28 +459,13 @@ function mostrarProductos(productos) {
 }
 
 
+function escapeTexto(texto) {
 
-function obtenerIcono(nombre) {
-
-    if (nombre.includes("Pizza"))
-        return "🍕";
-
-    if (nombre.includes("Pollo"))
-        return "🍗";
-
-    if (nombre.includes("Papas"))
-        return "🍟";
-
-    if (nombre.includes("Coca"))
-        return "🥤";
-
-    if (nombre.includes("Combo"))
-        return "🍱";
-
-    return "🍔";
+    return texto
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
 
 }
-
 
 
 function agregarProducto(
@@ -623,27 +475,13 @@ function agregarProducto(
 ) {
 
     let carrito =
-        JSON.parse(
-            localStorage.getItem("carrito")
-        ) || [];
+        JSON.parse(localStorage.getItem("carrito")) || [];
 
 
-    /*
-    IMPORTANTE:
-
-    Ya NO bloqueamos la compra
-    cuando existe otro restaurante.
-
-    Cada producto conserva
-    el nombre de su restaurante.
-    */
-
-
-    let existente =
-        carrito.find(
-            producto =>
-                producto.nombre === nombreProducto &&
-                producto.restaurante === restaurante
+    const existente =
+        carrito.find(item =>
+            item.nombre === nombreProducto &&
+            item.restaurante === restaurante
         );
 
 
@@ -656,11 +494,8 @@ function agregarProducto(
         carrito.push({
 
             nombre: nombreProducto,
-
-            precio: precio,
-
+            precio: Number(precio),
             cantidad: 1,
-
             restaurante: restaurante
 
         });
@@ -676,86 +511,67 @@ function agregarProducto(
 
     actualizarCarrito();
 
-    mostrarMensaje();
+    mostrarMensaje(
+        `${nombreProducto} agregado al carrito`
+    );
 
 }
 
 
-
 function actualizarCarrito() {
 
-    let carrito =
-        JSON.parse(
-            localStorage.getItem("carrito")
-        ) || [];
+    const carrito =
+        JSON.parse(localStorage.getItem("carrito")) || [];
 
-
-    let cantidad =
+    const cantidad =
         carrito.reduce(
             (total, producto) =>
                 total + producto.cantidad,
             0
         );
 
-
-    document.getElementById(
-        "cantidadCarrito"
-    ).textContent = cantidad;
-
-
-    document.getElementById(
-        "cantidadCarrito2"
-    ).textContent = cantidad;
+    document.getElementById("cantidadCarrito")
+        .textContent = cantidad;
 
 }
 
 
-
-function mostrarMensaje() {
+function mostrarMensaje(texto) {
 
     const mensaje =
         document.getElementById("mensaje");
 
-
-    mensaje.textContent =
-        "Producto agregado al pedido ✅";
-
+    mensaje.textContent = texto;
 
     mensaje.style.display = "block";
 
-
-    setTimeout(function() {
+    setTimeout(() => {
 
         mensaje.style.display = "none";
 
-    }, 1500);
+    }, 1800);
 
 }
-
 
 
 function irAlCarrito() {
 
-    window.location.href =
-        "menu.html";
+    window.location.href = "menu.html";
 
 }
-
 
 
 function volverRestaurantes() {
 
-    window.location.href =
-        "index.html";
+    window.location.href = "index.html";
 
 }
 
 
+cargarRestaurante();
 actualizarCarrito();
 
 </script>
 
 </body>
-
 </html>
-```
