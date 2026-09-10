@@ -6,257 +6,194 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Sobre Ruedas</title>
 
 <style>
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-body{
-font-family:Arial,sans-serif;
-background:#f5f6f8;
-color:#222;
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #222;
 }
 
-header{
-background:#111827;
-color:white;
-padding:18px 25px;
-
-display:flex;
-justify-content:space-between;
-align-items:center;
+header {
+    background: #111827;
+    color: white;
+    padding: 18px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.logo{
-font-size:24px;
-font-weight:bold;
+.logo {
+    font-size: 24px;
+    font-weight: bold;
 }
 
-.logo span{
-color:#22c55e;
+.logo span {
+    color: #22c55e;
 }
 
-.cart{
-background:#22c55e;
-color:white;
-border:none;
-padding:10px 16px;
-border-radius:20px;
-cursor:pointer;
-font-weight:bold;
+.cart {
+    background: #22c55e;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.hero{
-background:linear-gradient(
-135deg,
-#16a34a,
-#22c55e
-);
-
-color:white;
-
-padding:60px 20px;
-
-text-align:center;
+.hero {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
 }
 
-.hero h1{
-font-size:40px;
-margin-bottom:12px;
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 12px;
 }
 
-.hero p{
-font-size:18px;
-margin-bottom:25px;
+.hero p {
+    font-size: 18px;
+    margin-bottom: 25px;
 }
 
-.search{
-width:90%;
-max-width:550px;
-
-padding:15px;
-
-border:none;
-
-border-radius:10px;
-
-font-size:16px;
-
-outline:none;
+.search {
+    width: 90%;
+    max-width: 550px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
 }
 
-.container{
-max-width:1100px;
-
-margin:35px auto;
-
-padding:0 20px;
+.container {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 0 20px;
 }
 
-.section-title{
-margin-bottom:20px;
-
-font-size:25px;
+.section-title {
+    margin-bottom: 20px;
+    font-size: 25px;
 }
 
-.categories{
-display:flex;
-
-gap:12px;
-
-overflow-x:auto;
-
-padding-bottom:10px;
-
-margin-bottom:35px;
+.categories {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    margin-bottom: 35px;
 }
 
-.category{
-background:white;
-
-border:1px solid #ddd;
-
-padding:12px 18px;
-
-border-radius:25px;
-
-cursor:pointer;
-
-white-space:nowrap;
+.category {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 12px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
-.category:hover{
-background:#22c55e;
-
-color:white;
+.category:hover {
+    background: #22c55e;
+    color: white;
 }
 
-.restaurants{
-
-display:grid;
-
-grid-template-columns:
-repeat(
-auto-fit,
-minmax(250px,1fr)
-);
-
-gap:20px;
+.restaurants {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
-.restaurant{
-
-background:white;
-
-border-radius:15px;
-
-overflow:hidden;
-
-box-shadow:
-0 3px 12px
-rgba(0,0,0,0.08);
-
-transition:transform .2s;
+.restaurant {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
 }
 
-.restaurant:hover{
-transform:translateY(-4px);
+.restaurant:hover {
+    transform: translateY(-4px);
 }
 
-.restaurant-image{
-
-height:170px;
-
-background:#e5e7eb;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:65px;
+.restaurant-image {
+    height: 170px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 65px;
 }
 
-.restaurant-content{
-padding:18px;
+.restaurant-content {
+    padding: 18px;
 }
 
-.restaurant-content h3{
-margin-bottom:8px;
+.restaurant-content h3 {
+    margin-bottom: 8px;
 }
 
-.restaurant-content p{
-color:#666;
-
-margin-bottom:12px;
+.restaurant-content p {
+    color: #666;
+    margin-bottom: 12px;
 }
 
-.rating{
-color:#f59e0b;
-
-margin-bottom:15px;
+.rating {
+    color: #f59e0b;
+    margin-bottom: 15px;
 }
 
-.btn{
-
-width:100%;
-
-background:#22c55e;
-
-color:white;
-
-border:none;
-
-padding:12px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-font-size:15px;
-
-font-weight:bold;
+.btn {
+    width: 100%;
+    background: #22c55e;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
 }
 
-.btn:hover{
-background:#16a34a;
+.btn:hover {
+    background: #16a34a;
 }
 
-footer{
-
-margin-top:50px;
-
-background:#111827;
-
-color:white;
-
-text-align:center;
-
-padding:30px;
+footer {
+    margin-top: 50px;
+    background: #111827;
+    color: white;
+    text-align: center;
+    padding: 30px;
 }
 
-@media(max-width:600px){
+@media (max-width: 600px) {
 
-.hero h1{
-font-size:30px;
-}
+    .hero h1 {
+        font-size: 30px;
+    }
 
-header{
-padding:15px;
-}
+    header {
+        padding: 15px;
+    }
 
-.logo{
-font-size:20px;
-}
+    .logo {
+        font-size: 20px;
+    }
 
 }
 
@@ -264,403 +201,278 @@ font-size:20px;
 
 </head>
 
-
 <body>
-
 
 <header>
 
-<div class="logo">
+    <div class="logo">
+        🛵 <span>Sobre</span> Ruedas
+    </div>
 
-🛵 <span>Sobre</span> Ruedas
+    <button class="cart" onclick="irAlCarrito()">
 
-</div>
+        🛒 Carrito
+        (<span id="cantidadCarrito">0</span>)
 
-
-<button
-class="cart"
-onclick="irAlCarrito()">
-
-🛒 Carrito
-(<span id="cantidadCarrito">0</span>)
-
-</button>
+    </button>
 
 </header>
 
 
-
 <section class="hero">
 
-<h1>
+    <h1>
+        ¿Qué quieres pedir hoy?
+    </h1>
 
-¿Qué quieres pedir hoy?
+    <p>
+        Comida, bebidas y productos
+        de tus negocios favoritos.
+    </p>
 
-</h1>
-
-<p>
-
-Comida, bebidas y productos
-de tus negocios favoritos.
-
-</p>
-
-
-<input
-
-type="text"
-
-class="search"
-
-id="buscador"
-
-placeholder="🔎 Busca un restaurante..."
-
-onkeyup="buscarRestaurante()"
-
->
+    <input
+        type="text"
+        class="search"
+        id="buscador"
+        placeholder="🔎 Busca un restaurante..."
+        onkeyup="buscarRestaurante()"
+    >
 
 </section>
 
 
-
 <div class="container">
 
+    <h2 class="section-title">
+        Categorías
+    </h2>
 
-<h2 class="section-title">
+    <div class="categories">
 
-Categorías
+        <button class="category">
+            🍔 Hamburguesas
+        </button>
 
-</h2>
+        <button class="category">
+            🍕 Pizza
+        </button>
 
+        <button class="category">
+            🍗 Pollo
+        </button>
 
-<div class="categories">
+        <button class="category">
+            🥤 Bebidas
+        </button>
 
+        <button class="category">
+            🛒 Tiendas
+        </button>
 
-<button class="category">
-
-🍔 Hamburguesas
-
-</button>
-
-
-<button class="category">
-
-🍕 Pizza
-
-</button>
-
-
-<button class="category">
-
-🍗 Pollo
-
-</button>
+    </div>
 
 
-<button class="category">
-
-🥤 Bebidas
-
-</button>
+    <h2 class="section-title">
+        Restaurantes disponibles
+    </h2>
 
 
-<button class="category">
+    <div class="restaurants" id="restaurantes">
 
-🛒 Tiendas
 
-</button>
+        <div
+            class="restaurant"
+            data-nombre="Hamburguesas Don Pepe"
+        >
 
+            <div class="restaurant-image">
+                🍔
+            </div>
+
+            <div class="restaurant-content">
+
+                <h3>
+                    Hamburguesas Don Pepe
+                </h3>
+
+                <p>
+                    Hamburguesas, papas y bebidas.
+                </p>
+
+                <div class="rating">
+                    ⭐⭐⭐⭐⭐ 4.8
+                </div>
+
+                <button
+                    class="btn"
+                    onclick="abrirRestaurante('Hamburguesas Don Pepe')"
+                >
+                    Ver menú
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="restaurant"
+            data-nombre="Pizza Esmeraldas"
+        >
+
+            <div class="restaurant-image">
+                🍕
+            </div>
+
+            <div class="restaurant-content">
+
+                <h3>
+                    Pizza Esmeraldas
+                </h3>
+
+                <p>
+                    Pizzas familiares y personales.
+                </p>
+
+                <div class="rating">
+                    ⭐⭐⭐⭐⭐ 4.7
+                </div>
+
+                <button
+                    class="btn"
+                    onclick="abrirRestaurante('Pizza Esmeraldas')"
+                >
+                    Ver menú
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="restaurant"
+            data-nombre="Pollo El Sabor"
+        >
+
+            <div class="restaurant-image">
+                🍗
+            </div>
+
+            <div class="restaurant-content">
+
+                <h3>
+                    Pollo El Sabor
+                </h3>
+
+                <p>
+                    Pollo asado, combos y bebidas.
+                </p>
+
+                <div class="rating">
+                    ⭐⭐⭐⭐⭐ 4.6
+                </div>
+
+                <button
+                    class="btn"
+                    onclick="abrirRestaurante('Pollo El Sabor')"
+                >
+                    Ver menú
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
-
-
-
-<h2 class="section-title">
-
-Restaurantes disponibles
-
-</h2>
-
-
-
-<div
-class="restaurants"
-id="restaurantes"
->
-
-
-
-<!-- RESTAURANTE 1 -->
-
-<div
-class="restaurant"
-data-nombre="Hamburguesas Don Pepe"
->
-
-
-<div class="restaurant-image">
-
-🍔
-
-</div>
-
-
-<div class="restaurant-content">
-
-<h3>
-
-Hamburguesas Don Pepe
-
-</h3>
-
-
-<p>
-
-Hamburguesas, papas y bebidas.
-
-</p>
-
-
-<div class="rating">
-
-⭐⭐⭐⭐⭐ 4.8
-
-</div>
-
-
-<button
-class="btn"
-onclick="abrirRestaurante(
-'Hamburguesas Don Pepe'
-)"
->
-
-Ver menú
-
-</button>
-
-</div>
-
-</div>
-
-
-
-<!-- RESTAURANTE 2 -->
-
-<div
-class="restaurant"
-data-nombre="Pizza Esmeraldas"
->
-
-
-<div class="restaurant-image">
-
-🍕
-
-</div>
-
-
-<div class="restaurant-content">
-
-<h3>
-
-Pizza Esmeraldas
-
-</h3>
-
-
-<p>
-
-Pizzas familiares y personales.
-
-</p>
-
-
-<div class="rating">
-
-⭐⭐⭐⭐⭐ 4.7
-
-</div>
-
-
-<button
-class="btn"
-onclick="abrirRestaurante(
-'Pizza Esmeraldas'
-)"
->
-
-Ver menú
-
-</button>
-
-</div>
-
-</div>
-
-
-
-<!-- RESTAURANTE 3 -->
-
-<div
-class="restaurant"
-data-nombre="Pollo El Sabor"
->
-
-
-<div class="restaurant-image">
-
-🍗
-
-</div>
-
-
-<div class="restaurant-content">
-
-<h3>
-
-Pollo El Sabor
-
-</h3>
-
-
-<p>
-
-Pollo asado, combos y bebidas.
-
-</p>
-
-
-<div class="rating">
-
-⭐⭐⭐⭐⭐ 4.6
-
-</div>
-
-
-<button
-class="btn"
-onclick="abrirRestaurante(
-'Pollo El Sabor'
-)"
->
-
-Ver menú
-
-</button>
-
-</div>
-
-</div>
-
-
-</div>
-
-</div>
-
 
 
 <footer>
 
-🛵 <strong>Sobre Ruedas</strong>
+    🛵 <strong>Sobre Ruedas</strong>
 
-<br><br>
+    <br><br>
 
-Tu comida. Tu ciudad. Tu delivery.
+    Tu comida. Tu ciudad. Tu delivery.
 
 </footer>
 
 
-
 <script>
 
+function abrirRestaurante(nombre) {
 
-function abrirRestaurante(nombre){
-
-window.location.href =
-"restaurante.html?restaurante=" +
-encodeURIComponent(nombre);
-
-}
-
-
-
-function irAlCarrito(){
-
-window.location.href =
-"menu.html";
+    window.location.href =
+        "restaurante.html?restaurante=" +
+        encodeURIComponent(nombre);
 
 }
 
 
+function irAlCarrito() {
 
-function buscarRestaurante(){
-
-let texto =
-document
-.getElementById("buscador")
-.value
-.toLowerCase();
-
-
-let restaurantes =
-document.querySelectorAll(
-".restaurant"
-);
-
-
-restaurantes.forEach(
-function(restaurante){
-
-let nombre =
-restaurante
-.getAttribute(
-"data-nombre"
-)
-.toLowerCase();
-
-
-if(nombre.includes(texto)){
-
-restaurante.style.display =
-"block";
-
-}else{
-
-restaurante.style.display =
-"none";
-
-}
-
-});
+    window.location.href =
+        "menu.html";
 
 }
 
 
+function buscarRestaurante() {
 
-function actualizarCarrito(){
+    let texto =
+        document
+        .getElementById("buscador")
+        .value
+        .toLowerCase();
 
-let carrito =
-JSON.parse(
-localStorage.getItem(
-"carrito"
-)
-) || [];
-
-
-let cantidad =
-carrito.reduce(
-(total,producto)=>
-total + producto.cantidad,
-0
-);
+    let restaurantes =
+        document.querySelectorAll(".restaurant");
 
 
-document.getElementById(
-"cantidadCarrito"
-).textContent =
-cantidad;
+    restaurantes.forEach(function(restaurante) {
+
+        let nombre =
+            restaurante
+            .getAttribute("data-nombre")
+            .toLowerCase();
+
+
+        if (nombre.includes(texto)) {
+
+            restaurante.style.display = "block";
+
+        } else {
+
+            restaurante.style.display = "none";
+
+        }
+
+    });
+
+}
+
+
+function actualizarCarrito() {
+
+    let carrito =
+        JSON.parse(
+            localStorage.getItem("carrito")
+        ) || [];
+
+
+    let cantidad =
+        carrito.reduce(
+            (total, producto) =>
+                total + producto.cantidad,
+            0
+        );
+
+
+    document.getElementById(
+        "cantidadCarrito"
+    ).textContent = cantidad;
 
 }
 
@@ -668,7 +480,6 @@ cantidad;
 actualizarCarrito();
 
 </script>
-
 
 </body>
 
