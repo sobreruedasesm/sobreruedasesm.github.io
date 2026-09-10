@@ -1,11 +1,12 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Menú - Sobre Ruedas</title>
 
@@ -431,8 +432,6 @@
 </footer>
 
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
@@ -444,7 +443,7 @@ let restauranteActual = null;
 
 
 /* =========================================
-   OBTENER ID DEL RESTAURANTE DESDE LA URL
+   OBTENER ID
 ========================================= */
 
 function obtenerIdRestaurante() {
@@ -468,9 +467,8 @@ async function cargarRestaurante() {
     const id =
         obtenerIdRestaurante();
 
-
     console.log(
-        "ID del restaurante:",
+        "ID restaurante:",
         id
     );
 
@@ -488,22 +486,17 @@ async function cargarRestaurante() {
 
     const { data, error } =
         await supabaseClient
-
             .from("restaurantes")
-
             .select("*")
-
             .eq("id", id)
-
             .eq("activo", true)
-
             .single();
 
 
     if (error || !data) {
 
         console.error(
-            "Error cargando restaurante:",
+            "Error restaurante:",
             error
         );
 
@@ -537,13 +530,9 @@ async function cargarRestaurante() {
         "Deliciosos productos.";
 
 
-    const categoria =
-        document.querySelector(
-            ".categoria"
-        );
-
-
-    categoria.textContent =
+    document.querySelector(
+        ".categoria"
+    ).textContent =
         "🍽️ " +
         (
             data.categoria ||
@@ -574,25 +563,17 @@ async function cargarProductos(
 
     const { data, error } =
         await supabaseClient
-
             .from("productos")
-
             .select("*")
-
-            .eq(
-                "restaurante_id",
-                restauranteId
-            )
-
+            .eq("restaurante_id", restauranteId)
             .eq("activo", true)
-
             .order("nombre");
 
 
     if (error) {
 
         console.error(
-            "Error cargando productos:",
+            "Error productos:",
             error
         );
 
@@ -654,8 +635,12 @@ async function cargarProductos(
 
                 imagen = `
                     <img
-                        src="${escapeHTML(producto.imagen_url)}"
-                        alt="${escapeHTML(producto.nombre)}"
+                        src="${escapeHTML(
+                            producto.imagen_url
+                        )}"
+                        alt="${escapeHTML(
+                            producto.nombre
+                        )}"
                         loading="lazy"
                     >
                 `;
@@ -698,12 +683,7 @@ async function cargarProductos(
 
                         <button
                             class="btn-agregar"
-                            onclick="agregarProducto(
-                                ${producto.id},
-                                '${escapeJS(producto.nombre)}',
-                                ${Number(producto.precio)},
-                                ${producto.restaurante_id}
-                            )"
+                            data-producto-id="${producto.id}"
                         >
                             + Agregar
                         </button>
@@ -713,6 +693,24 @@ async function cargarProductos(
                 </div>
 
             `;
+
+
+            const boton =
+                tarjeta.querySelector(
+                    ".btn-agregar"
+                );
+
+
+            boton.addEventListener(
+                "click",
+                function() {
+
+                    agregarProducto(
+                        producto
+                    );
+
+                }
+            );
 
 
             contenedor.appendChild(
@@ -726,15 +724,23 @@ async function cargarProductos(
 
 
 /* =========================================
-   AGREGAR PRODUCTO AL CARRITO
+   AGREGAR PRODUCTO
 ========================================= */
 
 function agregarProducto(
-    productoId,
-    nombre,
-    precio,
-    restauranteId
+    producto
 ) {
+
+    if (!restauranteActual) {
+
+        alert(
+            "El restaurante todavía no está cargado."
+        );
+
+        return;
+
+    }
+
 
     let carrito =
         JSON.parse(
@@ -744,27 +750,26 @@ function agregarProducto(
         ) || [];
 
 
-    /*
-       Buscamos el producto por:
-       producto_id + restaurante_id
+    const productoId =
+        Number(producto.id);
 
-       Esto evita duplicados.
-    */
+
+    const restauranteId =
+        Number(
+            restauranteActual.id
+        );
+
 
     const existente =
         carrito.find(
             item =>
                 Number(
                     item.producto_id
-                ) === Number(
-                    productoId
-                )
+                ) === productoId
                 &&
                 Number(
                     item.restaurante_id
-                ) === Number(
-                    restauranteId
-                )
+                ) === restauranteId
         );
 
 
@@ -789,10 +794,20 @@ function agregarProducto(
                 restauranteActual.nombre,
 
             nombre:
-                nombre,
+                producto.nombre,
+
+            descripcion:
+                producto.descripcion ||
+                "",
 
             precio:
-                Number(precio),
+                Number(
+                    producto.precio
+                ),
+
+            imagen_url:
+                producto.imagen_url ||
+                "",
 
             cantidad:
                 1
@@ -804,7 +819,9 @@ function agregarProducto(
 
     localStorage.setItem(
         "carrito",
-        JSON.stringify(carrito)
+        JSON.stringify(
+            carrito
+        )
     );
 
 
@@ -812,7 +829,7 @@ function agregarProducto(
 
 
     mostrarNotificacion(
-        nombre +
+        producto.nombre +
         " agregado al carrito ✅"
     );
 
@@ -820,7 +837,7 @@ function agregarProducto(
 
 
 /* =========================================
-   ACTUALIZAR CONTADOR DEL CARRITO
+   CONTADOR
 ========================================= */
 
 function actualizarCarrito() {
@@ -856,7 +873,7 @@ function actualizarCarrito() {
 
 
 /* =========================================
-   IR AL CARRITO
+   CARRITO
 ========================================= */
 
 function irAlCarrito() {
@@ -903,7 +920,7 @@ function mostrarNotificacion(
 
 
 /* =========================================
-   MOSTRAR ERROR
+   ERROR
 ========================================= */
 
 function mostrarError(
@@ -928,7 +945,9 @@ function mostrarError(
 
         <div class="estado">
 
-            ❌ ${escapeHTML(mensaje)}
+            ❌ ${escapeHTML(
+                mensaje
+            )}
 
         </div>
 
@@ -938,7 +957,7 @@ function mostrarError(
 
 
 /* =========================================
-   SEGURIDAD HTML
+   SEGURIDAD
 ========================================= */
 
 function escapeHTML(
@@ -961,37 +980,6 @@ function escapeHTML(
 
 
 /* =========================================
-   SEGURIDAD JAVASCRIPT
-========================================= */
-
-function escapeJS(
-    texto
-) {
-
-    return String(
-        texto ?? ""
-    )
-    .replace(
-        /\\/g,
-        "\\\\"
-    )
-    .replace(
-        /'/g,
-        "\\'"
-    )
-    .replace(
-        /\n/g,
-        "\\n"
-    )
-    .replace(
-        /\r/g,
-        "\\r"
-    );
-
-}
-
-
-/* =========================================
    INICIO
 ========================================= */
 
@@ -1005,4 +993,3 @@ actualizarCarrito();
 </body>
 
 </html>
-```
