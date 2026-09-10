@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba Supabase</title>
+</head>
+<body>
+
+<h1>Prueba Sobre Ruedas</h1>
+
+<div id="resultado">Conectando...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+async function probarConexion() {
+
+    const { data, error } = await supabaseClient
+        .from("restaurantes")
+        .select("*");
+
+    const resultado = document.getElementById("resultado");
+
+    if (error) {
+        resultado.innerHTML =
+            "<strong>ERROR:</strong> " + error.message;
+        console.error(error);
+        return;
+    }
+
+    resultado.innerHTML =
+        "CONEXIÓN CORRECTA ✅<br><br>" +
+        "Restaurantes encontrados: " + data.length;
+
+    console.log(data);
+}
+
+probarConexion();
+</script>
+
+</body>
+</html>
