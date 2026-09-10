@@ -13,293 +13,266 @@ content="width=device-width, initial-scale=1.0">
 
 <style>
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-body{
-
-font-family:Arial,sans-serif;
-
-background:#f5f6f8;
-
-color:#222;
-
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #222;
 }
 
-header{
+header {
+    background: #111827;
+    color: white;
+    padding: 18px 20px;
 
-background:#111827;
-
-color:white;
-
-padding:18px 20px;
-
-text-align:center;
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.logo{
-
-font-size:25px;
-
-font-weight:bold;
-
+.logo {
+    font-size: 24px;
+    font-weight: bold;
 }
 
-.logo span{
-
-color:#22c55e;
-
+.logo span {
+    color: #22c55e;
 }
 
-.container{
+.back-button {
+    background: white;
+    color: #111827;
+    border: none;
 
-max-width:800px;
+    padding: 10px 15px;
 
-margin:30px auto;
+    border-radius: 20px;
 
-padding:0 20px;
+    font-weight: bold;
 
+    cursor: pointer;
 }
 
-.card{
-
-background:white;
-
-border-radius:15px;
-
-padding:25px;
-
-margin-bottom:20px;
-
-box-shadow:
-0 3px 12px
-rgba(0,0,0,.08);
-
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
 }
 
-h1{
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
 
-margin-bottom:25px;
-
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.08);
 }
 
-h2{
-
-margin-bottom:20px;
-
+h1 {
+    margin-bottom: 20px;
 }
 
-.producto{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:15px 0;
-
-border-bottom:1px solid #eee;
-
-gap:15px;
-
+h2 {
+    margin-bottom: 20px;
 }
 
-.producto-info{
+.restaurante-pedido {
+    background: #f0fdf4;
+    color: #166534;
 
-flex:1;
+    padding: 12px;
 
+    border-radius: 8px;
+
+    margin-bottom: 15px;
+
+    font-weight: bold;
 }
 
-.producto-info strong{
+.producto {
 
-display:block;
+    display: flex;
 
-margin-bottom:5px;
+    justify-content: space-between;
 
+    align-items: center;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #eee;
+
+    gap: 15px;
 }
 
-.producto-info span{
-
-color:#16a34a;
-
-font-weight:bold;
-
+.producto-info {
+    flex: 1;
 }
 
-.controles{
-
-display:flex;
-
-align-items:center;
-
-gap:10px;
-
+.producto-info strong {
+    display: block;
+    margin-bottom: 5px;
 }
 
-.controles button{
-
-width:32px;
-
-height:32px;
-
-border:none;
-
-border-radius:50%;
-
-background:#e5e7eb;
-
-cursor:pointer;
-
-font-weight:bold;
-
+.producto-info span {
+    color: #16a34a;
+    font-weight: bold;
 }
 
-.eliminar{
-
-color:#dc2626;
-
-background:none!important;
-
+.controles {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.total{
+.controles button {
 
-display:flex;
+    width: 32px;
+    height: 32px;
 
-justify-content:space-between;
+    border: none;
 
-font-size:22px;
+    border-radius: 50%;
 
-font-weight:bold;
+    background: #e5e7eb;
 
-margin-top:20px;
+    cursor: pointer;
 
+    font-weight: bold;
 }
 
-.form-group{
+.controles .eliminar {
 
-margin-bottom:18px;
+    color: #dc2626;
 
+    background: white;
+
+    font-size: 18px;
 }
 
-label{
+.total {
 
-display:block;
+    display: flex;
 
-font-weight:bold;
+    justify-content: space-between;
 
-margin-bottom:7px;
+    font-size: 22px;
 
+    font-weight: bold;
+
+    margin-top: 20px;
 }
 
-input,textarea{
-
-width:100%;
-
-padding:13px;
-
-border:1px solid #ccc;
-
-border-radius:8px;
-
-font-size:16px;
-
+.form-group {
+    margin-bottom: 18px;
 }
 
-textarea{
+label {
+    display: block;
 
-min-height:90px;
+    font-weight: bold;
 
-resize:vertical;
-
+    margin-bottom: 7px;
 }
 
-.btn{
+input,
+textarea {
 
-width:100%;
+    width: 100%;
 
-padding:15px;
+    padding: 13px;
 
-border:none;
+    border: 1px solid #ccc;
 
-border-radius:10px;
+    border-radius: 8px;
 
-background:#22c55e;
-
-color:white;
-
-font-size:17px;
-
-font-weight:bold;
-
-cursor:pointer;
-
+    font-size: 16px;
 }
 
-.btn:hover{
-
-background:#16a34a;
-
+textarea {
+    min-height: 90px;
+    resize: vertical;
 }
 
-.vacio{
+.btn {
 
-text-align:center;
+    width: 100%;
 
-padding:30px;
+    padding: 15px;
 
-color:#666;
+    border: none;
 
+    border-radius: 10px;
+
+    background: #22c55e;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
 }
 
-.exito{
-
-display:none;
-
-text-align:center;
-
-padding:30px;
-
+.btn:hover {
+    background: #16a34a;
 }
 
-.exito-icon{
-
-font-size:60px;
-
-margin-bottom:15px;
-
+.vacio {
+    text-align: center;
+    padding: 30px;
+    color: #666;
 }
 
-.numero-pedido{
-
-font-size:24px;
-
-font-weight:bold;
-
-color:#16a34a;
-
-margin:15px 0;
-
+.exito {
+    display: none;
+    text-align: center;
+    padding: 30px;
 }
 
-.whatsapp{
-
-background:#25D366;
-
-margin-top:10px;
-
+.exito-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
 }
 
-.volver{
+.numero-pedido {
+    font-size: 24px;
+    font-weight: bold;
 
-background:#111827;
+    color: #16a34a;
 
-margin-top:10px;
+    margin: 15px 0;
+}
+
+.whatsapp {
+    background: #25D366;
+    margin-top: 15px;
+}
+
+.volver {
+    background: #111827;
+    margin-top: 10px;
+}
+
+@media(max-width:600px) {
+
+    header {
+        padding: 15px;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    .producto {
+        flex-wrap: wrap;
+    }
 
 }
 
@@ -307,17 +280,26 @@ margin-top:10px;
 
 </head>
 
-
 <body>
 
 
 <header>
 
-<div class="logo">
+    <div class="logo">
 
-🛵 <span>Sobre</span> Ruedas
+        🛵 <span>Sobre</span> Ruedas
 
-</div>
+    </div>
+
+
+    <button
+        class="back-button"
+        onclick="seguirComprando()"
+    >
+
+        ← Seguir comprando
+
+    </button>
 
 </header>
 
@@ -326,224 +308,185 @@ margin-top:10px;
 <div class="container">
 
 
-<h1>
+    <h1>
+        🛒 Mi pedido
+    </h1>
 
-🛒 Mi pedido
 
-</h1>
+    <!-- CARRITO -->
 
+    <div
+        class="card"
+        id="carritoCard"
+    >
 
+        <h2>
+            Productos
+        </h2>
 
-<!-- CARRITO -->
 
-<div
-class="card"
-id="carritoCard"
->
+        <div
+            id="productosCarrito"
+        >
+        </div>
 
 
-<h2>
+        <div class="total">
 
-Productos
+            <span>
+                Total
+            </span>
 
-</h2>
+            <span>
+                $<span id="total">0.00</span>
+            </span>
 
+        </div>
 
-<div
-id="productosCarrito"
->
+    </div>
 
-</div>
 
 
-<div class="total">
+    <!-- FORMULARIO -->
 
-<span>
+    <div
+        class="card"
+        id="formularioCard"
+    >
 
-Total
+        <h2>
+            📍 Datos de entrega
+        </h2>
 
-</span>
 
-<span>
+        <div class="form-group">
 
-$<span id="total">0.00</span>
+            <label>
+                Nombre
+            </label>
 
-</span>
+            <input
+                type="text"
+                id="nombre"
+                placeholder="Ej: Juan Pérez"
+            >
 
-</div>
+        </div>
 
 
-</div>
+        <div class="form-group">
 
+            <label>
+                Teléfono
+            </label>
 
+            <input
+                type="tel"
+                id="telefono"
+                placeholder="Ej: 0987654321"
+            >
 
-<!-- DATOS CLIENTE -->
+        </div>
 
-<div
-class="card"
-id="formularioCard"
->
 
+        <div class="form-group">
 
-<h2>
+            <label>
+                Dirección de entrega
+            </label>
 
-📍 Datos de entrega
+            <textarea
+                id="direccion"
+                placeholder="Calle, número de casa, sector..."
+            ></textarea>
 
-</h2>
+        </div>
 
 
-<div class="form-group">
+        <div class="form-group">
 
-<label>
+            <label>
+                Referencia
+            </label>
 
-Nombre
+            <input
+                type="text"
+                id="referencia"
+                placeholder="Ej: Casa azul junto a..."
+            >
 
-</label>
+        </div>
 
-<input
-type="text"
-id="nombre"
-placeholder="Ej: Juan Pérez"
->
 
-</div>
+        <button
+            class="btn"
+            onclick="confirmarPedido()"
+        >
 
+            🛵 Confirmar pedido
 
+        </button>
 
-<div class="form-group">
+    </div>
 
-<label>
 
-Teléfono
 
-</label>
+    <!-- ÉXITO -->
 
-<input
-type="tel"
-id="telefono"
-placeholder="Ej: 0999999999"
->
+    <div
+        class="card exito"
+        id="exito"
+    >
 
-</div>
+        <div class="exito-icon">
+            ✅
+        </div>
 
 
+        <h2>
+            ¡Pedido recibido!
+        </h2>
 
-<div class="form-group">
 
-<label>
+        <p>
+            Tu pedido fue registrado correctamente.
+        </p>
 
-Dirección de entrega
 
-</label>
+        <div class="numero-pedido">
 
-<textarea
-id="direccion"
-placeholder="Calle, número de casa, sector..."
-></textarea>
+            Pedido #
+            <span id="numeroPedido"></span>
 
-</div>
+        </div>
 
 
+        <p>
+            Ahora puedes enviarlo por WhatsApp
+            a Sobre Ruedas.
+        </p>
 
-<div class="form-group">
 
-<label>
+        <button
+            class="btn whatsapp"
+            onclick="enviarWhatsApp()"
+        >
 
-Referencia
+            📱 Enviar pedido por WhatsApp
 
-</label>
+        </button>
 
-<input
-type="text"
-id="referencia"
-placeholder="Ej: Casa azul junto a..."
->
 
-</div>
+        <button
+            class="btn volver"
+            onclick="window.location.href='index.html'"
+        >
 
+            🏠 Volver al inicio
 
+        </button>
 
-<button
-class="btn"
-onclick="confirmarPedido()"
->
-
-🛵 Confirmar pedido
-
-</button>
-
-
-</div>
-
-
-
-<!-- PEDIDO CONFIRMADO -->
-
-<div
-class="card exito"
-id="exito"
->
-
-
-<div class="exito-icon">
-
-✅
-
-</div>
-
-
-<h2>
-
-¡Pedido recibido!
-
-</h2>
-
-
-<p>
-
-Tu pedido fue registrado
-correctamente.
-
-</p>
-
-
-<div class="numero-pedido">
-
-Pedido #<span id="numeroPedido"></span>
-
-</div>
-
-
-<p>
-
-En breve podremos asignar
-un repartidor disponible.
-
-</p>
-
-
-<button
-class="btn whatsapp"
-onclick="enviarWhatsApp()"
->
-
-📱 Enviar pedido por WhatsApp
-
-</button>
-
-
-<button
-class="btn volver"
-onclick="window.location.href='index.html'"
->
-
-🏠 Volver al inicio
-
-</button>
-
-
-</div>
-
+    </div>
 
 </div>
 
@@ -553,450 +496,485 @@ onclick="window.location.href='index.html'"
 
 
 let carrito =
-JSON.parse(
-localStorage.getItem(
-"carrito"
-)
-) || [];
+    JSON.parse(
+        localStorage.getItem("carrito")
+    ) || [];
 
 
 
-function mostrarCarrito(){
+function mostrarCarrito() {
 
-const contenedor =
-document.getElementById(
-"productosCarrito"
-);
-
-
-contenedor.innerHTML="";
+    const contenedor =
+        document.getElementById(
+            "productosCarrito"
+        );
 
 
-if(carrito.length===0){
-
-contenedor.innerHTML = `
-
-<div class="vacio">
-
-🛒 Tu carrito está vacío.
-
-<br><br>
-
-<button
-class="btn"
-onclick="window.location.href='index.html'"
->
-
-Buscar restaurantes
-
-</button>
-
-</div>
-
-`;
-
-return;
-
-}
+    contenedor.innerHTML = "";
 
 
-carrito.forEach(
-function(producto,index){
+    if (carrito.length === 0) {
 
-const div =
-document.createElement(
-"div"
-);
+        contenedor.innerHTML = `
 
+            <div class="vacio">
 
-div.className =
-"producto";
+                🛒 Tu carrito está vacío.
 
+                <br><br>
 
-let subtotal =
-producto.precio *
-producto.cantidad;
+                <button
+                    class="btn"
+                    onclick="seguirComprando()"
+                >
 
+                    Buscar restaurantes
 
-div.innerHTML = `
+                </button>
 
-<div class="producto-info">
+            </div>
 
-<strong>
-${producto.nombre}
-</strong>
+        `;
 
-<span>
-$${producto.precio.toFixed(2)}
-</span>
+        document.getElementById(
+            "total"
+        ).textContent = "0.00";
 
-</div>
+        return;
+    }
 
 
-<div class="controles">
-
-<button
-onclick="cambiarCantidad(
-${index},
--1
-)"
->
-−
-</button>
-
-<strong>
-${producto.cantidad}
-</strong>
-
-<button
-onclick="cambiarCantidad(
-${index},
-1
-)"
->
-+
-</button>
-
-<button
-class="eliminar"
-onclick="eliminarProducto(
-${index}
-)"
->
-✕
-</button>
-
-</div>
-
-<div>
-
-$${subtotal.toFixed(2)}
-
-</div>
-
-`;
+    const restaurante =
+        carrito[0].restaurante ||
+        "Restaurante";
 
 
-contenedor.appendChild(
-div
-);
-
-});
+    const nombreRestaurante =
+        document.createElement("div");
 
 
-calcularTotal();
+    nombreRestaurante.className =
+        "restaurante-pedido";
+
+
+    nombreRestaurante.textContent =
+        "🏪 " + restaurante;
+
+
+    contenedor.appendChild(
+        nombreRestaurante
+    );
+
+
+    carrito.forEach(
+        function(producto, index) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "producto";
+
+
+            const subtotal =
+                producto.precio *
+                producto.cantidad;
+
+
+            div.innerHTML = `
+
+                <div class="producto-info">
+
+                    <strong>
+                        ${producto.nombre}
+                    </strong>
+
+                    <span>
+                        $${producto.precio.toFixed(2)}
+                    </span>
+
+                </div>
+
+
+                <div class="controles">
+
+                    <button
+                        onclick="cambiarCantidad(
+                            ${index},
+                            -1
+                        )"
+                    >
+                        −
+                    </button>
+
+                    <strong>
+                        ${producto.cantidad}
+                    </strong>
+
+                    <button
+                        onclick="cambiarCantidad(
+                            ${index},
+                            1
+                        )"
+                    >
+                        +
+                    </button>
+
+                    <button
+                        class="eliminar"
+                        onclick="eliminarProducto(
+                            ${index}
+                        )"
+                    >
+                        ✕
+                    </button>
+
+                </div>
+
+
+                <div>
+
+                    $${subtotal.toFixed(2)}
+
+                </div>
+
+            `;
+
+
+            contenedor.appendChild(
+                div
+            );
+
+        }
+    );
+
+
+    calcularTotal();
 
 }
 
 
 
 function cambiarCantidad(
-index,
-cambio
-){
+    index,
+    cambio
+) {
 
-carrito[index].cantidad +=
-cambio;
-
-
-if(
-carrito[index].cantidad <= 0
-){
-
-carrito.splice(index,1);
-
-}
+    carrito[index].cantidad +=
+        cambio;
 
 
-guardar();
+    if (
+        carrito[index].cantidad <= 0
+    ) {
 
-mostrarCarrito();
+        carrito.splice(index, 1);
 
-}
+    }
 
 
+    guardar();
 
-function eliminarProducto(index){
-
-carrito.splice(index,1);
-
-guardar();
-
-mostrarCarrito();
+    mostrarCarrito();
 
 }
 
 
 
-function guardar(){
+function eliminarProducto(index) {
 
-localStorage.setItem(
+    carrito.splice(index, 1);
 
-"carrito",
+    guardar();
 
-JSON.stringify(
-carrito
-)
-
-);
+    mostrarCarrito();
 
 }
 
 
 
-function calcularTotal(){
+function guardar() {
 
-let total = 0;
-
-
-carrito.forEach(
-function(producto){
-
-total +=
-producto.precio *
-producto.cantidad;
-
-});
-
-
-document.getElementById(
-"total"
-).textContent =
-total.toFixed(2);
-
-return total;
+    localStorage.setItem(
+        "carrito",
+        JSON.stringify(carrito)
+    );
 
 }
 
 
 
-function confirmarPedido(){
+function calcularTotal() {
 
-if(carrito.length===0){
-
-alert(
-"Tu carrito está vacío."
-);
-
-return;
-
-}
+    let total = 0;
 
 
-const nombre =
-document.getElementById(
-"nombre"
-).value.trim();
+    carrito.forEach(
+        function(producto) {
+
+            total +=
+                producto.precio *
+                producto.cantidad;
+
+        }
+    );
 
 
-const telefono =
-document.getElementById(
-"telefono"
-).value.trim();
+    document.getElementById(
+        "total"
+    ).textContent =
+        total.toFixed(2);
 
 
-const direccion =
-document.getElementById(
-"direccion"
-).value.trim();
-
-
-const referencia =
-document.getElementById(
-"referencia"
-).value.trim();
-
-
-if(
-!nombre ||
-!telefono ||
-!direccion
-){
-
-alert(
-"Por favor completa nombre, teléfono y dirección."
-);
-
-return;
-
-}
-
-
-const total =
-calcularTotal();
-
-
-const numero =
-"SR-" +
-Date.now()
-.toString()
-.slice(-6);
-
-
-const pedido = {
-
-numero:numero,
-
-cliente:{
-
-nombre:nombre,
-
-telefono:telefono,
-
-direccion:direccion,
-
-referencia:referencia
-
-},
-
-productos:carrito,
-
-total:total,
-
-fecha:new Date()
-.toLocaleString()
-
-};
-
-
-localStorage.setItem(
-
-"ultimoPedido",
-
-JSON.stringify(
-pedido
-)
-
-);
-
-
-document.getElementById(
-"numeroPedido"
-).textContent =
-numero;
-
-
-document.getElementById(
-"formularioCard"
-).style.display =
-"none";
-
-
-document.getElementById(
-"carritoCard"
-).style.display =
-"none";
-
-
-document.getElementById(
-"exito"
-).style.display =
-"block";
-
+    return total;
 
 }
 
 
 
-function enviarWhatsApp(){
+function confirmarPedido() {
 
-const pedido =
-JSON.parse(
-localStorage.getItem(
-"ultimoPedido"
-)
-);
+    if (carrito.length === 0) {
+
+        alert(
+            "Tu carrito está vacío."
+        );
+
+        return;
+    }
 
 
-if(!pedido){
+    const nombre =
+        document
+        .getElementById("nombre")
+        .value.trim();
 
-return;
+
+    const telefono =
+        document
+        .getElementById("telefono")
+        .value.trim();
+
+
+    const direccion =
+        document
+        .getElementById("direccion")
+        .value.trim();
+
+
+    const referencia =
+        document
+        .getElementById("referencia")
+        .value.trim();
+
+
+    if (
+        !nombre ||
+        !telefono ||
+        !direccion
+    ) {
+
+        alert(
+            "Completa nombre, teléfono y dirección."
+        );
+
+        return;
+    }
+
+
+    const total =
+        calcularTotal();
+
+
+    const restaurante =
+        carrito[0].restaurante ||
+        "Restaurante";
+
+
+    const numero =
+        "SR-" +
+        Date.now()
+        .toString()
+        .slice(-6);
+
+
+    const pedido = {
+
+        numero: numero,
+
+        restaurante: restaurante,
+
+        cliente: {
+
+            nombre: nombre,
+
+            telefono: telefono,
+
+            direccion: direccion,
+
+            referencia: referencia
+
+        },
+
+        productos: carrito,
+
+        total: total,
+
+        fecha:
+            new Date()
+            .toLocaleString("es-EC")
+
+    };
+
+
+    localStorage.setItem(
+        "ultimoPedido",
+        JSON.stringify(pedido)
+    );
+
+
+    document.getElementById(
+        "numeroPedido"
+    ).textContent =
+        numero;
+
+
+    document.getElementById(
+        "formularioCard"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "carritoCard"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "exito"
+    ).style.display =
+        "block";
 
 }
 
 
-let mensaje =
-"Hola, Sobre Ruedas. Quiero confirmar mi pedido %0A%0A";
+
+function enviarWhatsApp() {
+
+    const pedido =
+        JSON.parse(
+            localStorage.getItem(
+                "ultimoPedido"
+            )
+        );
 
 
-mensaje +=
-"Pedido: " +
-pedido.numero +
-"%0A";
+    if (!pedido) {
+        return;
+    }
 
 
-mensaje +=
-"Cliente: " +
-pedido.cliente.nombre +
-"%0A";
+    let mensaje =
+        "Hola, Sobre Ruedas.%0A%0A";
 
 
-mensaje +=
-"Teléfono: " +
-pedido.cliente.telefono +
-"%0A";
+    mensaje +=
+        "🛵 PEDIDO " +
+        pedido.numero +
+        "%0A%0A";
 
 
-mensaje +=
-"Dirección: " +
-pedido.cliente.direccion +
-"%0A";
+    mensaje +=
+        "🏪 Restaurante: " +
+        pedido.restaurante +
+        "%0A";
 
 
-if(
-pedido.cliente.referencia
-){
+    mensaje +=
+        "👤 Cliente: " +
+        pedido.cliente.nombre +
+        "%0A";
 
-mensaje +=
-"Referencia: " +
-pedido.cliente.referencia +
-"%0A";
+
+    mensaje +=
+        "📱 Teléfono: " +
+        pedido.cliente.telefono +
+        "%0A";
+
+
+    mensaje +=
+        "📍 Dirección: " +
+        pedido.cliente.direccion +
+        "%0A";
+
+
+    if (
+        pedido.cliente.referencia
+    ) {
+
+        mensaje +=
+            "📝 Referencia: " +
+            pedido.cliente.referencia +
+            "%0A";
+
+    }
+
+
+    mensaje +=
+        "%0A🍔 PRODUCTOS%0A";
+
+
+    pedido.productos.forEach(
+        function(producto) {
+
+            mensaje +=
+
+                producto.cantidad +
+                " x " +
+                producto.nombre +
+                " - $" +
+                (
+                    producto.precio *
+                    producto.cantidad
+                ).toFixed(2) +
+                "%0A";
+
+        }
+    );
+
+
+    mensaje +=
+        "%0A💰 TOTAL: $" +
+        pedido.total.toFixed(2);
+
+
+    const numeroSobreRuedas =
+        "593985459479";
+
+
+    window.open(
+
+        "https://wa.me/" +
+        numeroSobreRuedas +
+        "?text=" +
+        mensaje,
+
+        "_blank"
+
+    );
 
 }
 
 
-mensaje +=
-"%0AProductos:%0A";
 
+function seguirComprando() {
 
-pedido.productos.forEach(
-function(producto){
-
-mensaje +=
-
-producto.cantidad +
-"x " +
-producto.nombre +
-" - $" +
-(
-producto.precio *
-producto.cantidad
-).toFixed(2) +
-"%0A";
-
-});
-
-
-mensaje +=
-
-"%0ATOTAL: $" +
-pedido.total.toFixed(2);
-
-
-const numeroDelivery =
-"59389351622";
-
-
-window.open(
-
-"https://wa.me/" +
-numeroDelivery +
-"?text=" +
-mensaje,
-
-"_blank"
-
-);
+    window.location.href =
+        "index.html";
 
 }
 
@@ -1004,7 +982,6 @@ mensaje,
 mostrarCarrito();
 
 </script>
-
 
 </body>
 
