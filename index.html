@@ -1,133 +1,328 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Sobre Ruedas - Delivery Esmeraldas</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            color: #222;
+        :root {
+            --verde-principal: #087f5b;
+            --verde-oscuro: #075c43;
+            --verde-claro: #e7f7f1;
+            --verde-hover: #066b4d;
+            --negro: #10201b;
+            --gris-texto: #5f6f69;
+            --fondo: #f4f7f6;
+            --blanco: #ffffff;
+            --borde: #dfe8e4;
+            --sombra: 0 8px 25px rgba(0, 50, 35, 0.08);
         }
 
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--fondo);
+            color: var(--negro);
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
         header {
-            background: #111;
-            color: white;
-            padding: 15px 20px;
+            background: var(--blanco);
+            border-bottom: 1px solid var(--borde);
+            padding: 14px 20px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .logo {
             font-size: 22px;
-            font-weight: bold;
+            font-weight: 800;
+            color: var(--verde-principal);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--negro);
         }
 
         .carrito-btn {
-            background: #ff9800;
+            background: var(--verde-principal);
             color: white;
+
             border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
+
             cursor: pointer;
             font-weight: bold;
+
+            transition: 0.2s;
         }
 
+        .carrito-btn:hover {
+            background: var(--verde-hover);
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
         .hero {
-            background: linear-gradient(135deg, #ff9800, #ff5722);
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--verde-oscuro),
+                    var(--verde-principal)
+                );
+
             color: white;
-            padding: 35px 20px;
+
+            padding: 55px 20px 65px;
+
             text-align: center;
         }
 
         .hero h1 {
-            margin: 0 0 10px;
+            margin: 0 0 12px;
+
+            font-size: clamp(30px, 5vw, 46px);
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
         .hero p {
             margin: 0;
+
+            font-size: 17px;
+            opacity: 0.92;
         }
 
+        .hero-badge {
+            display: inline-block;
+
+            margin-bottom: 18px;
+
+            padding: 7px 14px;
+
+            border-radius: 30px;
+
+            background: rgba(255,255,255,0.14);
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           BUSCADOR
+        ========================= */
+
         .busqueda {
-            max-width: 600px;
-            margin: 20px auto;
+            max-width: 700px;
+
+            margin: -25px auto 25px;
+
             padding: 0 15px;
+
+            position: relative;
+            z-index: 10;
         }
 
         .busqueda input {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+
+            padding: 17px 20px;
+
+            border: 1px solid var(--borde);
+
+            border-radius: 14px;
+
             font-size: 16px;
+
+            outline: none;
+
+            background: white;
+
+            box-shadow: var(--sombra);
+
+            transition: 0.2s;
         }
+
+        .busqueda input:focus {
+            border-color: var(--verde-principal);
+
+            box-shadow:
+                0 0 0 3px rgba(8,127,91,0.12),
+                var(--sombra);
+        }
+
+        /* =========================
+           CATEGORIAS
+        ========================= */
 
         .categorias {
             display: flex;
+
             gap: 10px;
+
             overflow-x: auto;
-            padding: 0 15px 20px;
-            max-width: 1000px;
+
+            padding: 0 15px 25px;
+
+            max-width: 1050px;
+
             margin: auto;
+
+            scrollbar-width: none;
+        }
+
+        .categorias::-webkit-scrollbar {
+            display: none;
         }
 
         .categoria {
             background: white;
-            border: 1px solid #ddd;
-            padding: 10px 15px;
-            border-radius: 20px;
+
+            color: var(--negro);
+
+            border: 1px solid var(--borde);
+
+            padding: 10px 16px;
+
+            border-radius: 25px;
+
             white-space: nowrap;
+
             cursor: pointer;
+
+            font-weight: 600;
+
+            transition: 0.2s;
         }
 
+        .categoria:hover {
+            border-color: var(--verde-principal);
+
+            color: var(--verde-principal);
+
+            background: var(--verde-claro);
+        }
+
+        /* =========================
+           CONTENIDO
+        ========================= */
+
         .contenedor {
-            max-width: 1000px;
+            max-width: 1100px;
+
             margin: auto;
-            padding: 10px 15px 40px;
+
+            padding: 10px 15px 50px;
+        }
+
+        .encabezado-seccion {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin: 15px 0 20px;
         }
 
         .titulo-seccion {
-            margin-top: 20px;
+            margin: 0;
+
+            font-size: 25px;
         }
+
+        .subtitulo {
+            color: var(--gris-texto);
+
+            font-size: 14px;
+
+            margin-top: 5px;
+        }
+
+        /* =========================
+           RESTAURANTES
+        ========================= */
 
         .restaurantes {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(270px, 1fr));
+
+            gap: 22px;
         }
 
         .restaurante {
             background: white;
-            border-radius: 15px;
+
+            border-radius: 16px;
+
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,.08);
+
+            border: 1px solid var(--borde);
+
+            box-shadow: var(--sombra);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .restaurante:hover {
+            transform: translateY(-4px);
+
+            box-shadow:
+                0 14px 30px rgba(0, 50, 35, 0.13);
         }
 
         .restaurante-imagen {
-            height: 180px;
-            background: #ddd;
+            height: 190px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dcefe8,
+                    #edf6f3
+                );
+
             display: flex;
+
             align-items: center;
             justify-content: center;
-            font-size: 55px;
+
+            font-size: 60px;
+
             overflow: hidden;
         }
 
         .restaurante-imagen img {
             width: 100%;
             height: 100%;
+
             object-fit: cover;
         }
 
@@ -136,54 +331,198 @@
         }
 
         .restaurante h3 {
-            margin-top: 0;
+            margin: 0 0 8px;
+
+            font-size: 20px;
+        }
+
+        .categoria-restaurante {
+            display: inline-block;
+
+            background: var(--verde-claro);
+
+            color: var(--verde-principal);
+
+            padding: 5px 9px;
+
+            border-radius: 15px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+        }
+
+        .restaurante p {
+            color: var(--gris-texto);
+
+            line-height: 1.5;
+
+            margin: 0 0 16px;
+
+            min-height: 45px;
         }
 
         .btn-menu {
             width: 100%;
-            padding: 12px;
+
+            padding: 13px;
+
             border: none;
-            border-radius: 8px;
-            background: #ff9800;
+
+            border-radius: 10px;
+
+            background: var(--verde-principal);
+
             color: white;
+
             cursor: pointer;
+
             font-weight: bold;
+
+            font-size: 15px;
+
+            transition: 0.2s;
         }
 
-        .vacio {
-            text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
+        .btn-menu:hover {
+            background: var(--verde-hover);
         }
+
+        /* =========================
+           ESTADOS
+        ========================= */
+
+        .vacio,
+        .cargando,
+        .error {
+            grid-column: 1 / -1;
+
+            text-align: center;
+
+            background: white;
+
+            padding: 40px 20px;
+
+            border-radius: 15px;
+
+            border: 1px solid var(--borde);
+        }
+
+        .cargando {
+            color: var(--gris-texto);
+        }
+
+        .error {
+            color: #a33a3a;
+
+            background: #fff5f5;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
 
         footer {
-            background: #111;
+            background: var(--negro);
+
             color: white;
+
             text-align: center;
-            padding: 25px;
+
+            padding: 35px 20px;
         }
+
+        footer strong {
+            color: #62c9a5;
+
+            font-size: 19px;
+        }
+
+        footer p {
+            margin: 8px 0;
+
+            color: #b9c7c2;
+
+            font-size: 14px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 12px 15px;
+            }
+
+            .logo {
+                font-size: 19px;
+            }
+
+            .carrito-btn {
+                padding: 9px 12px;
+                font-size: 13px;
+            }
+
+            .hero {
+                padding: 42px 18px 55px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .restaurantes {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
     </style>
+
 </head>
 
+
 <body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
 
 <header>
 
     <div class="logo">
-        🛵 Sobre Ruedas
+        🛵 Sobre <span>Ruedas</span>
     </div>
 
-    <button class="carrito-btn" onclick="irAlCarrito()">
-        🛒 Carrito (<span id="cantidadCarrito">0</span>)
+    <button
+        class="carrito-btn"
+        onclick="irAlCarrito()"
+    >
+        🛒 Carrito
+        (<span id="cantidadCarrito">0</span>)
     </button>
 
 </header>
 
 
+<!-- =========================
+     HERO
+========================= -->
+
 <section class="hero">
 
-    <h1>¿Qué quieres pedir hoy?</h1>
+    <div class="hero-badge">
+        📍 Esmeraldas, Ecuador
+    </div>
+
+    <h1>
+        ¿Qué quieres pedir hoy?
+    </h1>
 
     <p>
         Tu comida. Tu ciudad. Tu delivery.
@@ -191,6 +530,10 @@
 
 </section>
 
+
+<!-- =========================
+     BUSCADOR
+========================= -->
 
 <div class="busqueda">
 
@@ -204,49 +547,103 @@
 </div>
 
 
+<!-- =========================
+     CATEGORIAS
+========================= -->
+
 <div class="categorias">
 
-    <button class="categoria" onclick="filtrarCategoria('Hamburguesas')">
+    <button
+        class="categoria"
+        onclick="filtrarCategoria('Hamburguesas')"
+    >
         🍔 Hamburguesas
     </button>
 
-    <button class="categoria" onclick="filtrarCategoria('Pizza')">
+    <button
+        class="categoria"
+        onclick="filtrarCategoria('Pizza')"
+    >
         🍕 Pizza
     </button>
 
-    <button class="categoria" onclick="filtrarCategoria('Pollo')">
+    <button
+        class="categoria"
+        onclick="filtrarCategoria('Pollo')"
+    >
         🍗 Pollo
     </button>
 
-    <button class="categoria" onclick="filtrarCategoria('Bebidas')">
+    <button
+        class="categoria"
+        onclick="filtrarCategoria('Bebidas')"
+    >
         🥤 Bebidas
     </button>
 
-    <button class="categoria" onclick="filtrarCategoria('Tiendas')">
+    <button
+        class="categoria"
+        onclick="filtrarCategoria('Tiendas')"
+    >
         🛒 Tiendas
     </button>
 
-    <button class="categoria" onclick="mostrarTodos()">
+    <button
+        class="categoria"
+        onclick="mostrarTodos()"
+    >
         Ver todos
     </button>
 
 </div>
 
 
+<!-- =========================
+     RESTAURANTES
+========================= -->
+
 <main class="contenedor">
 
-    <h2 class="titulo-seccion">
-        Restaurantes
-    </h2>
+    <div class="encabezado-seccion">
 
-    <div id="restaurantes" class="restaurantes"></div>
+        <div>
+
+            <h2 class="titulo-seccion">
+                Restaurantes
+            </h2>
+
+            <div class="subtitulo">
+                Descubre opciones disponibles cerca de ti
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="restaurantes"
+        class="restaurantes"
+    >
+
+        <div class="cargando">
+            🔄 Cargando restaurantes...
+        </div>
+
+    </div>
 
 </main>
 
 
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer>
 
-    <strong>🛵 Sobre Ruedas</strong>
+    <strong>
+        🛵 Sobre Ruedas
+    </strong>
 
     <p>
         Tu comida. Tu ciudad. Tu delivery.
@@ -259,59 +656,60 @@
 </footer>
 
 
-<script src="config.js"></script>
+<!-- =========================
+     SUPABASE
+========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
 
 <script>
 
-const restaurantesBase = {
+/* =========================================
+   VARIABLE GLOBAL
+========================================= */
 
-    "Hamburguesas Don Pepe": {
-        categoria: "Hamburguesas",
-        descripcion: "Hamburguesas, papas y bebidas."
-    },
-
-    "Pizza Esmeraldas": {
-        categoria: "Pizza",
-        descripcion: "Pizzas y bebidas."
-    },
-
-    "Pollo El Sabor": {
-        categoria: "Pollo",
-        descripcion: "Pollo y combos familiares."
-    }
-
-};
+let restaurantesActuales = [];
 
 
-function obtenerRestaurantes() {
+/* =========================================
+   CARGAR RESTAURANTES DESDE SUPABASE
+========================================= */
 
-    const restaurantesGuardados =
-        JSON.parse(localStorage.getItem("restaurantes")) || {};
-
-    return {
-        ...restaurantesBase,
-        ...restaurantesGuardados
-    };
-
-}
-
-
-function mostrarRestaurantes(lista = null) {
-
-    const restaurantes = lista || obtenerRestaurantes();
+async function cargarRestaurantes() {
 
     const contenedor =
         document.getElementById("restaurantes");
 
-    contenedor.innerHTML = "";
+    contenedor.innerHTML = `
+        <div class="cargando">
+            🔄 Cargando restaurantes...
+        </div>
+    `;
 
-    const nombres = Object.keys(restaurantes);
 
-    if (nombres.length === 0) {
+    const { data, error } = await supabaseClient
+
+        .from("restaurantes")
+
+        .select("*")
+
+        .eq("activo", true)
+
+        .order("nombre");
+
+
+    if (error) {
+
+        console.error(error);
 
         contenedor.innerHTML = `
-            <div class="vacio">
-                No hay restaurantes disponibles.
+            <div class="error">
+                ❌ No pudimos cargar los restaurantes.
+                <br><br>
+                Intenta nuevamente.
             </div>
         `;
 
@@ -319,31 +717,71 @@ function mostrarRestaurantes(lista = null) {
     }
 
 
-    nombres.forEach(nombre => {
+    restaurantesActuales = data || [];
 
-        const restaurante = restaurantes[nombre];
+    mostrarRestaurantes(restaurantesActuales);
 
-        let imagen = "";
+}
 
-        if (restaurante.banner) {
+
+/* =========================================
+   MOSTRAR RESTAURANTES
+========================================= */
+
+function mostrarRestaurantes(lista) {
+
+    const contenedor =
+        document.getElementById("restaurantes");
+
+    contenedor.innerHTML = "";
+
+
+    if (!lista || lista.length === 0) {
+
+        contenedor.innerHTML = `
+            <div class="vacio">
+
+                🍽️
+
+                <h3>
+                    No encontramos restaurantes
+                </h3>
+
+                <p>
+                    Pronto tendremos más opciones disponibles.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    lista.forEach(restaurante => {
+
+        const tarjeta =
+            document.createElement("div");
+
+        tarjeta.className =
+            "restaurante";
+
+
+        let imagen = "🍽️";
+
+
+        if (restaurante.banner_url) {
 
             imagen = `
                 <img
-                    src="${restaurante.banner}"
-                    alt="${nombre}"
+                    src="${restaurante.banner_url}"
+                    alt="${escapeHTML(restaurante.nombre)}"
+                    loading="lazy"
                 >
             `;
 
-        } else {
-
-            imagen = "🍽️";
-
         }
 
-
-        const tarjeta = document.createElement("div");
-
-        tarjeta.className = "restaurante";
 
         tarjeta.innerHTML = `
 
@@ -353,21 +791,34 @@ function mostrarRestaurantes(lista = null) {
 
             <div class="restaurante-contenido">
 
-                <h3>${nombre}</h3>
+                <span class="categoria-restaurante">
+                    ${escapeHTML(
+                        restaurante.categoria || "Restaurante"
+                    )}
+                </span>
+
+                <h3>
+                    ${escapeHTML(restaurante.nombre)}
+                </h3>
 
                 <p>
-                    ${restaurante.descripcion || "Deliciosos productos."}
+                    ${escapeHTML(
+                        restaurante.descripcion ||
+                        "Deliciosos productos."
+                    )}
                 </p>
 
                 <button
                     class="btn-menu"
-                    onclick="verMenu('${encodeURIComponent(nombre)}')"
+                    onclick="verMenu('${encodeURIComponent(restaurante.nombre)}')"
                 >
-                    Ver menú
+                    Ver menú →
                 </button>
 
             </div>
+
         `;
+
 
         contenedor.appendChild(tarjeta);
 
@@ -375,6 +826,99 @@ function mostrarRestaurantes(lista = null) {
 
 }
 
+
+/* =========================================
+   BUSCAR
+========================================= */
+
+function filtrarRestaurantes() {
+
+    const texto =
+        document
+            .getElementById("buscar")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    if (!texto) {
+
+        mostrarRestaurantes(
+            restaurantesActuales
+        );
+
+        return;
+    }
+
+
+    const filtrados =
+        restaurantesActuales.filter(restaurante => {
+
+            const nombre =
+                (restaurante.nombre || "")
+                    .toLowerCase();
+
+            const descripcion =
+                (restaurante.descripcion || "")
+                    .toLowerCase();
+
+            const categoria =
+                (restaurante.categoria || "")
+                    .toLowerCase();
+
+
+            return (
+                nombre.includes(texto) ||
+                descripcion.includes(texto) ||
+                categoria.includes(texto)
+            );
+
+        });
+
+
+    mostrarRestaurantes(filtrados);
+
+}
+
+
+/* =========================================
+   FILTRAR POR CATEGORIA
+========================================= */
+
+function filtrarCategoria(categoria) {
+
+    const filtrados =
+        restaurantesActuales.filter(
+            restaurante =>
+                (restaurante.categoria || "")
+                    .toLowerCase() ===
+                categoria.toLowerCase()
+        );
+
+
+    mostrarRestaurantes(filtrados);
+
+}
+
+
+/* =========================================
+   MOSTRAR TODOS
+========================================= */
+
+function mostrarTodos() {
+
+    document.getElementById("buscar").value = "";
+
+    mostrarRestaurantes(
+        restaurantesActuales
+    );
+
+}
+
+
+/* =========================================
+   IR AL MENU
+========================================= */
 
 function verMenu(nombre) {
 
@@ -384,70 +928,17 @@ function verMenu(nombre) {
 }
 
 
-function filtrarRestaurantes() {
-
-    const texto =
-        document.getElementById("buscar").value.toLowerCase();
-
-    const restaurantes = obtenerRestaurantes();
-
-    const filtrados = {};
-
-    Object.keys(restaurantes).forEach(nombre => {
-
-        const r = restaurantes[nombre];
-
-        if (
-            nombre.toLowerCase().includes(texto) ||
-            (r.descripcion || "").toLowerCase().includes(texto)
-        ) {
-
-            filtrados[nombre] = r;
-
-        }
-
-    });
-
-    mostrarRestaurantes(filtrados);
-
-}
-
-
-function filtrarCategoria(categoria) {
-
-    const restaurantes = obtenerRestaurantes();
-
-    const filtrados = {};
-
-    Object.keys(restaurantes).forEach(nombre => {
-
-        if (
-            restaurantes[nombre].categoria === categoria
-        ) {
-
-            filtrados[nombre] =
-                restaurantes[nombre];
-
-        }
-
-    });
-
-    mostrarRestaurantes(filtrados);
-
-}
-
-
-function mostrarTodos() {
-
-    mostrarRestaurantes();
-
-}
-
+/* =========================================
+   CARRITO
+========================================= */
 
 function actualizarCarrito() {
 
     const carrito =
-        JSON.parse(localStorage.getItem("carrito")) || [];
+        JSON.parse(
+            localStorage.getItem("carrito")
+        ) || [];
+
 
     const cantidad =
         carrito.reduce(
@@ -456,23 +947,51 @@ function actualizarCarrito() {
             0
         );
 
-    document.getElementById("cantidadCarrito")
-        .textContent = cantidad;
+
+    document.getElementById(
+        "cantidadCarrito"
+    ).textContent = cantidad;
 
 }
 
 
 function irAlCarrito() {
 
-    window.location.href = "menu.html";
+    window.location.href =
+        "menu.html";
 
 }
 
 
-mostrarRestaurantes();
+/* =========================================
+   SEGURIDAD
+========================================= */
+
+function escapeHTML(texto) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        texto ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================
+   INICIO
+========================================= */
+
+cargarRestaurantes();
+
 actualizarCarrito();
 
 </script>
 
+
 </body>
+
 </html>
+```
