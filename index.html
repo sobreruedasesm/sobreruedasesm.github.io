@@ -1,204 +1,169 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Sobre Ruedas - Delivery Esmeraldas</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-<title>Sobre Ruedas</title>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
 
-<style>
+        header {
+            background: #111;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f6f8;
-    color: #222;
-}
+        .carrito-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-header {
-    background: #111827;
-    color: white;
-    padding: 18px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .hero {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+        }
 
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-}
+        .hero h1 {
+            margin: 0 0 10px;
+        }
 
-.logo span {
-    color: #22c55e;
-}
+        .hero p {
+            margin: 0;
+        }
 
-.cart {
-    background: #22c55e;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: bold;
-}
+        .busqueda {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
 
-.hero {
-    background: linear-gradient(135deg, #16a34a, #22c55e);
-    color: white;
-    padding: 60px 20px;
-    text-align: center;
-}
+        .busqueda input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
 
-.hero h1 {
-    font-size: 40px;
-    margin-bottom: 12px;
-}
+        .categorias {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 0 15px 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
 
-.hero p {
-    font-size: 18px;
-    margin-bottom: 25px;
-}
+        .categoria {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
 
-.search {
-    width: 90%;
-    max-width: 550px;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    outline: none;
-}
+        .contenedor {
+            max-width: 1000px;
+            margin: auto;
+            padding: 10px 15px 40px;
+        }
 
-.container {
-    max-width: 1100px;
-    margin: 35px auto;
-    padding: 0 20px;
-}
+        .titulo-seccion {
+            margin-top: 20px;
+        }
 
-.section-title {
-    margin-bottom: 20px;
-    font-size: 25px;
-}
+        .restaurantes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
 
-.categories {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    margin-bottom: 35px;
-}
+        .restaurante {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,.08);
+        }
 
-.category {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 12px 18px;
-    border-radius: 25px;
-    cursor: pointer;
-    white-space: nowrap;
-}
+        .restaurante-imagen {
+            height: 180px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
+            overflow: hidden;
+        }
 
-.category:hover {
-    background: #22c55e;
-    color: white;
-}
+        .restaurante-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.restaurants {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
+        .restaurante-contenido {
+            padding: 18px;
+        }
 
-.restaurant {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-}
+        .restaurante h3 {
+            margin-top: 0;
+        }
 
-.restaurant:hover {
-    transform: translateY(-4px);
-}
+        .btn-menu {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #ff9800;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-.restaurant-image {
-    height: 170px;
-    background: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 65px;
-}
+        .vacio {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
 
-.restaurant-content {
-    padding: 18px;
-}
-
-.restaurant-content h3 {
-    margin-bottom: 8px;
-}
-
-.restaurant-content p {
-    color: #666;
-    margin-bottom: 12px;
-}
-
-.rating {
-    color: #f59e0b;
-    margin-bottom: 15px;
-}
-
-.btn {
-    width: 100%;
-    background: #22c55e;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: bold;
-}
-
-.btn:hover {
-    background: #16a34a;
-}
-
-footer {
-    margin-top: 50px;
-    background: #111827;
-    color: white;
-    text-align: center;
-    padding: 30px;
-}
-
-@media (max-width: 600px) {
-
-    .hero h1 {
-        font-size: 30px;
-    }
-
-    header {
-        padding: 15px;
-    }
-
-    .logo {
-        font-size: 20px;
-    }
-
-}
-
-</style>
-
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+    </style>
 </head>
 
 <body>
@@ -206,14 +171,11 @@ footer {
 <header>
 
     <div class="logo">
-        🛵 <span>Sobre</span> Ruedas
+        🛵 Sobre Ruedas
     </div>
 
-    <button class="cart" onclick="irAlCarrito()">
-
-        🛒 Carrito
-        (<span id="cantidadCarrito">0</span>)
-
+    <button class="carrito-btn" onclick="irAlCarrito()">
+        🛒 Carrito (<span id="cantidadCarrito">0</span>)
     </button>
 
 </header>
@@ -221,267 +183,296 @@ footer {
 
 <section class="hero">
 
-    <h1>
-        ¿Qué quieres pedir hoy?
-    </h1>
+    <h1>¿Qué quieres pedir hoy?</h1>
 
     <p>
-        Comida, bebidas y productos
-        de tus negocios favoritos.
+        Tu comida. Tu ciudad. Tu delivery.
     </p>
-
-    <input
-        type="text"
-        class="search"
-        id="buscador"
-        placeholder="🔎 Busca un restaurante..."
-        onkeyup="buscarRestaurante()"
-    >
 
 </section>
 
 
-<div class="container">
+<div class="busqueda">
 
-    <h2 class="section-title">
-        Categorías
-    </h2>
-
-    <div class="categories">
-
-        <button class="category">
-            🍔 Hamburguesas
-        </button>
-
-        <button class="category">
-            🍕 Pizza
-        </button>
-
-        <button class="category">
-            🍗 Pollo
-        </button>
-
-        <button class="category">
-            🥤 Bebidas
-        </button>
-
-        <button class="category">
-            🛒 Tiendas
-        </button>
-
-    </div>
-
-
-    <h2 class="section-title">
-        Restaurantes disponibles
-    </h2>
-
-
-    <div class="restaurants" id="restaurantes">
-
-
-        <div
-            class="restaurant"
-            data-nombre="Hamburguesas Don Pepe"
-        >
-
-            <div class="restaurant-image">
-                🍔
-            </div>
-
-            <div class="restaurant-content">
-
-                <h3>
-                    Hamburguesas Don Pepe
-                </h3>
-
-                <p>
-                    Hamburguesas, papas y bebidas.
-                </p>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐ 4.8
-                </div>
-
-                <button
-                    class="btn"
-                    onclick="abrirRestaurante('Hamburguesas Don Pepe')"
-                >
-                    Ver menú
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="restaurant"
-            data-nombre="Pizza Esmeraldas"
-        >
-
-            <div class="restaurant-image">
-                🍕
-            </div>
-
-            <div class="restaurant-content">
-
-                <h3>
-                    Pizza Esmeraldas
-                </h3>
-
-                <p>
-                    Pizzas familiares y personales.
-                </p>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐ 4.7
-                </div>
-
-                <button
-                    class="btn"
-                    onclick="abrirRestaurante('Pizza Esmeraldas')"
-                >
-                    Ver menú
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="restaurant"
-            data-nombre="Pollo El Sabor"
-        >
-
-            <div class="restaurant-image">
-                🍗
-            </div>
-
-            <div class="restaurant-content">
-
-                <h3>
-                    Pollo El Sabor
-                </h3>
-
-                <p>
-                    Pollo asado, combos y bebidas.
-                </p>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐ 4.6
-                </div>
-
-                <button
-                    class="btn"
-                    onclick="abrirRestaurante('Pollo El Sabor')"
-                >
-                    Ver menú
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
+    <input
+        type="text"
+        id="buscar"
+        placeholder="🔎 Buscar restaurante..."
+        oninput="filtrarRestaurantes()"
+    >
 
 </div>
 
 
+<div class="categorias">
+
+    <button class="categoria" onclick="filtrarCategoria('Hamburguesas')">
+        🍔 Hamburguesas
+    </button>
+
+    <button class="categoria" onclick="filtrarCategoria('Pizza')">
+        🍕 Pizza
+    </button>
+
+    <button class="categoria" onclick="filtrarCategoria('Pollo')">
+        🍗 Pollo
+    </button>
+
+    <button class="categoria" onclick="filtrarCategoria('Bebidas')">
+        🥤 Bebidas
+    </button>
+
+    <button class="categoria" onclick="filtrarCategoria('Tiendas')">
+        🛒 Tiendas
+    </button>
+
+    <button class="categoria" onclick="mostrarTodos()">
+        Ver todos
+    </button>
+
+</div>
+
+
+<main class="contenedor">
+
+    <h2 class="titulo-seccion">
+        Restaurantes
+    </h2>
+
+    <div id="restaurantes" class="restaurantes"></div>
+
+</main>
+
+
 <footer>
 
-    🛵 <strong>Sobre Ruedas</strong>
+    <strong>🛵 Sobre Ruedas</strong>
 
-    <br><br>
+    <p>
+        Tu comida. Tu ciudad. Tu delivery.
+    </p>
 
-    Tu comida. Tu ciudad. Tu delivery.
+    <p>
+        Esmeraldas, Ecuador
+    </p>
 
 </footer>
 
 
+<script src="config.js"></script>
+
 <script>
 
-function abrirRestaurante(nombre) {
+const restaurantesBase = {
 
-    window.location.href =
-        "restaurante.html?restaurante=" +
-        encodeURIComponent(nombre);
+    "Hamburguesas Don Pepe": {
+        categoria: "Hamburguesas",
+        descripcion: "Hamburguesas, papas y bebidas."
+    },
+
+    "Pizza Esmeraldas": {
+        categoria: "Pizza",
+        descripcion: "Pizzas y bebidas."
+    },
+
+    "Pollo El Sabor": {
+        categoria: "Pollo",
+        descripcion: "Pollo y combos familiares."
+    }
+
+};
+
+
+function obtenerRestaurantes() {
+
+    const restaurantesGuardados =
+        JSON.parse(localStorage.getItem("restaurantes")) || {};
+
+    return {
+        ...restaurantesBase,
+        ...restaurantesGuardados
+    };
 
 }
 
 
-function irAlCarrito() {
+function mostrarRestaurantes(lista = null) {
 
-    window.location.href =
-        "menu.html";
+    const restaurantes = lista || obtenerRestaurantes();
 
-}
+    const contenedor =
+        document.getElementById("restaurantes");
 
+    contenedor.innerHTML = "";
 
-function buscarRestaurante() {
+    const nombres = Object.keys(restaurantes);
 
-    let texto =
-        document
-        .getElementById("buscador")
-        .value
-        .toLowerCase();
+    if (nombres.length === 0) {
 
-    let restaurantes =
-        document.querySelectorAll(".restaurant");
+        contenedor.innerHTML = `
+            <div class="vacio">
+                No hay restaurantes disponibles.
+            </div>
+        `;
 
-
-    restaurantes.forEach(function(restaurante) {
-
-        let nombre =
-            restaurante
-            .getAttribute("data-nombre")
-            .toLowerCase();
+        return;
+    }
 
 
-        if (nombre.includes(texto)) {
+    nombres.forEach(nombre => {
 
-            restaurante.style.display = "block";
+        const restaurante = restaurantes[nombre];
+
+        let imagen = "";
+
+        if (restaurante.banner) {
+
+            imagen = `
+                <img
+                    src="${restaurante.banner}"
+                    alt="${nombre}"
+                >
+            `;
 
         } else {
 
-            restaurante.style.display = "none";
+            imagen = "🍽️";
 
         }
+
+
+        const tarjeta = document.createElement("div");
+
+        tarjeta.className = "restaurante";
+
+        tarjeta.innerHTML = `
+
+            <div class="restaurante-imagen">
+                ${imagen}
+            </div>
+
+            <div class="restaurante-contenido">
+
+                <h3>${nombre}</h3>
+
+                <p>
+                    ${restaurante.descripcion || "Deliciosos productos."}
+                </p>
+
+                <button
+                    class="btn-menu"
+                    onclick="verMenu('${encodeURIComponent(nombre)}')"
+                >
+                    Ver menú
+                </button>
+
+            </div>
+        `;
+
+        contenedor.appendChild(tarjeta);
 
     });
 
 }
 
 
+function verMenu(nombre) {
+
+    window.location.href =
+        "restaurante.html?restaurante=" + nombre;
+
+}
+
+
+function filtrarRestaurantes() {
+
+    const texto =
+        document.getElementById("buscar").value.toLowerCase();
+
+    const restaurantes = obtenerRestaurantes();
+
+    const filtrados = {};
+
+    Object.keys(restaurantes).forEach(nombre => {
+
+        const r = restaurantes[nombre];
+
+        if (
+            nombre.toLowerCase().includes(texto) ||
+            (r.descripcion || "").toLowerCase().includes(texto)
+        ) {
+
+            filtrados[nombre] = r;
+
+        }
+
+    });
+
+    mostrarRestaurantes(filtrados);
+
+}
+
+
+function filtrarCategoria(categoria) {
+
+    const restaurantes = obtenerRestaurantes();
+
+    const filtrados = {};
+
+    Object.keys(restaurantes).forEach(nombre => {
+
+        if (
+            restaurantes[nombre].categoria === categoria
+        ) {
+
+            filtrados[nombre] =
+                restaurantes[nombre];
+
+        }
+
+    });
+
+    mostrarRestaurantes(filtrados);
+
+}
+
+
+function mostrarTodos() {
+
+    mostrarRestaurantes();
+
+}
+
+
 function actualizarCarrito() {
 
-    let carrito =
-        JSON.parse(
-            localStorage.getItem("carrito")
-        ) || [];
+    const carrito =
+        JSON.parse(localStorage.getItem("carrito")) || [];
 
-
-    let cantidad =
+    const cantidad =
         carrito.reduce(
             (total, producto) =>
                 total + producto.cantidad,
             0
         );
 
-
-    document.getElementById(
-        "cantidadCarrito"
-    ).textContent = cantidad;
+    document.getElementById("cantidadCarrito")
+        .textContent = cantidad;
 
 }
 
 
+function irAlCarrito() {
+
+    window.location.href = "menu.html";
+
+}
+
+
+mostrarRestaurantes();
 actualizarCarrito();
 
 </script>
 
 </body>
-
 </html>
-```
