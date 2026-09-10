@@ -59,7 +59,7 @@ header {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 850px;
     margin: 30px auto;
     padding: 0 20px;
 }
@@ -82,18 +82,57 @@ h2 {
     margin-bottom: 20px;
 }
 
-.restaurante-pedido {
+
+/* INFORMACIÓN DE LAS CARRERAS */
+
+.info-carreras {
+
+    background: #eff6ff;
+
+    border: 1px solid #bfdbfe;
+
+    color: #1e40af;
+
+    padding: 16px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    line-height: 1.5;
+
+}
+
+
+/* RESTAURANTE */
+
+.bloque-restaurante {
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    margin-bottom: 20px;
+
+    overflow: hidden;
+
+}
+
+
+.encabezado-restaurante {
+
     background: #f0fdf4;
+
+    padding: 15px;
+
     color: #166534;
 
-    padding: 12px;
-
-    border-radius: 8px;
-
-    margin-bottom: 15px;
-
     font-weight: bold;
+
+    font-size: 18px;
+
 }
+
 
 .producto {
 
@@ -103,36 +142,55 @@ h2 {
 
     align-items: center;
 
-    padding: 15px 0;
+    padding: 15px;
 
     border-bottom: 1px solid #eee;
 
     gap: 15px;
+
 }
+
 
 .producto-info {
+
     flex: 1;
+
 }
+
 
 .producto-info strong {
+
     display: block;
+
     margin-bottom: 5px;
+
 }
+
 
 .producto-info span {
+
     color: #16a34a;
+
     font-weight: bold;
+
 }
 
+
 .controles {
+
     display: flex;
+
     align-items: center;
+
     gap: 8px;
+
 }
+
 
 .controles button {
 
     width: 32px;
+
     height: 32px;
 
     border: none;
@@ -144,7 +202,9 @@ h2 {
     cursor: pointer;
 
     font-weight: bold;
+
 }
+
 
 .controles .eliminar {
 
@@ -153,7 +213,26 @@ h2 {
     background: white;
 
     font-size: 18px;
+
 }
+
+
+.subtotal-restaurante {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 15px;
+
+    font-weight: bold;
+
+    background: #fafafa;
+
+}
+
+
+/* TOTAL GENERAL */
 
 .total {
 
@@ -161,12 +240,20 @@ h2 {
 
     justify-content: space-between;
 
-    font-size: 22px;
+    font-size: 23px;
 
     font-weight: bold;
 
     margin-top: 20px;
+
+    padding-top: 20px;
+
+    border-top: 2px solid #ddd;
+
 }
+
+
+/* FORMULARIO */
 
 .form-group {
     margin-bottom: 18px;
@@ -192,12 +279,16 @@ textarea {
     border-radius: 8px;
 
     font-size: 16px;
+
 }
 
 textarea {
     min-height: 90px;
     resize: vertical;
 }
+
+
+/* BOTONES */
 
 .btn {
 
@@ -218,47 +309,109 @@ textarea {
     font-weight: bold;
 
     cursor: pointer;
+
 }
+
 
 .btn:hover {
     background: #16a34a;
 }
 
+
 .vacio {
+
     text-align: center;
+
     padding: 30px;
+
     color: #666;
+
 }
+
+
+/* ÉXITO */
 
 .exito {
+
     display: none;
+
     text-align: center;
+
     padding: 30px;
+
 }
+
 
 .exito-icon {
+
     font-size: 60px;
+
     margin-bottom: 15px;
+
 }
 
+
 .numero-pedido {
+
     font-size: 24px;
+
     font-weight: bold;
 
     color: #16a34a;
 
     margin: 15px 0;
+
 }
+
+
+.carreras-generadas {
+
+    text-align: left;
+
+    background: #f9fafb;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    margin: 20px 0;
+
+}
+
+
+.carrera-item {
+
+    padding: 12px;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.carrera-item:last-child {
+
+    border-bottom: none;
+
+}
+
 
 .whatsapp {
+
     background: #25D366;
+
     margin-top: 15px;
+
 }
 
+
 .volver {
+
     background: #111827;
+
     margin-top: 10px;
+
 }
+
 
 @media(max-width:600px) {
 
@@ -313,6 +466,31 @@ textarea {
     </h1>
 
 
+    <div
+        class="info-carreras"
+        id="infoCarreras"
+    >
+
+        <strong>
+            🛵 Importante
+        </strong>
+
+        <br>
+
+        Puedes comprar productos de diferentes
+        restaurantes en un mismo pedido.
+
+        <br><br>
+
+        Cada restaurante generará una
+        <strong>carrera de delivery independiente</strong>,
+        por lo que cada pedido podrá ser
+        asignado a un repartidor diferente.
+
+    </div>
+
+
+
     <!-- CARRITO -->
 
     <div
@@ -321,7 +499,7 @@ textarea {
     >
 
         <h2>
-            Productos
+            Tus productos
         </h2>
 
 
@@ -334,7 +512,7 @@ textarea {
         <div class="total">
 
             <span>
-                Total
+                Total general
             </span>
 
             <span>
@@ -455,15 +633,31 @@ textarea {
 
         <div class="numero-pedido">
 
-            Pedido #
+            Pedido general #
+
             <span id="numeroPedido"></span>
 
         </div>
 
 
+        <div class="carreras-generadas">
+
+            <strong>
+                🛵 Carreras de delivery generadas
+            </strong>
+
+            <div id="listaCarreras">
+            </div>
+
+        </div>
+
+
         <p>
-            Ahora puedes enviarlo por WhatsApp
-            a Sobre Ruedas.
+
+            Cada restaurante tendrá una
+            carrera independiente para que
+            podamos asignar un repartidor.
+
         </p>
 
 
@@ -502,6 +696,50 @@ let carrito =
 
 
 
+/*
+========================================
+AGRUPAR PRODUCTOS POR RESTAURANTE
+========================================
+*/
+
+function agruparPorRestaurante() {
+
+    const grupos = {};
+
+
+    carrito.forEach(function(producto) {
+
+        const restaurante =
+            producto.restaurante ||
+            "Restaurante";
+
+
+        if (!grupos[restaurante]) {
+
+            grupos[restaurante] = [];
+
+        }
+
+
+        grupos[restaurante].push(
+            producto
+        );
+
+    });
+
+
+    return grupos;
+
+}
+
+
+
+/*
+========================================
+MOSTRAR CARRITO
+========================================
+*/
+
 function mostrarCarrito() {
 
     const contenedor =
@@ -536,116 +774,186 @@ function mostrarCarrito() {
 
         `;
 
+
         document.getElementById(
             "total"
         ).textContent = "0.00";
 
+
         return;
+
     }
 
 
-    const restaurante =
-        carrito[0].restaurante ||
-        "Restaurante";
+    const grupos =
+        agruparPorRestaurante();
 
 
-    const nombreRestaurante =
-        document.createElement("div");
+    Object.keys(grupos).forEach(
+        function(restaurante) {
 
 
-    nombreRestaurante.className =
-        "restaurante-pedido";
-
-
-    nombreRestaurante.textContent =
-        "🏪 " + restaurante;
-
-
-    contenedor.appendChild(
-        nombreRestaurante
-    );
-
-
-    carrito.forEach(
-        function(producto, index) {
-
-            const div =
+            const bloque =
                 document.createElement(
                     "div"
                 );
 
 
-            div.className =
-                "producto";
+            bloque.className =
+                "bloque-restaurante";
 
 
-            const subtotal =
-                producto.precio *
-                producto.cantidad;
+            const encabezado =
+                document.createElement(
+                    "div"
+                );
 
 
-            div.innerHTML = `
-
-                <div class="producto-info">
-
-                    <strong>
-                        ${producto.nombre}
-                    </strong>
-
-                    <span>
-                        $${producto.precio.toFixed(2)}
-                    </span>
-
-                </div>
+            encabezado.className =
+                "encabezado-restaurante";
 
 
-                <div class="controles">
-
-                    <button
-                        onclick="cambiarCantidad(
-                            ${index},
-                            -1
-                        )"
-                    >
-                        −
-                    </button>
-
-                    <strong>
-                        ${producto.cantidad}
-                    </strong>
-
-                    <button
-                        onclick="cambiarCantidad(
-                            ${index},
-                            1
-                        )"
-                    >
-                        +
-                    </button>
-
-                    <button
-                        class="eliminar"
-                        onclick="eliminarProducto(
-                            ${index}
-                        )"
-                    >
-                        ✕
-                    </button>
-
-                </div>
+            encabezado.innerHTML =
+                "🏪 " + restaurante;
 
 
-                <div>
+            bloque.appendChild(
+                encabezado
+            );
 
+
+            let subtotal =
+                0;
+
+
+            grupos[restaurante]
+            .forEach(function(producto) {
+
+
+                const index =
+                    carrito.indexOf(
+                        producto
+                    );
+
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "producto";
+
+
+                const valor =
+                    producto.precio *
+                    producto.cantidad;
+
+
+                subtotal += valor;
+
+
+                div.innerHTML = `
+
+                    <div class="producto-info">
+
+                        <strong>
+                            ${producto.nombre}
+                        </strong>
+
+                        <span>
+                            $${producto.precio.toFixed(2)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="controles">
+
+                        <button
+                            onclick="cambiarCantidad(
+                                ${index},
+                                -1
+                            )"
+                        >
+                            −
+                        </button>
+
+
+                        <strong>
+                            ${producto.cantidad}
+                        </strong>
+
+
+                        <button
+                            onclick="cambiarCantidad(
+                                ${index},
+                                1
+                            )"
+                        >
+                            +
+                        </button>
+
+
+                        <button
+                            class="eliminar"
+                            onclick="eliminarProducto(
+                                ${index}
+                            )"
+                        >
+                            ✕
+                        </button>
+
+                    </div>
+
+
+                    <div>
+
+                        $${valor.toFixed(2)}
+
+                    </div>
+
+                `;
+
+
+                bloque.appendChild(
+                    div
+                );
+
+            });
+
+
+            const subtotalDiv =
+                document.createElement(
+                    "div"
+                );
+
+
+            subtotalDiv.className =
+                "subtotal-restaurante";
+
+
+            subtotalDiv.innerHTML = `
+
+                <span>
+                    Subtotal ${restaurante}
+                </span>
+
+                <span>
                     $${subtotal.toFixed(2)}
-
-                </div>
+                </span>
 
             `;
 
 
+            bloque.appendChild(
+                subtotalDiv
+            );
+
+
             contenedor.appendChild(
-                div
+                bloque
             );
 
         }
@@ -657,6 +965,12 @@ function mostrarCarrito() {
 }
 
 
+
+/*
+========================================
+CAMBIAR CANTIDAD
+========================================
+*/
 
 function cambiarCantidad(
     index,
@@ -684,6 +998,12 @@ function cambiarCantidad(
 
 
 
+/*
+========================================
+ELIMINAR PRODUCTO
+========================================
+*/
+
 function eliminarProducto(index) {
 
     carrito.splice(index, 1);
@@ -696,6 +1016,12 @@ function eliminarProducto(index) {
 
 
 
+/*
+========================================
+GUARDAR
+========================================
+*/
+
 function guardar() {
 
     localStorage.setItem(
@@ -706,6 +1032,12 @@ function guardar() {
 }
 
 
+
+/*
+========================================
+CALCULAR TOTAL
+========================================
+*/
 
 function calcularTotal() {
 
@@ -735,6 +1067,12 @@ function calcularTotal() {
 
 
 
+/*
+========================================
+CONFIRMAR PEDIDO
+========================================
+*/
+
 function confirmarPedido() {
 
     if (carrito.length === 0) {
@@ -744,6 +1082,7 @@ function confirmarPedido() {
         );
 
         return;
+
     }
 
 
@@ -782,6 +1121,7 @@ function confirmarPedido() {
         );
 
         return;
+
     }
 
 
@@ -789,39 +1129,118 @@ function confirmarPedido() {
         calcularTotal();
 
 
-    const restaurante =
-        carrito[0].restaurante ||
-        "Restaurante";
+    const grupos =
+        agruparPorRestaurante();
 
 
-    const numero =
+    const numeroGeneral =
         "SR-" +
         Date.now()
         .toString()
         .slice(-6);
 
 
+    /*
+    ====================================
+    CREAR UNA CARRERA POR RESTAURANTE
+    ====================================
+    */
+
+    const carreras = [];
+
+
+    let numeroCarrera = 1;
+
+
+    Object.keys(grupos)
+    .forEach(function(restaurante) {
+
+
+        let subtotal =
+            0;
+
+
+        grupos[restaurante]
+        .forEach(function(producto) {
+
+            subtotal +=
+                producto.precio *
+                producto.cantidad;
+
+        });
+
+
+        const carrera = {
+
+            id:
+                numeroGeneral +
+                "-C" +
+                numeroCarrera,
+
+            restaurante:
+                restaurante,
+
+            productos:
+                grupos[restaurante],
+
+            subtotal:
+                subtotal,
+
+            estado:
+                "Pendiente de asignación",
+
+            repartidor:
+                null
+
+        };
+
+
+        carreras.push(
+            carrera
+        );
+
+
+        numeroCarrera++;
+
+    });
+
+
+
+    /*
+    ====================================
+    PEDIDO GENERAL
+    ====================================
+    */
+
     const pedido = {
 
-        numero: numero,
-
-        restaurante: restaurante,
+        numero:
+            numeroGeneral,
 
         cliente: {
 
-            nombre: nombre,
+            nombre:
+                nombre,
 
-            telefono: telefono,
+            telefono:
+                telefono,
 
-            direccion: direccion,
+            direccion:
+                direccion,
 
-            referencia: referencia
+            referencia:
+                referencia
 
         },
 
-        productos: carrito,
+        total:
+            total,
 
-        total: total,
+        cantidadCarreras:
+            carreras.length,
+
+        carreras:
+            carreras,
 
         fecha:
             new Date()
@@ -830,16 +1249,80 @@ function confirmarPedido() {
     };
 
 
+    /*
+    Guardamos el pedido completo
+    */
+
     localStorage.setItem(
         "ultimoPedido",
         JSON.stringify(pedido)
     );
 
 
+    /*
+    ====================================
+    MOSTRAR RESULTADO
+    ====================================
+    */
+
     document.getElementById(
         "numeroPedido"
     ).textContent =
-        numero;
+        numeroGeneral;
+
+
+    const lista =
+        document.getElementById(
+            "listaCarreras"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    carreras.forEach(
+        function(carrera) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "carrera-item";
+
+
+            div.innerHTML = `
+
+                <strong>
+                    🛵 ${carrera.id}
+                </strong>
+
+                <br>
+
+                🏪 ${carrera.restaurante}
+
+                <br>
+
+                💰 $${carrera.subtotal.toFixed(2)}
+
+                <br>
+
+                <small>
+                    Estado:
+                    ${carrera.estado}
+                </small>
+
+            `;
+
+
+            lista.appendChild(
+                div
+            );
+
+        }
+    );
 
 
     document.getElementById(
@@ -855,13 +1338,36 @@ function confirmarPedido() {
 
 
     document.getElementById(
+        "infoCarreras"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
         "exito"
     ).style.display =
         "block";
 
+
+
+    /*
+    Vaciar carrito después
+    de generar el pedido.
+    */
+
+    localStorage.removeItem(
+        "carrito"
+    );
+
 }
 
 
+
+/*
+========================================
+WHATSAPP
+========================================
+*/
 
 function enviarWhatsApp() {
 
@@ -874,7 +1380,13 @@ function enviarWhatsApp() {
 
 
     if (!pedido) {
+
+        alert(
+            "No se encontró el pedido."
+        );
+
         return;
+
     }
 
 
@@ -883,15 +1395,9 @@ function enviarWhatsApp() {
 
 
     mensaje +=
-        "🛵 PEDIDO " +
+        "🛵 PEDIDO GENERAL " +
         pedido.numero +
         "%0A%0A";
-
-
-    mensaje +=
-        "🏪 Restaurante: " +
-        pedido.restaurante +
-        "%0A";
 
 
     mensaje +=
@@ -925,30 +1431,68 @@ function enviarWhatsApp() {
 
 
     mensaje +=
-        "%0A🍔 PRODUCTOS%0A";
+        "%0A";
 
 
-    pedido.productos.forEach(
-        function(producto) {
+    mensaje +=
+        "🛵 CARRERAS DE DELIVERY: " +
+        pedido.carreras.length +
+        "%0A%0A";
+
+
+    pedido.carreras.forEach(
+        function(carrera, i) {
+
 
             mensaje +=
 
-                producto.cantidad +
-                " x " +
-                producto.nombre +
-                " - $" +
-                (
-                    producto.precio *
-                    producto.cantidad
-                ).toFixed(2) +
+                "🛵 CARRERA " +
+                (i + 1) +
+                " - " +
+                carrera.id +
                 "%0A";
+
+
+            mensaje +=
+
+                "🏪 " +
+                carrera.restaurante +
+                "%0A";
+
+
+            carrera.productos
+            .forEach(
+                function(producto) {
+
+                    mensaje +=
+
+                        producto.cantidad +
+                        " x " +
+                        producto.nombre +
+                        " - $" +
+                        (
+                            producto.precio *
+                            producto.cantidad
+                        ).toFixed(2) +
+                        "%0A";
+
+                }
+            );
+
+
+            mensaje +=
+
+                "Subtotal: $" +
+                carrera.subtotal.toFixed(2) +
+                "%0A%0A";
 
         }
     );
 
 
     mensaje +=
-        "%0A💰 TOTAL: $" +
+
+        "💰 TOTAL GENERAL: $" +
         pedido.total.toFixed(2);
 
 
