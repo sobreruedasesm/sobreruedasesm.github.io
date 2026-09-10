@@ -102,7 +102,6 @@
         .producto-precio {
             color: #087f5b;
             font-weight: bold;
-            margin-top: 4px;
         }
 
         .carrera-total {
@@ -133,7 +132,7 @@
         }
 
         .ubicacion-box {
-            margin-top: 15px;
+            margin-top: 18px;
             padding: 15px;
             background: #eefbf6;
             border-radius: 10px;
@@ -159,10 +158,6 @@
             margin-top: 10px;
             font-size: 14px;
             color: #475569;
-        }
-
-        .totales {
-            margin-top: 20px;
         }
 
         .fila-total {
@@ -199,31 +194,13 @@
             background: #1ebe5d;
         }
 
-        .mensaje-exito {
-            background: #e9f8f1;
-            border: 1px solid #a7dfc6;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .carrera-resumen {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 10px;
-        }
-
-        .oculto {
-            display: none;
-        }
-
         .vacio {
             text-align: center;
             padding: 40px 20px;
         }
 
         @media (max-width: 600px) {
+
             .header-content {
                 flex-direction: column;
                 align-items: flex-start;
@@ -239,11 +216,24 @@
 <body>
 
 <header>
+
     <div class="header-content">
-        <div class="logo">🛵 Sobre Ruedas</div>
-        <a href="index.html" class="volver">← Seguir comprando</a>
+
+        <div class="logo">
+            🛵 Sobre Ruedas
+        </div>
+
+        <a
+            href="index.html"
+            class="volver"
+        >
+            ← Seguir comprando
+        </a>
+
     </div>
+
 </header>
+
 
 <div class="container">
 
@@ -251,53 +241,77 @@
 
 </div>
 
+
 <script src="config.js"></script>
+
 
 <script>
 
-const TARIFA_DELIVERY =
-    Number(localStorage.getItem("configSobreRuedas")
-        ? JSON.parse(localStorage.getItem("configSobreRuedas")).tarifaDelivery
-        : CONFIG.tarifaDelivery) || 1.50;
-
-const WHATSAPP =
-    CONFIG.whatsappNegocio || "593980390363";
-
 let carrito = JSON.parse(
-    localStorage.getItem("carritoSobreRuedas") || "[]"
+    localStorage.getItem("carrito") || "[]"
 );
 
 let ubicacion = null;
 
-const contenido = document.getElementById("contenidoPedido");
+
+const TARIFA_DELIVERY =
+    Number(
+        localStorage.getItem("configSobreRuedas")
+            ? JSON.parse(
+                localStorage.getItem(
+                    "configSobreRuedas"
+                )
+            ).tarifaDelivery
+            : CONFIG.tarifaDelivery
+    ) || 1.50;
 
 
-// =====================================================
+const WHATSAPP =
+    CONFIG.whatsappNegocio ||
+    "593980390363";
+
+
+const contenido =
+    document.getElementById(
+        "contenidoPedido"
+    );
+
+
+// ========================================
 // UTILIDADES
-// =====================================================
-
-function escapar(texto) {
-    return String(texto ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
+// ========================================
 
 function dinero(valor) {
-    return Number(valor || 0).toFixed(2);
+
+    return Number(
+        valor || 0
+    ).toFixed(2);
+
 }
 
 
-// =====================================================
+function escapar(texto) {
+
+    return String(
+        texto ?? ""
+    )
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+// ========================================
 // NORMALIZAR CARRITO
-// =====================================================
+// ========================================
 
 function normalizarCarrito() {
 
     const mapa = new Map();
+
 
     carrito.forEach(item => {
 
@@ -310,181 +324,308 @@ function normalizarCarrito() {
         const nombre =
             item.nombre ?? "Producto";
 
+
         const clave =
-            restauranteId + "|" +
-            productoId + "|" +
-            nombre;
+            restauranteId +
+            "|" +
+            productoId;
+
 
         if (!mapa.has(clave)) {
 
-            mapa.set(clave, {
-                producto_id: productoId,
-                restaurante_id: restauranteId,
-                restaurante_nombre:
-                    item.restaurante_nombre || "Restaurante",
-                nombre: nombre,
-                descripcion:
-                    item.descripcion || "",
-                precio: Number(item.precio || 0),
-                cantidad: Number(item.cantidad || 1)
-            });
+            mapa.set(
+                clave,
+                {
+                    producto_id:
+                        productoId,
+
+                    restaurante_id:
+                        restauranteId,
+
+                    restaurante_nombre:
+                        item.restaurante_nombre ||
+                        "Restaurante",
+
+                    nombre:
+                        nombre,
+
+                    descripcion:
+                        item.descripcion || "",
+
+                    precio:
+                        Number(
+                            item.precio || 0
+                        ),
+
+                    cantidad:
+                        Number(
+                            item.cantidad || 1
+                        )
+                }
+            );
 
         } else {
 
-            mapa.get(clave).cantidad +=
-                Number(item.cantidad || 1);
+            mapa.get(
+                clave
+            ).cantidad += Number(
+                item.cantidad || 1
+            );
+
         }
+
     });
 
-    carrito = Array.from(mapa.values());
+
+    carrito =
+        Array.from(
+            mapa.values()
+        );
+
 
     localStorage.setItem(
-        "carritoSobreRuedas",
+        "carrito",
         JSON.stringify(carrito)
     );
+
 }
 
 
-// =====================================================
+// ========================================
 // MOSTRAR CARRITO
-// =====================================================
+// ========================================
 
 function mostrarCarrito() {
 
     normalizarCarrito();
 
+
     if (!carrito.length) {
 
         contenido.innerHTML = `
+
             <div class="card vacio">
-                <h2>🛒 Tu carrito está vacío</h2>
-                <p>Agrega productos antes de continuar.</p>
-                <a href="index.html">Volver a restaurantes</a>
+
+                <h2>
+                    🛒 Tu carrito está vacío
+                </h2>
+
+                <p>
+                    Agrega productos antes de continuar.
+                </p>
+
+                <a href="index.html">
+                    Volver a restaurantes
+                </a>
+
             </div>
+
         `;
 
         return;
+
     }
 
+
     const grupos = {};
+
 
     carrito.forEach(item => {
 
         const id =
-            item.restaurante_id || item.restaurante_nombre;
+            item.restaurante_id ||
+            item.restaurante_nombre;
+
 
         if (!grupos[id]) {
+
             grupos[id] = {
-                restaurante_id: item.restaurante_id,
+
+                restaurante_id:
+                    item.restaurante_id,
+
                 restaurante_nombre:
                     item.restaurante_nombre,
+
                 productos: []
+
             };
+
         }
 
-        grupos[id].productos.push(item);
+
+        grupos[id].productos.push(
+            item
+        );
+
     });
 
 
     let totalProductos = 0;
+
     let totalDelivery = 0;
 
+
     let html = `
-        <h1>🛒 Mi pedido</h1>
+
+        <h1>
+            🛒 Mi pedido
+        </h1>
+
         <p class="subtitulo">
             Revisa tus productos antes de confirmar.
         </p>
+
     `;
 
 
-    Object.values(grupos).forEach((grupo, indice) => {
+    Object.values(
+        grupos
+    ).forEach(grupo => {
 
         let subtotal = 0;
 
         let productosHTML = "";
 
-        grupo.productos.forEach(producto => {
 
-            const cantidad =
-                Number(producto.cantidad || 1);
+        grupo.productos.forEach(
+            producto => {
 
-            const precio =
-                Number(producto.precio || 0);
+                const cantidad =
+                    Number(
+                        producto.cantidad || 1
+                    );
 
-            const subtotalProducto =
-                cantidad * precio;
 
-            subtotal += subtotalProducto;
+                const precio =
+                    Number(
+                        producto.precio || 0
+                    );
 
-            productosHTML += `
-                <div class="producto">
 
-                    <div class="producto-info">
+                const subtotalProducto =
+                    cantidad * precio;
 
-                        <div class="producto-nombre">
-                            ${escapar(producto.nombre)}
+
+                subtotal +=
+                    subtotalProducto;
+
+
+                productosHTML += `
+
+                    <div class="producto">
+
+                        <div class="producto-info">
+
+                            <div class="producto-nombre">
+
+                                ${escapar(
+                                    producto.nombre
+                                )}
+
+                            </div>
+
+                            <div>
+                                Cantidad: ${cantidad}
+                            </div>
+
+                            <div>
+                                Precio unitario:
+                                $${dinero(precio)}
+                            </div>
+
                         </div>
 
-                        <div>
-                            Cantidad: ${cantidad}
+
+                        <div class="producto-precio">
+
+                            $${dinero(
+                                subtotalProducto
+                            )}
+
                         </div>
 
                     </div>
 
-                    <div class="producto-precio">
-                        $${dinero(subtotalProducto)}
-                    </div>
+                `;
 
-                </div>
-            `;
-        });
+            }
+        );
 
 
-        const delivery = TARIFA_DELIVERY;
+        const delivery =
+            TARIFA_DELIVERY;
+
 
         const totalCarrera =
-            subtotal + delivery;
+            subtotal +
+            delivery;
 
-        totalProductos += subtotal;
-        totalDelivery += delivery;
+
+        totalProductos +=
+            subtotal;
+
+
+        totalDelivery +=
+            delivery;
 
 
         html += `
+
             <div class="card restaurante">
 
                 <h2>
-                    🏪 ${escapar(
+
+                    🏪
+                    ${escapar(
                         grupo.restaurante_nombre
                     )}
+
                 </h2>
+
 
                 ${productosHTML}
 
+
                 <div class="carrera-total">
-                    Subtotal: $${dinero(subtotal)}
+
+                    Subtotal:
+                    $${dinero(subtotal)}
+
                     <br>
-                    Delivery: $${dinero(delivery)}
+
+                    Delivery:
+                    $${dinero(delivery)}
+
                     <br>
+
                     Total carrera:
                     $${dinero(totalCarrera)}
+
                 </div>
 
             </div>
+
         `;
+
     });
 
 
     const totalGeneral =
-        totalProductos + totalDelivery;
+        totalProductos +
+        totalDelivery;
 
 
     html += `
 
         <div class="card">
 
-            <h2>📋 Datos de entrega</h2>
+            <h2>
+                📋 Datos de entrega
+            </h2>
 
-            <label for="clienteNombre">
+
+            <label>
                 Nombre
             </label>
 
@@ -495,7 +636,7 @@ function mostrarCarrito() {
             >
 
 
-            <label for="clienteTelefono">
+            <label>
                 Teléfono
             </label>
 
@@ -506,26 +647,28 @@ function mostrarCarrito() {
             >
 
 
-            <label for="clienteDireccion">
+            <label>
                 Dirección
             </label>
 
             <textarea
                 id="clienteDireccion"
-                placeholder="Ej: Calle principal, número de casa, sector..."
+                placeholder="Ej: Calle, número de casa, sector..."
             ></textarea>
 
 
             <div class="ubicacion-box">
 
                 <strong>
-                    📍 ¿Estás en el lugar donde recibirás el pedido?
+                    📍 Comparte tu ubicación
                 </strong>
 
                 <p>
-                    Puedes compartir tu ubicación para que el
-                    repartidor encuentre más fácilmente tu dirección.
+                    Si estás en el lugar donde recibirás
+                    el pedido, puedes compartir tu ubicación
+                    para facilitar la entrega.
                 </p>
+
 
                 <button
                     type="button"
@@ -535,14 +678,17 @@ function mostrarCarrito() {
                     📍 Usar mi ubicación
                 </button>
 
+
                 <div id="estadoUbicacion">
+
                     No se ha compartido ubicación.
+
                 </div>
 
             </div>
 
 
-            <label for="clienteReferencia">
+            <label>
                 Referencia
             </label>
 
@@ -556,38 +702,57 @@ function mostrarCarrito() {
 
         <div class="card">
 
-            <h2>💰 Resumen</h2>
+            <h2>
+                💰 Resumen
+            </h2>
 
-            <div class="totales">
 
-                <div class="fila-total">
-                    <span>Total productos</span>
-                    <strong>
-                        $${dinero(totalProductos)}
-                    </strong>
-                </div>
+            <div class="fila-total">
 
-                <div class="fila-total">
-                    <span>Delivery</span>
-                    <strong>
-                        $${dinero(totalDelivery)}
-                    </strong>
-                </div>
+                <span>
+                    Total productos
+                </span>
 
-                <div class="fila-total total-final">
-                    <span>Total</span>
-                    <strong>
-                        $${dinero(totalGeneral)}
-                    </strong>
-                </div>
+                <strong>
+                    $${dinero(totalProductos)}
+                </strong>
 
             </div>
+
+
+            <div class="fila-total">
+
+                <span>
+                    Delivery
+                </span>
+
+                <strong>
+                    $${dinero(totalDelivery)}
+                </strong>
+
+            </div>
+
+
+            <div class="fila-total total-final">
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    $${dinero(totalGeneral)}
+                </strong>
+
+            </div>
+
 
             <button
                 class="btn-whatsapp"
                 onclick="enviarPedidoWhatsApp()"
             >
+
                 📲 Enviar pedido por WhatsApp
+
             </button>
 
         </div>
@@ -595,18 +760,23 @@ function mostrarCarrito() {
     `;
 
 
-    contenido.innerHTML = html;
+    contenido.innerHTML =
+        html;
+
 }
 
 
-// =====================================================
-// OBTENER UBICACIÓN
-// =====================================================
+// ========================================
+// UBICACIÓN
+// ========================================
 
 function obtenerUbicacion() {
 
     const estado =
-        document.getElementById("estadoUbicacion");
+        document.getElementById(
+            "estadoUbicacion"
+        );
+
 
     if (!navigator.geolocation) {
 
@@ -614,11 +784,12 @@ function obtenerUbicacion() {
             "❌ Tu navegador no permite obtener ubicación.";
 
         return;
+
     }
 
 
     estado.innerHTML =
-        "📍 Obteniendo tu ubicación...";
+        "📍 Obteniendo ubicación...";
 
 
     navigator.geolocation.getCurrentPosition(
@@ -628,55 +799,70 @@ function obtenerUbicacion() {
             const lat =
                 position.coords.latitude;
 
+
             const lon =
                 position.coords.longitude;
 
 
             ubicacion = {
+
                 lat: lat,
+
                 lon: lon
+
             };
 
 
-            const mapa =
-                `https://www.google.com/maps?q=${lat},${lon}`;
-
-
             estado.innerHTML = `
-                ✅ Ubicación obtenida correctamente.
+
+                ✅ Ubicación obtenida.
+
                 <br>
+
                 <a
-                    href="${mapa}"
+                    href="https://www.google.com/maps?q=${lat},${lon}"
                     target="_blank"
                 >
                     Ver ubicación en Google Maps
                 </a>
+
             `;
 
         },
+
 
         function(error) {
 
             console.error(error);
 
+
             estado.innerHTML =
+
                 "❌ No se pudo obtener la ubicación. " +
-                "Puedes escribir tu dirección manualmente.";
+
+                "Puedes escribir la dirección manualmente.";
 
         },
 
+
         {
+
             enableHighAccuracy: true,
+
             timeout: 10000,
+
             maximumAge: 0
+
         }
+
     );
+
 }
 
 
-// =====================================================
-// CREAR NÚMERO DE PEDIDO
-// =====================================================
+// ========================================
+// NÚMERO DE PEDIDO
+// ========================================
 
 function generarNumeroPedido() {
 
@@ -686,65 +872,84 @@ function generarNumeroPedido() {
             Math.random() * 900000
         );
 
+
     return "SR-" + numero;
+
 }
 
 
-// =====================================================
-// ENVIAR A WHATSAPP
-// =====================================================
+// ========================================
+// ENVIAR WHATSAPP
+// ========================================
 
 function enviarPedidoWhatsApp() {
 
     if (!carrito.length) {
 
-        alert("Tu carrito está vacío.");
+        alert(
+            "Tu carrito está vacío."
+        );
 
         return;
+
     }
 
 
     const nombre =
         document
-            .getElementById("clienteNombre")
+            .getElementById(
+                "clienteNombre"
+            )
             .value
             .trim();
 
 
     const telefono =
         document
-            .getElementById("clienteTelefono")
+            .getElementById(
+                "clienteTelefono"
+            )
             .value
             .trim();
 
 
     const direccion =
         document
-            .getElementById("clienteDireccion")
+            .getElementById(
+                "clienteDireccion"
+            )
             .value
             .trim();
 
 
     const referencia =
         document
-            .getElementById("clienteReferencia")
+            .getElementById(
+                "clienteReferencia"
+            )
             .value
             .trim();
 
 
     if (!nombre) {
 
-        alert("Ingresa tu nombre.");
+        alert(
+            "Ingresa tu nombre."
+        );
 
         return;
+
     }
 
 
     if (!telefono) {
 
-        alert("Ingresa tu teléfono.");
+        alert(
+            "Ingresa tu teléfono."
+        );
 
         return;
+
     }
 
 
@@ -755,6 +960,7 @@ function enviarPedidoWhatsApp() {
         );
 
         return;
+
     }
 
 
@@ -764,71 +970,113 @@ function enviarPedidoWhatsApp() {
 
     const grupos = {};
 
+
     carrito.forEach(item => {
 
         const id =
             item.restaurante_id ||
             item.restaurante_nombre;
 
+
         if (!grupos[id]) {
 
             grupos[id] = {
+
                 restaurante_nombre:
                     item.restaurante_nombre,
+
                 productos: []
+
             };
+
         }
 
-        grupos[id].productos.push(item);
+
+        grupos[id].productos.push(
+            item
+        );
+
     });
 
 
     let totalProductos = 0;
+
     let totalDelivery = 0;
 
 
     let mensaje = "";
 
-    mensaje += "🛵 *SOBRE RUEDAS*";
+
+    mensaje +=
+        "🛵 *SOBRE RUEDAS*";
+
+
     mensaje += "\n";
-    mensaje += "📦 *PEDIDO: " +
-        numeroPedido;
+
+
+    mensaje +=
+        "📦 *PEDIDO: " +
+        numeroPedido +
+        "*";
+
+
     mensaje += "\n\n";
 
 
-    mensaje += "👤 *Cliente:* " +
+    mensaje +=
+        "👤 *Cliente:* " +
         nombre;
+
+
     mensaje += "\n";
 
-    mensaje += "📱 *Teléfono:* " +
+
+    mensaje +=
+        "📱 *Teléfono:* " +
         telefono;
+
+
     mensaje += "\n";
 
 
     if (direccion) {
 
-        mensaje += "📍 *Dirección:* " +
+        mensaje +=
+            "📍 *Dirección:* " +
             direccion;
+
         mensaje += "\n";
+
     }
 
 
     if (referencia) {
 
-        mensaje += "📌 *Referencia:* " +
+        mensaje +=
+            "📌 *Referencia:* " +
             referencia;
+
         mensaje += "\n";
+
     }
 
 
     if (ubicacion) {
 
         const mapa =
-            `https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lon}`;
+            "https://www.google.com/maps?q=" +
+            ubicacion.lat +
+            "," +
+            ubicacion.lon;
 
-        mensaje += "🗺️ *Ubicación:* " +
+
+        mensaje +=
+            "🗺️ *Ubicación:* " +
             mapa;
+
+
         mensaje += "\n";
+
     }
 
 
@@ -838,7 +1086,9 @@ function enviarPedidoWhatsApp() {
     let contadorCarrera = 0;
 
 
-    Object.values(grupos).forEach(grupo => {
+    Object.values(
+        grupos
+    ).forEach(grupo => {
 
         contadorCarrera++;
 
@@ -850,50 +1100,73 @@ function enviarPedidoWhatsApp() {
             "🏪 *CARRERA " +
             contadorCarrera +
             "*";
+
+
         mensaje += "\n";
+
 
         mensaje +=
             "*" +
             grupo.restaurante_nombre +
             "*";
+
+
         mensaje += "\n";
 
 
-        grupo.productos.forEach(producto => {
+        grupo.productos.forEach(
+            producto => {
 
-            const cantidad =
-                Number(producto.cantidad || 1);
+                const cantidad =
+                    Number(
+                        producto.cantidad || 1
+                    );
 
-            const precio =
-                Number(producto.precio || 0);
 
-            const subtotalProducto =
-                cantidad * precio;
+                const precio =
+                    Number(
+                        producto.precio || 0
+                    );
 
-            subtotal +=
-                subtotalProducto;
 
-            mensaje +=
-                "• " +
-                producto.nombre +
-                " x" +
-                cantidad +
-                " — $" +
-                dinero(subtotalProducto);
+                const subtotalProducto =
+                    cantidad *
+                    precio;
 
-            mensaje += "\n";
-        });
+
+                subtotal +=
+                    subtotalProducto;
+
+
+                mensaje +=
+                    "• " +
+                    producto.nombre +
+                    " x" +
+                    cantidad +
+                    " — $" +
+                    dinero(
+                        subtotalProducto
+                    );
+
+
+                mensaje += "\n";
+
+            }
+        );
 
 
         const delivery =
             TARIFA_DELIVERY;
 
+
         const totalCarrera =
-            subtotal + delivery;
+            subtotal +
+            delivery;
 
 
         totalProductos +=
             subtotal;
+
 
         totalDelivery +=
             delivery;
@@ -903,11 +1176,14 @@ function enviarPedidoWhatsApp() {
             "🛵 Delivery: $" +
             dinero(delivery);
 
+
         mensaje += "\n";
+
 
         mensaje +=
             "💰 Total carrera: $" +
             dinero(totalCarrera);
+
 
         mensaje += "\n\n";
 
@@ -923,12 +1199,14 @@ function enviarPedidoWhatsApp() {
         "🧾 *TOTAL PRODUCTOS:* $" +
         dinero(totalProductos);
 
+
     mensaje += "\n";
 
 
     mensaje +=
         "🛵 *TOTAL DELIVERY:* $" +
         dinero(totalDelivery);
+
 
     mensaje += "\n";
 
@@ -938,25 +1216,38 @@ function enviarPedidoWhatsApp() {
         dinero(total) +
         "*";
 
+
     mensaje += "\n\n";
+
 
     mensaje +=
         "Pedido generado desde Sobre Ruedas.";
 
 
-    // Guardar temporalmente
+    // Guardar pedido localmente
     const pedido = {
 
-        numero: numeroPedido,
+        numero:
+            numeroPedido,
 
         cliente: {
-            nombre: nombre,
-            telefono: telefono,
-            direccion: direccion,
-            referencia: referencia
+
+            nombre:
+                nombre,
+
+            telefono:
+                telefono,
+
+            direccion:
+                direccion,
+
+            referencia:
+                referencia
+
         },
 
-        ubicacion: ubicacion,
+        ubicacion:
+            ubicacion,
 
         total_productos:
             totalProductos,
@@ -964,19 +1255,25 @@ function enviarPedidoWhatsApp() {
         total_delivery:
             totalDelivery,
 
-        total: total,
+        total:
+            total,
 
         carreras:
-            Object.values(grupos),
+            Object.values(
+                grupos
+            ),
 
         creado_en:
             new Date().toISOString()
+
     };
 
 
     localStorage.setItem(
         "ultimoPedido",
-        JSON.stringify(pedido)
+        JSON.stringify(
+            pedido
+        )
     );
 
 
@@ -985,19 +1282,20 @@ function enviarPedidoWhatsApp() {
         "https://wa.me/" +
         WHATSAPP +
         "?text=" +
-        encodeURIComponent(mensaje);
+        encodeURIComponent(
+            mensaje
+        );
 
 
-    window.open(
-        url,
-        "_blank"
-    );
+    window.location.href =
+        url;
+
 }
 
 
-// =====================================================
+// ========================================
 // INICIO
-// =====================================================
+// ========================================
 
 mostrarCarrito();
 
