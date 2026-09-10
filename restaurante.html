@@ -629,34 +629,14 @@ function agregarProducto(
 
 
     /*
-    Evitamos mezclar restaurantes
-    dentro del mismo pedido.
+    IMPORTANTE:
+
+    Ya NO bloqueamos la compra
+    cuando existe otro restaurante.
+
+    Cada producto conserva
+    el nombre de su restaurante.
     */
-
-    if (
-        carrito.length > 0 &&
-        carrito[0].restaurante !== restaurante
-    ) {
-
-        let confirmar =
-            confirm(
-                "Tu carrito contiene productos de " +
-                carrito[0].restaurante +
-                ".\n\n" +
-                "¿Quieres vaciarlo y pedir en " +
-                restaurante +
-                "?"
-            );
-
-
-        if (!confirmar) {
-            return;
-        }
-
-
-        carrito = [];
-
-    }
 
 
     let existente =
@@ -735,6 +715,10 @@ function mostrarMensaje() {
 
     const mensaje =
         document.getElementById("mensaje");
+
+
+    mensaje.textContent =
+        "Producto agregado al pedido ✅";
 
 
     mensaje.style.display = "block";
