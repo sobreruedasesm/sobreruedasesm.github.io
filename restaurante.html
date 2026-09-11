@@ -4,1403 +4,151 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Local | Sobre Ruedas</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-
 <style>
-*{
- box-sizing:border-box;
-}
-
-:root{
- --rojo:#d62828;
- --rojo-dark:#b51f1f;
- --verde:#198754;
- --azul:#1261a0;
- --amarillo:#f4c542;
- --negro:#171717;
- --blanco:#fff;
- --gris:#f4f5f7;
- --gris2:#e5e7eb;
- --muted:#5f6670;
-}
-
-body{
- margin:0;
- background:var(--gris);
- color:var(--negro);
- font-family:Arial,Helvetica,sans-serif;
-}
-
-.header{
- background:var(--negro);
- color:#fff;
- padding:13px 16px;
- position:sticky;
- top:0;
- z-index:20;
-}
-
-.header-inner{
- max-width:1100px;
- margin:auto;
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:12px;
-}
-
-.brand{
- font-size:20px;
- font-weight:800;
-}
-
-.cart{
- color:#fff;
- text-decoration:none;
- background:var(--rojo);
- padding:9px 12px;
- border-radius:8px;
- font-weight:700;
-}
-
-.wrap{
- max-width:1100px;
- margin:auto;
- padding:15px;
-}
-
-.banner{
- width:100%;
- height:280px;
- object-fit:cover;
- border-radius:14px;
- background:#ddd;
-}
-
-.no-banner{
- height:180px;
- border-radius:14px;
- background:linear-gradient(135deg,var(--rojo),var(--azul));
- display:flex;
- align-items:center;
- justify-content:center;
- color:#fff;
- font-size:30px;
- font-weight:800;
- text-align:center;
- padding:20px;
-}
-
-.info{
- background:#fff;
- border-radius:14px;
- padding:18px;
- margin-top:12px;
- border:1px solid var(--gris2);
-}
-
-.title{
- font-size:28px;
- font-weight:800;
- margin-bottom:5px;
-}
-
-.category{
- color:var(--azul);
- font-weight:700;
-}
-
-.description{
- color:var(--muted);
- margin-top:10px;
- line-height:1.5;
-}
-
-.status{
- margin-top:14px;
- font-weight:800;
- font-size:16px;
-}
-
-.status.open{
- color:var(--verde);
-}
-
-.status.closed{
- color:var(--rojo);
-}
-
-.hours{
- margin-top:8px;
- color:var(--muted);
- font-size:14px;
-}
-
-.closed-message{
- display:none;
- margin-top:14px;
- padding:12px 14px;
- border-radius:10px;
- background:#fee2e2;
- color:#991b1b;
- font-weight:700;
-}
-
-.closed-message.show{
- display:block;
-}
-
-.products{
- display:grid;
- grid-template-columns:repeat(2,minmax(0,1fr));
- gap:14px;
- margin-top:18px;
-}
-
-.product{
- background:#fff;
- border:1px solid var(--gris2);
- border-radius:12px;
- overflow:hidden;
- display:flex;
- flex-direction:column;
-}
-
-.product.closed-product{
- opacity:.72;
-}
-
-.product-image{
- width:100%;
- height:180px;
- object-fit:cover;
- background:#eee;
-}
-
-.product-no-image{
- width:100%;
- height:180px;
- background:#e5e7eb;
- display:flex;
- align-items:center;
- justify-content:center;
- color:#888;
- font-size:14px;
-}
-
-.product-body{
- padding:14px;
- display:flex;
- flex-direction:column;
- flex:1;
-}
-
-.product-name{
- font-weight:800;
- font-size:18px;
-}
-
-.product-description{
- color:var(--muted);
- font-size:14px;
- line-height:1.4;
- margin-top:6px;
- flex:1;
-}
-
-.product-bottom{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:10px;
- margin-top:14px;
-}
-
-.price{
- font-weight:800;
- font-size:18px;
- color:var(--rojo);
-}
-
-.add{
- border:0;
- background:var(--rojo);
- color:#fff;
- padding:9px 12px;
- border-radius:8px;
- font-weight:700;
- cursor:pointer;
-}
-
-.add:hover{
- background:var(--rojo-dark);
-}
-
-.add:disabled{
- background:#9ca3af;
- cursor:not-allowed;
-}
-
-.closed-label{
- color:var(--rojo);
- font-size:13px;
- font-weight:800;
-}
-
-.empty{
- background:#fff;
- border-radius:12px;
- padding:25px;
- text-align:center;
- color:var(--muted);
- margin-top:18px;
-}
-
-.back{
- display:inline-block;
- margin-bottom:12px;
- color:var(--azul);
- text-decoration:none;
- font-weight:700;
-}
-
-.error{
- background:#fff0ef;
- color:var(--rojo-dark);
- border:1px solid #f2c5c1;
- border-radius:10px;
- padding:15px;
- margin-top:15px;
-}
-
-@media(max-width:700px){
-
- .banner{
-  height:210px;
- }
-
- .products{
-  grid-template-columns:1fr;
- }
-
- .title{
-  font-size:24px;
- }
-
-}
-
-@media(max-width:430px){
-
- .product-image,
- .product-no-image{
-  height:160px;
- }
-
-}
+*{box-sizing:border-box}
+body{margin:0;background:#f5f5f5;color:#222;font-family:Arial,sans-serif}
+header{background:#111;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-size:20px;font-weight:bold}.logo span{color:#e53935}
+.back{color:#fff;text-decoration:none}.cart{background:#e53935;color:#fff;text-decoration:none;padding:9px 13px;border-radius:9px;font-weight:bold}
+main{max-width:900px;margin:auto;padding:15px}
+.banner{height:240px;background:#ddd;border-radius:16px;overflow:hidden}.banner img{width:100%;height:100%;object-fit:cover}
+.info{background:#fff;margin-top:12px;padding:18px;border-radius:15px}
+.categoria{color:#e53935;font-size:13px;font-weight:bold}.info h1{margin:5px 0}.desc{color:#666}
+.estado{display:inline-block;margin-top:8px;padding:7px 12px;border-radius:20px;background:#159447;color:#fff;font-size:13px;font-weight:bold}.estado.cerrado{background:#777}
+.cerradoBox{margin-top:12px;background:#eee;padding:13px;border-radius:10px}
+.productos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:15px}
+.producto{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 8px #0001}
+.prodimg{height:150px;background:#eee}.prodimg img{width:100%;height:100%;object-fit:cover}
+.pinfo{padding:14px}.pinfo h3{margin:0 0 5px}.pdesc{font-size:14px;color:#666;min-height:34px}.precio{font-size:18px;font-weight:bold;margin:10px 0}
+.btn{width:100%;border:0;border-radius:9px;padding:11px;background:#e53935;color:#fff;font-weight:bold;cursor:pointer}.btn:disabled{background:#aaa;cursor:not-allowed}
+.vacio{text-align:center;background:#fff;padding:25px;border-radius:14px;color:#777}
 </style>
 </head>
-
 <body>
-
-<header class="header">
-
- <div class="header-inner">
-
-  <div class="brand">
-   Sobre Ruedas
-  </div>
-
-  <a href="menu.html" class="cart">
-   🛒 Carrito <span id="cartCount">0</span>
-  </a>
-
- </div>
-
+<header>
+<a class="back" href="index.html">← Volver</a>
+<div class="logo">Sobre <span>Ruedas</span></div>
+<a class="cart" href="menu.html">🛒 <span id="cartCount">0</span></a>
 </header>
 
-<main class="wrap">
-
- <a href="index.html" class="back">
-  ← Volver a locales
- </a>
-
- <div id="contenido"></div>
-
+<main id="app">
+<div class="vacio">Cargando...</div>
 </main>
 
 <script>
+const restauranteId=Number(new URLSearchParams(location.search).get("id"));
+let restaurante=null,productos=[],horarios=[],localAbierto=true;
 
-const params=new URLSearchParams(location.search);
-const restauranteId=Number(params.get("id"));
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 
-let restaurante=null;
-let productos=[];
-let horarios=[];
-let localAbierto=false;
+function obtenerCarrito(){
+ try{return JSON.parse(sessionStorage.getItem("carrito")||"[]")}
+ catch{return[]}
+}
+function guardarCarrito(c){sessionStorage.setItem("carrito",JSON.stringify(c));actualizarCarrito()}
+function actualizarCarrito(){$("cartCount").textContent=obtenerCarrito().reduce((a,x)=>a+(+x.cantidad||0),0)}
 
+const DIAS_NOMBRES=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
-/* =====================================================
-   INICIO
-===================================================== */
-
-document.addEventListener("DOMContentLoaded",async()=>{
-
- actualizarCarrito();
-
- await cargarLocal();
-
-});
-
-
-/* =====================================================
-   CARGAR LOCAL
-===================================================== */
+function horaEcuador(){
+ return new Intl.DateTimeFormat("en-GB",{timeZone:"America/Guayaquil",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());
+}
+function ahoraDia(){
+ return new Date(new Date().toLocaleString("en-US",{timeZone:"America/Guayaquil"})).getDay();
+}
+function obtenerEstadoLocal(){
+ if(!horarios.length)return{abierto:true,texto:"Abierto"};
+ const dia=ahoraDia(),min=(()=>{const [h,m]=horaEcuador().split(":").map(Number);return h*60+m})();
+ const h=horarios.find(x=>x.dia_semana===dia);
+ if(!h||h.cerrado)return{abierto:false,texto:"Cerrado hoy"};
+ if(h.hora_apertura==="00:00:00"&&h.hora_cierre==="23:59:00")return{abierto:true,texto:"Abierto"};
+ if(!h.hora_apertura||!h.hora_cierre)return{abierto:false,texto:"Cerrado"};
+ const [ah,am]=h.hora_apertura.slice(0,5).split(":").map(Number);
+ const [ch,cm]=h.hora_cierre.slice(0,5).split(":").map(Number);
+ const a=ah*60+am,c=ch*60+cm;
+ const ok=a<=c?min>=a&&min<=c:min>=a||min<=c;
+ return{abierto:ok,texto:ok?"Abierto":`Cerrado · ${h.hora_apertura.slice(0,5)}–${h.hora_cierre.slice(0,5)}`};
+}
 
 async function cargarLocal(){
-
- if(!restauranteId){
-
-  mostrarError(
-   "No se especificó el local."
-  );
-
-  return;
-
- }
-
  try{
+  if(!restauranteId)throw Error("Local no válido");
+  const r=await supabaseClient.from("restaurantes").select("*").eq("id",restauranteId).eq("activo",true).single();
+  if(r.error)throw r.error;
+  restaurante=r.data;
 
-  const {
-   data,
-   error
-  }=await supabaseClient
-   .from("restaurantes")
-   .select("*")
-   .eq("id",restauranteId)
-   .eq("activo",true)
-   .maybeSingle();
-
-  if(error)
-   throw error;
-
-  if(!data){
-
-   mostrarError(
-    "Este local no está disponible."
-   );
-
-   return;
-
-  }
-
-  restaurante=data;
-
-
-  const [
-   {data:prods,error:e2},
-   {data:hrs,error:e3}
-  ]=await Promise.all([
-
-   supabaseClient
-    .from("productos")
-    .select("*")
-    .eq("restaurante_id",restauranteId)
-    .eq("activo",true)
-    .order("id"),
-
-   supabaseClient
-    .from("horarios_restaurantes")
-    .select("*")
-    .eq("restaurante_id",restauranteId)
-    .order("dia_semana")
-
+  const [p,h]=await Promise.all([
+   supabaseClient.from("productos").select("*").eq("restaurante_id",restauranteId).eq("activo",true).order("nombre"),
+   supabaseClient.from("horarios_restaurantes").select("*").eq("restaurante_id",restauranteId).order("dia_semana")
   ]);
-
-
-  if(e2)
-   throw e2;
-
-  if(e3)
-   throw e3;
-
-
-  productos=prods||[];
-
-  horarios=hrs||[];
-
-
-  pintar();
-
-  actualizarEstado();
-
-
-  /*
-   * Revisar automáticamente cada minuto
-   */
-  setInterval(
-   actualizarEstado,
-   60000
-  );
-
-
+  if(p.error)throw p.error;if(h.error)throw h.error;
+  productos=p.data||[];horarios=h.data||[];
+  pintar();actualizarEstado();
  }catch(e){
-
-  console.error(e);
-
-  mostrarError(
-   e?.message||
-   "No se pudo cargar el local."
-  );
-
+  console.error(e);$("app").innerHTML='<div class="vacio">No se pudo cargar el local.</div>';
  }
-
 }
-
-
-/* =====================================================
-   PINTAR LOCAL
-===================================================== */
 
 function pintar(){
-
- const banner=
-  restaurante.banner_url
-
-   ?`
-
-    <img
-     class="banner"
-     src="${escapeAttr(
-      restaurante.banner_url+
-      "?v="+Date.now()
-     )}"
-     alt="${escapeAttr(
-      restaurante.nombre
-     )}">
-
-   `
-
-   :`
-
-    <div class="no-banner">
-
-     ${escapeHtml(
-      restaurante.nombre
-     )}
-
-    </div>
-
-   `;
-
-
- const categoria=
-  restaurante.categoria
-
-   ?`
-
-    <div class="category">
-
-     ${escapeHtml(
-      restaurante.categoria
-     )}
-
-    </div>
-
-   `
-
-   :"";
-
-
- contenido.innerHTML=`
-
-  ${banner}
-
-  <section class="info">
-
-   <div class="title">
-
-    ${escapeHtml(
-     restaurante.nombre
-    )}
-
-   </div>
-
-   ${categoria}
-
-   <div class="description">
-
-    ${escapeHtml(
-     restaurante.descripcion||""
-    )}
-
-   </div>
-
-   <div
-    id="estadoLocal"
-    class="status">
-   </div>
-
-   <div
-    id="horarioLocal"
-    class="hours">
-   </div>
-
-   <div
-    id="mensajeCerrado"
-    class="closed-message">
-
-    🔴 Este local está cerrado en este momento.
-
-    Puedes consultar sus productos,
-    pero no puedes realizar pedidos
-    hasta que vuelva a abrir.
-
-   </div>
-
-  </section>
-
-  <section>
-
-   <div
-    class="products"
-    id="productos">
-   </div>
-
-  </section>
-
- `;
-
+ $("app").innerHTML=`
+ <div class="banner">${restaurante.banner_url?`<img src="${esc(restaurante.banner_url)}?v=${Date.now()}" alt="">`:""}</div>
+ <section class="info">
+  <div class="categoria">${esc(restaurante.categoria||"")}</div>
+  <h1>${esc(restaurante.nombre)}</h1>
+  <div class="desc">${esc(restaurante.descripcion||"")}</div>
+  <div id="estado" class="estado">Cargando...</div>
+  <div id="cerrado"></div>
+ </section>
+ <h2>Productos</h2>
+ <section id="productos" class="productos"></section>`;
  pintarProductos();
-
 }
-
-
-/* =====================================================
-   PRODUCTOS
-===================================================== */
 
 function pintarProductos(){
-
- const box=
-  document.getElementById(
-   "productos"
-  );
-
-
- if(!productos.length){
-
-  box.innerHTML=`
-
-   <div class="empty">
-
-    Este local no tiene
-    productos disponibles.
-
-   </div>
-
-  `;
-
-  return;
-
- }
-
-
- box.innerHTML=
-
-  productos.map(p=>{
-
-   const imagen=
-
-    p.imagen_url
-
-     ?`
-
-      <img
-       class="product-image"
-       src="${escapeAttr(
-        p.imagen_url+
-        "?v="+Date.now()
-       )}"
-       alt="${escapeAttr(
-        p.nombre
-       )}"
-       onerror="this.style.display='none'">
-
-     `
-
-     :`
-
-      <div class="product-no-image">
-
-       Sin imagen
-
-      </div>
-
-     `;
-
-
-   return`
-
-    <article
-     class="product"
-     data-product-id="${p.id}">
-
-     ${imagen}
-
-     <div class="product-body">
-
-      <div class="product-name">
-
-       ${escapeHtml(
-        p.nombre
-       )}
-
-      </div>
-
-      <div class="product-description">
-
-       ${escapeHtml(
-        p.descripcion||""
-       )}
-
-      </div>
-
-      <div class="product-bottom">
-
-       <div class="price">
-
-        $${Number(
-         p.precio||0
-        ).toFixed(2)}
-
-       </div>
-
-       <div class="product-action">
-
-        <button
-         class="add"
-         data-add-id="${p.id}"
-         onclick="agregarAlCarrito(${p.id})">
-
-         + Agregar
-
-        </button>
-
-       </div>
-
-      </div>
-
-     </div>
-
-    </article>
-
-   `;
-
-  }).join("");
-
+ $("productos").innerHTML=productos.length?productos.map(p=>`
+ <article class="producto">
+  <div class="prodimg">${p.imagen_url?`<img src="${esc(p.imagen_url)}?v=${Date.now()}" alt="">`:""}</div>
+  <div class="pinfo">
+   <h3>${esc(p.nombre)}</h3>
+   <div class="pdesc">${esc(p.descripcion||"")}</div>
+   <div class="precio">$${(+p.precio).toFixed(2)}</div>
+   <button class="btn agregar" data-id="${p.id}" onclick="agregarAlCarrito(${p.id})">Agregar</button>
+  </div>
+ </article>`).join(""):'<div class="vacio">Este local no tiene productos disponibles.</div>';
 }
-
-
-/* =====================================================
-   ESTADO DEL LOCAL
-===================================================== */
 
 function actualizarEstado(){
-
- const estado=
-  obtenerEstadoLocal();
-
- localAbierto=
-  estado.abierto;
-
-
- const el=
-  document.getElementById(
-   "estadoLocal"
-  );
-
- const mensajeCerrado=
-  document.getElementById(
-   "mensajeCerrado"
-  );
-
-
- if(el){
-
-  el.textContent=
-   estado.texto;
-
-  el.className=
-   "status "+
-   (
-    estado.abierto
-     ?"open"
-     :"closed"
-   );
-
- }
-
-
- if(mensajeCerrado){
-
-  mensajeCerrado.classList.toggle(
-   "show",
-   !estado.abierto
-  );
-
- }
-
-
- actualizarBotonesProductos();
-
+ const e=obtenerEstadoLocal();localAbierto=e.abierto;
+ const el=$("estado");if(!el)return;
+ el.textContent=e.texto;el.classList.toggle("cerrado",!e.abierto);
+ $("cerrado").innerHTML=e.abierto?"":'<div class="cerradoBox">Este local está cerrado. Podrás consultar sus productos, pero no realizar pedidos ahora.</div>';
+ document.querySelectorAll(".agregar").forEach(b=>b.disabled=!e.abierto);
 }
-
-
-/* =====================================================
-   BOTONES PRODUCTOS
-===================================================== */
-
-function actualizarBotonesProductos(){
-
- document
-  .querySelectorAll("[data-add-id]")
-  .forEach(btn=>{
-
-   btn.disabled=
-    !localAbierto;
-
-   if(localAbierto){
-
-    btn.textContent=
-     "+ Agregar";
-
-   }else{
-
-    btn.textContent=
-     "Cerrado";
-
-   }
-
-  });
-
-
- document
-  .querySelectorAll(".product")
-  .forEach(card=>{
-
-   card.classList.toggle(
-    "closed-product",
-    !localAbierto
-   );
-
-  });
-
-}
-
-
-/* =====================================================
-   AGREGAR AL CARRITO
-===================================================== */
 
 function agregarAlCarrito(id){
-
- /*
-  * NO PERMITIR AGREGAR
-  * SI EL LOCAL ESTÁ CERRADO
-  */
-
- if(!localAbierto){
-
-  const estado=
-   obtenerEstadoLocal();
-
-  alert(
-   estado.texto+
-   "\n\nNo puedes agregar productos mientras el local está cerrado."
-  );
-
-  return;
-
- }
-
-
- const producto=
-  productos.find(
-   p=>Number(p.id)===Number(id)
-  );
-
-
- if(!producto)
-  return;
-
-
- /*
-  * IMPORTANTE:
-  *
-  * TODA LA APLICACIÓN UTILIZA
-  * LA MISMA CLAVE:
-  *
-  * "carrito"
-  */
-
- let carrito=[];
-
-
- try{
-
-  carrito=
-   JSON.parse(
-    localStorage.getItem(
-     "carrito"
-    )||"[]"
-   );
-
-
-  if(!Array.isArray(carrito))
-   carrito=[];
-
-
- }catch{
-
-  carrito=[];
-
- }
-
-
- /*
-  * Buscar si ya existe
-  */
-
- const existente=
-  carrito.find(x=>
-
-   Number(x.producto_id)===
-    Number(producto.id)
-
-   &&
-
-   Number(x.restaurante_id)===
-    Number(restaurante.id)
-
-  );
-
-
- if(existente){
-
-  existente.cantidad=
-   (Number(
-    existente.cantidad
-   )||1)+1;
-
- }else{
-
-  carrito.push({
-
-   producto_id:
-    producto.id,
-
-   restaurante_id:
-    restaurante.id,
-
-   restaurante_nombre:
-    restaurante.nombre,
-
-   producto_nombre:
-    producto.nombre,
-
-   precio:
-    Number(producto.precio)||0,
-
-   cantidad:1,
-
-   imagen_url:
-    producto.imagen_url||""
-
-  });
-
- }
-
-
- /*
-  * GUARDAR EN LA MISMA CLAVE
-  * QUE USA menu.html
-  */
-
- localStorage.setItem(
-  "carrito",
-  JSON.stringify(carrito)
- );
-
-
- actualizarCarrito();
-
+ if(!localAbierto)return;
+ const p=productos.find(x=>x.id===id);if(!p)return;
+ const c=obtenerCarrito();
+ const existente=c.find(x=>x.producto_id===p.id&&x.restaurante_id===restaurante.id);
+ if(existente)existente.cantidad++;
+ else c.push({
+  producto_id:p.id,
+  restaurante_id:restaurante.id,
+  restaurante_nombre:restaurante.nombre,
+  producto_nombre:p.nombre,
+  precio:+p.precio,
+  cantidad:1,
+  imagen_url:p.imagen_url||null
+ });
+ guardarCarrito(c);
 }
 
-
-/* =====================================================
-   ACTUALIZAR CONTADOR
-===================================================== */
-
-function actualizarCarrito(){
-
- let carrito=[];
-
-
- try{
-
-  carrito=
-   JSON.parse(
-    localStorage.getItem(
-     "carrito"
-    )||"[]"
-   );
-
-
-  if(!Array.isArray(carrito))
-   carrito=[];
-
-
- }catch{
-
-  carrito=[];
-
- }
-
-
- const total=
-  carrito.reduce(
-   (s,p)=>
-    s+
-    (Number(p.cantidad)||0),
-   0
-  );
-
-
- const el=
-  document.getElementById(
-   "cartCount"
-  );
-
-
- if(el)
-  el.textContent=total;
-
-}
-
-
-/* =====================================================
-   ESTADO HORARIO
-===================================================== */
-
-function obtenerEstadoLocal(){
-
- /*
-  * SIEMPRE ABIERTO
-  *
-  * 7 días
-  * 00:00 - 23:59
-  */
-
- const todosDias=
-  horarios.length===7;
-
-
- if(
-  todosDias&&
-  horarios.every(h=>
-
-   !h.cerrado&&
-
-   h.hora_apertura?.substring(0,5)==="00:00"&&
-
-   h.hora_cierre?.substring(0,5)==="23:59"
-
-  )
- ){
-
-  return{
-
-   abierto:true,
-
-   texto:
-    "🟢 Abierto · Siempre abierto"
-
-  };
-
- }
-
-
- /*
-  * HORA ECUADOR
-  */
-
- const ahora=
-  new Date();
-
-
- const partes=
-  new Intl.DateTimeFormat(
-   "es-EC",
-   {
-    timeZone:
-     "America/Guayaquil",
-    weekday:"short",
-    hour:"2-digit",
-    minute:"2-digit",
-    hour12:false
-   }
-  ).formatToParts(
-   ahora
-  );
-
-
- const get=tipo=>
-  partes.find(
-   x=>x.type===tipo
-  )?.value;
-
-
- const horaActual=
-  Number(
-   get("hour")||0
-  );
-
-
- const minutoActual=
-  Number(
-   get("minute")||0
-  );
-
-
- const actual=
-  horaActual*60+
-  minutoActual;
-
-
- const diaSemana=
-  obtenerDiaSemanaEcuador();
-
-
- const h=
-  horarios.find(
-   x=>
-    Number(x.dia_semana)===
-    diaSemana
-  );
-
-
- /*
-  * DÍA CERRADO
-  */
-
- if(!h||h.cerrado){
-
-  const siguiente=
-   buscarSiguienteHorario(
-    diaSemana
-   );
-
-
-  return{
-
-   abierto:false,
-
-   texto:
-    siguiente
-     ?`🔴 Cerrado · Abre ${siguiente}`
-     :"🔴 Cerrado"
-
-  };
-
- }
-
-
- const apertura=
-  (
-   h.hora_apertura||
-   "00:00"
-  ).substring(0,5);
-
-
- const cierre=
-  (
-   h.hora_cierre||
-   "23:59"
-  ).substring(0,5);
-
-
- const [ha,ma]=
-  apertura
-   .split(":")
-   .map(Number);
-
-
- const [hc,mc]=
-  cierre
-   .split(":")
-   .map(Number);
-
-
- const inicio=
-  ha*60+ma;
-
-
- const fin=
-  hc*60+mc;
-
-
- let abierto=false;
-
-
- /*
-  * HORARIO NORMAL
-  */
-
- if(inicio<=fin){
-
-  abierto=
-   actual>=inicio&&
-   actual<=fin;
-
- }
-
-
- /*
-  * HORARIO QUE CRUZA MEDIANOCHE
-  */
-
- else{
-
-  abierto=
-   actual>=inicio||
-   actual<=fin;
-
- }
-
-
- if(abierto){
-
-  return{
-
-   abierto:true,
-
-   texto:
-    `🟢 Abierto · Hasta las ${cierre}`
-
-  };
-
- }
-
-
- /*
-  * TODAVÍA NO ABRE
-  */
-
- if(actual<inicio){
-
-  return{
-
-   abierto:false,
-
-   texto:
-    `🔴 Cerrado · Abre a las ${apertura}`
-
-  };
-
- }
-
-
- /*
-  * YA TERMINÓ EL HORARIO
-  */
-
- const siguiente=
-  buscarSiguienteHorario(
-   diaSemana
-  );
-
-
- return{
-
-  abierto:false,
-
-  texto:
-   siguiente
-    ?`🔴 Cerrado · Abre ${siguiente}`
-    :"🔴 Cerrado"
-
- };
-
-}
-
-
-/* =====================================================
-   DÍA DE ECUADOR
-===================================================== */
-
-function obtenerDiaSemanaEcuador(){
-
- const fecha=
-  new Date();
-
-
- const texto=
-  new Intl.DateTimeFormat(
-   "en-US",
-   {
-    timeZone:
-     "America/Guayaquil",
-    weekday:"short"
-   }
-  ).format(fecha);
-
-
- const dias={
-
-  Sun:0,
-  Mon:1,
-  Tue:2,
-  Wed:3,
-  Thu:4,
-  Fri:5,
-  Sat:6
-
- };
-
-
- return dias[texto];
-
-}
-
-
-/* =====================================================
-   SIGUIENTE HORARIO
-===================================================== */
-
-function buscarSiguienteHorario(
- diaActual
-){
-
- for(
-  let i=1;
-  i<=7;
-  i++
- ){
-
-  const dia=
-   (diaActual+i)%7;
-
-
-  const h=
-   horarios.find(
-    x=>
-     Number(x.dia_semana)===
-     dia
-   );
-
-
-  if(
-   h&&
-   !h.cerrado&&
-   h.hora_apertura
-  ){
-
-   const nombre=
-    DIAS_NOMBRES[dia];
-
-
-   return(
-    `${nombre} a las `+
-    `${h.hora_apertura.substring(0,5)}`
-   );
-
-  }
-
- }
-
-
- return null;
-
-}
-
-
-const DIAS_NOMBRES=[
-
- "domingo",
- "lunes",
- "martes",
- "miércoles",
- "jueves",
- "viernes",
- "sábado"
-
-];
-
-
-/* =====================================================
-   ERROR
-===================================================== */
-
-function mostrarError(texto){
-
- contenido.innerHTML=`
-
-  <div class="error">
-
-   ${escapeHtml(texto)}
-
-  </div>
-
- `;
-
-}
-
-
-/* =====================================================
-   SEGURIDAD HTML
-===================================================== */
-
-function escapeHtml(value){
-
- return String(value??"")
-
-  .replace(
-   /&/g,
-   "&amp;"
-  )
-
-  .replace(
-   /</g,
-   "&lt;"
-  )
-
-  .replace(
-   />/g,
-   "&gt;"
-  )
-
-  .replace(
-   /"/g,
-   "&quot;"
-  )
-
-  .replace(
-   /'/g,
-   "&#039;"
-  );
-
-}
-
-
-function escapeAttr(value){
-
- return escapeHtml(value);
-
-}
-
+actualizarCarrito();
+cargarLocal();
+setInterval(actualizarEstado,60000);
 </script>
-
 </body>
 </html>
