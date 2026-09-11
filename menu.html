@@ -102,6 +102,52 @@
         .producto-precio {
             color: #087f5b;
             font-weight: bold;
+            text-align: right;
+        }
+
+        /* ==============================
+           BOTÓN ELIMINAR PRODUCTO
+           ============================== */
+
+        .btn-eliminar {
+            border: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .btn-eliminar:hover {
+            background: #fecaca;
+        }
+
+        /* ==============================
+           BOTÓN VACIAR CARRITO
+           ============================== */
+
+        .acciones-carrito {
+            display: flex;
+            justify-content: flex-end;
+            margin: 15px 0 20px;
+        }
+
+        .btn-vaciar {
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-vaciar:hover {
+            background: #b91c1c;
         }
 
         .carrera-total {
@@ -208,6 +254,18 @@
 
             .producto {
                 flex-direction: column;
+            }
+
+            .producto-precio {
+                text-align: left;
+            }
+
+            .acciones-carrito {
+                justify-content: stretch;
+            }
+
+            .btn-vaciar {
+                width: 100%;
             }
         }
     </style>
@@ -392,6 +450,99 @@ function normalizarCarrito() {
 
 
 // ========================================
+// ELIMINAR PRODUCTO
+// ========================================
+
+function eliminarProducto(
+    restauranteId,
+    productoId
+) {
+
+    const confirmar =
+        confirm(
+            "¿Quieres eliminar este producto del carrito?"
+        );
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    carrito = carrito.filter(item => {
+
+        const itemRestauranteId =
+            String(
+                item.restaurante_id ?? ""
+            );
+
+        const itemProductoId =
+            String(
+                item.producto_id ?? ""
+            );
+
+
+        return !(
+            itemRestauranteId ===
+                String(restauranteId) &&
+            itemProductoId ===
+                String(productoId)
+        );
+
+    });
+
+
+    localStorage.setItem(
+        "carrito",
+        JSON.stringify(carrito)
+    );
+
+
+    mostrarCarrito();
+
+}
+
+
+// ========================================
+// VACIAR TODO EL CARRITO
+// ========================================
+
+function vaciarCarrito() {
+
+    if (!carrito.length) {
+
+        alert(
+            "El carrito ya está vacío."
+        );
+
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+            "¿Estás seguro de que quieres vaciar todo el carrito?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    carrito = [];
+
+
+    localStorage.removeItem(
+        "carrito"
+    );
+
+
+    mostrarCarrito();
+
+}
+
+
+// ========================================
 // MOSTRAR CARRITO
 // ========================================
 
@@ -476,6 +627,18 @@ function mostrarCarrito() {
             Revisa tus productos antes de confirmar.
         </p>
 
+        <div class="acciones-carrito">
+
+            <button
+                type="button"
+                class="btn-vaciar"
+                onclick="vaciarCarrito()"
+            >
+                🗑️ Vaciar carrito
+            </button>
+
+        </div>
+
     `;
 
 
@@ -511,6 +674,27 @@ function mostrarCarrito() {
                     subtotalProducto;
 
 
+                /*
+                 * Usamos JSON.stringify para
+                 * pasar correctamente los IDs
+                 * aunque sean texto.
+                 */
+
+                const restauranteId =
+                    JSON.stringify(
+                        String(
+                            producto.restaurante_id ?? ""
+                        )
+                    );
+
+                const productoId =
+                    JSON.stringify(
+                        String(
+                            producto.producto_id ?? ""
+                        )
+                    );
+
+
                 productosHTML += `
 
                     <div class="producto">
@@ -542,6 +726,19 @@ function mostrarCarrito() {
                             $${dinero(
                                 subtotalProducto
                             )}
+
+                            <br>
+
+                            <button
+                                type="button"
+                                class="btn-eliminar"
+                                onclick='eliminarProducto(
+                                    ${restauranteId},
+                                    ${productoId}
+                                )'
+                            >
+                                🗑️ Eliminar
+                            </button>
 
                         </div>
 
@@ -1225,6 +1422,7 @@ function enviarPedidoWhatsApp() {
 
 
     // Guardar pedido localmente
+
     const pedido = {
 
         numero:
@@ -1278,6 +1476,7 @@ function enviarPedidoWhatsApp() {
 
 
     // Abrir WhatsApp
+
     const url =
         "https://wa.me/" +
         WHATSAPP +
