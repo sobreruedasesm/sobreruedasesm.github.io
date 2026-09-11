@@ -3,30 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Menú | Sobre Ruedas</title>
+<title>Local | Sobre Ruedas</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
 <style>
+*{box-sizing:border-box}
+
 :root{
  --rojo:#d62828;
- --rojo2:#b51f1f;
+ --rojo-dark:#b51f1f;
  --verde:#198754;
- --verde2:#146c43;
  --azul:#1261a0;
- --azul2:#0d4f82;
  --amarillo:#f4c542;
  --negro:#171717;
  --blanco:#fff;
  --gris:#f4f5f7;
  --gris2:#e5e7eb;
- --muted:#626a73;
- --shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-*{
- box-sizing:border-box;
+ --muted:#5f6670;
 }
 
 body{
@@ -36,483 +31,283 @@ body{
  font-family:Arial,Helvetica,sans-serif;
 }
 
-header{
+.header{
  background:var(--negro);
  color:#fff;
- border-top:5px solid var(--rojo);
+ padding:13px 16px;
  position:sticky;
  top:0;
- z-index:50;
- box-shadow:0 2px 12px rgba(0,0,0,.18);
+ z-index:20;
 }
 
 .header-inner{
  max-width:1100px;
  margin:auto;
- padding:13px 15px;
  display:flex;
- align-items:center;
  justify-content:space-between;
+ align-items:center;
  gap:12px;
 }
 
-.logo{
- font-size:22px;
- font-weight:900;
+.brand{
+ font-size:20px;
+ font-weight:800;
 }
 
-.logo span{
- color:var(--rojo);
-}
-
-.sub{
- color:#ddd;
- font-size:11px;
- margin-top:2px;
-}
-
-.cart-btn{
- background:var(--rojo);
+.cart{
  color:#fff;
  text-decoration:none;
- border-radius:22px;
- padding:9px 14px;
- font-size:13px;
- font-weight:bold;
- white-space:nowrap;
+ background:var(--rojo);
+ padding:9px 12px;
+ border-radius:8px;
+ font-weight:700;
 }
 
-.cart-btn:hover{
- background:var(--rojo2);
-}
-
-main{
+.wrap{
  max-width:1100px;
  margin:auto;
- padding:15px 14px 30px;
-}
-
-.back{
- display:inline-block;
- color:var(--azul);
- font-weight:bold;
- text-decoration:none;
- margin-bottom:12px;
- font-size:14px;
-}
-
-.local-header{
- background:#fff;
- border-radius:14px;
- overflow:hidden;
- box-shadow:var(--shadow);
- margin-bottom:16px;
+ padding:15px;
 }
 
 .banner{
- height:230px;
- background:linear-gradient(135deg,var(--negro),var(--azul));
- position:relative;
-}
-
-.banner img{
  width:100%;
- height:100%;
+ height:280px;
  object-fit:cover;
- display:block;
+ border-radius:14px;
+ background:#ddd;
 }
 
-.banner-placeholder{
- width:100%;
- height:100%;
+.no-banner{
+ height:180px;
+ border-radius:14px;
+ background:linear-gradient(135deg,var(--rojo),var(--azul));
  display:flex;
  align-items:center;
  justify-content:center;
  color:#fff;
- font-size:60px;
+ font-size:30px;
+ font-weight:800;
+ text-align:center;
+ padding:20px;
 }
 
-.local-info{
- padding:16px;
+.info{
+ background:#fff;
+ border-radius:14px;
+ padding:18px;
+ margin-top:12px;
+ border:1px solid var(--gris2);
 }
 
-.local-name{
- font-size:26px;
- font-weight:900;
- margin-bottom:4px;
+.title{
+ font-size:28px;
+ font-weight:800;
+ margin-bottom:5px;
 }
 
-.local-category{
+.category{
  color:var(--azul);
- font-size:13px;
- font-weight:bold;
- margin-bottom:8px;
+ font-weight:700;
 }
 
-.local-description{
+.description{
  color:var(--muted);
- line-height:1.45;
- font-size:14px;
-}
-
-.status-row{
- display:flex;
- align-items:center;
- gap:8px;
- flex-wrap:wrap;
- margin-top:13px;
+ margin-top:10px;
+ line-height:1.5;
 }
 
 .status{
- display:inline-flex;
- align-items:center;
- gap:5px;
- border-radius:20px;
- padding:6px 10px;
- font-size:12px;
- font-weight:bold;
+ margin-top:12px;
+ font-weight:800;
 }
 
 .status.open{
- background:#dff5e8;
- color:var(--verde2);
+ color:var(--verde);
 }
 
 .status.closed{
- background:#ffe3e1;
- color:var(--rojo2);
+ color:var(--rojo);
 }
 
-.schedule{
- background:#eef6fc;
- color:var(--azul2);
- padding:6px 10px;
- border-radius:20px;
- font-size:12px;
- font-weight:bold;
-}
-
-.section-title{
- display:flex;
- align-items:center;
- justify-content:space-between;
- margin:18px 0 11px;
-}
-
-.section-title h2{
- margin:0;
- font-size:20px;
-}
-
-.section-title span{
+.hours{
+ margin-top:8px;
  color:var(--muted);
- font-size:12px;
+ font-size:14px;
 }
 
 .products{
  display:grid;
- grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+ grid-template-columns:repeat(2,minmax(0,1fr));
  gap:14px;
+ margin-top:18px;
 }
 
 .product{
  background:#fff;
- border-radius:13px;
+ border:1px solid var(--gris2);
+ border-radius:12px;
  overflow:hidden;
- box-shadow:var(--shadow);
- border:1px solid #eee;
  display:flex;
  flex-direction:column;
 }
 
 .product-image{
- height:185px;
- background:var(--gris);
- position:relative;
- overflow:hidden;
-}
-
-.product-image img{
  width:100%;
- height:100%;
+ height:180px;
  object-fit:cover;
- display:block;
+ background:#eee;
 }
 
-.product-placeholder{
+.product-no-image{
  width:100%;
- height:100%;
+ height:180px;
+ background:#e5e7eb;
  display:flex;
  align-items:center;
  justify-content:center;
- font-size:45px;
- background:linear-gradient(135deg,#f4f5f7,#e5e7eb);
+ color:#888;
+ font-size:14px;
 }
 
 .product-body{
- padding:13px;
+ padding:14px;
  display:flex;
  flex-direction:column;
  flex:1;
 }
 
 .product-name{
- font-size:17px;
- font-weight:900;
- margin-bottom:5px;
+ font-weight:800;
+ font-size:18px;
 }
 
 .product-description{
  color:var(--muted);
- font-size:13px;
+ font-size:14px;
  line-height:1.4;
- min-height:36px;
- margin-bottom:10px;
+ margin-top:6px;
+ flex:1;
 }
 
 .product-bottom{
  display:flex;
- align-items:center;
  justify-content:space-between;
+ align-items:center;
  gap:10px;
- margin-top:auto;
- padding-top:9px;
+ margin-top:14px;
 }
 
 .price{
+ font-weight:800;
  font-size:18px;
- font-weight:900;
  color:var(--rojo);
 }
 
 .add{
- background:var(--verde);
- color:#fff;
  border:0;
- border-radius:9px;
+ background:var(--rojo);
+ color:#fff;
  padding:9px 12px;
- font-weight:bold;
+ border-radius:8px;
+ font-weight:700;
  cursor:pointer;
 }
 
 .add:hover{
- background:var(--verde2);
-}
-
-.add:disabled{
- background:#aaa;
- cursor:not-allowed;
-}
-
-.closed-msg{
- color:var(--rojo2);
- font-size:12px;
- font-weight:bold;
- margin-top:7px;
+ background:var(--rojo-dark);
 }
 
 .empty{
  background:#fff;
- padding:30px 15px;
- text-align:center;
  border-radius:12px;
- box-shadow:var(--shadow);
- color:var(--muted);
-}
-
-.empty-icon{
- font-size:40px;
- margin-bottom:7px;
-}
-
-.loading{
- background:#fff;
- padding:35px;
+ padding:25px;
  text-align:center;
- border-radius:12px;
  color:var(--muted);
+ margin-top:18px;
 }
 
-.error{
- background:#fff0ef;
- color:var(--rojo2);
- border:1px solid #f2c5c1;
- padding:15px;
- border-radius:10px;
+.back{
+ display:inline-block;
+ margin-bottom:12px;
+ color:var(--azul);
+ text-decoration:none;
+ font-weight:700;
 }
 
-.toast{
- position:fixed;
- left:50%;
- bottom:22px;
- transform:translate(-50%,20px);
- background:var(--negro);
- color:#fff;
- padding:11px 16px;
- border-radius:9px;
- font-size:13px;
- font-weight:bold;
- opacity:0;
- pointer-events:none;
- transition:.25s;
- z-index:100;
- box-shadow:0 5px 18px rgba(0,0,0,.25);
+@media(max-width:700px){
+ .banner{height:210px}
+ .products{grid-template-columns:1fr}
+ .title{font-size:24px}
 }
 
-.toast.show{
- opacity:1;
- transform:translate(-50%,0);
-}
-
-@media(max-width:600px){
-
- .header-inner{
-  padding:12px;
- }
-
- .logo{
-  font-size:20px;
- }
-
- .cart-btn{
-  padding:8px 11px;
- }
-
- .banner{
-  height:190px;
- }
-
- .local-name{
-  font-size:23px;
- }
-
- .products{
-  grid-template-columns:1fr;
- }
-
- .product-image{
-  height:200px;
- }
+@media(max-width:430px){
+ .product-image,
+ .product-no-image{height:160px}
 }
 </style>
 </head>
 
 <body>
 
-<header>
- <div class="header-inner">
+<header class="header">
+<div class="header-inner">
 
-  <div>
-   <div class="logo">Sobre <span>Ruedas</span></div>
-   <div class="sub">Delivery en Esmeraldas</div>
-  </div>
+<div class="brand">Sobre Ruedas</div>
 
-  <a href="menu.html" class="cart-btn">
-   🛒 Carrito
-   <span id="cartCount">0</span>
-  </a>
+<a href="menu.html" class="cart">
+🛒 Carrito <span id="cartCount">0</span>
+</a>
 
- </div>
+</div>
 </header>
 
-<main>
+<main class="wrap">
 
- <a href="index.html" class="back">← Volver a locales</a>
+<a href="index.html" class="back">← Volver a locales</a>
 
- <div id="contenido">
-  <div class="loading">Cargando local...</div>
- </div>
+<div id="contenido"></div>
 
 </main>
 
-<div id="toast" class="toast"></div>
-
 <script>
-const params=new URLSearchParams(window.location.search);
+const params=new URLSearchParams(location.search);
 const restauranteId=Number(params.get("id"));
 
 let restaurante=null;
 let productos=[];
 let horarios=[];
-let abierto=false;
-let carrito=[];
 
-const $=id=>document.getElementById(id);
+document.addEventListener("DOMContentLoaded",async()=>{
+ actualizarCarrito();
+ await cargarLocal();
+});
 
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
- "&":"&amp;",
- "<":"&lt;",
- ">":"&gt;",
- '"':"&quot;",
- "'":"&#039;"
-}[m]));
-
-function cargarCarrito(){
- try{
-  carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
-
-  if(!Array.isArray(carrito))
-   carrito=[];
-
- }catch{
-  carrito=[];
- }
-
- actualizarContador();
-}
-
-function guardarCarrito(){
- localStorage.setItem("carrito",JSON.stringify(carrito));
- actualizarContador();
-}
-
-function actualizarContador(){
- const cantidad=carrito.reduce(
-  (total,item)=>total+(Number(item.cantidad)||0),
-  0
- );
-
- $("cartCount").textContent=cantidad;
-}
-
-function mostrarToast(mensaje){
- const el=$("toast");
-
- el.textContent=mensaje;
- el.classList.add("show");
-
- clearTimeout(window.toastTimer);
-
- window.toastTimer=setTimeout(()=>{
-  el.classList.remove("show");
- },1800);
-}
-
-async function cargar(){
+async function cargarLocal(){
 
  if(!restauranteId){
-  $("contenido").innerHTML=`
-   <div class="error">
-    No se indicó el local.
-   </div>
-  `;
+  mostrarError("No se especificó el local.");
   return;
  }
 
  try{
 
-  const [
-   {data:local,error:e1},
-   {data:productosData,error:e2},
-   {data:horariosData,error:e3}
-  ]=await Promise.all([
+  const {data,error}=await supabaseClient
+   .from("restaurantes")
+   .select("*")
+   .eq("id",restauranteId)
+   .eq("activo",true)
+   .maybeSingle();
 
-   supabaseClient
-    .from("restaurantes")
-    .select("*")
-    .eq("id",restauranteId)
-    .eq("activo",true)
-    .maybeSingle(),
+  if(error)throw error;
+
+  if(!data){
+   mostrarError("Este local no está disponible.");
+   return;
+  }
+
+  restaurante=data;
+
+  const [{data:prods,error:e2},{data:hrs,error:e3}]=await Promise.all([
 
    supabaseClient
     .from("productos")
@@ -529,414 +324,155 @@ async function cargar(){
 
   ]);
 
-  if(e1)throw e1;
   if(e2)throw e2;
   if(e3)throw e3;
 
-  if(!local){
-   $("contenido").innerHTML=`
-    <div class="empty">
-     <div class="empty-icon">🏪</div>
-     <strong>Local no disponible</strong>
-     <div>Es posible que esté inactivo.</div>
-    </div>
-   `;
-   return;
-  }
+  productos=prods||[];
+  horarios=hrs||[];
 
-  restaurante=local;
-  productos=productosData||[];
-  horarios=horariosData||[];
-
-  document.title=`${restaurante.nombre} | Sobre Ruedas`;
-
-  render();
+  pintar();
 
   actualizarEstado();
 
   setInterval(actualizarEstado,60000);
 
- }catch(error){
+ }catch(e){
 
-  console.error(error);
+  console.error(e);
 
-  $("contenido").innerHTML=`
-   <div class="error">
-    No se pudo cargar el local.
-    <br>
-    <small>${esc(error.message||"Error de conexión")}</small>
-   </div>
-  `;
+  mostrarError(
+   e?.message||"No se pudo cargar el local."
+  );
  }
 }
 
-function render(){
+function pintar(){
 
- const imagen=restaurante.banner_url
-  ?`
-   <img
-    src="${esc(restaurante.banner_url)}?v=${Date.now()}"
-    alt="${esc(restaurante.nombre)}"
-    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-   <div class="banner-placeholder" style="display:none">
-    🍴
-   </div>
-  `
-  :`
-   <div class="banner-placeholder">🍴</div>
-  `;
+ const banner=restaurante.banner_url
+  ? `<img class="banner"
+      src="${escapeAttr(restaurante.banner_url+"?v="+Date.now())}"
+      alt="${escapeAttr(restaurante.nombre)}">`
+  : `<div class="no-banner">${escapeHtml(restaurante.nombre)}</div>`;
 
- $("contenido").innerHTML=`
+ const categoria=restaurante.categoria
+  ? `<div class="category">${escapeHtml(restaurante.categoria)}</div>`
+  : "";
 
-  <section class="local-header">
+ contenido.innerHTML=`
 
-   <div class="banner">
-    ${imagen}
+  ${banner}
+
+  <section class="info">
+
+   <div class="title">
+    ${escapeHtml(restaurante.nombre)}
    </div>
 
-   <div class="local-info">
+   ${categoria}
 
-    <div class="local-name">
-     ${esc(restaurante.nombre)}
-    </div>
-
-    ${restaurante.categoria?`
-     <div class="local-category">
-      ${esc(restaurante.categoria)}
-     </div>
-    `:""}
-
-    ${restaurante.descripcion?`
-     <div class="local-description">
-      ${esc(restaurante.descripcion)}
-     </div>
-    `:""}
-
-    <div class="status-row">
-
-     <span id="estadoLocal" class="status">
-      ● Verificando horario...
-     </span>
-
-     <span id="horarioActual" class="schedule">
-      🕒 Horario
-     </span>
-
-    </div>
-
+   <div class="description">
+    ${escapeHtml(restaurante.descripcion||"")}
    </div>
+
+   <div id="estadoLocal" class="status"></div>
+
+   <div id="horarioLocal" class="hours"></div>
 
   </section>
 
-  <div class="section-title">
-   <h2>Menú</h2>
-   <span>${productos.length} producto${productos.length===1?"":"s"}</span>
-  </div>
-
-  <div id="productos" class="products"></div>
+  <section>
+   <div class="products" id="productos"></div>
+  </section>
  `;
 
- renderProductos();
+ pintarProductos();
 }
 
-function renderProductos(){
+function pintarProductos(){
 
- const contenedor=$("productos");
+ const box=document.getElementById("productos");
 
  if(!productos.length){
 
-  contenedor.innerHTML=`
+  box.innerHTML=`
    <div class="empty">
-    <div class="empty-icon">🍽️</div>
-    <strong>No hay productos disponibles</strong>
-    <div>Este local todavía no tiene productos activos.</div>
+    Este local no tiene productos disponibles.
    </div>
   `;
 
   return;
  }
 
- contenedor.innerHTML=productos.map(p=>{
+ box.innerHTML=productos.map(p=>{
 
   const imagen=p.imagen_url
-   ?`
-    <img
-     src="${esc(p.imagen_url)}?v=${Date.now()}"
-     alt="${esc(p.nombre)}"
-     loading="lazy"
-     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-    <div class="product-placeholder" style="display:none">
-     🍽️
-    </div>
-   `
-   :`
-    <div class="product-placeholder">🍽️</div>
-   `;
+   ? `<img
+      class="product-image"
+      src="${escapeAttr(p.imagen_url+"?v="+Date.now())}"
+      alt="${escapeAttr(p.nombre)}">`
+   : `<div class="product-no-image">Sin imagen</div>`;
 
-  return`
+  return `
+
    <article class="product">
 
-    <div class="product-image">
-     ${imagen}
-    </div>
+    ${imagen}
 
     <div class="product-body">
 
      <div class="product-name">
-      ${esc(p.nombre)}
+      ${escapeHtml(p.nombre)}
      </div>
 
      <div class="product-description">
-      ${esc(p.descripcion||"")}
+      ${escapeHtml(p.descripcion||"")}
      </div>
 
      <div class="product-bottom">
 
-      <span class="price">
+      <div class="price">
        $${Number(p.precio||0).toFixed(2)}
-      </span>
+      </div>
 
       <button
        class="add"
-       id="btnProducto_${p.id}"
-       onclick="agregarProducto(${p.id})">
+       onclick="agregarAlCarrito(${p.id})">
        + Agregar
       </button>
 
      </div>
 
-     <div
-      id="cerrado_${p.id}"
-      class="closed-msg"
-      style="display:none">
-      El local está cerrado
-     </div>
-
     </div>
 
    </article>
+
   `;
-
  }).join("");
-
- actualizarBotones();
 }
 
-function obtenerHorarioDia(dia){
+function agregarAlCarrito(id){
 
- const encontrado=horarios.find(
-  h=>Number(h.dia_semana)===dia
- );
-
- return encontrado||null;
-}
-
-function convertirMinutos(hora){
-
- if(!hora)return null;
-
- const partes=String(hora).split(":");
-
- const h=Number(partes[0]);
- const m=Number(partes[1]);
-
- if(!Number.isFinite(h)||!Number.isFinite(m))
-  return null;
-
- return h*60+m;
-}
-
-function ahoraEcuador(){
-
- const texto=new Intl.DateTimeFormat(
-  "en-US",
-  {
-   timeZone:"America/Guayaquil",
-   weekday:"short",
-   hour:"2-digit",
-   minute:"2-digit",
-   hour12:false
-  }
- ).format(new Date());
-
- return texto;
-}
-
-function obtenerFechaEcuador(){
-
- const partes=new Intl.DateTimeFormat(
-  "en-US",
-  {
-   timeZone:"America/Guayaquil",
-   weekday:"long",
-   hour:"2-digit",
-   minute:"2-digit",
-   hour12:false
-  }
- ).formatToParts(new Date());
-
- const weekday=partes.find(p=>p.type==="weekday")?.value;
- const hour=Number(partes.find(p=>p.type==="hour")?.value);
- const minute=Number(partes.find(p=>p.type==="minute")?.value);
-
- const dias={
-  Sunday:0,
-  Monday:1,
-  Tuesday:2,
-  Wednesday:3,
-  Thursday:4,
-  Friday:5,
-  Saturday:6
- };
-
- return{
-  dia:dias[weekday],
-  minutos:hour*60+minute
- };
-}
-
-function calcularEstado(){
-
- const ahora=obtenerFechaEcuador();
- const horarioHoy=obtenerHorarioDia(ahora.dia);
-
- if(!horarioHoy||horarioHoy.cerrado){
-  return{
-   abierto:false,
-   texto:"Cerrado hoy",
-   horario:horarioHoy
-  };
- }
-
- const apertura=convertirMinutos(horarioHoy.hora_apertura);
- const cierre=convertirMinutos(horarioHoy.hora_cierre);
-
- if(apertura===null||cierre===null){
-  return{
-   abierto:false,
-   texto:"Horario no disponible",
-   horario:horarioHoy
-  };
- }
-
- let estaAbierto=false;
-
- if(apertura===cierre){
-  estaAbierto=true;
- }else if(apertura<cierre){
-  estaAbierto=
-   ahora.minutos>=apertura &&
-   ahora.minutos<cierre;
- }else{
-  estaAbierto=
-   ahora.minutos>=apertura ||
-   ahora.minutos<cierre;
- }
-
- return{
-  abierto:estaAbierto,
-  texto:estaAbierto?"Abierto ahora":"Cerrado ahora",
-  horario:horarioHoy
- };
-}
-
-function formatoHora(hora){
-
- if(!hora)return"--";
-
- const partes=String(hora).split(":");
- const h=Number(partes[0]);
- const m=Number(partes[1]);
-
- if(!Number.isFinite(h)||!Number.isFinite(m))
-  return hora;
-
- const sufijo=h>=12?"PM":"AM";
- const hh=(h%12)||12;
-
- return`${hh}:${String(m).padStart(2,"0")} ${sufijo}`;
-}
-
-function actualizarEstado(){
-
- if(!restaurante)return;
-
- const estado=calcularEstado();
-
- abierto=estado.abierto;
-
- const estadoEl=$("estadoLocal");
- const horarioEl=$("horarioActual");
-
- if(!estadoEl)return;
-
- estadoEl.className=`status ${abierto?"open":"closed"}`;
-
- estadoEl.textContent=
-  abierto
-   ?"● Abierto ahora"
-   :"● "+estado.texto;
-
- if(estado.horario&&!estado.horario.cerrado){
-
-  horarioEl.textContent=
-   `🕒 ${formatoHora(estado.horario.hora_apertura)} – ${formatoHora(estado.horario.hora_cierre)}`;
-
- }else{
-
-  horarioEl.textContent="🕒 Cerrado hoy";
-
- }
-
- actualizarBotones();
-}
-
-function actualizarBotones(){
-
- productos.forEach(p=>{
-
-  const boton=$(`btnProducto_${p.id}`);
-  const cerrado=$(`cerrado_${p.id}`);
-
-  if(!boton)return;
-
-  boton.disabled=!abierto;
-
-  boton.textContent=
-   abierto
-    ?"+ Agregar"
-    :"Cerrado";
-
-  if(cerrado){
-   cerrado.style.display=abierto?"none":"block";
-  }
-
- });
-}
-
-function agregarProducto(id){
-
- if(!abierto){
-  mostrarToast("El local está cerrado.");
-  return;
- }
-
- const producto=productos.find(
-  p=>Number(p.id)===Number(id)
- );
+ const producto=productos.find(p=>p.id===id);
 
  if(!producto)return;
 
- const existente=carrito.find(
-  item=>
-   Number(item.producto_id)===Number(producto.id)&&
-   Number(item.restaurante_id)===Number(restaurante.id)
+ let carrito=[];
+
+ try{
+  carrito=JSON.parse(localStorage.getItem("carrito_sobre_ruedas")||"[]");
+  if(!Array.isArray(carrito))carrito=[];
+ }catch{
+  carrito=[];
+ }
+
+ const existente=carrito.find(x=>
+  Number(x.producto_id)===Number(producto.id)&&
+  Number(x.restaurante_id)===Number(restaurante.id)
  );
 
  if(existente){
 
-  existente.cantidad=
-   (Number(existente.cantidad)||0)+1;
+  existente.cantidad=(Number(existente.cantidad)||1)+1;
 
  }else{
 
@@ -949,16 +485,176 @@ function agregarProducto(id){
    cantidad:1,
    imagen_url:producto.imagen_url||""
   });
+ }
+
+ localStorage.setItem(
+  "carrito_sobre_ruedas",
+  JSON.stringify(carrito)
+ );
+
+ actualizarCarrito();
+
+}
+
+function actualizarCarrito(){
+
+ let carrito=[];
+
+ try{
+  carrito=JSON.parse(
+   localStorage.getItem("carrito_sobre_ruedas")||"[]"
+  );
+
+  if(!Array.isArray(carrito))carrito=[];
+ }catch{
+  carrito=[];
+ }
+
+ const total=carrito.reduce(
+  (s,p)=>s+(Number(p.cantidad)||0),
+  0
+ );
+
+ const el=document.getElementById("cartCount");
+
+ if(el)el.textContent=total;
+}
+
+function obtenerEstadoLocal(){
+
+ const ahora=new Date();
+
+ const dia=ahora.getDay();
+
+ const hora=String(ahora.getHours()).padStart(2,"0");
+ const minuto=String(ahora.getMinutes()).padStart(2,"0");
+
+ const actual=hora+":"+minuto;
+
+ const todosDias=horarios.length===7;
+
+ if(todosDias&&horarios.every(h=>
+  !h.cerrado &&
+  h.hora_apertura?.substring(0,5)==="00:00" &&
+  (
+   h.hora_cierre?.substring(0,5)==="23:59" ||
+   h.hora_cierre?.substring(0,5)==="00:00"
+  )
+ )){
+
+  return {
+   abierto:true,
+   texto:"Abierto · Siempre abierto"
+  };
+ }
+
+ const h=horarios.find(x=>Number(x.dia_semana)===dia);
+
+ if(!h||h.cerrado){
+
+  const siguiente=buscarSiguienteHorario(dia);
+
+  return {
+   abierto:false,
+   texto:siguiente
+    ? `Cerrado · Abre ${siguiente}`
+    : "Cerrado"
+  };
+ }
+
+ const apertura=(h.hora_apertura||"00:00").substring(0,5);
+ const cierre=(h.hora_cierre||"23:59").substring(0,5);
+
+ let abierto;
+
+ if(apertura<=cierre){
+  abierto=actual>=apertura&&actual<=cierre;
+ }else{
+  abierto=actual>=apertura||actual<=cierre;
+ }
+
+ if(abierto){
+
+  return {
+   abierto:true,
+   texto:`Abierto · Hasta las ${cierre}`
+  };
 
  }
 
- guardarCarrito();
-
- mostrarToast(`${producto.nombre} agregado al carrito`);
+ return {
+  abierto:false,
+  texto:`Cerrado · Abre a las ${apertura}`
+ };
 }
 
-cargarCarrito();
-cargar();
+function buscarSiguienteHorario(diaActual){
+
+ for(let i=1;i<=7;i++){
+
+  const dia=(diaActual+i)%7;
+
+  const h=horarios.find(x=>
+   Number(x.dia_semana)===dia
+  );
+
+  if(h&&!h.cerrado&&h.hora_apertura){
+
+   const nombre=DIAS_NOMBRES[dia];
+
+   return `${nombre} a las ${h.hora_apertura.substring(0,5)}`;
+  }
+ }
+
+ return null;
+}
+
+const DIAS_NOMBRES=[
+ "domingo",
+ "lunes",
+ "martes",
+ "miércoles",
+ "jueves",
+ "viernes",
+ "sábado"
+];
+
+function actualizarEstado(){
+
+ const estado=obtenerEstadoLocal();
+
+ const el=document.getElementById("estadoLocal");
+
+ if(!el)return;
+
+ el.textContent=estado.texto;
+
+ el.className=
+  "status "+(estado.abierto?"open":"closed");
+}
+
+function mostrarError(texto){
+
+ contenido.innerHTML=`
+  <div class="empty">
+   ${escapeHtml(texto)}
+  </div>
+ `;
+}
+
+function escapeHtml(value){
+
+ return String(value??"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+}
+
+function escapeAttr(value){
+ return escapeHtml(value);
+}
 </script>
 
 </body>
