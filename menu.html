@@ -245,6 +245,12 @@
             padding: 40px 20px;
         }
 
+        .vacio a {
+            color: #087f5b;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
         @media (max-width: 600px) {
 
             .header-content {
@@ -311,6 +317,10 @@ let carrito = JSON.parse(
 
 let ubicacion = null;
 
+
+// ========================================
+// CONFIGURACIÓN
+// ========================================
 
 const TARIFA_DELIVERY =
     Number(
@@ -463,6 +473,7 @@ function eliminarProducto(
             "¿Quieres eliminar este producto del carrito?"
         );
 
+
     if (!confirmar) {
         return;
     }
@@ -491,10 +502,20 @@ function eliminarProducto(
     });
 
 
-    localStorage.setItem(
-        "carrito",
-        JSON.stringify(carrito)
-    );
+    if (carrito.length) {
+
+        localStorage.setItem(
+            "carrito",
+            JSON.stringify(carrito)
+        );
+
+    } else {
+
+        localStorage.removeItem(
+            "carrito"
+        );
+
+    }
 
 
     mostrarCarrito();
@@ -503,18 +524,15 @@ function eliminarProducto(
 
 
 // ========================================
-// VACIAR TODO EL CARRITO
+// VACIAR CARRITO
 // ========================================
 
 function vaciarCarrito() {
 
     if (!carrito.length) {
 
-        alert(
-            "El carrito ya está vacío."
-        );
-
         return;
+
     }
 
 
@@ -525,7 +543,9 @@ function vaciarCarrito() {
 
 
     if (!confirmar) {
+
         return;
+
     }
 
 
@@ -667,18 +687,13 @@ function mostrarCarrito() {
 
 
                 const subtotalProducto =
-                    cantidad * precio;
+                    cantidad *
+                    precio;
 
 
                 subtotal +=
                     subtotalProducto;
 
-
-                /*
-                 * Usamos JSON.stringify para
-                 * pasar correctamente los IDs
-                 * aunque sean texto.
-                 */
 
                 const restauranteId =
                     JSON.stringify(
@@ -686,6 +701,7 @@ function mostrarCarrito() {
                             producto.restaurante_id ?? ""
                         )
                     );
+
 
                 const productoId =
                     JSON.stringify(
@@ -1421,7 +1437,9 @@ function enviarPedidoWhatsApp() {
         "Pedido generado desde Sobre Ruedas.";
 
 
-    // Guardar pedido localmente
+    // ========================================
+    // GUARDAR ÚLTIMO PEDIDO
+    // ========================================
 
     const pedido = {
 
@@ -1475,7 +1493,9 @@ function enviarPedidoWhatsApp() {
     );
 
 
-    // Abrir WhatsApp
+    // ========================================
+    // ABRIR WHATSAPP
+    // ========================================
 
     const url =
         "https://wa.me/" +
@@ -1485,6 +1505,23 @@ function enviarPedidoWhatsApp() {
             mensaje
         );
 
+
+    /*
+     * IMPORTANTE:
+     * Primero eliminamos el carrito.
+     * De esta forma, cuando el cliente
+     * regrese a la página, comenzará
+     * con un carrito nuevo.
+     */
+
+    carrito = [];
+
+    localStorage.removeItem(
+        "carrito"
+    );
+
+
+    // Finalmente abrir WhatsApp
 
     window.location.href =
         url;
