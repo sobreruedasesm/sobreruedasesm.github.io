@@ -1,87 +1,260 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Administración | Sobre Ruedas</title>
+<title>Mi pedido | Sobre Ruedas</title>
 
 <style>
 *{box-sizing:border-box}
 
 :root{
- --bg:#0b1110;
- --panel:#121a18;
- --panel2:#18221f;
- --border:#26332f;
- --text:#f1f5f3;
- --muted:#91a09a;
- --primary:#35d07f;
- --primary2:#22a963;
- --danger:#ef5b5b;
- --warning:#e5a84b;
- --input:#0d1513;
+ --bg:#f7f4ee;
+ --panel:#fffdf9;
+ --panel2:#fff;
+ --primary:#2f5d45;
+ --primary2:#244936;
+ --accent:#d97941;
+ --accent2:#c86832;
+ --text:#26352d;
+ --muted:#68736b;
+ --border:#e7dfd2;
+ --soft:#f1eadf;
+ --danger:#a9553b;
+ --success:#35633f;
+ --shadow:0 4px 16px #5b46331a;
 }
 
 body{
  margin:0;
- font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ font-family:Arial,sans-serif;
  background:var(--bg);
  color:var(--text);
 }
 
 header{
- background:#0d1513;
- border-bottom:1px solid var(--border);
- padding:22px 24px;
+ background:var(--primary);
+ color:#fff;
+ padding:18px 20px;
  position:sticky;
  top:0;
  z-index:20;
+ box-shadow:0 3px 12px #0002;
+}
+
+.header-inner{
+ max-width:1100px;
+ margin:auto;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
 }
 
 header h1{
  margin:0;
  font-size:24px;
- font-weight:800;
- letter-spacing:-.4px;
 }
 
 header p{
- margin:5px 0 0;
- color:var(--muted);
+ margin:4px 0 0;
+ color:#e5eee7;
  font-size:14px;
 }
 
+.btn-header{
+ background:#ffffff1c;
+ color:#fff;
+ border:1px solid #ffffff33;
+ padding:9px 13px;
+ border-radius:9px;
+ cursor:pointer;
+ font-weight:bold;
+}
+
 main{
- max-width:1150px;
+ max-width:1100px;
  margin:auto;
- padding:24px;
+ padding:20px;
 }
 
 .seccion{
  background:var(--panel);
  border:1px solid var(--border);
- border-radius:16px;
- padding:20px;
+ border-radius:14px;
+ padding:18px;
  margin-bottom:18px;
- box-shadow:0 8px 25px #00000022;
+ box-shadow:var(--shadow);
 }
 
 .seccion h2{
- margin:0 0 18px;
- font-size:19px;
- color:#fff;
- letter-spacing:-.2px;
+ margin:0 0 15px;
+ color:var(--primary);
+ font-size:20px;
 }
 
 .seccion h3{
- color:var(--primary)!important;
+ margin:0 0 12px;
+ color:var(--primary);
+ font-size:17px;
 }
+
+.mensaje{
+ padding:11px 13px;
+ border-radius:9px;
+ background:#f5eadf;
+ border:1px solid #ead6c3;
+ color:#76543d;
+ margin-bottom:14px;
+ font-size:14px;
+}
+
+.mensaje.exito{
+ background:#e2efe3;
+ border-color:#cfe2d0;
+ color:var(--success);
+}
+
+.oculto{
+ display:none!important;
+}
+
+/* CARRITO */
+
+.local-card{
+ background:#fff;
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:15px;
+ margin-bottom:14px;
+}
+
+.local-header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin-bottom:12px;
+ padding-bottom:10px;
+ border-bottom:1px solid var(--border);
+}
+
+.local-header h3{
+ margin:0;
+ color:var(--primary);
+}
+
+.producto{
+ display:grid;
+ grid-template-columns:1fr auto auto;
+ gap:12px;
+ align-items:center;
+ padding:10px 0;
+ border-bottom:1px solid #eee8de;
+}
+
+.producto:last-child{
+ border-bottom:0;
+}
+
+.producto-info strong{
+ display:block;
+ color:var(--text);
+ margin-bottom:3px;
+}
+
+.producto-info small{
+ color:var(--muted);
+}
+
+.cantidad{
+ display:flex;
+ align-items:center;
+ gap:7px;
+}
+
+.cantidad button{
+ width:30px;
+ height:30px;
+ padding:0;
+ border-radius:7px;
+ background:var(--soft);
+ color:var(--primary);
+ font-size:17px;
+}
+
+.cantidad span{
+ min-width:22px;
+ text-align:center;
+ font-weight:bold;
+}
+
+.producto-total{
+ text-align:right;
+ min-width:80px;
+ font-weight:bold;
+ color:var(--primary);
+}
+
+.eliminar{
+ background:none;
+ color:var(--danger);
+ border:0;
+ padding:4px;
+ cursor:pointer;
+ font-size:12px;
+}
+
+.local-resumen{
+ margin-top:12px;
+ padding-top:11px;
+ border-top:1px solid var(--border);
+}
+
+.linea{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ margin:6px 0;
+ color:var(--muted);
+ font-size:14px;
+}
+
+.linea.total-local{
+ color:var(--primary);
+ font-size:16px;
+ font-weight:bold;
+}
+
+/* RESUMEN */
+
+.resumen-final{
+ background:var(--primary);
+ color:#fff;
+ border-radius:13px;
+ padding:17px;
+ margin-top:18px;
+}
+
+.resumen-final .linea{
+ color:#e4eee7;
+}
+
+.resumen-final .linea.total{
+ color:#fff;
+ font-size:20px;
+ font-weight:bold;
+ padding-top:10px;
+ margin-top:10px;
+ border-top:1px solid #ffffff33;
+}
+
+/* FORMULARIO */
 
 .grid{
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
- gap:14px;
+ gap:12px;
 }
 
 .campo{
@@ -90,31 +263,28 @@ main{
 
 .campo label{
  display:block;
- margin-bottom:7px;
- color:#aab7b1;
+ margin-bottom:6px;
  font-size:13px;
- font-weight:600;
+ font-weight:bold;
+ color:#53665a;
 }
 
 input,
-textarea,
-select{
+textarea{
  width:100%;
  padding:11px 12px;
- border:1px solid var(--border);
- border-radius:10px;
- background:var(--input);
+ border:1px solid #d8d0c3;
+ border-radius:9px;
+ background:#fff;
  color:var(--text);
  font-size:14px;
  outline:none;
- transition:.2s;
 }
 
 input:focus,
-textarea:focus,
-select:focus{
+textarea:focus{
  border-color:var(--primary);
- box-shadow:0 0 0 3px #35d07f18;
+ box-shadow:0 0 0 3px #2f5d4515;
 }
 
 textarea{
@@ -122,220 +292,149 @@ textarea{
  resize:vertical;
 }
 
-input[type="file"]{
- padding:9px;
+.ubicacion{
+ display:flex;
+ gap:8px;
+ margin-top:7px;
+ flex-wrap:wrap;
 }
 
-input[type="checkbox"]{
- width:auto;
- accent-color:var(--primary);
+.ubicacion button{
+ flex:1;
+ min-width:170px;
 }
 
-button{
- border:0;
- border-radius:9px;
- background:var(--primary);
- color:#06100b;
- padding:10px 14px;
- cursor:pointer;
- font-weight:750;
- transition:.2s;
-}
-
-button:hover{
- filter:brightness(1.08);
- transform:translateY(-1px);
-}
-
-button.sec{
- background:#24362f;
- color:#dce8e3;
-}
-
-button.gray{
- background:#25302d;
- color:#d6dfdb;
-}
-
-button.danger{
- background:#6d2929;
- color:#fff;
-}
-
-button.danger:hover{
- background:#873333;
-}
-
-button.warning{
- background:#765625;
- color:#fff;
-}
+/* BOTONES */
 
 .acciones{
  display:flex;
  gap:8px;
  flex-wrap:wrap;
- margin-top:12px;
+ margin-top:15px;
 }
 
-.lista{
- display:grid;
- gap:12px;
-}
-
-.card{
- background:var(--panel2);
- border:1px solid var(--border);
- border-radius:13px;
- padding:15px;
-}
-
-.card h3{
- margin:0 0 6px;
- color:#fff!important;
-}
-
-.card p{
- margin:5px 0;
- color:var(--muted);
- font-size:13px;
-}
-
-.estado{
- display:inline-flex;
- align-items:center;
- gap:6px;
- padding:5px 9px;
- border-radius:20px;
- font-size:11px;
- font-weight:800;
- margin-top:6px;
-}
-
-.activo{
- background:#123d29;
- color:#57dc91;
-}
-
-.inactivo{
- background:#392020;
- color:#ef7777;
-}
-
-.banner{
- width:100%;
- max-width:520px;
- height:190px;
- object-fit:cover;
- border-radius:11px;
- background:#0c1210;
- border:1px solid var(--border);
- margin:5px 0 12px;
-}
-
-.preview{
- width:100%;
- height:150px;
- object-fit:cover;
- border-radius:10px;
- background:#0c1210;
- border:1px solid var(--border);
- display:none;
- margin-top:8px;
-}
-
-.producto-row{
- display:grid;
- grid-template-columns:1fr 120px auto;
- gap:8px;
- align-items:center;
- margin-bottom:8px;
-}
-
-.horarios{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
- gap:9px;
-}
-
-.dia{
- border:1px solid var(--border);
- border-radius:10px;
- padding:10px;
- background:#101816;
-}
-
-.dia strong{
- display:block;
- color:#fff;
- margin-bottom:8px;
- font-size:13px;
-}
-
-.check{
- display:flex;
- align-items:center;
- gap:7px;
- font-size:12px;
- color:var(--muted);
-}
-
-.mensaje{
- padding:11px 13px;
- border-radius:10px;
- background:#33271a;
- border:1px solid #584323;
- color:#e9c986;
- margin-bottom:14px;
- font-size:13px;
-}
-
-.exito{
- background:#123d29;
- border-color:#1c6843;
- color:#62dc96;
-}
-
-.oculto{
- display:none;
-}
-
-hr{
+button{
  border:0;
- border-top:1px solid var(--border);
- margin:20px 0;
+ border-radius:8px;
+ background:var(--accent);
+ color:#fff;
+ padding:10px 14px;
+ cursor:pointer;
+ font-weight:bold;
+ transition:.15s;
 }
+
+button:hover{
+ background:var(--accent2);
+ transform:translateY(-1px);
+}
+
+button.sec{
+ background:var(--primary);
+}
+
+button.sec:hover{
+ background:var(--primary2);
+}
+
+button.gray{
+ background:var(--soft);
+ color:var(--primary);
+}
+
+button.danger{
+ background:#f0ddd7;
+ color:var(--danger);
+}
+
+button.danger:hover{
+ background:#e7ccc4;
+}
+
+button:disabled{
+ opacity:.55;
+ cursor:not-allowed;
+ transform:none;
+}
+
+/* VACÍO */
 
 .vacio{
+ text-align:center;
+ padding:40px 20px;
  color:var(--muted);
- font-size:13px;
- padding:5px 0;
 }
 
+.vacio-icon{
+ font-size:42px;
+ margin-bottom:10px;
+}
+
+.vacio h2{
+ margin:0 0 7px;
+ color:var(--primary);
+}
+
+/* FOOTER */
+
+.acciones-finales{
+ display:flex;
+ gap:10px;
+ justify-content:flex-end;
+ flex-wrap:wrap;
+ margin-top:18px;
+}
+
+.btn-pedido{
+ font-size:16px;
+ padding:13px 20px;
+}
+
+/* RESPONSIVE */
+
 @media(max-width:600px){
+
  main{
   padding:14px;
  }
 
  header{
-  padding:18px;
+  padding:16px;
+ }
+
+ header h1{
+  font-size:21px;
  }
 
  .seccion{
   padding:15px;
-  border-radius:13px;
  }
 
- .producto-row{
-  grid-template-columns:1fr 100px;
+ .producto{
+  grid-template-columns:1fr auto;
  }
 
- .producto-row button{
-  grid-column:1/3;
+ .producto-total{
+  grid-column:2;
+  grid-row:1;
  }
 
- button{
-  padding:10px 12px;
+ .cantidad{
+  grid-column:1;
+ }
+
+ .eliminar{
+  grid-column:2;
+  grid-row:2;
+  justify-self:end;
+ }
+
+ .local-header{
+  align-items:flex-start;
+ }
+
+ .acciones-finales button{
+  width:100%;
  }
 }
 </style>
@@ -344,175 +443,107 @@ hr{
 <body>
 
 <header>
- <h1>Sobre Ruedas</h1>
- <p>Panel de administración</p>
+ <div class="header-inner">
+  <div>
+   <h1>Sobre Ruedas</h1>
+   <p>Mi pedido</p>
+  </div>
+
+  <button class="btn-header" onclick="volverInicio()">
+   ← Seguir comprando
+  </button>
+ </div>
 </header>
 
 <main>
 
 <div id="mensaje"></div>
 
-<!-- CONFIGURACIÓN -->
+<section id="seccionCarrito" class="seccion">
+ <h2>🛒 Productos seleccionados</h2>
 
-<section class="seccion">
- <h2>Configuración del negocio</h2>
+ <div id="carrito"></div>
 
- <div class="grid">
+ <div id="resumenFinal"></div>
 
-  <div class="campo">
-   <label>Nombre del negocio</label>
-   <input id="nombreNegocio">
-  </div>
+ <div class="acciones-finales">
+  <button class="gray" onclick="vaciarCarrito()">
+   Vaciar carrito
+  </button>
 
-  <div class="campo">
-   <label>Ciudad</label>
-   <input id="ciudad">
-  </div>
-
-  <div class="campo">
-   <label>Tarifa de delivery</label>
-   <input id="tarifaDelivery" type="number" step="0.01" min="0">
-  </div>
-
-  <div class="campo">
-   <label>WhatsApp del negocio</label>
-   <input id="whatsappNegocio">
-  </div>
-
- </div>
-
- <div class="acciones">
-  <button onclick="guardarConfiguracion()">Guardar configuración</button>
+  <button class="sec" onclick="volverInicio()">
+   Seguir comprando
+  </button>
  </div>
 </section>
 
-<!-- CATEGORÍAS -->
+<section id="seccionDatos" class="seccion oculto">
 
-<section class="seccion">
- <h2>Categorías</h2>
-
- <div class="grid">
-  <div class="campo">
-   <label>Nueva categoría</label>
-   <input id="nuevaCategoria" placeholder="Ej.: Hamburguesas">
-  </div>
- </div>
-
- <div class="acciones">
-  <button onclick="crearCategoria()">+ Agregar categoría</button>
- </div>
-
- <hr>
-
- <div id="listaCategorias" class="lista"></div>
-</section>
-
-<!-- NUEVO LOCAL -->
-
-<section class="seccion">
- <h2>Nuevo local</h2>
+ <h2>📍 Datos de entrega</h2>
 
  <div class="grid">
 
   <div class="campo">
    <label>Nombre</label>
-   <input id="nuevoNombre">
+   <input
+    id="clienteNombre"
+    type="text"
+    placeholder="Tu nombre">
   </div>
 
   <div class="campo">
-   <label>Categoría</label>
-   <select id="nuevoCategoria"></select>
-  </div>
-
-  <div class="campo">
-   <label>Descripción</label>
-   <textarea id="nuevoDescripcion"></textarea>
-  </div>
-
-  <div class="campo">
-   <label>Banner</label>
-   <input id="nuevoBanner" type="file" accept="image/*"
-    onchange="previsualizarArchivo(this,'previewNuevo')">
-   <img id="previewNuevo" class="preview">
+   <label>Teléfono</label>
+   <input
+    id="clienteTelefono"
+    type="tel"
+    placeholder="Ej.: 0981234567">
   </div>
 
  </div>
 
- <h3>Horarios</h3>
- <div id="horariosNuevo" class="horarios"></div>
+ <div class="campo" style="margin-top:12px">
+  <label>Dirección de entrega</label>
 
- <h3 style="margin-top:20px">Productos</h3>
- <div id="productosNuevos"></div>
+  <textarea
+   id="direccion"
+   placeholder="Ingresa la dirección donde deseas recibir tu pedido"></textarea>
+
+  <div class="ubicacion">
+
+   <button
+    type="button"
+    class="sec"
+    onclick="usarMiUbicacion()">
+    📍 Usar mi ubicación
+   </button>
+
+   <button
+    type="button"
+    class="gray"
+    id="btnMapa"
+    onclick="abrirGoogleMaps()"
+    disabled>
+    🗺️ Abrir en Google Maps
+   </button>
+
+  </div>
+ </div>
+
+ <div class="campo" style="margin-top:12px">
+  <label>Referencia</label>
+
+  <input
+   id="referencia"
+   type="text"
+   placeholder="Ej.: casa de color azul, frente al parque">
+ </div>
 
  <div class="acciones">
-  <button class="gray" onclick="agregarProductoNuevo()">+ Producto</button>
-  <button onclick="crearLocal()">Crear local</button>
- </div>
-</section>
-
-<!-- LOCALES -->
-
-<section class="seccion">
- <h2>Locales</h2>
- <div id="listaLocales" class="lista">
-  Cargando...
- </div>
-</section>
-
-<!-- EDICIÓN -->
-
-<section id="edicion" class="seccion oculto">
-
- <h2>Editar local</h2>
-
- <input id="editId" type="hidden">
-
- <div class="grid">
-
-  <div class="campo">
-   <label>Nombre</label>
-   <input id="editNombre">
-  </div>
-
-  <div class="campo">
-   <label>Categoría</label>
-   <select id="editCategoria"></select>
-  </div>
-
-  <div class="campo">
-   <label>Descripción</label>
-   <textarea id="editDescripcion"></textarea>
-  </div>
-
-  <div class="campo">
-   <label>Estado</label>
-   <select id="editActivo">
-    <option value="true">Activo</option>
-    <option value="false">Inactivo</option>
-   </select>
-  </div>
-
-  <div class="campo">
-   <label>Nuevo banner</label>
-   <input id="editBanner" type="file" accept="image/*"
-    onchange="previsualizarArchivo(this,'previewEdit')">
-   <img id="previewEdit" class="preview">
-  </div>
-
- </div>
-
- <div id="bannerActual"></div>
-
- <h3>Horarios</h3>
- <div id="horariosEdit" class="horarios"></div>
-
- <h3 style="margin-top:20px">Productos</h3>
- <div id="productosEdit"></div>
-
- <div class="acciones">
-  <button class="gray" onclick="agregarProductoEdit()">+ Producto</button>
-  <button onclick="guardarEdicion()">Guardar cambios</button>
-  <button class="gray" onclick="cerrarEdicion()">Cancelar</button>
+  <button
+   class="btn-pedido"
+   onclick="confirmarPedido()">
+   Confirmar pedido
+  </button>
  </div>
 
 </section>
@@ -525,49 +556,28 @@ hr{
 
 <script>
 
-const BUCKET="restaurantes";
 const $=id=>document.getElementById(id);
 
-const mensaje=$("mensaje");
-const nombreNegocio=$("nombreNegocio");
-const ciudad=$("ciudad");
-const tarifaDelivery=$("tarifaDelivery");
-const whatsappNegocio=$("whatsappNegocio");
-const nuevaCategoria=$("nuevaCategoria");
-const listaCategorias=$("listaCategorias");
-const nuevoNombre=$("nuevoNombre");
-const nuevoCategoria=$("nuevoCategoria");
-const nuevoDescripcion=$("nuevoDescripcion");
-const nuevoBanner=$("nuevoBanner");
-const previewNuevo=$("previewNuevo");
-const productosNuevosEl=$("productosNuevos");
-const listaLocales=$("listaLocales");
-const edicion=$("edicion");
-const editId=$("editId");
-const editNombre=$("editNombre");
-const editCategoria=$("editCategoria");
-const editDescripcion=$("editDescripcion");
-const editActivo=$("editActivo");
-const editBanner=$("editBanner");
-const previewEdit=$("previewEdit");
-const bannerActual=$("bannerActual");
-const productosEditEl=$("productosEdit");
+const carritoEl=$("carrito");
+const resumenFinalEl=$("resumenFinal");
+const seccionDatos=$("seccionDatos");
+const mensajeEl=$("mensaje");
+const clienteNombre=$("clienteNombre");
+const clienteTelefono=$("clienteTelefono");
+const direccion=$("direccion");
+const referencia=$("referencia");
+const btnMapa=$("btnMapa");
 
-let categorias=[];
-let locales=[];
-let productosEdit=[];
-let productosNuevos=[];
-let bannerEdicionActual="";
+let carrito=[];
+let ubicacionActual=null;
+let tarifaDelivery=1.50;
+let whatsappNegocio=
+ window.CONFIG?.whatsappNegocio||
+ "593985459479";
 
-const dias=[
- "Domingo",
- "Lunes",
- "Martes",
- "Miércoles",
- "Jueves",
- "Viernes",
- "Sábado"
-];
+/* =========================
+   UTILIDADES
+========================= */
 
 function escapeHtml(v=""){
  return String(v).replace(/[&<>"']/g,m=>({
@@ -580,1137 +590,785 @@ function escapeHtml(v=""){
 }
 
 function mostrarMensaje(texto,exito=false){
- mensaje.innerHTML=
+
+ mensajeEl.innerHTML=
   `<div class="mensaje ${exito?"exito":""}">
    ${escapeHtml(texto)}
   </div>`;
 
- setTimeout(()=>mensaje.innerHTML="",4000);
+ window.scrollTo({
+  top:0,
+  behavior:"smooth"
+ });
+
+ setTimeout(()=>{
+  mensajeEl.innerHTML="";
+ },5000);
 }
 
-function cacheUrl(url){
- if(!url)return "";
- return url+(url.includes("?")?"&":"?")+"v="+Date.now();
+function dinero(valor){
+ return "$"+Number(valor||0).toFixed(2);
 }
 
-function extensionArchivo(nombre=""){
- const p=nombre.toLowerCase().split(".");
- return p.length>1?p.pop():"jpg";
+function numeroPedido(){
+ return "SR-"+Math.floor(
+  100000+
+  Math.random()*900000
+ );
 }
 
-async function subirImagen(archivo,idLocal){
- if(!archivo)return null;
+/* =========================
+   CARRITO
+========================= */
 
- const ruta=
-  `banners/${idLocal}/${Date.now()}-${crypto.randomUUID()}.${extensionArchivo(archivo.name)}`;
-
- const {error}=await supabaseClient.storage
-  .from(BUCKET)
-  .upload(ruta,archivo,{
-   cacheControl:"3600",
-   upsert:false,
-   contentType:archivo.type||"image/jpeg"
-  });
-
- if(error)throw error;
-
- const {data}=supabaseClient.storage
-  .from(BUCKET)
-  .getPublicUrl(ruta);
-
- if(!data?.publicUrl)
-  throw new Error("No se pudo obtener la URL pública.");
-
- return data.publicUrl;
-}
-
-function previsualizarArchivo(input,id){
- const archivo=input.files?.[0];
- const img=$(id);
-
- if(!archivo){
-  img.style.display="none";
-  img.removeAttribute("src");
-  return;
- }
-
- img.src=URL.createObjectURL(archivo);
- img.style.display="block";
-}
-
-/* CONFIGURACIÓN */
-
-async function cargarConfiguracion(){
- try{
-
-  let data=null;
-
-  const r=await supabaseClient
-   .from("configuracion_negocio")
-   .select("*")
-   .order("id",{ascending:true})
-   .limit(1);
-
-  if(r.error)throw r.error;
-
-  if(r.data?.length)
-   data=r.data[0];
-
-  nombreNegocio.value=
-   data?.nombre_negocio||
-   window.CONFIG?.nombreNegocio||
-   "Sobre Ruedas";
-
-  ciudad.value=
-   data?.ciudad||
-   window.CONFIG?.ciudad||
-   "Esmeraldas";
-
-  tarifaDelivery.value=
-   data?.tarifa_delivery??
-   window.CONFIG?.tarifaDelivery??
-   1.50;
-
-  whatsappNegocio.value=
-   data?.whatsapp_negocio||
-   window.CONFIG?.whatsappNegocio||
-   "";
-
- }catch(e){
-
-  console.error(e);
-
-  nombreNegocio.value=window.CONFIG?.nombreNegocio||"Sobre Ruedas";
-  ciudad.value=window.CONFIG?.ciudad||"Esmeraldas";
-  tarifaDelivery.value=window.CONFIG?.tarifaDelivery??1.50;
-  whatsappNegocio.value=window.CONFIG?.whatsappNegocio||"";
-
- }
-}
-
-async function guardarConfiguracion(){
+function cargarCarrito(){
 
  try{
 
-  const registro={
-   nombre_negocio:nombreNegocio.value.trim()||"Sobre Ruedas",
-   ciudad:ciudad.value.trim()||"Esmeraldas",
-   tarifa_delivery:Number(tarifaDelivery.value)||0,
-   whatsapp_negocio:whatsappNegocio.value.trim(),
-   moneda:"USD",
-   actualizado_en:new Date().toISOString()
-  };
+  carrito=JSON.parse(
+   localStorage.getItem("carrito")||"[]"
+  );
 
-  const {data,error}=await supabaseClient
-   .from("configuracion_negocio")
-   .select("id")
-   .order("id",{ascending:true})
-   .limit(1);
+  if(!Array.isArray(carrito))
+   carrito=[];
 
-  if(error)throw error;
+ }catch{
 
-  let errorGuardar;
+  carrito=[];
+ }
 
-  if(data?.length){
+ renderCarrito();
+}
 
-   ({error:errorGuardar}=await supabaseClient
-    .from("configuracion_negocio")
-    .update(registro)
-    .eq("id",data[0].id));
+function guardarCarrito(){
 
-  }else{
+ localStorage.setItem(
+  "carrito",
+  JSON.stringify(carrito)
+ );
 
-   ({error:errorGuardar}=await supabaseClient
-    .from("configuracion_negocio")
-    .insert(registro));
+ renderCarrito();
+}
+
+function agruparPorLocal(){
+
+ const grupos={};
+
+ carrito.forEach((p,i)=>{
+
+  const id=String(
+   p.restaurante_id||
+   p.local_id||
+   "sin-local"
+  );
+
+  if(!grupos[id]){
+
+   grupos[id]={
+    restaurante_id:p.restaurante_id,
+    restaurante_nombre:
+     p.restaurante_nombre||
+     "Local",
+    productos:[]
+   };
 
   }
 
-  if(errorGuardar)throw errorGuardar;
+  grupos[id].productos.push({
+   ...p,
+   _index:i
+  });
 
-  mostrarMensaje("Configuración guardada.",true);
+ });
 
- }catch(e){
-
-  console.error(e);
-  mostrarMensaje("No se pudo guardar la configuración: "+e.message);
-
- }
+ return Object.values(grupos);
 }
 
-/* CATEGORÍAS */
+function calcularSubtotalLocal(local){
 
-async function cargarCategorias(){
-
- try{
-
-  const {data,error}=await supabaseClient
-   .from("categorias")
-   .select("*")
-   .order("nombre");
-
-  if(error)throw error;
-
-  categorias=data||[];
-
-  renderCategorias();
-  cargarSelectCategorias();
-
- }catch(e){
-
-  console.error(e);
-
-  categorias=[];
-  renderCategorias();
-  cargarSelectCategorias();
-
-  mostrarMensaje("No se pudieron cargar las categorías: "+e.message);
-
- }
+ return local.productos.reduce(
+  (total,p)=>
+   total+
+   (Number(p.precio)||0)*
+   (Number(p.cantidad)||0),
+  0
+ );
 }
 
-function renderCategorias(){
+function calcularDelivery(){
 
- if(!categorias.length){
+ return agruparPorLocal().length*
+  Number(tarifaDelivery||1.50);
+}
 
-  listaCategorias.innerHTML=
-   `<div class="vacio">No hay categorías registradas.</div>`;
+function calcularTotalProductos(){
 
-  return;
- }
+ return carrito.reduce(
+  (total,p)=>
+   total+
+   (Number(p.precio)||0)*
+   (Number(p.cantidad)||0),
+  0
+ );
+}
 
- listaCategorias.innerHTML=categorias.map(c=>`
+function renderCarrito(){
 
-  <div class="card">
+ const locales=agruparPorLocal();
 
-   <strong>${escapeHtml(c.nombre)}</strong>
+ if(!locales.length){
 
-   <span class="estado ${c.activo?"activo":"inactivo"}">
-    ${c.activo?"● Activa":"● Inactiva"}
-   </span>
+  carritoEl.innerHTML=`
+   <div class="vacio">
 
-   <div class="acciones">
+    <div class="vacio-icon">🛒</div>
 
-    <button class="gray"
-     onclick="editarCategoria(${c.id})">
-     Editar
-    </button>
+    <h2>Tu carrito está vacío</h2>
 
-    <button class="${c.activo?"warning":"sec"}"
-     onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
-     ${c.activo?"Desactivar":"Activar"}
-    </button>
+    <p>Agrega productos desde nuestros locales.</p>
 
-    <button class="danger"
-     onclick="eliminarCategoria(${c.id})">
-     Eliminar
+    <button class="sec" onclick="volverInicio()">
+     Ver locales
     </button>
 
    </div>
+  `;
 
-  </div>
+  resumenFinalEl.innerHTML="";
+  seccionDatos.classList.add("oculto");
 
- `).join("");
-}
-
-function cargarSelectCategorias(){
-
- const opciones=
-  '<option value="">Seleccionar categoría</option>'+
-  categorias
-   .filter(c=>c.activo)
-   .map(c=>`
-    <option value="${escapeHtml(c.nombre)}">
-     ${escapeHtml(c.nombre)}
-    </option>
-   `).join("");
-
- nuevoCategoria.innerHTML=opciones;
- editCategoria.innerHTML=opciones;
-}
-
-async function crearCategoria(){
-
- const nombre=nuevaCategoria.value.trim();
-
- if(!nombre){
-  mostrarMensaje("Ingresa el nombre de la categoría.");
   return;
  }
 
- try{
+ seccionDatos.classList.remove("oculto");
 
-  const existe=categorias.some(c=>
-   c.nombre.trim().toLowerCase()===nombre.toLowerCase()
-  );
+ carritoEl.innerHTML=locales.map(local=>{
 
-  if(existe){
-   mostrarMensaje("La categoría ya existe.");
-   return;
-  }
-
-  const {error}=await supabaseClient
-   .from("categorias")
-   .insert({
-    nombre,
-    activo:true
-   });
-
-  if(error)throw error;
-
-  nuevaCategoria.value="";
-
-  await cargarCategorias();
-
-  mostrarMensaje("Categoría creada.",true);
-
- }catch(e){
-
-  console.error(e);
-  mostrarMensaje("No se pudo crear la categoría: "+e.message);
-
- }
-}
-
-async function editarCategoria(id){
-
- const categoria=categorias.find(c=>Number(c.id)===Number(id));
-
- if(!categoria)return;
-
- const nuevo=prompt(
-  "Nombre de la categoría:",
-  categoria.nombre
- );
-
- if(nuevo===null)return;
-
- const nombre=nuevo.trim();
-
- if(!nombre){
-  mostrarMensaje("El nombre no puede quedar vacío.");
-  return;
- }
-
- try{
-
-  const existe=categorias.some(c=>
-   Number(c.id)!==Number(id)&&
-   c.nombre.trim().toLowerCase()===nombre.toLowerCase()
-  );
-
-  if(existe){
-   mostrarMensaje("Ya existe otra categoría con ese nombre.");
-   return;
-  }
-
-  const {error}=await supabaseClient
-   .from("categorias")
-   .update({nombre})
-   .eq("id",id);
-
-  if(error)throw error;
-
-  /*
-   Actualizamos también los locales que tenían
-   la categoría anterior.
-  */
-
-  if(categoria.nombre!==nombre){
-
-   const {error:errorLocales}=await supabaseClient
-    .from("restaurantes")
-    .update({categoria:nombre})
-    .eq("categoria",categoria.nombre);
-
-   if(errorLocales)throw errorLocales;
-  }
-
-  await cargarCategorias();
-  await cargarLocales();
-
-  mostrarMensaje("Categoría actualizada.",true);
-
- }catch(e){
-
-  console.error(e);
-  mostrarMensaje("No se pudo actualizar la categoría: "+e.message);
-
- }
-}
-
-async function cambiarEstadoCategoria(id,activo){
-
- try{
-
-  const {error}=await supabaseClient
-   .from("categorias")
-   .update({activo})
-   .eq("id",id);
-
-  if(error)throw error;
-
-  await cargarCategorias();
-
-  mostrarMensaje(
-   activo?"Categoría activada.":"Categoría desactivada.",
-   true
-  );
-
- }catch(e){
-
-  console.error(e);
-  mostrarMensaje("No se pudo cambiar el estado: "+e.message);
-
- }
-}
-
-async function eliminarCategoria(id){
-
- const categoria=categorias.find(c=>Number(c.id)===Number(id));
-
- if(!categoria)return;
-
- const usada=locales.some(l=>
-  String(l.categoria||"").trim().toLowerCase()===
-  String(categoria.nombre).trim().toLowerCase()
- );
-
- if(usada){
-
-  if(!confirm(
-   `La categoría "${categoria.nombre}" está siendo utilizada por uno o más locales.\n\n`+
-   "Si la eliminas, esos locales quedarán sin categoría.\n\n"+
-   "¿Deseas continuar?"
-  ))return;
-
-  try{
-
-   const {error:errorLocales}=await supabaseClient
-    .from("restaurantes")
-    .update({categoria:null})
-    .eq("categoria",categoria.nombre);
-
-   if(errorLocales)throw errorLocales;
-
-  }catch(e){
-
-   console.error(e);
-   mostrarMensaje("No se pudo quitar la categoría de los locales: "+e.message);
-   return;
-  }
- }
-
- if(!confirm(
-  `¿Eliminar definitivamente la categoría "${categoria.nombre}"?`
- ))return;
-
- try{
-
-  const {error}=await supabaseClient
-   .from("categorias")
-   .delete()
-   .eq("id",id);
-
-  if(error)throw error;
-
-  await cargarCategorias();
-  await cargarLocales();
-
-  mostrarMensaje("Categoría eliminada.",true);
-
- }catch(e){
-
-  console.error(e);
-  mostrarMensaje("No se pudo eliminar la categoría: "+e.message);
-
- }
-}
-
-/* HORARIOS */
-
-function renderHorarios(contenedorId,datos=[]){
-
- const cont=$(contenedorId);
- const mapa={};
-
- datos.forEach(h=>mapa[h.dia_semana]=h);
-
- cont.innerHTML=dias.map((dia,i)=>{
-
-  const h=mapa[i]||{
-   cerrado:false,
-   hora_apertura:"10:00",
-   hora_cierre:"22:00"
-  };
+  const subtotal=calcularSubtotalLocal(local);
+  const delivery=Number(tarifaDelivery)||1.50;
+  const total=subtotal+delivery;
 
   return `
-   <div class="dia">
+   <div class="local-card">
 
-    <strong>${dia}</strong>
+    <div class="local-header">
+     <h3>${escapeHtml(local.restaurante_nombre)}</h3>
+     <strong>${dinero(total)}</strong>
+    </div>
 
-    <label class="check">
-     <input
-      type="checkbox"
-      id="${contenedorId}_cerrado_${i}"
-      ${h.cerrado?"checked":""}>
-     Cerrado
-    </label>
+    ${local.productos.map(p=>`
 
-    <input
-     type="time"
-     id="${contenedorId}_apertura_${i}"
-     value="${h.hora_apertura||"10:00"}"
-     style="margin-top:7px">
+     <div class="producto">
 
-    <input
-     type="time"
-     id="${contenedorId}_cierre_${i}"
-     value="${h.hora_cierre||"22:00"}"
-     style="margin-top:7px">
+      <div class="producto-info">
+       <strong>${escapeHtml(p.producto_nombre||"Producto")}</strong>
+       <small>
+        ${dinero(p.precio)} × ${Number(p.cantidad)||0}
+       </small>
+      </div>
+
+      <div class="cantidad">
+
+       <button
+        onclick="cambiarCantidad(${p._index},-1)">
+        −
+       </button>
+
+       <span>${Number(p.cantidad)||0}</span>
+
+       <button
+        onclick="cambiarCantidad(${p._index},1)">
+        +
+       </button>
+
+      </div>
+
+      <div class="producto-total">
+       ${dinero(
+        (Number(p.precio)||0)*
+        (Number(p.cantidad)||0)
+       )}
+
+       <br>
+
+       <button
+        class="eliminar"
+        onclick="eliminarProducto(${p._index})">
+        Eliminar
+       </button>
+
+      </div>
+
+     </div>
+
+    `).join("")}
+
+    <div class="local-resumen">
+
+     <div class="linea">
+      <span>Productos</span>
+      <span>${dinero(subtotal)}</span>
+     </div>
+
+     <div class="linea">
+      <span>Delivery</span>
+      <span>${dinero(delivery)}</span>
+     </div>
+
+     <div class="linea total-local">
+      <span>Total local</span>
+      <span>${dinero(total)}</span>
+     </div>
+
+    </div>
 
    </div>
   `;
 
  }).join("");
-}
 
-function leerHorarios(contenedorId){
+ const totalProductos=calcularTotalProductos();
+ const totalDelivery=calcularDelivery();
+ const total=totalProductos+totalDelivery;
 
- return dias.map((_,i)=>({
+ resumenFinalEl.innerHTML=`
+  <div class="resumen-final">
 
-  dia_semana:i,
-
-  hora_apertura:
-   $(`${contenedorId}_apertura_${i}`).value||null,
-
-  hora_cierre:
-   $(`${contenedorId}_cierre_${i}`).value||null,
-
-  cerrado:
-   $(`${contenedorId}_cerrado_${i}`).checked
-
- }));
-
-}
-
-/* PRODUCTOS */
-
-function renderProductosNuevos(){
-
- productosNuevosEl.innerHTML=
-  productosNuevos.map((p,i)=>`
-
-   <div class="producto-row">
-
-    <input
-     placeholder="Nombre del producto"
-     value="${escapeHtml(p.nombre||"")}"
-     oninput="productosNuevos[${i}].nombre=this.value">
-
-    <input
-     type="number"
-     step="0.01"
-     min="0"
-     placeholder="Precio"
-     value="${p.precio??""}"
-     oninput="productosNuevos[${i}].precio=this.value">
-
-    <button
-     class="danger"
-     onclick="eliminarProductoNuevo(${i})">
-     Eliminar
-    </button>
-
+   <div class="linea">
+    <span>Total productos</span>
+    <span>${dinero(totalProductos)}</span>
    </div>
 
-  `).join("");
-}
-
-function agregarProductoNuevo(){
-
- productosNuevos.push({
-  nombre:"",
-  precio:""
- });
-
- renderProductosNuevos();
-}
-
-function eliminarProductoNuevo(i){
-
- productosNuevos.splice(i,1);
-
- renderProductosNuevos();
-}
-
-function renderProductosEdit(){
-
- productosEditEl.innerHTML=
-  productosEdit.map((p,i)=>`
-
-   <div class="card" style="margin-bottom:8px">
-
-    <div class="producto-row">
-
-     <input
-      placeholder="Nombre"
-      value="${escapeHtml(p.nombre||"")}"
-      oninput="productosEdit[${i}].nombre=this.value">
-
-     <input
-      type="number"
-      step="0.01"
-      min="0"
-      placeholder="Precio"
-      value="${p.precio??""}"
-      oninput="productosEdit[${i}].precio=this.value">
-
-     <button
-      class="${p._nuevo?"danger":"gray"}"
-      onclick="eliminarProductoEdit(${i})">
-      ${p._nuevo?"Eliminar":"Desactivar"}
-     </button>
-
-    </div>
-
-    <label class="check">
-
-     <input
-      type="checkbox"
-      ${p.activo!==false?"checked":""}
-      onchange="productosEdit[${i}].activo=this.checked">
-
-     Producto activo
-
-    </label>
-
+   <div class="linea">
+    <span>Total delivery</span>
+    <span>${dinero(totalDelivery)}</span>
    </div>
 
-  `).join("");
+   <div class="linea total">
+    <span>TOTAL DEL PEDIDO</span>
+    <span>${dinero(total)}</span>
+   </div>
+
+  </div>
+ `;
 }
 
-function agregarProductoEdit(){
+function cambiarCantidad(index,cambio){
 
- productosEdit.push({
-  nombre:"",
-  precio:"",
-  activo:true,
-  _nuevo:true
- });
+ if(!carrito[index])return;
 
- renderProductosEdit();
-}
-
-function eliminarProductoEdit(i){
-
- if(productosEdit[i]._nuevo)
-  productosEdit.splice(i,1);
- else
-  productosEdit[i].activo=false;
-
- renderProductosEdit();
-}
-
-/* CREAR LOCAL */
-
-async function crearLocal(){
-
- try{
-
-  const nombre=nuevoNombre.value.trim();
-
-  if(!nombre){
-   mostrarMensaje("Ingresa el nombre del local.");
-   return;
-  }
-
-  if(!nuevoCategoria.value){
-   mostrarMensaje("Selecciona una categoría.");
-   return;
-  }
-
-  const {data,error}=await supabaseClient
-   .from("restaurantes")
-   .insert({
-    nombre,
-    categoria:nuevoCategoria.value,
-    descripcion:nuevoDescripcion.value.trim(),
-    activo:true
-   })
-   .select()
-   .single();
-
-  if(error)throw error;
-
-  const archivo=nuevoBanner.files?.[0];
-
-  if(archivo){
-
-   try{
-
-    const bannerUrl=await subirImagen(archivo,data.id);
-
-    const {error:errorBanner}=await supabaseClient
-     .from("restaurantes")
-     .update({banner_url:bannerUrl})
-     .eq("id",data.id);
-
-    if(errorBanner)throw errorBanner;
-
-   }catch(e){
-
-    await supabaseClient
-     .from("restaurantes")
-     .delete()
-     .eq("id",data.id);
-
-    throw new Error("No se pudo subir el banner: "+e.message);
-   }
-  }
-
-  const horariosData=leerHorarios("horariosNuevo");
-
-  const {error:errorHorarios}=await supabaseClient
-   .from("horarios_restaurantes")
-   .upsert(
-    horariosData.map(h=>({
-     restaurante_id:data.id,
-     ...h
-    })),
-    {onConflict:"restaurante_id,dia_semana"}
-   );
-
-  if(errorHorarios)throw errorHorarios;
-
-  const productosValidos=
-   productosNuevos
-    .filter(p=>p.nombre.trim()&&Number(p.precio)>=0)
-    .map(p=>({
-     restaurante_id:data.id,
-     nombre:p.nombre.trim(),
-     precio:Number(p.precio)||0,
-     activo:true
-    }));
-
-  if(productosValidos.length){
-
-   const {error:errorProductos}=await supabaseClient
-    .from("productos")
-    .insert(productosValidos);
-
-   if(errorProductos)throw errorProductos;
-  }
-
-  nuevoNombre.value="";
-  nuevoCategoria.value="";
-  nuevoDescripcion.value="";
-  nuevoBanner.value="";
-
-  previewNuevo.style.display="none";
-  previewNuevo.removeAttribute("src");
-
-  productosNuevos=[];
-
-  renderProductosNuevos();
-  renderHorarios("horariosNuevo");
-
-  await cargarLocales();
-
-  mostrarMensaje("Local creado correctamente.",true);
-
- }catch(e){
-
-  console.error(e);
-
-  mostrarMensaje(
-   "No se pudo crear el local: "+e.message
+ carrito[index].cantidad=
+  Math.max(
+   1,
+   (Number(carrito[index].cantidad)||1)+cambio
   );
 
- }
+ guardarCarrito();
 }
 
-/* LOCALES */
+function eliminarProducto(index){
 
-async function cargarLocales(){
+ if(!carrito[index])return;
 
- try{
+ carrito.splice(index,1);
 
-  const {data,error}=await supabaseClient
-   .from("restaurantes")
-   .select("*")
-   .order("nombre");
+ guardarCarrito();
 
-  if(error)throw error;
-
-  locales=data||[];
-
-  listaLocales.innerHTML=locales.length
-   ? locales.map(l=>`
-
-    <div class="card">
-
-     ${l.banner_url?`
-      <img
-       class="banner"
-       src="${escapeHtml(cacheUrl(l.banner_url))}"
-       alt="${escapeHtml(l.nombre)}"
-       onerror="this.style.display='none'">
-     `:""}
-
-     <h3>${escapeHtml(l.nombre)}</h3>
-
-     <p>
-      <strong>Categoría:</strong>
-      ${escapeHtml(l.categoria||"Sin categoría")}
-     </p>
-
-     <p>${escapeHtml(l.descripcion||"")}</p>
-
-     <span class="estado ${l.activo?"activo":"inactivo"}">
-      ${l.activo?"● Activo":"● Inactivo"}
-     </span>
-
-     <div class="acciones">
-
-      <button onclick="abrirEdicion(${l.id})">
-       Editar
-      </button>
-
-      <button
-       class="${l.activo?"warning":"sec"}"
-       onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
-       ${l.activo?"Desactivar":"Activar"}
-      </button>
-
-      <button
-       class="danger"
-       onclick="eliminarLocal(${l.id})">
-       Eliminar
-      </button>
-
-     </div>
-
-    </div>
-
-   `).join("")
-   :
-   `<div class="vacio">No hay locales registrados.</div>`;
-
- }catch(e){
-
-  console.error(e);
-
-  listaLocales.innerHTML=
-   `<div class="mensaje">
-    No se pudieron cargar los locales:
-    ${escapeHtml(e.message)}
-   </div>`;
-
- }
-}
-
-async function abrirEdicion(id){
-
- try{
-
-  const local=locales.find(
-   l=>Number(l.id)===Number(id)
-  );
-
-  if(!local)return;
-
-  editId.value=local.id;
-  editNombre.value=local.nombre||"";
-  editCategoria.value=local.categoria||"";
-  editDescripcion.value=local.descripcion||"";
-  editActivo.value=String(local.activo!==false);
-
-  bannerEdicionActual=local.banner_url||"";
-
-  editBanner.value="";
-  previewEdit.style.display="none";
-  previewEdit.removeAttribute("src");
-
-  bannerActual.innerHTML=local.banner_url
-   ? `
-    <p style="color:#aab7b1;font-size:13px;font-weight:600">
-     Banner actual
-    </p>
-
-    <img
-     class="banner"
-     src="${escapeHtml(cacheUrl(local.banner_url))}"
-     onerror="this.style.display='none'">
-   `
-   :
-   `<p style="color:#91a09a;font-size:13px">
-    Este local no tiene banner.
-   </p>`;
-
-  const {data:horariosData,error:errorHorarios}=
-   await supabaseClient
-    .from("horarios_restaurantes")
-    .select("*")
-    .eq("restaurante_id",id)
-    .order("dia_semana");
-
-  if(errorHorarios)throw errorHorarios;
-
-  renderHorarios(
-   "horariosEdit",
-   horariosData||[]
-  );
-
-  const {data:productos,error:errorProductos}=
-   await supabaseClient
-    .from("productos")
-    .select("*")
-    .eq("restaurante_id",id)
-    .order("nombre");
-
-  if(errorProductos)throw errorProductos;
-
-  productosEdit=(productos||[]).map(p=>({
-   ...p,
-   _nuevo:false
-  }));
-
-  renderProductosEdit();
-
-  edicion.classList.remove("oculto");
-
-  edicion.scrollIntoView({
-   behavior:"smooth",
-   block:"start"
-  });
-
- }catch(e){
-
-  console.error(e);
-
-  mostrarMensaje(
-   "No se pudo cargar el local: "+e.message
-  );
-
- }
-}
-
-async function guardarEdicion(){
-
- try{
-
-  const id=Number(editId.value);
-
-  if(!id)return;
-
-  if(!editNombre.value.trim()){
-   mostrarMensaje("Ingresa el nombre del local.");
-   return;
-  }
-
-  let bannerUrl=bannerEdicionActual;
-
-  const archivo=editBanner.files?.[0];
-
-  /*
-   IMPORTANTE:
-   Solo se intenta subir una imagen
-   cuando realmente se seleccionó una nueva.
-  */
-
-  if(archivo)
-   bannerUrl=await subirImagen(archivo,id);
-
-  const {error}=await supabaseClient
-   .from("restaurantes")
-   .update({
-    nombre:editNombre.value.trim(),
-    categoria:editCategoria.value||null,
-    descripcion:editDescripcion.value.trim(),
-    activo:editActivo.value==="true",
-    banner_url:bannerUrl||null
-   })
-   .eq("id",id);
-
-  if(error)throw error;
-
-  const horariosData=leerHorarios("horariosEdit");
-
-  const {error:errorHorarios}=await supabaseClient
-   .from("horarios_restaurantes")
-   .upsert(
-    horariosData.map(h=>({
-     restaurante_id:id,
-     ...h
-    })),
-    {onConflict:"restaurante_id,dia_semana"}
-   );
-
-  if(errorHorarios)throw errorHorarios;
-
-  for(const p of productosEdit.filter(p=>!p._nuevo)){
-
-   if(!p.nombre?.trim())continue;
-
-   const {error:errorProducto}=await supabaseClient
-    .from("productos")
-    .update({
-     nombre:p.nombre.trim(),
-     precio:Number(p.precio)||0,
-     activo:p.activo!==false
-    })
-    .eq("id",p.id);
-
-   if(errorProducto)throw errorProducto;
-  }
-
-  const nuevos=
-   productosEdit
-    .filter(p=>p._nuevo&&p.nombre.trim())
-    .map(p=>({
-     restaurante_id:id,
-     nombre:p.nombre.trim(),
-     precio:Number(p.precio)||0,
-     activo:true
-    }));
-
-  if(nuevos.length){
-
-   const {error:errorNuevos}=await supabaseClient
-    .from("productos")
-    .insert(nuevos);
-
-   if(errorNuevos)throw errorNuevos;
-  }
-
-  await cargarLocales();
-
-  cerrarEdicion();
-
-  mostrarMensaje(
-   "Local actualizado correctamente.",
-   true
-  );
-
- }catch(e){
-
-  console.error(e);
-
-  mostrarMensaje(
-   "No se pudo actualizar el local: "+e.message
-  );
-
- }
-}
-
-function cerrarEdicion(){
-
- edicion.classList.add("oculto");
-
- bannerEdicionActual="";
- productosEdit=[];
-
- editBanner.value="";
-
- previewEdit.style.display="none";
- previewEdit.removeAttribute("src");
-
- bannerActual.innerHTML="";
-}
-
-async function cambiarEstadoLocal(id,activo){
-
- try{
-
-  const {error}=await supabaseClient
-   .from("restaurantes")
-   .update({activo})
-   .eq("id",id);
-
-  if(error)throw error;
-
-  await cargarLocales();
-
-  mostrarMensaje(
-   activo?"Local activado.":"Local desactivado.",
-   true
-  );
-
- }catch(e){
-
-  console.error(e);
-
-  mostrarMensaje(
-   "No se pudo cambiar el estado: "+e.message
-  );
-
- }
-}
-
-async function eliminarLocal(id){
-
- const local=locales.find(
-  l=>Number(l.id)===Number(id)
+ mostrarMensaje(
+  "Producto eliminado del carrito.",
+  true
  );
+}
 
- if(!local)return;
+function vaciarCarrito(){
+
+ if(!carrito.length)return;
 
  if(!confirm(
-  `¿Eliminar definitivamente el local "${local.nombre}"?\n\n`+
-  "También se eliminarán sus productos y horarios."
+  "¿Deseas eliminar todos los productos del carrito?"
  ))return;
+
+ carrito=[];
+
+ localStorage.removeItem("carrito");
+
+ renderCarrito();
+
+ mostrarMensaje(
+  "Carrito vacío.",
+  true
+ );
+}
+
+/* =========================
+   CONFIGURACIÓN
+========================= */
+
+async function cargarConfiguracion(){
 
  try{
 
-  const {error:errorProductos}=await supabaseClient
-   .from("productos")
-   .delete()
-   .eq("restaurante_id",id);
+  const {data,error}=await supabaseClient
+   .from("configuracion_negocio")
+   .select("*")
+   .order("id",{ascending:true})
+   .limit(1);
 
-  if(errorProductos)throw errorProductos;
+  if(!error&&data?.length){
 
-  const {error:errorHorarios}=await supabaseClient
-   .from("horarios_restaurantes")
-   .delete()
-   .eq("restaurante_id",id);
+   tarifaDelivery=
+    Number(data[0].tarifa_delivery)||1.50;
 
-  if(errorHorarios)throw errorHorarios;
+   whatsappNegocio=
+    data[0].whatsapp_negocio||
+    whatsappNegocio;
 
-  const {error}=await supabaseClient
-   .from("restaurantes")
-   .delete()
-   .eq("id",id);
+   renderCarrito();
 
-  if(error)throw error;
+   return;
+  }
 
-  await cargarLocales();
+ }catch(e){
 
-  mostrarMensaje("Local eliminado.",true);
+  console.error(e);
+
+ }
+
+ tarifaDelivery=
+  Number(window.CONFIG?.tarifaDelivery)||1.50;
+
+ whatsappNegocio=
+  window.CONFIG?.whatsappNegocio||
+  whatsappNegocio;
+
+ renderCarrito();
+}
+
+/* =========================
+   UBICACIÓN
+========================= */
+
+function usarMiUbicacion(){
+
+ if(!navigator.geolocation){
+
+  mostrarMensaje(
+   "Tu navegador no permite obtener la ubicación."
+  );
+
+  return;
+ }
+
+ mostrarMensaje(
+  "Obteniendo tu ubicación..."
+ );
+
+ navigator.geolocation.getCurrentPosition(
+
+  posicion=>{
+
+   const lat=posicion.coords.latitude;
+   const lng=posicion.coords.longitude;
+
+   ubicacionActual={
+    lat,
+    lng
+   };
+
+   btnMapa.disabled=false;
+
+   /*
+    IMPORTANTE:
+    NO colocamos coordenadas en el campo
+    de dirección.
+   */
+
+   abrirGoogleMaps();
+
+   mensajeEl.innerHTML="";
+
+  },
+
+  error=>{
+
+   console.error(error);
+
+   let texto=
+    "No se pudo obtener tu ubicación.";
+
+   if(error.code===1)
+    texto=
+     "Debes permitir el acceso a tu ubicación.";
+
+   if(error.code===2)
+    texto=
+     "No fue posible determinar tu ubicación.";
+
+   if(error.code===3)
+    texto=
+     "La ubicación tardó demasiado en responder.";
+
+   mostrarMensaje(texto);
+
+  },
+
+  {
+   enableHighAccuracy:true,
+   timeout:10000,
+   maximumAge:0
+  }
+ );
+}
+
+function abrirGoogleMaps(){
+
+ if(!ubicacionActual){
+
+  mostrarMensaje(
+   "Primero presiona «Usar mi ubicación»."
+  );
+
+  return;
+ }
+
+ const url=
+  "https://www.google.com/maps/search/?api=1&query="+
+  encodeURIComponent(
+   `${ubicacionActual.lat},${ubicacionActual.lng}`
+  );
+
+ window.open(
+  url,
+  "_blank",
+  "noopener,noreferrer"
+ );
+}
+
+/* =========================
+   PEDIDO
+========================= */
+
+function validarDatos(){
+
+ if(!clienteNombre.value.trim()){
+
+  mostrarMensaje(
+   "Ingresa tu nombre."
+  );
+
+  clienteNombre.focus();
+
+  return false;
+ }
+
+ if(!clienteTelefono.value.trim()){
+
+  mostrarMensaje(
+   "Ingresa tu número de teléfono."
+  );
+
+  clienteTelefono.focus();
+
+  return false;
+ }
+
+ if(!direccion.value.trim()){
+
+  mostrarMensaje(
+   "Ingresa la dirección de entrega."
+  );
+
+  direccion.focus();
+
+  return false;
+ }
+
+ if(!carrito.length){
+
+  mostrarMensaje(
+   "El carrito está vacío."
+  );
+
+  return false;
+ }
+
+ return true;
+}
+
+function construirCarreras(){
+
+ return agruparPorLocal().map(local=>{
+
+  const subtotal=
+   calcularSubtotalLocal(local);
+
+  const delivery=
+   Number(tarifaDelivery)||1.50;
+
+  return {
+
+   restaurante_id:Number(
+    local.restaurante_id
+   ),
+
+   subtotal,
+
+   delivery,
+
+   total:subtotal+delivery,
+
+   productos:local.productos.map(p=>({
+
+    producto_id:
+     p.producto_id?
+     Number(p.producto_id):
+     null,
+
+    producto_nombre:
+     p.producto_nombre||
+     "Producto",
+
+    precio_unitario:
+     Number(p.precio)||0,
+
+    cantidad:
+     Number(p.cantidad)||1,
+
+    subtotal:
+     (Number(p.precio)||0)*
+     (Number(p.cantidad)||0)
+
+   }))
+
+  };
+
+ });
+}
+
+async function registrarPedido(){
+
+ const numero=numeroPedido();
+
+ const totalProductos=
+  calcularTotalProductos();
+
+ const totalDelivery=
+  calcularDelivery();
+
+ const total=
+  totalProductos+
+  totalDelivery;
+
+ const carreras=
+  construirCarreras();
+
+ const {data,error}=await supabaseClient.rpc(
+  "registrar_pedido_completo",
+  {
+   p_numero:numero,
+
+   p_cliente_nombre:
+    clienteNombre.value.trim(),
+
+   p_cliente_telefono:
+    clienteTelefono.value.trim(),
+
+   p_direccion:
+    direccion.value.trim(),
+
+   p_referencia:
+    referencia.value.trim(),
+
+   p_total_productos:
+    totalProductos,
+
+   p_total_delivery:
+    totalDelivery,
+
+   p_total:
+    total,
+
+   p_carreras:
+    carreras
+  }
+ );
+
+ if(error)
+  throw error;
+
+ return {
+  id:data,
+  numero,
+  totalProductos,
+  totalDelivery,
+  total
+ };
+}
+
+/* =========================
+   WHATSAPP
+========================= */
+
+function generarMensajeWhatsApp(pedido){
+
+ const locales=agruparPorLocal();
+
+ let texto=
+  `*NUEVO PEDIDO - SOBRE RUEDAS*%0A%0A`+
+  `*Pedido:* ${pedido.numero}%0A`+
+  `*Cliente:* ${encodeURIComponent(clienteNombre.value.trim())}%0A`+
+  `*Teléfono:* ${encodeURIComponent(clienteTelefono.value.trim())}%0A`+
+  `*Dirección:* ${encodeURIComponent(direccion.value.trim())}%0A`;
+
+ if(referencia.value.trim()){
+
+  texto+=
+   `*Referencia:* ${encodeURIComponent(
+    referencia.value.trim()
+   )}%0A`;
+ }
+
+ texto+="%0A";
+
+ locales.forEach(local=>{
+
+  texto+=
+   `*${encodeURIComponent(
+    local.restaurante_nombre
+   )}*%0A`;
+
+  local.productos.forEach(p=>{
+
+   texto+=
+    `• ${encodeURIComponent(
+     p.producto_nombre
+    )} x${Number(p.cantidad)||0} `+
+    `- ${dinero(
+     (Number(p.precio)||0)*
+     (Number(p.cantidad)||0)
+    )}%0A`;
+
+  });
+
+  const subtotal=
+   calcularSubtotalLocal(local);
+
+  texto+=
+   `Subtotal: ${dinero(subtotal)}%0A`+
+   `Delivery: ${dinero(tarifaDelivery)}%0A`+
+   `Total local: ${dinero(
+    subtotal+Number(tarifaDelivery)
+   )}%0A%0A`;
+ });
+
+ texto+=
+  `*TOTAL PRODUCTOS:* ${dinero(
+   pedido.totalProductos
+  )}%0A`+
+  `*TOTAL DELIVERY:* ${dinero(
+   pedido.totalDelivery
+  )}%0A`+
+  `*TOTAL PEDIDO:* ${dinero(
+   pedido.total
+  )}`;
+
+ return texto;
+}
+
+/* =========================
+   CONFIRMAR
+========================= */
+
+async function confirmarPedido(){
+
+ if(!validarDatos())
+  return;
+
+ const botones=
+  document.querySelectorAll(
+   "#seccionDatos button"
+  );
+
+ botones.forEach(b=>b.disabled=true);
+
+ mostrarMensaje(
+  "Registrando tu pedido..."
+ );
+
+ try{
+
+  const pedido=
+   await registrarPedido();
+
+  /*
+   El pedido ya está guardado en Supabase.
+   Ahora sí limpiamos el carrito.
+  */
+
+  localStorage.removeItem("carrito");
+  carrito=[];
+
+  const mensajeWhatsApp=
+   generarMensajeWhatsApp(pedido);
+
+  const telefono=
+   String(whatsappNegocio)
+    .replace(/\D/g,"");
+
+  const url=
+   `https://wa.me/${telefono}?text=${mensajeWhatsApp}`;
+
+  mostrarMensaje(
+   `Pedido ${pedido.numero} registrado correctamente.`,
+   true
+  );
+
+  renderCarrito();
+
+  setTimeout(()=>{
+
+   window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+   );
+
+  },500);
 
  }catch(e){
 
   console.error(e);
 
   mostrarMensaje(
-   "No se pudo eliminar el local: "+e.message
+   "No se pudo registrar el pedido: "+
+   (e.message||"Error desconocido.")
   );
+
+ }finally{
+
+  botones.forEach(b=>b.disabled=false);
 
  }
 }
 
-/* INICIO */
+/* =========================
+   NAVEGACIÓN
+========================= */
+
+function volverInicio(){
+
+ location.href="index.html";
+}
+
+/* =========================
+   INICIO
+========================= */
 
 async function iniciar(){
 
- renderHorarios("horariosNuevo");
- renderProductosNuevos();
+ cargarCarrito();
 
- await Promise.allSettled([
-  cargarConfiguracion(),
-  cargarCategorias(),
-  cargarLocales()
- ]);
+ await cargarConfiguracion();
 
 }
 
@@ -1720,4 +1378,3 @@ iniciar();
 
 </body>
 </html>
-```
