@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 <script src="config.js"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
@@ -16,17 +18,16 @@ section{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-s
 h2{margin:0 0 15px}
 h3{margin:15px 0 8px}
 input,select,textarea{width:100%;padding:10px;margin:5px 0 10px;border:1px solid #ccc;border-radius:6px}
-textarea{min-height:80px;resize:vertical}
+textarea{min-height:75px;resize:vertical}
 button{border:0;border-radius:6px;padding:9px 13px;cursor:pointer;margin:3px}
 .btn{background:#222;color:#fff}
 .btn2{background:#ddd;color:#222}
 .ok{background:#198754;color:#fff}
 .danger{background:#c0392b;color:#fff}
-.warn{background:#f39c12;color:#fff}
 .mensaje{padding:10px;border-radius:6px;margin-top:10px;display:none}
 .exito{display:block;background:#dff5e5;color:#176b35}
 .error{display:block;background:#fde2e2;color:#8b1e1e}
-.item{border:1px solid #ddd;border-radius:8px;padding:14px;margin:10px 0}
+.item,.producto,.dia{border:1px solid #ddd;border-radius:8px;padding:12px;margin:8px 0}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .estado{font-weight:bold;font-size:13px}
@@ -34,654 +35,1418 @@ button{border:0;border-radius:6px;padding:9px 13px;cursor:pointer;margin:3px}
 .inactivo{color:#c0392b}
 .img{width:90px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
 .preview{max-width:180px;max-height:120px;object-fit:cover;border-radius:6px;margin:5px 0}
-.producto{border:1px solid #ddd;padding:12px;border-radius:8px;margin:8px 0}
 .oculto{display:none!important}
-.dia{border:1px solid #ddd;padding:10px;border-radius:7px}
-.dia label{display:block}
 small{color:#666}
+.horarios{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.dia label{display:block;font-weight:bold;margin-bottom:5px}
+.producto img{width:80px;height:60px;object-fit:cover;border-radius:6px}
 </style>
 </head>
 
 <body>
-<header><h1>Administración | Sobre Ruedas</h1></header>
+
+<header>
+<h1>Administración | Sobre Ruedas</h1>
+</header>
 
 <main>
 
+<!-- CONFIGURACIÓN -->
 <section>
 <h2>Configuración del negocio</h2>
+
 <div class="grid">
-<div><label>Tarifa delivery</label><input id="tarifaDelivery" type="number" min="0" step="0.01"></div>
-<div><label>WhatsApp</label><input id="whatsappNegocio" type="text"></div>
+<div>
+<label>Tarifa delivery</label>
+<input id="tarifaDelivery" type="number" min="0" step=".01">
 </div>
+
+<div>
+<label>WhatsApp</label>
+<input id="whatsappNegocio">
+</div>
+</div>
+
 <button class="btn ok" onclick="guardarConfiguracion()">Guardar configuración</button>
 <div id="mensajeConfiguracion" class="mensaje"></div>
 </section>
 
+
+<!-- CATEGORÍAS -->
 <section>
 <h2>Categorías</h2>
+
 <div class="flex">
-<input id="nuevaCategoria" placeholder="Nueva categoría" style="flex:1">
+<input id="nuevaCategoria" placeholder="Nueva categoría">
 <button class="btn ok" onclick="agregarCategoria()">Agregar</button>
 </div>
+
 <div id="listaCategorias"></div>
 <div id="mensajeCategoria" class="mensaje"></div>
 </section>
 
+
+<!-- CREAR LOCAL -->
 <section>
-<h2>Nuevo restaurante</h2>
+<h2>Crear local</h2>
 
 <div class="grid">
-<div><label>Nombre</label><input id="nombreRestaurante"></div>
-<div><label>Categoría</label><select id="categoriaRestaurante"></select></div>
+<div>
+<label>Nombre del local</label>
+<input id="nombreLocal">
+</div>
+
+<div>
+<label>Categoría</label>
+<select id="categoriaLocal"></select>
+</div>
 </div>
 
 <label>Descripción</label>
-<textarea id="descripcionRestaurante"></textarea>
+<textarea id="descripcionLocal" placeholder="Descripción del local"></textarea>
 
 <label>Banner <small>(opcional)</small></label>
-<input id="bannerRestaurante" type="file" accept="image/*" onchange="mostrarBanner()">
+<input id="bannerLocal" type="file" accept="image/*" onchange="mostrarBanner()">
+
 <div id="previewBanner" class="oculto">
 <img id="imagenBanner" class="preview">
 </div>
 
-<h3>Productos</h3>
+<h3>Horario del local</h3>
+<div id="horarioNuevo" class="horarios"></div>
+
+<h3>Productos del local</h3>
 <div id="listaProductos"></div>
+
 <button class="btn2" onclick="agregarProducto()">+ Producto</button>
 
 <br><br>
-<button class="btn ok" onclick="publicarRestaurante()">Publicar restaurante</button>
+
+<button class="btn ok" onclick="publicarLocal()">Publicar local</button>
+
 <div id="mensajePublicacion" class="mensaje"></div>
 </section>
 
-<section id="editorRestaurante" class="oculto">
-<h2>Editar restaurante</h2>
+
+<!-- LOCALES -->
+<section>
+<h2>Locales registrados</h2>
+<div id="localesLista">Cargando...</div>
+</section>
+
+
+<!-- EDITAR LOCAL -->
+<section id="editor" class="oculto">
+
+<h2>Editar local</h2>
+
 <input type="hidden" id="editarId">
 
 <div class="grid">
-<div><label>Nombre</label><input id="editarNombreRestaurante"></div>
-<div><label>Categoría</label><select id="editarCategoriaRestaurante"></select></div>
+<div>
+<label>Nombre del local</label>
+<input id="editarNombre">
+</div>
+
+<div>
+<label>Categoría</label>
+<select id="editarCategoria"></select>
+</div>
 </div>
 
 <label>Descripción</label>
-<textarea id="editarDescripcionRestaurante"></textarea>
+<textarea id="editarDescripcion"></textarea>
 
-<label>Banner nuevo <small>(opcional)</small></label>
-<input id="editarBannerRestaurante" type="file" accept="image/*" onchange="mostrarBannerEdicion()">
+<label>Nuevo banner <small>(opcional)</small></label>
+<input id="editarBanner" type="file" accept="image/*" onchange="mostrarBannerEdicion()">
 
-<div id="previewBannerEdicion" class="oculto">
-<img id="editarImagenBanner" class="preview">
+<div id="previewEditarBanner" class="oculto">
+<img id="editarImagen" class="preview">
 </div>
 
 <label>
-<input type="checkbox" id="quitarBannerRestaurante" onchange="actualizarPreviewBannerEdicion()">
- Quitar banner actual
+<input type="checkbox" id="quitarBanner">
+Quitar banner actual
 </label>
 
 <label>
-<input type="checkbox" id="editarActivoRestaurante">
- Restaurante activo
+<input type="checkbox" id="editarActivo">
+Local activo
 </label>
 
-<div>
-<button class="btn ok" onclick="guardarEdicionRestaurante()">Guardar cambios</button>
-<button class="btn2" onclick="cerrarEditorRestaurante()">Cancelar</button>
-</div>
+<h3>Horario del local</h3>
+<div id="horarioEditar" class="horarios"></div>
 
-<div id="mensajeEdicionRestaurante" class="mensaje"></div>
-</section>
-
-<section id="editorProductos" class="oculto">
-<h2>Productos</h2>
-<div id="nombreRestauranteProductos"></div>
-<div id="listaProductosEdicion"></div>
+<h3>Productos del local</h3>
+<div id="productosEditar"></div>
 
 <h3>Agregar producto</h3>
+
 <div class="grid">
-<div><label>Nombre</label><input id="nuevoProductoNombre"></div>
-<div><label>Precio</label><input id="nuevoProductoPrecio" type="number" min="0" step="0.01"></div>
+<div>
+<label>Nombre</label>
+<input id="nuevoProductoNombre">
+</div>
+
+<div>
+<label>Precio</label>
+<input id="nuevoProductoPrecio" type="number" min="0" step=".01">
+</div>
 </div>
 
 <label>Imagen <small>(opcional)</small></label>
 <input id="nuevoProductoImagen" type="file" accept="image/*">
 
-<button class="btn ok" onclick="agregarProductoExistente()">Agregar producto</button>
-<button class="btn2" onclick="cerrarEditorProductos()">Cerrar</button>
+<button class="btn ok" onclick="agregarProductoExistente()">
+Agregar producto
+</button>
 
-<div id="mensajeProductos" class="mensaje"></div>
-</section>
+<br><br>
 
-<section>
-<h2>Restaurantes</h2>
-<div id="restaurantesLista">Cargando...</div>
-</section>
+<button class="btn ok" onclick="guardarLocalCompleto()">
+Guardar todos los cambios
+</button>
 
-<section>
-<h2>Horarios</h2>
-<select id="restauranteHorario" onchange="cargarHorariosRestaurante()"></select>
-<div id="editorHorarios"></div>
-<button class="btn ok" onclick="guardarHorarios()">Guardar horarios</button>
-<div id="mensajeHorarios" class="mensaje"></div>
+<button class="btn2" onclick="cerrarEditor()">
+Cancelar
+</button>
+
+<div id="mensajeEdicion" class="mensaje"></div>
+
 </section>
 
 </main>
 
+
 <script>
-let productos=[],bannerArchivo=null,configuracionNegocioId=null;
-let categoriasDisponibles=[],restaurantesCache=[];
-let restauranteEditandoId=null,bannerEdicionArchivo=null,quitarBannerEdicion=false;
-let productosEdicion=[],diasNombres=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+let productos=[];
+let bannerArchivo=null;
+let configuracionNegocioId=null;
+
+let categoriasDisponibles=[];
+let localesCache=[];
+let localEditandoId=null;
+
+let bannerEdicionArchivo=null;
+let productosEdicion=[];
+
+const dias=[
+"Domingo",
+"Lunes",
+"Martes",
+"Miércoles",
+"Jueves",
+"Viernes",
+"Sábado"
+];
+
 
 document.addEventListener("DOMContentLoaded",async()=>{
- await cargarConfiguracion();
- await cargarCategorias();
- agregarProducto();
- await cargarRestaurantes();
- await cargarRestaurantesParaHorarios();
+
+await cargarConfiguracion();
+await cargarCategorias();
+
+generarHorario("horarioNuevo");
+agregarProducto();
+
+await cargarLocales();
+
 });
 
-function mensaje(id,text,tipo="exito"){
- const e=document.getElementById(id);
- e.textContent=text;e.className="mensaje "+tipo;
+
+function $id(id){
+return document.getElementById(id);
 }
 
-function escaparHTML(v){
- return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function mensaje(id,text,tipo="exito"){
+
+const e=$id(id);
+
+e.textContent=text;
+e.className="mensaje "+tipo;
+
 }
+
+
+function escapar(v){
+
+return String(v??"").replace(/[&<>"']/g,m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m]));
+
+}
+
+
+/* =========================
+   CONFIGURACIÓN
+========================= */
 
 async function cargarConfiguracion(){
- try{
-  const {data,error}=await supabaseClient.from("configuracion_negocio")
-   .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda")
-   .order("id",{ascending:true}).limit(1).maybeSingle();
-  if(error)throw error;
-  if(data){
-   configuracionNegocioId=data.id;
-   tarifaDelivery.value=Number(data.tarifa_delivery).toFixed(2);
-   whatsappNegocio.value=data.whatsapp_negocio||"";
-  }else{
-   tarifaDelivery.value=Number(CONFIG.tarifaDelivery||0).toFixed(2);
-   whatsappNegocio.value=CONFIG.whatsappNegocio||"";
-  }
- }catch(e){
-  tarifaDelivery.value=Number(CONFIG.tarifaDelivery||0).toFixed(2);
-  whatsappNegocio.value=CONFIG.whatsappNegocio||"";
-  mensaje("mensajeConfiguracion","No se pudo cargar configuración: "+e.message,"error");
- }
+
+try{
+
+const {data,error}=await supabaseClient
+.from("configuracion_negocio")
+.select("*")
+.order("id",{ascending:true})
+.limit(1)
+.maybeSingle();
+
+if(error)throw error;
+
+if(data){
+
+configuracionNegocioId=data.id;
+
+$id("tarifaDelivery").value=data.tarifa_delivery??"";
+$id("whatsappNegocio").value=data.whatsapp_negocio??"";
+
 }
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajeConfiguracion",
+"No se pudo cargar la configuración: "+e.message,
+"error"
+);
+
+}
+
+}
+
 
 async function guardarConfiguracion(){
- const tarifa=Number(tarifaDelivery.value),whatsapp=whatsappNegocio.value.trim();
- if(Number.isNaN(tarifa)||tarifa<0)return mensaje("mensajeConfiguracion","Tarifa inválida.","error");
- if(!whatsapp)return mensaje("mensajeConfiguracion","Ingresa el WhatsApp.","error");
 
- try{
-  const datos={
-   nombre_negocio:CONFIG.nombreNegocio||"Sobre Ruedas",
-   ciudad:CONFIG.ciudad||"Esmeraldas",
-   tarifa_delivery:tarifa,whatsapp_negocio:whatsapp,
-   moneda:CONFIG.moneda||"USD",actualizado_en:new Date().toISOString()
-  };
-  let r;
-  if(configuracionNegocioId)
-   r=await supabaseClient.from("configuracion_negocio").update(datos).eq("id",configuracionNegocioId);
-  else{
-   r=await supabaseClient.from("configuracion_negocio").insert(datos).select("id").single();
-   if(r.data)configuracionNegocioId=r.data.id;
-  }
-  if(r.error)throw r.error;
-  mensaje("mensajeConfiguracion","Configuración guardada.");
- }catch(e){mensaje("mensajeConfiguracion","No se pudo guardar: "+e.message,"error")}
+try{
+
+const datos={
+tarifa_delivery:Number($id("tarifaDelivery").value||0),
+whatsapp_negocio:$id("whatsappNegocio").value.trim()
+};
+
+let error;
+
+if(configuracionNegocioId){
+
+({error}=await supabaseClient
+.from("configuracion_negocio")
+.update(datos)
+.eq("id",configuracionNegocioId));
+
+}else{
+
+const r=await supabaseClient
+.from("configuracion_negocio")
+.insert(datos)
+.select()
+.single();
+
+error=r.error;
+
+if(!error)
+configuracionNegocioId=r.data.id;
+
 }
+
+if(error)throw error;
+
+mensaje(
+"mensajeConfiguracion",
+"Configuración guardada correctamente."
+);
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajeConfiguracion",
+"No se pudo guardar: "+e.message,
+"error"
+);
+
+}
+
+}
+
+
+/* =========================
+   CATEGORÍAS
+========================= */
 
 async function cargarCategorias(){
- try{
-  const {data,error}=await supabaseClient.from("categorias").select("id,nombre,activo").order("nombre");
-  if(error)throw error;
-  categoriasDisponibles=data||[];
-  const opciones=categoriasDisponibles.map(c=>`<option value="${escaparHTML(c.nombre)}">${escaparHTML(c.nombre)}${c.activo?"":" (INACTIVA)"}</option>`).join("");
-  categoriaRestaurante.innerHTML=opciones;
-  renderCategorias();
- }catch(e){mensaje("mensajeCategoria","Error cargando categorías: "+e.message,"error")}
+
+try{
+
+const {data,error}=await supabaseClient
+.from("categorias")
+.select("*")
+.order("nombre");
+
+if(error)throw error;
+
+categoriasDisponibles=data||[];
+
+llenarCategorias();
+renderCategorias();
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajeCategoria",
+"No se pudieron cargar las categorías: "+e.message,
+"error"
+);
+
 }
+
+}
+
+
+function llenarCategorias(){
+
+const opciones=
+`<option value="">Seleccionar categoría</option>`+
+categoriasDisponibles
+.filter(c=>c.activo)
+.map(c=>`<option value="${escapar(c.nombre)}">${escapar(c.nombre)}</option>`)
+.join("");
+
+$id("categoriaLocal").innerHTML=opciones;
+
+$id("editarCategoria").innerHTML=opciones;
+
+}
+
 
 function renderCategorias(){
- listaCategorias.innerHTML=categoriasDisponibles.length?categoriasDisponibles.map(c=>`
- <div class="item flex">
- <span style="flex:1"><b>${escaparHTML(c.nombre)}</b> <span class="${c.activo?"activo":"inactivo"}">${c.activo?"ACTIVA":"INACTIVA"}</span></span>
- <button class="btn2" onclick="editarCategoria(${c.id},'${escaparHTML(c.nombre)}')">Editar</button>
- <button class="${c.activo?"danger":"ok"}" onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">${c.activo?"Desactivar":"Activar"}</button>
- </div>`).join(""):"<p>No existen categorías.</p>";
+
+$id("listaCategorias").innerHTML=
+categoriasDisponibles.map(c=>`
+
+<div class="item flex">
+
+<div style="flex:1">
+<strong>${escapar(c.nombre)}</strong>
+<span class="estado ${c.activo?"activo":"inactivo"}">
+${c.activo?"Activa":"Inactiva"}
+</span>
+</div>
+
+<button class="btn2"
+onclick="editarCategoria(${c.id},'${escapar(c.nombre)}')">
+Editar
+</button>
+
+<button class="${c.activo?"danger":"ok"}"
+onclick="cambiarCategoria(${c.id},${!c.activo})">
+${c.activo?"Desactivar":"Activar"}
+</button>
+
+</div>
+
+`).join("");
+
 }
+
 
 async function agregarCategoria(){
- const nombre=nuevaCategoria.value.trim();
- if(!nombre)return mensaje("mensajeCategoria","Ingresa una categoría.","error");
- try{
-  const {error}=await supabaseClient.from("categorias").insert({nombre});
-  if(error)throw error;
-  nuevaCategoria.value="";
-  await cargarCategorias();
-  mensaje("mensajeCategoria","Categoría agregada.");
- }catch(e){mensaje("mensajeCategoria","No se pudo agregar: "+e.message,"error")}
+
+const nombre=$id("nuevaCategoria").value.trim();
+
+if(!nombre)
+return mensaje("mensajeCategoria","Ingresa una categoría.","error");
+
+try{
+
+const {error}=await supabaseClient
+.from("categorias")
+.insert({nombre});
+
+if(error)throw error;
+
+$id("nuevaCategoria").value="";
+
+await cargarCategorias();
+
+mensaje(
+"mensajeCategoria",
+"Categoría agregada correctamente."
+);
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajeCategoria",
+"No se pudo agregar: "+e.message,
+"error"
+);
+
 }
 
-async function editarCategoria(id,nombre){
- const nuevo=prompt("Nombre de la categoría:",nombre);
- if(!nuevo||nuevo.trim()===nombre)return;
- try{
-  const {error}=await supabaseClient.from("categorias").update({nombre:nuevo.trim()}).eq("id",id);
-  if(error)throw error;
-  await cargarCategorias();
- }catch(e){mensaje("mensajeCategoria","No se pudo editar: "+e.message,"error")}
 }
 
-async function cambiarEstadoCategoria(id,activo){
- try{
-  const {error}=await supabaseClient.from("categorias").update({activo}).eq("id",id);
-  if(error)throw error;
-  await cargarCategorias();
- }catch(e){mensaje("mensajeCategoria","No se pudo actualizar: "+e.message,"error")}
+
+async function editarCategoria(id,nombreActual){
+
+const nuevo=prompt("Nombre de la categoría:",nombreActual);
+
+if(nuevo===null)return;
+
+const nombre=nuevo.trim();
+
+if(!nombre)return;
+
+try{
+
+const {error}=await supabaseClient
+.from("categorias")
+.update({nombre})
+.eq("id",id);
+
+if(error)throw error;
+
+await cargarCategorias();
+
+}catch(e){
+
+alert("No se pudo actualizar la categoría: "+e.message);
+
 }
+
+}
+
+
+async function cambiarCategoria(id,activo){
+
+try{
+
+const {error}=await supabaseClient
+.from("categorias")
+.update({activo})
+.eq("id",id);
+
+if(error)throw error;
+
+await cargarCategorias();
+
+}catch(e){
+
+alert("No se pudo cambiar el estado: "+e.message);
+
+}
+
+}
+
+
+/* =========================
+   IMÁGENES
+========================= */
 
 async function subirImagen(archivo,carpeta){
- if(!archivo)return null;
- if(!supabaseClient?.storage)throw new Error("Supabase Storage no está disponible.");
- const ext=(archivo.name.split(".").pop()||"jpg").toLowerCase();
- const nombre=`${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2,10)}.${ext}`;
- try{
-  const {error}=await supabaseClient.storage.from("restaurantes").upload(nombre,archivo,{
-   cacheControl:"3600",upsert:false,contentType:archivo.type||"application/octet-stream"
-  });
-  if(error)throw new Error(error.message||"Error de Storage");
-  const {data}=supabaseClient.storage.from("restaurantes").getPublicUrl(nombre);
-  if(!data?.publicUrl)throw new Error("No se pudo obtener la URL.");
-  return data.publicUrl;
- }catch(e){
-  console.error("Storage:",e);
-  if(String(e.message).includes("NetworkError")||e.name==="TypeError")
-   throw new Error("No se pudo conectar con Supabase Storage. Verifica el bucket 'restaurantes' y la conexión de Supabase.");
-  throw e;
- }
+
+if(!archivo)return null;
+
+const ext=
+(archivo.name.split(".").pop()||"jpg").toLowerCase();
+
+const ruta=
+`${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2,10)}.${ext}`;
+
+try{
+
+const {error}=await supabaseClient.storage
+.from("restaurantes")
+.upload(
+ruta,
+archivo,
+{
+cacheControl:"3600",
+upsert:false,
+contentType:archivo.type||"application/octet-stream"
 }
+);
+
+if(error)throw error;
+
+const {data}=supabaseClient.storage
+.from("restaurantes")
+.getPublicUrl(ruta);
+
+if(!data?.publicUrl)
+throw new Error("No se obtuvo la URL pública.");
+
+return data.publicUrl;
+
+}catch(e){
+
+console.error(e);
+
+if(
+String(e.message).includes("NetworkError")||
+e.name==="TypeError"
+){
+
+throw new Error(
+"Error de conexión con Storage. Verifica el bucket 'restaurantes' y Supabase."
+);
+
+}
+
+throw e;
+
+}
+
+}
+
 
 function mostrarBanner(){
- const archivo=bannerRestaurante.files[0];
- bannerArchivo=archivo||null;
- if(!archivo){previewBanner.classList.add("oculto");return}
- imagenBanner.src=URL.createObjectURL(archivo);
- previewBanner.classList.remove("oculto");
+
+const archivo=$id("bannerLocal").files[0];
+
+bannerArchivo=archivo||null;
+
+if(!archivo){
+
+$id("previewBanner").classList.add("oculto");
+return;
+
 }
 
-function agregarProducto(nombre="",precio=0){
- productos.push({nombre,precio:Number(precio)||0,archivoImagen:null,imagenUrl:null});
- mostrarProductos();
+$id("imagenBanner").src=URL.createObjectURL(archivo);
+$id("previewBanner").classList.remove("oculto");
+
 }
 
-function mostrarProductos(){
- listaProductos.innerHTML=productos.map((p,i)=>`
- <div class="producto">
- <div class="grid">
- <div><input placeholder="Nombre" value="${escaparHTML(p.nombre)}" oninput="productos[${i}].nombre=this.value"></div>
- <div><input type="number" min="0" step=".01" placeholder="Precio" value="${p.precio}" oninput="productos[${i}].precio=Number(this.value)||0"></div>
- </div>
- <input type="file" accept="image/*" onchange="seleccionarImagenProducto(${i},this)">
- <small>Imagen opcional</small>
- <button class="danger" onclick="eliminarProducto(${i})">Eliminar</button>
- </div>`).join("");
-}
-
-function seleccionarImagenProducto(i,input){
- productos[i].archivoImagen=input.files[0]||null;
-}
-
-function eliminarProducto(i){
- productos.splice(i,1);
- mostrarProductos();
-}
-
-async function publicarRestaurante(){
- const nombre=nombreRestaurante.value.trim(),categoria=categoriaRestaurante.value,descripcion=descripcionRestaurante.value.trim();
- if(!nombre)return mensaje("mensajePublicacion","Ingresa el nombre.","error");
- if(!categoria)return mensaje("mensajePublicacion","Selecciona una categoría.","error");
- if(!productos.length)return mensaje("mensajePublicacion","Agrega al menos un producto.","error");
- for(const p of productos)if(!p.nombre.trim()||p.precio<0)return mensaje("mensajePublicacion","Revisa los productos.","error");
-
- try{
-  mensaje("mensajePublicacion","Publicando...");
-  const bannerUrl=await subirImagen(bannerArchivo,"banners");
-  const {data:r,error}=await supabaseClient.from("restaurantes").insert({
-   nombre,categoria,descripcion,banner_url:bannerUrl,activo:true
-  }).select().single();
-  if(error)throw error;
-
-  for(const p of productos){
-   const imagenUrl=await subirImagen(p.archivoImagen,`productos/${r.id}`);
-   const {error:e}=await supabaseClient.from("productos").insert({
-    restaurante_id:r.id,nombre:p.nombre.trim(),precio:Number(p.precio),imagen_url:imagenUrl
-   });
-   if(e)throw e;
-  }
-
-  mensaje("mensajePublicacion","Restaurante publicado correctamente.");
-  limpiarFormulario();
-  await cargarRestaurantes();
-  await cargarRestaurantesParaHorarios();
- }catch(e){mensaje("mensajePublicacion","No se pudo publicar: "+e.message,"error")}
-}
-
-function limpiarFormulario(){
- nombreRestaurante.value="";
- descripcionRestaurante.value="";
- bannerRestaurante.value="";
- bannerArchivo=null;
- previewBanner.classList.add("oculto");
- productos=[];
- agregarProducto();
-}
-
-async function cargarRestaurantes(){
- try{
-  const {data,error}=await supabaseClient.from("restaurantes")
-   .select("id,nombre,categoria,descripcion,banner_url,activo,creado_en")
-   .order("creado_en",{ascending:false});
-  if(error)throw error;
-  restaurantesCache=data||[];
-  if(!restaurantesCache.length){
-   restaurantesLista.innerHTML="<p>No existen restaurantes.</p>";return;
-  }
-
-  restaurantesLista.innerHTML=restaurantesCache.map(r=>`
-  <div class="item">
-   <div class="flex">
-    ${r.banner_url?`<img src="${escaparHTML(r.banner_url)}" class="img">`:""}
-    <div style="flex:1">
-     <b>${escaparHTML(r.nombre)}</b><br>
-     ${escaparHTML(r.categoria||"Sin categoría")}<br>
-     <small>${escaparHTML(r.descripcion||"")}</small><br>
-     <span class="estado ${r.activo?"activo":"inactivo"}">${r.activo?"ACTIVO":"INACTIVO"}</span>
-    </div>
-   </div>
-   <hr>
-   <button class="btn" onclick="abrirEditorRestaurante(${r.id})">Editar restaurante</button>
-   <button class="btn" onclick="abrirEditorProductos(${r.id})">Gestionar productos</button>
-   <button class="${r.activo?"danger":"ok"}" onclick="cambiarEstadoRestaurante(${r.id},${!r.activo})">${r.activo?"Desactivar":"Activar"}</button>
-  </div>`).join("");
- }catch(e){
-  restaurantesLista.innerHTML=`<p class="inactivo">Error: ${escaparHTML(e.message)}</p>`;
- }
-}
-
-function cargarSelectCategorias(select,actual){
- select.innerHTML=categoriasDisponibles.map(c=>`
- <option value="${escaparHTML(c.nombre)}">${escaparHTML(c.nombre)}${c.activo?"":" (INACTIVA)"}</option>`).join("");
- if(actual&&!categoriasDisponibles.some(c=>c.nombre===actual))
-  select.insertAdjacentHTML("beforeend",`<option value="${escaparHTML(actual)}">${escaparHTML(actual)}</option>`);
- select.value=actual||"";
-}
-
-function abrirEditorRestaurante(id){
- const r=restaurantesCache.find(x=>x.id===id);
- if(!r)return;
- restauranteEditandoId=id;
- bannerEdicionArchivo=null;
- quitarBannerEdicion=false;
- editarId.value=id;
- editarNombreRestaurante.value=r.nombre||"";
- editarDescripcionRestaurante.value=r.descripcion||"";
- editarActivoRestaurante.checked=!!r.activo;
- editarBannerRestaurante.value="";
- quitarBannerRestaurante.checked=false;
- cargarSelectCategorias(editarCategoriaRestaurante,r.categoria);
- editarImagenBanner.src=r.banner_url||"";
- previewBannerEdicion.classList.toggle("oculto",!r.banner_url);
- editorRestaurante.classList.remove("oculto");
- editorProductos.classList.add("oculto");
- window.scrollTo({top:editorRestaurante.offsetTop-10,behavior:"smooth"});
-}
 
 function mostrarBannerEdicion(){
- const archivo=editarBannerRestaurante.files[0];
- bannerEdicionArchivo=archivo||null;
- if(!archivo)return;
- quitarBannerRestaurante.checked=false;
- editarImagenBanner.src=URL.createObjectURL(archivo);
- previewBannerEdicion.classList.remove("oculto");
+
+const archivo=$id("editarBanner").files[0];
+
+bannerEdicionArchivo=archivo||null;
+
+if(!archivo){
+
+$id("previewEditarBanner").classList.add("oculto");
+return;
+
 }
 
-function actualizarPreviewBannerEdicion(){
- if(quitarBannerRestaurante.checked&&!bannerEdicionArchivo){
-  previewBannerEdicion.classList.add("oculto");
- }
+$id("editarImagen").src=URL.createObjectURL(archivo);
+$id("previewEditarBanner").classList.remove("oculto");
+
 }
 
-async function guardarEdicionRestaurante(){
- if(!restauranteEditandoId)return;
- const r=restaurantesCache.find(x=>x.id===restauranteEditandoId);
- const nombre=editarNombreRestaurante.value.trim();
- if(!nombre)return mensaje("mensajeEdicionRestaurante","Ingresa el nombre.","error");
 
- try{
-  mensaje("mensajeEdicionRestaurante","Guardando...");
-  let bannerUrl=r.banner_url||null;
+/* =========================
+   HORARIOS
+========================= */
 
-  /* SOLO sube si realmente se seleccionó una imagen nueva */
-  if(bannerEdicionArchivo)
-   bannerUrl=await subirImagen(bannerEdicionArchivo,`banners/${restauranteEditandoId}`);
-  else if(quitarBannerRestaurante.checked)
-   bannerUrl=null;
+function generarHorario(contenedor,datos={}){
 
-  const {error}=await supabaseClient.from("restaurantes").update({
-   nombre,
-   categoria:editarCategoriaRestaurante.value,
-   descripcion:editarDescripcionRestaurante.value.trim(),
-   banner_url:bannerUrl,
-   activo:editarActivoRestaurante.checked
-  }).eq("id",restauranteEditandoId);
+$id(contenedor).innerHTML=dias.map((dia,i)=>{
 
-  if(error)throw error;
+const d=datos[i]||{};
 
-  mensaje("mensajeEdicionRestaurante","Restaurante actualizado.");
-  await cargarRestaurantes();
-  await cargarRestaurantesParaHorarios();
- }catch(e){
-  console.error(e);
-  mensaje("mensajeEdicionRestaurante","No se pudo actualizar: "+e.message,"error");
- }
+return `
+
+<div class="dia">
+
+<label>${dia}</label>
+
+<label>
+<input
+type="checkbox"
+id="horario${contenedor}C${i}"
+${d.cerrado?"checked":""}
+onchange="cambiarDia('${contenedor}',${i})">
+Cerrado
+</label>
+
+<input
+type="time"
+id="horario${contenedor}A${i}"
+value="${d.hora_apertura||""}"
+${d.cerrado?"disabled":""}>
+
+<input
+type="time"
+id="horario${contenedor}B${i}"
+value="${d.hora_cierre||""}"
+${d.cerrado?"disabled":""}>
+
+</div>
+
+`;
+
+}).join("");
+
 }
 
-function cerrarEditorRestaurante(){
- editorRestaurante.classList.add("oculto");
- restauranteEditandoId=null;
- bannerEdicionArchivo=null;
+
+function cambiarDia(contenedor,i){
+
+const cerrado=$id(`horario${contenedor}C${i}`).checked;
+
+$id(`horario${contenedor}A${i}`).disabled=cerrado;
+$id(`horario${contenedor}B${i}`).disabled=cerrado;
+
 }
 
-async function cambiarEstadoRestaurante(id,activo){
- try{
-  const {error}=await supabaseClient.from("restaurantes").update({activo}).eq("id",id);
-  if(error)throw error;
-  await cargarRestaurantes();
-  await cargarRestaurantesParaHorarios();
- }catch(e){alert("No se pudo actualizar: "+e.message)}
+
+function obtenerHorario(contenedor,localId){
+
+return dias.map((_,i)=>{
+
+const cerrado=$id(`horario${contenedor}C${i}`).checked;
+
+return{
+restaurante_id:localId,
+dia_semana:i,
+hora_apertura:cerrado?null:$id(`horario${contenedor}A${i}`).value||null,
+hora_cierre:cerrado?null:$id(`horario${contenedor}B${i}`).value||null,
+cerrado
+};
+
+});
+
 }
 
-async function abrirEditorProductos(id){
- const r=restaurantesCache.find(x=>x.id===id);
- if(!r)return;
- restauranteEditandoId=id;
- nombreRestauranteProductos.innerHTML=`<b>${escaparHTML(r.nombre)}</b>`;
- editorProductos.classList.remove("oculto");
- editorRestaurante.classList.add("oculto");
- await cargarProductosEdicion(id);
- window.scrollTo({top:editorProductos.offsetTop-10,behavior:"smooth"});
+
+/* =========================
+   PRODUCTOS NUEVOS
+========================= */
+
+function agregarProducto(){
+
+productos.push({
+nombre:"",
+precio:"",
+imagen:null
+});
+
+renderProductos();
+
 }
 
-async function cargarProductosEdicion(id){
- listaProductosEdicion.innerHTML="Cargando...";
- try{
-  const {data,error}=await supabaseClient.from("productos")
-   .select("id,restaurante_id,nombre,precio,imagen_url")
-   .eq("restaurante_id",id).order("id");
-  if(error)throw error;
-  productosEdicion=data||[];
-  renderProductosEdicion();
- }catch(e){listaProductosEdicion.innerHTML=`<p class="inactivo">${escaparHTML(e.message)}</p>`}
+
+function renderProductos(){
+
+$id("listaProductos").innerHTML=productos.map((p,i)=>`
+
+<div class="producto">
+
+<div class="grid">
+
+<div>
+<label>Nombre</label>
+<input
+value="${escapar(p.nombre)}"
+oninput="productos[${i}].nombre=this.value"
+placeholder="Nombre del producto">
+</div>
+
+<div>
+<label>Precio</label>
+<input
+type="number"
+min="0"
+step=".01"
+value="${p.precio}"
+oninput="productos[${i}].precio=this.value">
+</div>
+
+</div>
+
+<label>Imagen <small>(opcional)</small></label>
+
+<input
+type="file"
+accept="image/*"
+onchange="productos[${i}].imagen=this.files[0]||null">
+
+<button
+class="danger"
+onclick="productos.splice(${i},1);renderProductos()">
+Eliminar
+</button>
+
+</div>
+
+`).join("");
+
 }
+
+
+/* =========================
+   PUBLICAR LOCAL
+========================= */
+
+async function publicarLocal(){
+
+const nombre=$id("nombreLocal").value.trim();
+const categoria=$id("categoriaLocal").value;
+const descripcion=$id("descripcionLocal").value.trim();
+
+if(!nombre)
+return mensaje(
+"mensajePublicacion",
+"Ingresa el nombre del local.",
+"error"
+);
+
+if(!categoria)
+return mensaje(
+"mensajePublicacion",
+"Selecciona una categoría.",
+"error"
+);
+
+try{
+
+mensaje(
+"mensajePublicacion",
+"Publicando local..."
+);
+
+let banner=null;
+
+if(bannerArchivo)
+banner=await subirImagen(
+bannerArchivo,
+"banners"
+);
+
+const {data:local,error}=await supabaseClient
+.from("restaurantes")
+.insert({
+nombre,
+categoria,
+descripcion,
+banner_url:banner,
+activo:true
+})
+.select()
+.single();
+
+if(error)throw error;
+
+
+/* HORARIOS */
+
+const horarios=
+obtenerHorario("horarioNuevo",local.id);
+
+const {error:eh}=await supabaseClient
+.from("horarios_restaurantes")
+.insert(horarios);
+
+if(eh)throw eh;
+
+
+/* PRODUCTOS */
+
+for(const p of productos){
+
+if(!p.nombre.trim())continue;
+
+let imagen=null;
+
+if(p.imagen){
+
+imagen=await subirImagen(
+p.imagen,
+`productos/${local.id}`
+);
+
+}
+
+const {error:ep}=await supabaseClient
+.from("productos")
+.insert({
+restaurante_id:local.id,
+nombre:p.nombre.trim(),
+precio:Number(p.precio||0),
+imagen_url:imagen
+});
+
+if(ep)throw ep;
+
+}
+
+mensaje(
+"mensajePublicacion",
+"Local publicado correctamente."
+);
+
+limpiarNuevo();
+
+await cargarLocales();
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajePublicacion",
+"No se pudo publicar el local: "+e.message,
+"error"
+);
+
+}
+
+}
+
+
+/* =========================
+   LIMPIAR CREACIÓN
+========================= */
+
+function limpiarNuevo(){
+
+$id("nombreLocal").value="";
+$id("categoriaLocal").value="";
+$id("descripcionLocal").value="";
+$id("bannerLocal").value="";
+$id("previewBanner").classList.add("oculto");
+
+bannerArchivo=null;
+
+generarHorario("horarioNuevo");
+
+productos=[];
+
+agregarProducto();
+
+}
+
+
+/* =========================
+   CARGAR LOCALES
+========================= */
+
+async function cargarLocales(){
+
+try{
+
+const {data,error}=await supabaseClient
+.from("restaurantes")
+.select("*")
+.order("nombre");
+
+if(error)throw error;
+
+localesCache=data||[];
+
+$id("localesLista").innerHTML=
+localesCache.length
+?
+localesCache.map(l=>`
+
+<div class="item">
+
+<div class="flex">
+
+<div style="flex:1">
+
+<strong>${escapar(l.nombre)}</strong>
+
+<div>
+${escapar(l.categoria||"Sin categoría")}
+</div>
+
+<div class="estado ${l.activo?"activo":"inactivo"}">
+${l.activo?"Activo":"Inactivo"}
+</div>
+
+</div>
+
+${l.banner_url?
+`<img class="img" src="${escapar(l.banner_url)}">`
+:""}
+
+</div>
+
+<p>${escapar(l.descripcion||"")}</p>
+
+<button class="btn" onclick="editarLocal(${l.id})">
+Editar local
+</button>
+
+<button
+class="${l.activo?"danger":"ok"}"
+onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
+
+${l.activo?"Desactivar":"Activar"}
+
+</button>
+
+</div>
+
+`).join("")
+:
+"<p>No hay locales registrados.</p>";
+
+}catch(e){
+
+console.error(e);
+
+$id("localesLista").innerHTML=
+`<div class="mensaje error">
+No se pudieron cargar los locales: ${escapar(e.message)}
+</div>`;
+
+}
+
+}
+
+
+/* =========================
+   EDITAR LOCAL
+========================= */
+
+async function editarLocal(id){
+
+try{
+
+const local=localesCache.find(x=>x.id===id);
+
+if(!local)return;
+
+localEditandoId=id;
+
+$id("editarId").value=id;
+$id("editarNombre").value=local.nombre||"";
+$id("editarCategoria").value=local.categoria||"";
+$id("editarDescripcion").value=local.descripcion||"";
+$id("editarActivo").checked=!!local.activo;
+
+$id("editarBanner").value="";
+$id("quitarBanner").checked=false;
+
+bannerEdicionArchivo=null;
+
+if(local.banner_url){
+
+$id("editarImagen").src=local.banner_url;
+$id("previewEditarBanner").classList.remove("oculto");
+
+}else{
+
+$id("previewEditarBanner").classList.add("oculto");
+
+}
+
+
+/* HORARIOS */
+
+const {data:horarios,error:eh}=await supabaseClient
+.from("horarios_restaurantes")
+.select("*")
+.eq("restaurante_id",id)
+.order("dia_semana");
+
+if(eh)throw eh;
+
+const datos={};
+
+(horarios||[]).forEach(h=>{
+datos[h.dia_semana]=h;
+});
+
+generarHorario(
+"horarioEditar",
+datos
+);
+
+
+/* PRODUCTOS */
+
+await cargarProductosEdicion(id);
+
+$id("editor").classList.remove("oculto");
+
+window.scrollTo({
+top:$id("editor").offsetTop-20,
+behavior:"smooth"
+});
+
+}catch(e){
+
+console.error(e);
+
+alert("No se pudo cargar el local: "+e.message);
+
+}
+
+}
+
+
+/* =========================
+   PRODUCTOS EDICIÓN
+========================= */
+
+async function cargarProductosEdicion(localId){
+
+const {data,error}=await supabaseClient
+.from("productos")
+.select("*")
+.eq("restaurante_id",localId)
+.order("id");
+
+if(error)throw error;
+
+productosEdicion=data||[];
+
+renderProductosEdicion();
+
+}
+
 
 function renderProductosEdicion(){
- if(!productosEdicion.length){
-  listaProductosEdicion.innerHTML="<p>No existen productos.</p>";return;
- }
- listaProductosEdicion.innerHTML=productosEdicion.map((p,i)=>`
- <div class="producto">
-  <div class="grid">
-   <div>
-    <label>Nombre</label>
-    <input value="${escaparHTML(p.nombre)}" onchange="productosEdicion[${i}].nombre=this.value">
-   </div>
-   <div>
-    <label>Precio</label>
-    <input type="number" min="0" step=".01" value="${p.precio}" onchange="productosEdicion[${i}].precio=Number(this.value)">
-   </div>
-  </div>
-  ${p.imagen_url?`<img src="${escaparHTML(p.imagen_url)}" class="img">`:""}
-  <label>Nueva imagen <small>(opcional)</small></label>
-  <input type="file" accept="image/*" onchange="productosEdicion[${i}].archivoImagen=this.files[0]||null">
-  <label><input type="checkbox" onchange="productosEdicion[${i}].quitarImagen=this.checked"> Quitar imagen</label>
-  <br>
-  <button class="btn ok" onclick="guardarProductoEditado(${i})">Guardar producto</button>
-  <button class="danger" onclick="eliminarProductoExistente(${p.id})">Eliminar</button>
-  <div id="msgProd${p.id}" class="mensaje"></div>
- </div>`).join("");
+
+$id("productosEditar").innerHTML=
+productosEdicion.length
+?
+productosEdicion.map(p=>`
+
+<div class="producto">
+
+<div class="flex">
+
+${
+p.imagen_url
+?
+`<img src="${escapar(p.imagen_url)}">`
+:""
 }
 
-async function guardarProductoEditado(i){
- const p=productosEdicion[i];
- if(!p.nombre?.trim())return alert("Ingresa el nombre del producto.");
- if(Number(p.precio)<0)return alert("El precio no puede ser negativo.");
+<div style="flex:1">
 
- try{
-  let imagenUrl=p.imagen_url||null;
+<input
+value="${escapar(p.nombre)}"
+onchange="guardarProducto(${p.id},this.value,this.parentElement.parentElement.querySelector('input[type=number]').value)">
 
-  /* Solo sube si el usuario eligió una imagen nueva */
-  if(p.archivoImagen)
-   imagenUrl=await subirImagen(p.archivoImagen,`productos/${p.restaurante_id}`);
-  else if(p.quitarImagen)
-   imagenUrl=null;
+<input
+type="number"
+min="0"
+step=".01"
+value="${p.precio}"
+onchange="guardarProducto(${p.id},this.parentElement.querySelector('input[type=text]').value,this.value)">
 
-  const {error}=await supabaseClient.from("productos").update({
-   nombre:p.nombre.trim(),
-   precio:Number(p.precio),
-   imagen_url:imagenUrl
-  }).eq("id",p.id);
+</div>
 
-  if(error)throw error;
-  await cargarProductosEdicion(p.restaurante_id);
- }catch(e){alert("No se pudo actualizar el producto: "+e.message)}
+<button
+class="danger"
+onclick="eliminarProducto(${p.id})">
+Eliminar
+</button>
+
+</div>
+
+</div>
+
+`).join("")
+:
+"<p>No hay productos registrados.</p>";
+
 }
 
-async function eliminarProductoExistente(id){
- if(!confirm("¿Eliminar este producto?"))return;
- try{
-  const {error}=await supabaseClient.from("productos").delete().eq("id",id);
-  if(error)throw error;
-  await cargarProductosEdicion(restauranteEditandoId);
- }catch(e){alert("No se pudo eliminar: "+e.message)}
+
+async function guardarProducto(id,nombre,precio){
+
+try{
+
+const {error}=await supabaseClient
+.from("productos")
+.update({
+nombre:nombre.trim(),
+precio:Number(precio||0)
+})
+.eq("id",id);
+
+if(error)throw error;
+
+}catch(e){
+
+alert("No se pudo actualizar el producto: "+e.message);
+
 }
+
+}
+
 
 async function agregarProductoExistente(){
- const nombre=nuevoProductoNombre.value.trim();
- const precio=Number(nuevoProductoPrecio.value);
- const archivo=nuevoProductoImagen.files[0]||null;
 
- if(!nombre)return mensaje("mensajeProductos","Ingresa el nombre.","error");
- if(Number.isNaN(precio)||precio<0)return mensaje("mensajeProductos","Precio inválido.","error");
+if(!localEditandoId)return;
 
- try{
-  const imagenUrl=await subirImagen(archivo,`productos/${restauranteEditandoId}`);
-  const {error}=await supabaseClient.from("productos").insert({
-   restaurante_id:restauranteEditandoId,
-   nombre,precio,imagen_url:imagenUrl
-  });
-  if(error)throw error;
+const nombre=$id("nuevoProductoNombre").value.trim();
+const precio=Number($id("nuevoProductoPrecio").value||0);
+const archivo=$id("nuevoProductoImagen").files[0]||null;
 
-  nuevoProductoNombre.value="";
-  nuevoProductoPrecio.value="";
-  nuevoProductoImagen.value="";
-  await cargarProductosEdicion(restauranteEditandoId);
-  mensaje("mensajeProductos","Producto agregado.");
- }catch(e){mensaje("mensajeProductos","No se pudo agregar: "+e.message,"error")}
+if(!nombre)
+return mensaje(
+"mensajeEdicion",
+"Ingresa el nombre del producto.",
+"error"
+);
+
+try{
+
+mensaje(
+"mensajeEdicion",
+"Agregando producto..."
+);
+
+let imagen=null;
+
+if(archivo){
+
+imagen=await subirImagen(
+archivo,
+`productos/${localEditandoId}`
+);
+
 }
 
-function cerrarEditorProductos(){
- editorProductos.classList.add("oculto");
- productosEdicion=[];
+const {error}=await supabaseClient
+.from("productos")
+.insert({
+restaurante_id:localEditandoId,
+nombre,
+precio,
+imagen_url:imagen
+});
+
+if(error)throw error;
+
+$id("nuevoProductoNombre").value="";
+$id("nuevoProductoPrecio").value="";
+$id("nuevoProductoImagen").value="";
+
+await cargarProductosEdicion(localEditandoId);
+
+mensaje(
+"mensajeEdicion",
+"Producto agregado correctamente."
+);
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajeEdicion",
+"No se pudo agregar el producto: "+e.message,
+"error"
+);
+
 }
 
-async function cargarRestaurantesParaHorarios(){
- try{
-  const {data,error}=await supabaseClient.from("restaurantes")
-   .select("id,nombre").order("nombre");
-  if(error)throw error;
-  restauranteHorario.innerHTML=(data||[]).map(r=>`<option value="${r.id}">${escaparHTML(r.nombre)}</option>`).join("");
-  if(data?.length)cargarHorariosRestaurante();
- }catch(e){editorHorarios.innerHTML=`<p class="inactivo">${escaparHTML(e.message)}</p>`}
 }
 
-async function cargarHorariosRestaurante(){
- const id=Number(restauranteHorario.value);
- if(!id)return;
- try{
-  const {data,error}=await supabaseClient.from("horarios_restaurantes")
-   .select("dia_semana,hora_apertura,hora_cierre,cerrado")
-   .eq("restaurante_id",id).order("dia_semana");
-  if(error)throw error;
-  const mapa={};
-  (data||[]).forEach(x=>mapa[x.dia_semana]=x);
 
-  editorHorarios.innerHTML=diasNombres.map((d,i)=>{
-   const h=mapa[i]||{cerrado:false,hora_apertura:"10:00",hora_cierre:"22:00"};
-   return `<div class="dia">
-    <b>${d}</b>
-    <label><input type="checkbox" id="cerrado${i}" ${h.cerrado?"checked":""} onchange="cambiarEstadoDia(${i})"> Cerrado</label>
-    <div class="grid">
-     <input type="time" id="apertura${i}" value="${h.hora_apertura||"10:00"}" ${h.cerrado?"disabled":""}>
-     <input type="time" id="cierre${i}" value="${h.hora_cierre||"22:00"}" ${h.cerrado?"disabled":""}>
-    </div>
-   </div>`;
-  }).join("");
- }catch(e){mensaje("mensajeHorarios","No se pudieron cargar horarios: "+e.message,"error")}
+async function eliminarProducto(id){
+
+if(!confirm("¿Eliminar este producto?"))return;
+
+try{
+
+const {error}=await supabaseClient
+.from("productos")
+.delete()
+.eq("id",id);
+
+if(error)throw error;
+
+await cargarProductosEdicion(localEditandoId);
+
+}catch(e){
+
+alert("No se pudo eliminar el producto: "+e.message);
+
 }
 
-function cambiarEstadoDia(i){
- const cerrado=document.getElementById("cerrado"+i).checked;
- document.getElementById("apertura"+i).disabled=cerrado;
- document.getElementById("cierre"+i).disabled=cerrado;
 }
 
-async function guardarHorarios(){
- const id=Number(restauranteHorario.value);
- if(!id)return mensaje("mensajeHorarios","Selecciona un restaurante.","error");
 
- try{
-  const {error:delError}=await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",id);
-  if(delError)throw delError;
+/* =========================
+   GUARDAR LOCAL COMPLETO
+========================= */
 
-  const filas=diasNombres.map((_,i)=>{
-   const cerrado=document.getElementById("cerrado"+i).checked;
-   return{
-    restaurante_id:id,
-    dia_semana:i,
-    hora_apertura:cerrado?null:document.getElementById("apertura"+i).value,
-    hora_cierre:cerrado?null:document.getElementById("cierre"+i).value,
-    cerrado
-   };
-  });
+async function guardarLocalCompleto(){
 
-  const {error}=await supabaseClient.from("horarios_restaurantes").insert(filas);
-  if(error)throw error;
-  mensaje("mensajeHorarios","Horarios guardados correctamente.");
- }catch(e){mensaje("mensajeHorarios","No se pudieron guardar: "+e.message,"error")}
+if(!localEditandoId)return;
+
+const local=localesCache.find(x=>x.id===localEditandoId);
+
+if(!local)return;
+
+const nombre=$id("editarNombre").value.trim();
+
+if(!nombre)
+return mensaje(
+"mensajeEdicion",
+"Ingresa el nombre del local.",
+"error"
+);
+
+try{
+
+mensaje(
+"mensajeEdicion",
+"Guardando cambios..."
+);
+
+let banner=local.banner_url||null;
+
+
+/*
+NO SUBIR IMAGEN SI NO SE SELECCIONÓ UNA NUEVA.
+*/
+
+if(bannerEdicionArchivo){
+
+banner=await subirImagen(
+bannerEdicionArchivo,
+`banners/${localEditandoId}`
+);
+
+}else if($id("quitarBanner").checked){
+
+banner=null;
+
 }
+
+
+/* LOCAL */
+
+const {error}=await supabaseClient
+.from("restaurantes")
+.update({
+
+nombre,
+
+categoria:$id("editarCategoria").value,
+
+descripcion:$id("editarDescripcion").value.trim(),
+
+banner_url:banner,
+
+activo:$id("editarActivo").checked
+
+})
+.eq("id",localEditandoId);
+
+if(error)throw error;
+
+
+/* HORARIOS */
+
+const {error:eh}=await supabaseClient
+.from("horarios_restaurantes")
+.delete()
+.eq("restaurante_id",localEditandoId);
+
+if(eh)throw eh;
+
+const horarios=
+obtenerHorario(
+"horarioEditar",
+localEditandoId
+);
+
+const {error:ih}=await supabaseClient
+.from("horarios_restaurantes")
+.insert(horarios);
+
+if(ih)throw ih;
+
+
+mensaje(
+"mensajeEdicion",
+"Local y horario actualizados correctamente."
+);
+
+await cargarLocales();
+
+await cargarProductosEdicion(
+localEditandoId
+);
+
+}catch(e){
+
+console.error(e);
+
+mensaje(
+"mensajeEdicion",
+"No se pudo actualizar el local: "+e.message,
+"error"
+);
+
+}
+
+}
+
+
+/* =========================
+   ESTADO DEL LOCAL
+========================= */
+
+async function cambiarEstadoLocal(id,activo){
+
+try{
+
+const {error}=await supabaseClient
+.from("restaurantes")
+.update({activo})
+.eq("id",id);
+
+if(error)throw error;
+
+await cargarLocales();
+
+}catch(e){
+
+alert(
+"No se pudo cambiar el estado del local: "+e.message
+);
+
+}
+
+}
+
+
+/* =========================
+   CERRAR EDITOR
+========================= */
+
+function cerrarEditor(){
+
+localEditandoId=null;
+bannerEdicionArchivo=null;
+productosEdicion=[];
+
+$id("editor").classList.add("oculto");
+$id("mensajeEdicion").className="mensaje";
+
+}
+
 </script>
+
 </body>
 </html>
+```
