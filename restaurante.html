@@ -9,7 +9,9 @@
 <script src="supabase.js"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+ box-sizing:border-box;
+}
 
 :root{
  --rojo:#d62828;
@@ -264,15 +266,38 @@ body{
  font-weight:700;
 }
 
+.error{
+ background:#fff0ef;
+ color:var(--rojo-dark);
+ border:1px solid #f2c5c1;
+ border-radius:10px;
+ padding:15px;
+ margin-top:15px;
+}
+
 @media(max-width:700px){
- .banner{height:210px}
- .products{grid-template-columns:1fr}
- .title{font-size:24px}
+
+ .banner{
+  height:210px;
+ }
+
+ .products{
+  grid-template-columns:1fr;
+ }
+
+ .title{
+  font-size:24px;
+ }
+
 }
 
 @media(max-width:430px){
+
  .product-image,
- .product-no-image{height:160px}
+ .product-no-image{
+  height:160px;
+ }
+
 }
 </style>
 </head>
@@ -280,22 +305,28 @@ body{
 <body>
 
 <header class="header">
-<div class="header-inner">
 
-<div class="brand">Sobre Ruedas</div>
+ <div class="header-inner">
 
-<a href="menu.html" class="cart">
-🛒 Carrito <span id="cartCount">0</span>
-</a>
+  <div class="brand">
+   Sobre Ruedas
+  </div>
 
-</div>
+  <a href="menu.html" class="cart">
+   🛒 Carrito <span id="cartCount">0</span>
+  </a>
+
+ </div>
+
 </header>
 
 <main class="wrap">
 
-<a href="index.html" class="back">← Volver a locales</a>
+ <a href="index.html" class="back">
+  ← Volver a locales
+ </a>
 
-<div id="contenido"></div>
+ <div id="contenido"></div>
 
 </main>
 
@@ -309,42 +340,64 @@ let productos=[];
 let horarios=[];
 let localAbierto=false;
 
+
+/* =====================================================
+   INICIO
+===================================================== */
+
 document.addEventListener("DOMContentLoaded",async()=>{
+
  actualizarCarrito();
+
  await cargarLocal();
+
 });
+
+
+/* =====================================================
+   CARGAR LOCAL
+===================================================== */
 
 async function cargarLocal(){
 
  if(!restauranteId){
-  mostrarError("No se especificó el local.");
+
+  mostrarError(
+   "No se especificó el local."
+  );
+
   return;
+
  }
 
  try{
 
-  /*
-   * SOLO LOCALES ACTIVOS
-   */
-  const {data,error}=await supabaseClient
+  const {
+   data,
+   error
+  }=await supabaseClient
    .from("restaurantes")
    .select("*")
    .eq("id",restauranteId)
    .eq("activo",true)
    .maybeSingle();
 
-  if(error)throw error;
+  if(error)
+   throw error;
 
   if(!data){
-   mostrarError("Este local no está disponible.");
+
+   mostrarError(
+    "Este local no está disponible."
+   );
+
    return;
+
   }
 
   restaurante=data;
 
-  /*
-   * SOLO PRODUCTOS ACTIVOS
-   */
+
   const [
    {data:prods,error:e2},
    {data:hrs,error:e3}
@@ -365,53 +418,100 @@ async function cargarLocal(){
 
   ]);
 
-  if(e2)throw e2;
-  if(e3)throw e3;
+
+  if(e2)
+   throw e2;
+
+  if(e3)
+   throw e3;
+
 
   productos=prods||[];
+
   horarios=hrs||[];
+
 
   pintar();
 
   actualizarEstado();
 
+
   /*
-   * Revisa automáticamente cada minuto
-   * por si el local abre o cierra mientras
-   * el usuario está en la página.
+   * Revisar automáticamente cada minuto
    */
-  setInterval(actualizarEstado,60000);
+  setInterval(
+   actualizarEstado,
+   60000
+  );
+
 
  }catch(e){
 
   console.error(e);
 
   mostrarError(
-   e?.message||"No se pudo cargar el local."
+   e?.message||
+   "No se pudo cargar el local."
   );
+
  }
+
 }
+
+
+/* =====================================================
+   PINTAR LOCAL
+===================================================== */
 
 function pintar(){
 
- const banner=restaurante.banner_url
+ const banner=
+  restaurante.banner_url
 
-  ? `<img
-      class="banner"
-      src="${escapeAttr(restaurante.banner_url+"?v="+Date.now())}"
-      alt="${escapeAttr(restaurante.nombre)}">`
+   ?`
 
-  : `<div class="no-banner">
-      ${escapeHtml(restaurante.nombre)}
-    </div>`;
+    <img
+     class="banner"
+     src="${escapeAttr(
+      restaurante.banner_url+
+      "?v="+Date.now()
+     )}"
+     alt="${escapeAttr(
+      restaurante.nombre
+     )}">
 
- const categoria=restaurante.categoria
+   `
 
-  ? `<div class="category">
-      ${escapeHtml(restaurante.categoria)}
-    </div>`
+   :`
 
-  : "";
+    <div class="no-banner">
+
+     ${escapeHtml(
+      restaurante.nombre
+     )}
+
+    </div>
+
+   `;
+
+
+ const categoria=
+  restaurante.categoria
+
+   ?`
+
+    <div class="category">
+
+     ${escapeHtml(
+      restaurante.categoria
+     )}
+
+    </div>
+
+   `
+
+   :"";
+
 
  contenido.innerHTML=`
 
@@ -420,122 +520,228 @@ function pintar(){
   <section class="info">
 
    <div class="title">
-    ${escapeHtml(restaurante.nombre)}
+
+    ${escapeHtml(
+     restaurante.nombre
+    )}
+
    </div>
 
    ${categoria}
 
    <div class="description">
-    ${escapeHtml(restaurante.descripcion||"")}
+
+    ${escapeHtml(
+     restaurante.descripcion||""
+    )}
+
    </div>
 
-   <div id="estadoLocal" class="status"></div>
+   <div
+    id="estadoLocal"
+    class="status">
+   </div>
 
-   <div id="horarioLocal" class="hours"></div>
+   <div
+    id="horarioLocal"
+    class="hours">
+   </div>
 
-   <div id="mensajeCerrado" class="closed-message">
+   <div
+    id="mensajeCerrado"
+    class="closed-message">
+
     🔴 Este local está cerrado en este momento.
-    Puedes consultar sus productos, pero no puedes realizar pedidos hasta que vuelva a abrir.
+
+    Puedes consultar sus productos,
+    pero no puedes realizar pedidos
+    hasta que vuelva a abrir.
+
    </div>
 
   </section>
 
   <section>
-   <div class="products" id="productos"></div>
+
+   <div
+    class="products"
+    id="productos">
+   </div>
+
   </section>
 
  `;
 
  pintarProductos();
+
 }
+
+
+/* =====================================================
+   PRODUCTOS
+===================================================== */
 
 function pintarProductos(){
 
- const box=document.getElementById("productos");
+ const box=
+  document.getElementById(
+   "productos"
+  );
+
 
  if(!productos.length){
 
   box.innerHTML=`
+
    <div class="empty">
-    Este local no tiene productos disponibles.
+
+    Este local no tiene
+    productos disponibles.
+
    </div>
+
   `;
 
   return;
+
  }
 
- box.innerHTML=productos.map(p=>{
 
-  const imagen=p.imagen_url
+ box.innerHTML=
 
-   ? `<img
-      class="product-image"
-      src="${escapeAttr(p.imagen_url+"?v="+Date.now())}"
-      alt="${escapeAttr(p.nombre)}">`
+  productos.map(p=>{
 
-   : `<div class="product-no-image">
-      Sin imagen
-     </div>`;
+   const imagen=
 
-  return `
+    p.imagen_url
 
-   <article class="product" data-product-id="${p.id}">
+     ?`
 
-    ${imagen}
+      <img
+       class="product-image"
+       src="${escapeAttr(
+        p.imagen_url+
+        "?v="+Date.now()
+       )}"
+       alt="${escapeAttr(
+        p.nombre
+       )}"
+       onerror="this.style.display='none'">
 
-    <div class="product-body">
+     `
 
-     <div class="product-name">
-      ${escapeHtml(p.nombre)}
-     </div>
+     :`
 
-     <div class="product-description">
-      ${escapeHtml(p.descripcion||"")}
-     </div>
+      <div class="product-no-image">
 
-     <div class="product-bottom">
+       Sin imagen
 
-      <div class="price">
-       $${Number(p.precio||0).toFixed(2)}
       </div>
 
-      <div class="product-action">
-       <button
-        class="add"
-        data-add-id="${p.id}"
-        onclick="agregarAlCarrito(${p.id})">
-        + Agregar
-       </button>
+     `;
+
+
+   return`
+
+    <article
+     class="product"
+     data-product-id="${p.id}">
+
+     ${imagen}
+
+     <div class="product-body">
+
+      <div class="product-name">
+
+       ${escapeHtml(
+        p.nombre
+       )}
+
+      </div>
+
+      <div class="product-description">
+
+       ${escapeHtml(
+        p.descripcion||""
+       )}
+
+      </div>
+
+      <div class="product-bottom">
+
+       <div class="price">
+
+        $${Number(
+         p.precio||0
+        ).toFixed(2)}
+
+       </div>
+
+       <div class="product-action">
+
+        <button
+         class="add"
+         data-add-id="${p.id}"
+         onclick="agregarAlCarrito(${p.id})">
+
+         + Agregar
+
+        </button>
+
+       </div>
+
       </div>
 
      </div>
 
-    </div>
+    </article>
 
-   </article>
+   `;
 
-  `;
-
- }).join("");
+  }).join("");
 
 }
 
+
+/* =====================================================
+   ESTADO DEL LOCAL
+===================================================== */
+
 function actualizarEstado(){
 
- const estado=obtenerEstadoLocal();
+ const estado=
+  obtenerEstadoLocal();
 
- localAbierto=estado.abierto;
+ localAbierto=
+  estado.abierto;
 
- const el=document.getElementById("estadoLocal");
- const mensajeCerrado=document.getElementById("mensajeCerrado");
+
+ const el=
+  document.getElementById(
+   "estadoLocal"
+  );
+
+ const mensajeCerrado=
+  document.getElementById(
+   "mensajeCerrado"
+  );
+
 
  if(el){
 
-  el.textContent=estado.texto;
+  el.textContent=
+   estado.texto;
 
   el.className=
-   "status "+(estado.abierto?"open":"closed");
+   "status "+
+   (
+    estado.abierto
+     ?"open"
+     :"closed"
+   );
+
  }
+
 
  if(mensajeCerrado){
 
@@ -543,32 +749,45 @@ function actualizarEstado(){
    "show",
    !estado.abierto
   );
+
  }
+
 
  actualizarBotonesProductos();
 
 }
 
+
+/* =====================================================
+   BOTONES PRODUCTOS
+===================================================== */
+
 function actualizarBotonesProductos(){
 
- document.querySelectorAll("[data-add-id]")
+ document
+  .querySelectorAll("[data-add-id]")
   .forEach(btn=>{
 
-   btn.disabled=!localAbierto;
+   btn.disabled=
+    !localAbierto;
 
    if(localAbierto){
 
-    btn.textContent="+ Agregar";
+    btn.textContent=
+     "+ Agregar";
 
    }else{
 
-    btn.textContent="Cerrado";
+    btn.textContent=
+     "Cerrado";
 
    }
 
   });
 
- document.querySelectorAll(".product")
+
+ document
+  .querySelectorAll(".product")
   .forEach(card=>{
 
    card.classList.toggle(
@@ -580,17 +799,22 @@ function actualizarBotonesProductos(){
 
 }
 
+
+/* =====================================================
+   AGREGAR AL CARRITO
+===================================================== */
+
 function agregarAlCarrito(id){
 
  /*
-  * SEGURIDAD DE INTERFAZ:
-  * aunque alguien intente ejecutar la función
-  * manualmente, no permitimos agregar productos
-  * cuando el local está cerrado.
+  * NO PERMITIR AGREGAR
+  * SI EL LOCAL ESTÁ CERRADO
   */
+
  if(!localAbierto){
 
-  const estado=obtenerEstadoLocal();
+  const estado=
+   obtenerEstadoLocal();
 
   alert(
    estado.texto+
@@ -598,218 +822,363 @@ function agregarAlCarrito(id){
   );
 
   return;
+
  }
 
- const producto=productos.find(
-  p=>Number(p.id)===Number(id)
- );
 
- if(!producto)return;
+ const producto=
+  productos.find(
+   p=>Number(p.id)===Number(id)
+  );
+
+
+ if(!producto)
+  return;
+
+
+ /*
+  * IMPORTANTE:
+  *
+  * TODA LA APLICACIÓN UTILIZA
+  * LA MISMA CLAVE:
+  *
+  * "carrito"
+  */
 
  let carrito=[];
 
+
  try{
 
-  carrito=JSON.parse(
-   localStorage.getItem("carrito_sobre_ruedas")||"[]"
-  );
+  carrito=
+   JSON.parse(
+    localStorage.getItem(
+     "carrito"
+    )||"[]"
+   );
+
 
   if(!Array.isArray(carrito))
    carrito=[];
 
+
  }catch{
 
   carrito=[];
+
  }
 
- const existente=carrito.find(x=>
-  Number(x.producto_id)===Number(producto.id)&&
-  Number(x.restaurante_id)===Number(restaurante.id)
- );
+
+ /*
+  * Buscar si ya existe
+  */
+
+ const existente=
+  carrito.find(x=>
+
+   Number(x.producto_id)===
+    Number(producto.id)
+
+   &&
+
+   Number(x.restaurante_id)===
+    Number(restaurante.id)
+
+  );
+
 
  if(existente){
 
   existente.cantidad=
-   (Number(existente.cantidad)||1)+1;
+   (Number(
+    existente.cantidad
+   )||1)+1;
 
  }else{
 
   carrito.push({
 
-   producto_id:producto.id,
+   producto_id:
+    producto.id,
 
-   restaurante_id:restaurante.id,
+   restaurante_id:
+    restaurante.id,
 
-   restaurante_nombre:restaurante.nombre,
+   restaurante_nombre:
+    restaurante.nombre,
 
-   producto_nombre:producto.nombre,
+   producto_nombre:
+    producto.nombre,
 
-   precio:Number(producto.precio)||0,
+   precio:
+    Number(producto.precio)||0,
 
    cantidad:1,
 
-   imagen_url:producto.imagen_url||""
+   imagen_url:
+    producto.imagen_url||""
 
   });
 
  }
 
+
+ /*
+  * GUARDAR EN LA MISMA CLAVE
+  * QUE USA menu.html
+  */
+
  localStorage.setItem(
-  "carrito_sobre_ruedas",
+  "carrito",
   JSON.stringify(carrito)
  );
+
 
  actualizarCarrito();
 
 }
 
+
+/* =====================================================
+   ACTUALIZAR CONTADOR
+===================================================== */
+
 function actualizarCarrito(){
 
  let carrito=[];
 
+
  try{
 
-  carrito=JSON.parse(
-   localStorage.getItem("carrito_sobre_ruedas")||"[]"
-  );
+  carrito=
+   JSON.parse(
+    localStorage.getItem(
+     "carrito"
+    )||"[]"
+   );
+
 
   if(!Array.isArray(carrito))
    carrito=[];
 
+
  }catch{
 
   carrito=[];
+
  }
 
- const total=carrito.reduce(
-  (s,p)=>s+(Number(p.cantidad)||0),
-  0
- );
 
- const el=document.getElementById("cartCount");
+ const total=
+  carrito.reduce(
+   (s,p)=>
+    s+
+    (Number(p.cantidad)||0),
+   0
+  );
+
+
+ const el=
+  document.getElementById(
+   "cartCount"
+  );
+
 
  if(el)
   el.textContent=total;
 
 }
 
+
+/* =====================================================
+   ESTADO HORARIO
+===================================================== */
+
 function obtenerEstadoLocal(){
 
  /*
-  * Siempre abierto
+  * SIEMPRE ABIERTO
   *
-  * Se detecta cuando los 7 días están abiertos
-  * desde 00:00 hasta 23:59.
+  * 7 días
+  * 00:00 - 23:59
   */
- const todosDias=horarios.length===7;
+
+ const todosDias=
+  horarios.length===7;
+
 
  if(
-  todosDias &&
+  todosDias&&
   horarios.every(h=>
-   !h.cerrado &&
-   h.hora_apertura?.substring(0,5)==="00:00" &&
-   (
-    h.hora_cierre?.substring(0,5)==="23:59" ||
-    h.hora_cierre?.substring(0,5)==="23:59"
-   )
+
+   !h.cerrado&&
+
+   h.hora_apertura?.substring(0,5)==="00:00"&&
+
+   h.hora_cierre?.substring(0,5)==="23:59"
+
   )
  ){
 
   return{
+
    abierto:true,
-   texto:"🟢 Abierto · Siempre abierto"
+
+   texto:
+    "🟢 Abierto · Siempre abierto"
+
   };
 
  }
 
- /*
-  * Hora actual de Ecuador
-  */
- const ahora=new Date();
 
- const partes=new Intl.DateTimeFormat(
-  "es-EC",
-  {
-   timeZone:"America/Guayaquil",
-   weekday:"short",
-   hour:"2-digit",
-   minute:"2-digit",
-   hour12:false
-  }
- ).formatToParts(ahora);
+ /*
+  * HORA ECUADOR
+  */
+
+ const ahora=
+  new Date();
+
+
+ const partes=
+  new Intl.DateTimeFormat(
+   "es-EC",
+   {
+    timeZone:
+     "America/Guayaquil",
+    weekday:"short",
+    hour:"2-digit",
+    minute:"2-digit",
+    hour12:false
+   }
+  ).formatToParts(
+   ahora
+  );
+
 
  const get=tipo=>
-  partes.find(x=>x.type===tipo)?.value;
+  partes.find(
+   x=>x.type===tipo
+  )?.value;
 
- const horaActual=Number(get("hour")||0);
- const minutoActual=Number(get("minute")||0);
 
- const actual=horaActual*60+minutoActual;
+ const horaActual=
+  Number(
+   get("hour")||0
+  );
 
- const diaSemana=obtenerDiaSemanaEcuador();
 
- const h=horarios.find(x=>
-  Number(x.dia_semana)===diaSemana
- );
+ const minutoActual=
+  Number(
+   get("minute")||0
+  );
+
+
+ const actual=
+  horaActual*60+
+  minutoActual;
+
+
+ const diaSemana=
+  obtenerDiaSemanaEcuador();
+
+
+ const h=
+  horarios.find(
+   x=>
+    Number(x.dia_semana)===
+    diaSemana
+  );
+
 
  /*
-  * Día cerrado o sin configuración
+  * DÍA CERRADO
   */
+
  if(!h||h.cerrado){
 
-  const siguiente=buscarSiguienteHorario(
-   diaSemana
-  );
+  const siguiente=
+   buscarSiguienteHorario(
+    diaSemana
+   );
+
 
   return{
 
    abierto:false,
 
-   texto:siguiente
-    ? `🔴 Cerrado · Abre ${siguiente}`
-    : "🔴 Cerrado"
+   texto:
+    siguiente
+     ?`🔴 Cerrado · Abre ${siguiente}`
+     :"🔴 Cerrado"
 
   };
 
  }
 
- const apertura=(h.hora_apertura||"00:00")
-  .substring(0,5);
 
- const cierre=(h.hora_cierre||"23:59")
-  .substring(0,5);
+ const apertura=
+  (
+   h.hora_apertura||
+   "00:00"
+  ).substring(0,5);
 
- const [ha,ma]=apertura.split(":").map(Number);
- const [hc,mc]=cierre.split(":").map(Number);
 
- const inicio=ha*60+ma;
- const fin=hc*60+mc;
+ const cierre=
+  (
+   h.hora_cierre||
+   "23:59"
+  ).substring(0,5);
+
+
+ const [ha,ma]=
+  apertura
+   .split(":")
+   .map(Number);
+
+
+ const [hc,mc]=
+  cierre
+   .split(":")
+   .map(Number);
+
+
+ const inicio=
+  ha*60+ma;
+
+
+ const fin=
+  hc*60+mc;
+
 
  let abierto=false;
 
+
  /*
-  * Horario normal:
-  * 10:00 - 22:00
+  * HORARIO NORMAL
   */
+
  if(inicio<=fin){
 
   abierto=
-   actual>=inicio &&
+   actual>=inicio&&
    actual<=fin;
 
  }
 
+
  /*
-  * Horario que cruza medianoche:
-  * 18:00 - 02:00
+  * HORARIO QUE CRUZA MEDIANOCHE
   */
+
  else{
 
   abierto=
-   actual>=inicio ||
+   actual>=inicio||
    actual<=fin;
 
  }
+
 
  if(abierto){
 
@@ -817,59 +1186,79 @@ function obtenerEstadoLocal(){
 
    abierto:true,
 
-   texto:`🟢 Abierto · Hasta las ${cierre}`
+   texto:
+    `🟢 Abierto · Hasta las ${cierre}`
 
   };
 
  }
 
+
  /*
-  * Todavía no abre
+  * TODAVÍA NO ABRE
   */
+
  if(actual<inicio){
 
   return{
 
    abierto:false,
 
-   texto:`🔴 Cerrado · Abre a las ${apertura}`
+   texto:
+    `🔴 Cerrado · Abre a las ${apertura}`
 
   };
 
  }
 
+
  /*
-  * Ya terminó el horario
+  * YA TERMINÓ EL HORARIO
   */
- const siguiente=buscarSiguienteHorario(
-  diaSemana
- );
+
+ const siguiente=
+  buscarSiguienteHorario(
+   diaSemana
+  );
+
 
  return{
 
   abierto:false,
 
-  texto:siguiente
-   ? `🔴 Cerrado · Abre ${siguiente}`
-   : "🔴 Cerrado"
+  texto:
+   siguiente
+    ?`🔴 Cerrado · Abre ${siguiente}`
+    :"🔴 Cerrado"
 
  };
 
 }
 
+
+/* =====================================================
+   DÍA DE ECUADOR
+===================================================== */
+
 function obtenerDiaSemanaEcuador(){
 
- const fecha=new Date();
+ const fecha=
+  new Date();
 
- const texto=new Intl.DateTimeFormat(
-  "en-US",
-  {
-   timeZone:"America/Guayaquil",
-   weekday:"short"
-  }
- ).format(fecha);
+
+ const texto=
+  new Intl.DateTimeFormat(
+   "en-US",
+   {
+    timeZone:
+     "America/Guayaquil",
+    weekday:"short"
+   }
+  ).format(fecha);
+
 
  const dias={
+
   Sun:0,
   Mon:1,
   Tue:2,
@@ -877,39 +1266,68 @@ function obtenerDiaSemanaEcuador(){
   Thu:4,
   Fri:5,
   Sat:6
+
  };
 
+
  return dias[texto];
+
 }
 
-function buscarSiguienteHorario(diaActual){
 
- for(let i=1;i<=7;i++){
+/* =====================================================
+   SIGUIENTE HORARIO
+===================================================== */
 
-  const dia=(diaActual+i)%7;
+function buscarSiguienteHorario(
+ diaActual
+){
 
-  const h=horarios.find(x=>
-   Number(x.dia_semana)===dia
-  );
+ for(
+  let i=1;
+  i<=7;
+  i++
+ ){
+
+  const dia=
+   (diaActual+i)%7;
+
+
+  const h=
+   horarios.find(
+    x=>
+     Number(x.dia_semana)===
+     dia
+   );
+
 
   if(
-   h &&
-   !h.cerrado &&
+   h&&
+   !h.cerrado&&
    h.hora_apertura
   ){
 
-   const nombre=DIAS_NOMBRES[dia];
+   const nombre=
+    DIAS_NOMBRES[dia];
 
-   return `${nombre} a las ${h.hora_apertura.substring(0,5)}`;
+
+   return(
+    `${nombre} a las `+
+    `${h.hora_apertura.substring(0,5)}`
+   );
 
   }
 
  }
 
+
  return null;
+
 }
 
+
 const DIAS_NOMBRES=[
+
  "domingo",
  "lunes",
  "martes",
@@ -917,30 +1335,64 @@ const DIAS_NOMBRES=[
  "jueves",
  "viernes",
  "sábado"
+
 ];
+
+
+/* =====================================================
+   ERROR
+===================================================== */
 
 function mostrarError(texto){
 
  contenido.innerHTML=`
 
-  <div class="empty">
+  <div class="error">
+
    ${escapeHtml(texto)}
+
   </div>
 
  `;
 
 }
 
+
+/* =====================================================
+   SEGURIDAD HTML
+===================================================== */
+
 function escapeHtml(value){
 
  return String(value??"")
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
+
+  .replace(
+   /&/g,
+   "&amp;"
+  )
+
+  .replace(
+   /</g,
+   "&lt;"
+  )
+
+  .replace(
+   />/g,
+   "&gt;"
+  )
+
+  .replace(
+   /"/g,
+   "&quot;"
+  )
+
+  .replace(
+   /'/g,
+   "&#039;"
+  );
 
 }
+
 
 function escapeAttr(value){
 
