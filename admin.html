@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -211,31 +212,49 @@ hr{border:0;border-top:1px solid #eee5d8;margin:18px 0}
 <script>
 const BUCKET="restaurantes";
 
+const $=id=>document.getElementById(id);
+
+const mensaje=$("mensaje");
+const nombreNegocio=$("nombreNegocio");
+const ciudad=$("ciudad");
+const tarifaDelivery=$("tarifaDelivery");
+const whatsappNegocio=$("whatsappNegocio");
+const nuevaCategoria=$("nuevaCategoria");
+const listaCategorias=$("listaCategorias");
+const nuevoNombre=$("nuevoNombre");
+const nuevoCategoria=$("nuevoCategoria");
+const nuevoDescripcion=$("nuevoDescripcion");
+const nuevoBanner=$("nuevoBanner");
+const previewNuevo=$("previewNuevo");
+const productosNuevosEl=$("productosNuevos");
+const listaLocales=$("listaLocales");
+const edicion=$("edicion");
+const editId=$("editId");
+const editNombre=$("editNombre");
+const editCategoria=$("editCategoria");
+const editDescripcion=$("editDescripcion");
+const editActivo=$("editActivo");
+const editBanner=$("editBanner");
+const previewEdit=$("previewEdit");
+const bannerActual=$("bannerActual");
+const productosEditEl=$("productosEdit");
+
 let categorias=[];
 let locales=[];
 let productosEdit=[];
 let productosNuevos=[];
-let horarios=[];
 let bannerEdicionActual="";
 
 const dias=[
- "Domingo",
- "Lunes",
- "Martes",
- "Miércoles",
- "Jueves",
- "Viernes",
- "Sábado"
+ "Domingo","Lunes","Martes","Miércoles",
+ "Jueves","Viernes","Sábado"
 ];
 
 function escapeHtml(v=""){
  return String(v).replace(/[&<>"']/g,m=>({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#039;"
- }[m]);
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#039;"
+ }[m]));
 }
 
 function mostrarMensaje(texto,exito=false){
@@ -244,9 +263,7 @@ function mostrarMensaje(texto,exito=false){
    ${escapeHtml(texto)}
   </div>`;
 
- setTimeout(()=>{
-  mensaje.innerHTML="";
- },4000);
+ setTimeout(()=>mensaje.innerHTML="",4000);
 }
 
 function cacheUrl(url){
@@ -255,16 +272,15 @@ function cacheUrl(url){
 }
 
 function extensionArchivo(nombre=""){
- const partes=nombre.toLowerCase().split(".");
- return partes.length>1?partes.pop():"jpg";
+ const p=nombre.toLowerCase().split(".");
+ return p.length>1?p.pop():"jpg";
 }
 
 async function subirImagen(archivo,idLocal){
  if(!archivo)return null;
 
- const extension=extensionArchivo(archivo.name);
  const ruta=
-  `banners/${idLocal}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+  `banners/${idLocal}/${Date.now()}-${crypto.randomUUID()}.${extensionArchivo(archivo.name)}`;
 
  const {error}=await supabaseClient.storage
   .from(BUCKET)
@@ -280,16 +296,15 @@ async function subirImagen(archivo,idLocal){
   .from(BUCKET)
   .getPublicUrl(ruta);
 
- if(!data?.publicUrl){
-  throw new Error("No se pudo obtener la URL pública de la imagen.");
- }
+ if(!data?.publicUrl)
+  throw new Error("No se pudo obtener la URL pública.");
 
  return data.publicUrl;
 }
 
 function previsualizarArchivo(input,id){
  const archivo=input.files?.[0];
- const img=document.getElementById(id);
+ const img=$(id);
 
  if(!archivo){
   img.style.display="none";
@@ -301,21 +316,64 @@ function previsualizarArchivo(input,id){
  img.style.display="block";
 }
 
+/* =========================
+   CONFIGURACIÓN
+========================= */
+
 async function cargarConfiguracion(){
- const {data,error}=await supabaseClient
-  .from("configuracion_negocio")
-  .select("*")
-  .order("id")
-  .limit(1)
-  .maybeSingle();
+ try{
+  let data=null;
 
- if(error)throw error;
+  const r1=await supabaseClient
+   .from("configuracion_negocio")
+   .select("*")
+   .order("id",{ascending:true})
+   .limit(1);
 
- if(data){
-  nombreNegocio.value=data.nombre_negocio||"";
-  ciudad.value=data.ciudad||"";
-  tarifaDelivery.value=data.tarifa_delivery??1.5;
-  whatsappNegocio.value=data.whatsapp_negocio||"";
+  if(r1.error)throw r1.error;
+
+  if(r1.data?.length){
+   data=r1.data[0];
+  }else{
+   const r2=await supabaseClient
+    .from("configuracion")
+    .select("*")
+    .order("id",{ascending:true})
+    .limit(1);
+
+   if(!r2.error&&r2.data?.length)
+    data=r2.data[0];
+  }
+
+  nombreNegocio.value=
+   data?.nombre_negocio||
+   window.CONFIG?.nombreNegocio||
+   "Sobre Ruedas";
+
+  ciudad.value=
+   data?.ciudad||
+   window.CONFIG?.ciudad||
+   "Esmeraldas";
+
+  tarifaDelivery.value=
+   data?.tarifa_delivery ??
+   window.CONFIG?.tarifaDelivery ??
+   1.50;
+
+  whatsappNegocio.value=
+   data?.whatsapp_negocio||
+   window.CONFIG?.whatsappNegocio||
+   "";
+
+ }catch(e){
+  console.error("Configuración:",e);
+
+  nombreNegocio.value=window.CONFIG?.nombreNegocio||"Sobre Ruedas";
+  ciudad.value=window.CONFIG?.ciudad||"Esmeraldas";
+  tarifaDelivery.value=window.CONFIG?.tarifaDelivery??1.50;
+  whatsappNegocio.value=window.CONFIG?.whatsappNegocio||"";
+
+  mostrarMensaje("No se pudo leer la configuración guardada. Se muestran los valores actuales.");
  }
 }
 
@@ -330,66 +388,81 @@ async function guardarConfiguracion(){
    actualizado_en:new Date().toISOString()
   };
 
-  const {data:existente}=await supabaseClient
+  const {data,error}=await supabaseClient
    .from("configuracion_negocio")
    .select("id")
-   .order("id")
-   .limit(1)
-   .maybeSingle();
+   .order("id",{ascending:true})
+   .limit(1);
 
-  let error;
+  if(error)throw error;
 
-  if(existente?.id){
-   ({error}=await supabaseClient
+  let errorGuardar;
+
+  if(data?.length){
+   ({error:errorGuardar}=await supabaseClient
     .from("configuracion_negocio")
     .update(registro)
-    .eq("id",existente.id));
+    .eq("id",data[0].id));
   }else{
-   ({error}=await supabaseClient
+   ({error:errorGuardar}=await supabaseClient
     .from("configuracion_negocio")
     .insert(registro));
   }
 
-  if(error)throw error;
+  if(errorGuardar)throw errorGuardar;
 
-  mostrarMensaje("Configuración guardada.",true);
+  mostrarMensaje("Configuración guardada correctamente.",true);
+
  }catch(e){
   console.error(e);
   mostrarMensaje("No se pudo guardar la configuración: "+e.message);
  }
 }
 
+/* =========================
+   CATEGORÍAS
+========================= */
+
 async function cargarCategorias(){
- const {data,error}=await supabaseClient
-  .from("categorias")
-  .select("*")
-  .order("nombre");
+ try{
+  const {data,error}=await supabaseClient
+   .from("categorias")
+   .select("*")
+   .order("nombre");
 
- if(error)throw error;
+  if(error)throw error;
 
- categorias=data||[];
- renderCategorias();
- cargarSelectCategorias();
+  categorias=data||[];
+  renderCategorias();
+  cargarSelectCategorias();
+
+ }catch(e){
+  console.error(e);
+  categorias=[];
+  renderCategorias();
+  cargarSelectCategorias();
+  mostrarMensaje("No se pudieron cargar las categorías: "+e.message);
+ }
 }
 
 function renderCategorias(){
- listaCategorias.innerHTML=categorias.map(c=>`
+ listaCategorias.innerHTML=categorias.length
+ ? categorias.map(c=>`
   <div class="card">
    <strong>${escapeHtml(c.nombre)}</strong>
    <span class="estado ${c.activo?"activo":"inactivo"}">
     ${c.activo?"Activa":"Inactiva"}
    </span>
    <div class="acciones">
-    <button class="gray" onclick="editarCategoria(${c.id})">
-     Editar
-    </button>
+    <button class="gray" onclick="editarCategoria(${c.id})">Editar</button>
     <button class="${c.activo?"danger":"sec"}"
      onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
      ${c.activo?"Desactivar":"Activar"}
     </button>
    </div>
   </div>
- `).join("");
+ `).join("")
+ : `<div class="card">No hay categorías registradas.</div>`;
 }
 
 function cargarSelectCategorias(){
@@ -425,6 +498,7 @@ async function crearCategoria(){
   nuevaCategoria.value="";
   await cargarCategorias();
   mostrarMensaje("Categoría creada.",true);
+
  }catch(e){
   console.error(e);
   mostrarMensaje("No se pudo crear la categoría: "+e.message);
@@ -436,11 +510,9 @@ async function editarCategoria(id){
  if(!categoria)return;
 
  const nuevo=prompt("Nombre de la categoría:",categoria.nombre);
-
  if(nuevo===null)return;
 
  const nombre=nuevo.trim();
-
  if(!nombre)return;
 
  try{
@@ -453,7 +525,9 @@ async function editarCategoria(id){
 
   await cargarCategorias();
   await cargarLocales();
+
   mostrarMensaje("Categoría actualizada.",true);
+
  }catch(e){
   console.error(e);
   mostrarMensaje("No se pudo actualizar la categoría: "+e.message);
@@ -471,44 +545,47 @@ async function cambiarEstadoCategoria(id,activo){
 
   await cargarCategorias();
   mostrarMensaje("Estado actualizado.",true);
+
  }catch(e){
   console.error(e);
   mostrarMensaje("No se pudo actualizar: "+e.message);
  }
 }
 
-function renderHorarios(contenedorId,datos=[]){
- const cont=document.getElementById(contenedorId);
+/* =========================
+   HORARIOS
+========================= */
 
+function renderHorarios(contenedorId,datos=[]){
+ const cont=$(contenedorId);
  const mapa={};
 
- datos.forEach(h=>{
-  mapa[h.dia_semana]=h;
- });
+ datos.forEach(h=>mapa[h.dia_semana]=h);
 
  cont.innerHTML=dias.map((dia,i)=>{
-  const h=mapa[i]||{cerrado:false,hora_apertura:"10:00",hora_cierre:"22:00"};
+  const h=mapa[i]||{
+   cerrado:false,
+   hora_apertura:"10:00",
+   hora_cierre:"22:00"
+  };
 
   return `
    <div class="dia">
     <strong>${dia}</strong>
 
     <label class="check">
-     <input
-      type="checkbox"
+     <input type="checkbox"
       id="${contenedorId}_cerrado_${i}"
       ${h.cerrado?"checked":""}>
      Cerrado
     </label>
 
-    <input
-     type="time"
+    <input type="time"
      id="${contenedorId}_apertura_${i}"
      value="${h.hora_apertura||"10:00"}"
      style="margin-top:6px">
 
-    <input
-     type="time"
+    <input type="time"
      id="${contenedorId}_cierre_${i}"
      value="${h.hora_cierre||"22:00"}"
      style="margin-top:6px">
@@ -520,32 +597,30 @@ function renderHorarios(contenedorId,datos=[]){
 function leerHorarios(contenedorId){
  return dias.map((_,i)=>({
   dia_semana:i,
-  hora_apertura:
-   document.getElementById(`${contenedorId}_apertura_${i}`).value||null,
-  hora_cierre:
-   document.getElementById(`${contenedorId}_cierre_${i}`).value||null,
-  cerrado:
-   document.getElementById(`${contenedorId}_cerrado_${i}`).checked
+  hora_apertura:$(`${contenedorId}_apertura_${i}`).value||null,
+  hora_cierre:$(`${contenedorId}_cierre_${i}`).value||null,
+  cerrado:$(`${contenedorId}_cerrado_${i}`).checked
  }));
 }
+
+/* =========================
+   PRODUCTOS
+========================= */
 
 function renderProductosNuevos(){
  productosNuevosEl.innerHTML=productosNuevos.map((p,i)=>`
   <div class="producto-row">
-   <input
-    placeholder="Nombre del producto"
+   <input placeholder="Nombre del producto"
     value="${escapeHtml(p.nombre||"")}"
     oninput="productosNuevos[${i}].nombre=this.value">
 
-   <input
-    type="number"
-    step="0.01"
-    min="0"
+   <input type="number" step="0.01" min="0"
     placeholder="Precio"
     value="${p.precio??""}"
     oninput="productosNuevos[${i}].precio=this.value">
 
-   <button class="danger" onclick="eliminarProductoNuevo(${i})">
+   <button class="danger"
+    onclick="eliminarProductoNuevo(${i})">
     Eliminar
    </button>
   </div>
@@ -553,11 +628,7 @@ function renderProductosNuevos(){
 }
 
 function agregarProductoNuevo(){
- productosNuevos.push({
-  nombre:"",
-  precio:""
- });
-
+ productosNuevos.push({nombre:"",precio:""});
  renderProductosNuevos();
 }
 
@@ -570,15 +641,11 @@ function renderProductosEdit(){
  productosEditEl.innerHTML=productosEdit.map((p,i)=>`
   <div class="card" style="margin-bottom:8px">
    <div class="producto-row">
-    <input
-     placeholder="Nombre"
+    <input placeholder="Nombre"
      value="${escapeHtml(p.nombre||"")}"
      oninput="productosEdit[${i}].nombre=this.value">
 
-    <input
-     type="number"
-     step="0.01"
-     min="0"
+    <input type="number" step="0.01" min="0"
      placeholder="Precio"
      value="${p.precio??""}"
      oninput="productosEdit[${i}].precio=this.value">
@@ -590,8 +657,7 @@ function renderProductosEdit(){
    </div>
 
    <label class="check">
-    <input
-     type="checkbox"
+    <input type="checkbox"
      ${p.activo!==false?"checked":""}
      onchange="productosEdit[${i}].activo=this.checked">
     Producto activo
@@ -607,19 +673,21 @@ function agregarProductoEdit(){
   activo:true,
   _nuevo:true
  });
-
  renderProductosEdit();
 }
 
 function eliminarProductoEdit(i){
- if(productosEdit[i]._nuevo){
+ if(productosEdit[i]._nuevo)
   productosEdit.splice(i,1);
- }else{
+ else
   productosEdit[i].activo=false;
- }
 
  renderProductosEdit();
 }
+
+/* =========================
+   CREAR LOCAL
+========================= */
 
 async function crearLocal(){
  try{
@@ -648,13 +716,11 @@ async function crearLocal(){
 
   if(error)throw error;
 
-  let bannerUrl=null;
+  const archivo=nuevoBanner.files?.[0];
 
-  try{
-   const archivo=nuevoBanner.files?.[0];
-
-   if(archivo){
-    bannerUrl=await subirImagen(archivo,data.id);
+  if(archivo){
+   try{
+    const bannerUrl=await subirImagen(archivo,data.id);
 
     const {error:errorBanner}=await supabaseClient
      .from("restaurantes")
@@ -662,14 +728,15 @@ async function crearLocal(){
      .eq("id",data.id);
 
     if(errorBanner)throw errorBanner;
-   }
-  }catch(e){
-   await supabaseClient
-    .from("restaurantes")
-    .delete()
-    .eq("id",data.id);
 
-   throw new Error("No se pudo subir el banner: "+e.message);
+   }catch(e){
+    await supabaseClient
+     .from("restaurantes")
+     .delete()
+     .eq("id",data.id);
+
+    throw new Error("No se pudo subir el banner: "+e.message);
+   }
   }
 
   const horariosData=leerHorarios("horariosNuevo");
@@ -708,6 +775,8 @@ async function crearLocal(){
   nuevoDescripcion.value="";
   nuevoBanner.value="";
   previewNuevo.style.display="none";
+  previewNuevo.removeAttribute("src");
+
   productosNuevos=[];
   renderProductosNuevos();
   renderHorarios("horariosNuevo");
@@ -721,6 +790,10 @@ async function crearLocal(){
   mostrarMensaje("No se pudo crear el local: "+e.message);
  }
 }
+
+/* =========================
+   LOCALES
+========================= */
 
 async function cargarLocales(){
  try{
@@ -736,15 +809,12 @@ async function cargarLocales(){
   listaLocales.innerHTML=locales.length
    ? locales.map(l=>`
     <div class="card">
-     ${
-      l.banner_url
-      ? `<img
-          class="banner"
-          src="${escapeHtml(cacheUrl(l.banner_url))}"
-          alt="${escapeHtml(l.nombre)}"
-          onerror="this.style.display='none'">`
-      : ""
-     }
+     ${l.banner_url?`
+      <img class="banner"
+       src="${escapeHtml(cacheUrl(l.banner_url))}"
+       alt="${escapeHtml(l.nombre)}"
+       onerror="this.style.display='none'">
+     `:""}
 
      <h3>${escapeHtml(l.nombre)}</h3>
 
@@ -760,9 +830,7 @@ async function cargarLocales(){
      </span>
 
      <div class="acciones">
-      <button onclick="abrirEdicion(${l.id})">
-       Editar
-      </button>
+      <button onclick="abrirEdicion(${l.id})">Editar</button>
 
       <button class="${l.activo?"danger":"sec"}"
        onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
@@ -781,7 +849,7 @@ async function cargarLocales(){
  }catch(e){
   console.error(e);
   listaLocales.innerHTML=
-   `<div class="mensaje">No se pudieron cargar los locales.</div>`;
+   `<div class="mensaje">No se pudieron cargar los locales: ${escapeHtml(e.message)}</div>`;
  }
 }
 
@@ -797,6 +865,7 @@ async function abrirEdicion(id){
   editActivo.value=String(local.activo!==false);
 
   bannerEdicionActual=local.banner_url||"";
+
   editBanner.value="";
   previewEdit.style.display="none";
   previewEdit.removeAttribute("src");
@@ -804,8 +873,7 @@ async function abrirEdicion(id){
   bannerActual.innerHTML=local.banner_url
    ? `
     <p style="color:#53665a;font-weight:bold">Banner actual</p>
-    <img
-     class="banner"
+    <img class="banner"
      src="${escapeHtml(cacheUrl(local.banner_url))}"
      onerror="this.style.display='none'">
    `
@@ -837,7 +905,10 @@ async function abrirEdicion(id){
   renderProductosEdit();
 
   edicion.classList.remove("oculto");
-  edicion.scrollIntoView({behavior:"smooth",block:"start"});
+  edicion.scrollIntoView({
+   behavior:"smooth",
+   block:"start"
+  });
 
  }catch(e){
   console.error(e);
@@ -848,7 +919,6 @@ async function abrirEdicion(id){
 async function guardarEdicion(){
  try{
   const id=Number(editId.value);
-
   if(!id)return;
 
   if(!editNombre.value.trim()){
@@ -857,12 +927,10 @@ async function guardarEdicion(){
   }
 
   let bannerUrl=bannerEdicionActual;
-
   const archivo=editBanner.files?.[0];
 
-  if(archivo){
+  if(archivo)
    bannerUrl=await subirImagen(archivo,id);
-  }
 
   const {error}=await supabaseClient
    .from("restaurantes")
@@ -891,9 +959,9 @@ async function guardarEdicion(){
 
   if(errorHorarios)throw errorHorarios;
 
-  const existentes=productosEdit.filter(p=>!p._nuevo);
+  for(const p of productosEdit.filter(p=>!p._nuevo)){
+   if(!p.nombre?.trim())continue;
 
-  for(const p of existentes){
    const {error:errorProducto}=await supabaseClient
     .from("productos")
     .update({
@@ -912,7 +980,7 @@ async function guardarEdicion(){
     restaurante_id:id,
     nombre:p.nombre.trim(),
     precio:Number(p.precio)||0,
-    activo:p.activo!==false
+    activo:true
    }));
 
   if(nuevos.length){
@@ -940,6 +1008,7 @@ function cerrarEdicion(){
  productosEdit=[];
  editBanner.value="";
  previewEdit.style.display="none";
+ previewEdit.removeAttribute("src");
  bannerActual.innerHTML="";
 }
 
@@ -958,6 +1027,7 @@ async function cambiarEstadoLocal(id,activo){
    activo?"Local activado.":"Local desactivado.",
    true
   );
+
  }catch(e){
   console.error(e);
   mostrarMensaje("No se pudo cambiar el estado: "+e.message);
@@ -966,7 +1036,6 @@ async function cambiarEstadoLocal(id,activo){
 
 async function eliminarLocal(id){
  const local=locales.find(l=>Number(l.id)===Number(id));
-
  if(!local)return;
 
  if(!confirm(
@@ -1006,46 +1075,19 @@ async function eliminarLocal(id){
  }
 }
 
-const mensaje=document.getElementById("mensaje");
-const nombreNegocio=document.getElementById("nombreNegocio");
-const ciudad=document.getElementById("ciudad");
-const tarifaDelivery=document.getElementById("tarifaDelivery");
-const whatsappNegocio=document.getElementById("whatsappNegocio");
-const nuevaCategoria=document.getElementById("nuevaCategoria");
-const listaCategorias=document.getElementById("listaCategorias");
-const nuevoNombre=document.getElementById("nuevoNombre");
-const nuevoCategoria=document.getElementById("nuevoCategoria");
-const nuevoDescripcion=document.getElementById("nuevoDescripcion");
-const nuevoBanner=document.getElementById("nuevoBanner");
-const previewNuevo=document.getElementById("previewNuevo");
-const horariosNuevo=document.getElementById("horariosNuevo");
-const productosNuevosEl=document.getElementById("productosNuevos");
-const listaLocales=document.getElementById("listaLocales");
-const edicion=document.getElementById("edicion");
-const editId=document.getElementById("editId");
-const editNombre=document.getElementById("editNombre");
-const editCategoria=document.getElementById("editCategoria");
-const editDescripcion=document.getElementById("editDescripcion");
-const editActivo=document.getElementById("editActivo");
-const editBanner=document.getElementById("editBanner");
-const previewEdit=document.getElementById("previewEdit");
-const bannerActual=document.getElementById("bannerActual");
-const horariosEdit=document.getElementById("horariosEdit");
-const productosEditEl=document.getElementById("productosEdit");
+/* =========================
+   INICIO
+========================= */
 
 async function iniciar(){
- try{
-  renderHorarios("horariosNuevo");
-  renderProductosNuevos();
+ renderHorarios("horariosNuevo");
+ renderProductosNuevos();
 
-  await cargarConfiguracion();
-  await cargarCategorias();
-  await cargarLocales();
-
- }catch(e){
-  console.error(e);
-  mostrarMensaje("Error al cargar administración: "+e.message);
- }
+ await Promise.allSettled([
+  cargarConfiguracion(),
+  cargarCategorias(),
+  cargarLocales()
+ ]);
 }
 
 iniciar();
@@ -1053,3 +1095,4 @@ iniciar();
 
 </body>
 </html>
+```
