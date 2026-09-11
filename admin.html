@@ -12,36 +12,37 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-header{background:#111;color:#fff;padding:18px;text-align:center}
+header{background:#111;color:#fff;padding:16px;text-align:center}
 main{max-width:1100px;margin:auto;padding:20px}
-section{background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 8px #0001}
+section{background:#fff;padding:18px;margin-bottom:18px;border-radius:10px;box-shadow:0 2px 8px #0001}
 h2{margin:0 0 15px}
 h3{margin:15px 0 8px}
-input,select,textarea{width:100%;padding:10px;margin:5px 0 10px;border:1px solid #ccc;border-radius:6px}
-textarea{min-height:75px;resize:vertical}
-button{border:0;border-radius:6px;padding:9px 13px;cursor:pointer;margin:3px}
+input,select,textarea{width:100%;padding:9px;margin:4px 0 9px;border:1px solid #ccc;border-radius:6px}
+textarea{min-height:70px;resize:vertical}
+button{border:0;border-radius:6px;padding:9px 12px;cursor:pointer;margin:3px}
 .btn{background:#222;color:#fff}
 .btn2{background:#ddd;color:#222}
 .ok{background:#198754;color:#fff}
 .danger{background:#c0392b;color:#fff}
-.mensaje{padding:10px;border-radius:6px;margin-top:10px;display:none}
+.mensaje{padding:9px;border-radius:6px;margin-top:10px;display:none}
 .exito{display:block;background:#dff5e5;color:#176b35}
 .error{display:block;background:#fde2e2;color:#8b1e1e}
-.item,.producto,.dia{border:1px solid #ddd;border-radius:8px;padding:12px;margin:8px 0}
+.item,.producto,.dia{border:1px solid #ddd;border-radius:8px;padding:11px;margin:8px 0}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .estado{font-weight:bold;font-size:13px}
 .activo{color:#198754}
 .inactivo{color:#c0392b}
-.img{width:90px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
-.preview{max-width:180px;max-height:120px;object-fit:cover;border-radius:6px;margin:5px 0}
+.img{width:100px;height:75px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
+.preview{max-width:200px;max-height:130px;object-fit:cover;border-radius:6px;margin:5px 0}
 .oculto{display:none!important}
 small{color:#666}
 .horarios{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
 .dia label{display:block;font-weight:bold;margin-bottom:5px}
 .producto img{width:80px;height:60px;object-fit:cover;border-radius:6px}
-.url-imagen{font-size:11px;color:#666;word-break:break-all;margin-top:4px}
+.url-imagen{font-size:10px;color:#666;word-break:break-all;margin-top:4px}
 .cargando{color:#666}
+.imagen-error{font-size:12px;color:#c0392b;background:#fde2e2;padding:5px;border-radius:5px;margin-top:4px}
 </style>
 </head>
 
@@ -58,7 +59,6 @@ small{color:#666}
 <h2>Configuración del negocio</h2>
 
 <div class="grid">
-
 <div>
 <label>Tarifa delivery</label>
 <input id="tarifaDelivery" type="number" min="0" step=".01">
@@ -68,13 +68,9 @@ small{color:#666}
 <label>WhatsApp</label>
 <input id="whatsappNegocio">
 </div>
-
 </div>
 
-<button class="btn ok" onclick="guardarConfiguracion()">
-Guardar configuración
-</button>
-
+<button class="btn ok" onclick="guardarConfiguracion()">Guardar configuración</button>
 <div id="mensajeConfiguracion" class="mensaje"></div>
 </section>
 
@@ -84,17 +80,11 @@ Guardar configuración
 <h2>Categorías</h2>
 
 <div class="flex">
-
 <input id="nuevaCategoria" placeholder="Nueva categoría">
-
-<button class="btn ok" onclick="agregarCategoria()">
-Agregar
-</button>
-
+<button class="btn ok" onclick="agregarCategoria()">Agregar</button>
 </div>
 
 <div id="listaCategorias"></div>
-
 <div id="mensajeCategoria" class="mensaje"></div>
 </section>
 
@@ -105,7 +95,6 @@ Agregar
 <h2>Crear local</h2>
 
 <div class="grid">
-
 <div>
 <label>Nombre del local</label>
 <input id="nombreLocal">
@@ -115,60 +104,29 @@ Agregar
 <label>Categoría</label>
 <select id="categoriaLocal"></select>
 </div>
-
 </div>
 
 <label>Descripción</label>
-
-<textarea
-id="descripcionLocal"
-placeholder="Descripción del local"></textarea>
-
+<textarea id="descripcionLocal" placeholder="Descripción del local"></textarea>
 
 <label>Banner <small>(opcional)</small></label>
-
-<input
-id="bannerLocal"
-type="file"
-accept="image/*"
-onchange="mostrarBanner()">
-
+<input id="bannerLocal" type="file" accept="image/*" onchange="mostrarBanner()">
 
 <div id="previewBanner" class="oculto">
-
-<img
-id="imagenBanner"
-class="preview">
-
+<img id="imagenBanner" class="preview">
 </div>
-
 
 <h3>Horario del local</h3>
-
-<div
-id="horarioNuevo"
-class="horarios">
-</div>
-
+<div id="horarioNuevo" class="horarios"></div>
 
 <h3>Productos del local</h3>
-
 <div id="listaProductos"></div>
 
-<button
-class="btn2"
-onclick="agregarProducto()">
-+ Producto
-</button>
+<button class="btn2" onclick="agregarProducto()">+ Producto</button>
 
 <br><br>
 
-<button
-class="btn ok"
-onclick="publicarLocal()">
-Publicar local
-</button>
-
+<button class="btn ok" onclick="publicarLocal()">Publicar local</button>
 <div id="mensajePublicacion" class="mensaje"></div>
 
 </section>
@@ -178,10 +136,7 @@ Publicar local
 <section>
 
 <h2>Locales registrados</h2>
-
-<div id="localesLista">
-Cargando...
-</div>
+<div id="localesLista">Cargando...</div>
 
 </section>
 
@@ -191,10 +146,7 @@ Cargando...
 
 <h2>Editar local</h2>
 
-<input
-type="hidden"
-id="editarId">
-
+<input type="hidden" id="editarId">
 
 <div class="grid">
 
@@ -210,134 +162,60 @@ id="editarId">
 
 </div>
 
-
 <label>Descripción</label>
-
 <textarea id="editarDescripcion"></textarea>
 
-
-<label>
-Nuevo banner <small>(opcional)</small>
-</label>
-
-<input
-id="editarBanner"
-type="file"
-accept="image/*"
-onchange="mostrarBannerEdicion()">
-
+<label>Nuevo banner <small>(opcional)</small></label>
+<input id="editarBanner" type="file" accept="image/*" onchange="mostrarBannerEdicion()">
 
 <div id="previewEditarBanner" class="oculto">
-
-<img
-id="editarImagen"
-class="preview">
-
+<img id="editarImagen" class="preview">
+<div id="errorImagenEditar" class="imagen-error oculto"></div>
 </div>
 
-
 <label>
-<input
-type="checkbox"
-id="quitarBanner">
-
+<input type="checkbox" id="quitarBanner">
 Quitar banner actual
 </label>
 
-
 <label>
-<input
-type="checkbox"
-id="editarActivo">
-
+<input type="checkbox" id="editarActivo">
 Local activo
 </label>
 
-
 <h3>Horario del local</h3>
-
-<div
-id="horarioEditar"
-class="horarios">
-</div>
-
+<div id="horarioEditar" class="horarios"></div>
 
 <h3>Productos del local</h3>
-
 <div id="productosEditar"></div>
-
 
 <h3>Agregar producto</h3>
 
 <div class="grid">
 
 <div>
-
 <label>Nombre</label>
-
 <input id="nuevoProductoNombre">
-
 </div>
 
 <div>
-
 <label>Precio</label>
-
-<input
-id="nuevoProductoPrecio"
-type="number"
-min="0"
-step=".01">
-
+<input id="nuevoProductoPrecio" type="number" min="0" step=".01">
 </div>
 
 </div>
 
+<label>Imagen <small>(opcional)</small></label>
+<input id="nuevoProductoImagen" type="file" accept="image/*">
 
-<label>
-Imagen <small>(opcional)</small>
-</label>
-
-<input
-id="nuevoProductoImagen"
-type="file"
-accept="image/*">
-
-
-<button
-class="btn ok"
-onclick="agregarProductoExistente()">
-
-Agregar producto
-
-</button>
-
+<button class="btn ok" onclick="agregarProductoExistente()">Agregar producto</button>
 
 <br><br>
 
+<button class="btn ok" onclick="guardarLocalCompleto()">Guardar todos los cambios</button>
+<button class="btn2" onclick="cerrarEditor()">Cancelar</button>
 
-<button
-class="btn ok"
-onclick="guardarLocalCompleto()">
-
-Guardar todos los cambios
-
-</button>
-
-
-<button
-class="btn2"
-onclick="cerrarEditor()">
-
-Cancelar
-
-</button>
-
-
-<div
-id="mensajeEdicion"
-class="mensaje">
-</div>
+<div id="mensajeEdicion" class="mensaje"></div>
 
 </section>
 
@@ -349,1799 +227,1507 @@ class="mensaje">
 let productos=[];
 let bannerArchivo=null;
 let configuracionNegocioId=null;
-
 let categoriasDisponibles=[];
 let localesCache=[];
 let localEditandoId=null;
-
 let bannerEdicionArchivo=null;
 let productosEdicion=[];
 
-
 const dias=[
-"Domingo",
-"Lunes",
-"Martes",
-"Miércoles",
-"Jueves",
-"Viernes",
-"Sábado"
+"Domingo","Lunes","Martes","Miércoles",
+"Jueves","Viernes","Sábado"
 ];
 
+document.addEventListener("DOMContentLoaded",async()=>{
+    await cargarConfiguracion();
+    await cargarCategorias();
+    generarHorario("horarioNuevo");
+    agregarProducto();
+    await cargarLocales();
+});
 
-document.addEventListener(
-"DOMContentLoaded",
-async()=>{
-
-await cargarConfiguracion();
-
-await cargarCategorias();
-
-generarHorario("horarioNuevo");
-
-agregarProducto();
-
-await cargarLocales();
-
-}
-);
-
-
-function $id(id){
-
-return document.getElementById(id);
-
-}
-
+const $id=id=>document.getElementById(id);
 
 function mensaje(id,text,tipo="exito"){
-
-const e=$id(id);
-
-if(!e)return;
-
-e.textContent=text;
-
-e.className="mensaje "+tipo;
-
+    const e=$id(id);
+    if(!e)return;
+    e.textContent=text;
+    e.className="mensaje "+tipo;
 }
 
-
 function escapar(v){
-
-return String(v??"")
-.replace(/[&<>"']/g,m=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-}[m]));
-
+    return String(v??"").replace(/[&<>"']/g,m=>({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    }[m]));
 }
 
 
 /* =====================================================
-   CONFIGURACIÓN
+CONFIGURACIÓN
 ===================================================== */
 
 async function cargarConfiguracion(){
 
-try{
+    try{
 
-const {data,error}=await supabaseClient
-.from("configuracion_negocio")
-.select("*")
-.order("id",{ascending:true})
-.limit(1)
-.maybeSingle();
+        const {data,error}=await supabaseClient
+        .from("configuracion_negocio")
+        .select("*")
+        .order("id",{ascending:true})
+        .limit(1)
+        .maybeSingle();
 
-if(error)throw error;
+        if(error)throw error;
 
-if(data){
+        if(data){
 
-configuracionNegocioId=data.id;
+            configuracionNegocioId=data.id;
 
-$id("tarifaDelivery").value=
-data.tarifa_delivery??"";
+            $id("tarifaDelivery").value=data.tarifa_delivery??"";
+            $id("whatsappNegocio").value=data.whatsapp_negocio??"";
 
-$id("whatsappNegocio").value=
-data.whatsapp_negocio??"";
+        }
 
-}
+    }catch(e){
 
-}catch(e){
+        console.error(e);
 
-console.error(e);
+        mensaje(
+            "mensajeConfiguracion",
+            "No se pudo cargar la configuración: "+e.message,
+            "error"
+        );
 
-mensaje(
-"mensajeConfiguracion",
-"No se pudo cargar la configuración: "+e.message,
-"error"
-);
-
-}
+    }
 
 }
 
 
 async function guardarConfiguracion(){
 
-try{
+    try{
 
-const datos={
+        const datos={
+            tarifa_delivery:Number($id("tarifaDelivery").value||0),
+            whatsapp_negocio:$id("whatsappNegocio").value.trim()
+        };
 
-tarifa_delivery:
-Number($id("tarifaDelivery").value||0),
+        let error;
 
-whatsapp_negocio:
-$id("whatsappNegocio").value.trim()
+        if(configuracionNegocioId){
 
-};
+            ({error}=await supabaseClient
+            .from("configuracion_negocio")
+            .update(datos)
+            .eq("id",configuracionNegocioId));
 
+        }else{
 
-let error;
+            const r=await supabaseClient
+            .from("configuracion_negocio")
+            .insert(datos)
+            .select()
+            .single();
 
+            error=r.error;
 
-if(configuracionNegocioId){
+            if(!error)
+                configuracionNegocioId=r.data.id;
 
-({error}=await supabaseClient
-.from("configuracion_negocio")
-.update(datos)
-.eq("id",configuracionNegocioId));
+        }
 
-}else{
+        if(error)throw error;
 
-const r=await supabaseClient
-.from("configuracion_negocio")
-.insert(datos)
-.select()
-.single();
+        mensaje(
+            "mensajeConfiguracion",
+            "Configuración guardada correctamente."
+        );
 
-error=r.error;
+    }catch(e){
 
-if(!error)
-configuracionNegocioId=r.data.id;
+        console.error(e);
 
-}
+        mensaje(
+            "mensajeConfiguracion",
+            "No se pudo guardar: "+e.message,
+            "error"
+        );
 
-
-if(error)throw error;
-
-
-mensaje(
-"mensajeConfiguracion",
-"Configuración guardada correctamente."
-);
-
-
-}catch(e){
-
-console.error(e);
-
-mensaje(
-"mensajeConfiguracion",
-"No se pudo guardar: "+e.message,
-"error"
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   CATEGORÍAS
+CATEGORÍAS
 ===================================================== */
 
 async function cargarCategorias(){
 
-try{
+    try{
 
-const {data,error}=await supabaseClient
-.from("categorias")
-.select("*")
-.order("nombre");
+        const {data,error}=await supabaseClient
+        .from("categorias")
+        .select("*")
+        .order("nombre");
 
-if(error)throw error;
+        if(error)throw error;
 
-categoriasDisponibles=data||[];
+        categoriasDisponibles=data||[];
 
-llenarCategorias();
+        llenarCategorias();
+        renderCategorias();
 
-renderCategorias();
+    }catch(e){
 
+        console.error(e);
 
-}catch(e){
+        mensaje(
+            "mensajeCategoria",
+            "No se pudieron cargar las categorías: "+e.message,
+            "error"
+        );
 
-console.error(e);
-
-mensaje(
-"mensajeCategoria",
-"No se pudieron cargar las categorías: "+e.message,
-"error"
-);
-
-}
+    }
 
 }
 
 
 function llenarCategorias(){
 
-const opciones=
-`<option value="">Seleccionar categoría</option>`+
+    const opciones=
+        `<option value="">Seleccionar categoría</option>`+
+        categoriasDisponibles
+        .filter(c=>c.activo)
+        .map(c=>`
+            <option value="${escapar(c.nombre)}">
+                ${escapar(c.nombre)}
+            </option>
+        `).join("");
 
-categoriasDisponibles
-.filter(c=>c.activo)
-.map(c=>
-`<option value="${escapar(c.nombre)}">
-${escapar(c.nombre)}
-</option>`
-)
-.join("");
-
-
-$id("categoriaLocal").innerHTML=opciones;
-
-$id("editarCategoria").innerHTML=opciones;
+    $id("categoriaLocal").innerHTML=opciones;
+    $id("editarCategoria").innerHTML=opciones;
 
 }
 
 
 function renderCategorias(){
 
-$id("listaCategorias").innerHTML=
+    $id("listaCategorias").innerHTML=
+    categoriasDisponibles.map(c=>`
 
-categoriasDisponibles.map(c=>`
+        <div class="item flex">
 
-<div class="item flex">
+            <div style="flex:1">
+                <strong>${escapar(c.nombre)}</strong>
 
-<div style="flex:1">
+                <span class="estado ${c.activo?"activo":"inactivo"}">
+                    ${c.activo?"Activa":"Inactiva"}
+                </span>
+            </div>
 
-<strong>
-${escapar(c.nombre)}
-</strong>
+            <button
+                class="btn2"
+                onclick="editarCategoria(${c.id},'${escapar(c.nombre)}')">
+                Editar
+            </button>
 
-<span class="estado ${c.activo?"activo":"inactivo"}">
-${c.activo?"Activa":"Inactiva"}
-</span>
+            <button
+                class="${c.activo?"danger":"ok"}"
+                onclick="cambiarCategoria(${c.id},${!c.activo})">
+                ${c.activo?"Desactivar":"Activar"}
+            </button>
 
-</div>
+        </div>
 
-
-<button
-class="btn2"
-onclick="editarCategoria(${c.id},'${escapar(c.nombre)}')">
-
-Editar
-
-</button>
-
-
-<button
-class="${c.activo?"danger":"ok"}"
-onclick="cambiarCategoria(${c.id},${!c.activo})">
-
-${c.activo?"Desactivar":"Activar"}
-
-</button>
-
-</div>
-
-`).join("");
+    `).join("");
 
 }
 
 
 async function agregarCategoria(){
 
-const nombre=
-$id("nuevaCategoria").value.trim();
+    const nombre=$id("nuevaCategoria").value.trim();
 
+    if(!nombre)
+        return mensaje(
+            "mensajeCategoria",
+            "Ingresa una categoría.",
+            "error"
+        );
 
-if(!nombre){
+    try{
 
-return mensaje(
-"mensajeCategoria",
-"Ingresa una categoría.",
-"error"
-);
+        const {error}=await supabaseClient
+        .from("categorias")
+        .insert({nombre});
 
-}
+        if(error)throw error;
 
+        $id("nuevaCategoria").value="";
 
-try{
+        await cargarCategorias();
 
-const {error}=await supabaseClient
-.from("categorias")
-.insert({nombre});
+        mensaje(
+            "mensajeCategoria",
+            "Categoría agregada correctamente."
+        );
 
+    }catch(e){
 
-if(error)throw error;
+        mensaje(
+            "mensajeCategoria",
+            "No se pudo agregar: "+e.message,
+            "error"
+        );
 
-
-$id("nuevaCategoria").value="";
-
-
-await cargarCategorias();
-
-
-mensaje(
-"mensajeCategoria",
-"Categoría agregada correctamente."
-);
-
-
-}catch(e){
-
-console.error(e);
-
-mensaje(
-"mensajeCategoria",
-"No se pudo agregar: "+e.message,
-"error"
-);
-
-}
+    }
 
 }
 
 
 async function editarCategoria(id,nombreActual){
 
-const nuevo=
-prompt(
-"Nombre de la categoría:",
-nombreActual
-);
+    const nuevo=prompt(
+        "Nombre de la categoría:",
+        nombreActual
+    );
 
+    if(nuevo===null)return;
 
-if(nuevo===null)return;
+    const nombre=nuevo.trim();
 
+    if(!nombre)return;
 
-const nombre=nuevo.trim();
+    try{
 
-if(!nombre)return;
+        const {error}=await supabaseClient
+        .from("categorias")
+        .update({nombre})
+        .eq("id",id);
 
+        if(error)throw error;
 
-try{
+        await cargarCategorias();
 
-const {error}=await supabaseClient
-.from("categorias")
-.update({nombre})
-.eq("id",id);
+    }catch(e){
 
+        alert("No se pudo actualizar la categoría: "+e.message);
 
-if(error)throw error;
-
-
-await cargarCategorias();
-
-
-}catch(e){
-
-alert(
-"No se pudo actualizar la categoría: "+e.message
-);
-
-}
+    }
 
 }
 
 
 async function cambiarCategoria(id,activo){
 
-try{
+    try{
 
-const {error}=await supabaseClient
-.from("categorias")
-.update({activo})
-.eq("id",id);
+        const {error}=await supabaseClient
+        .from("categorias")
+        .update({activo})
+        .eq("id",id);
 
+        if(error)throw error;
 
-if(error)throw error;
+        await cargarCategorias();
 
+    }catch(e){
 
-await cargarCategorias();
+        alert("No se pudo cambiar el estado: "+e.message);
 
-
-}catch(e){
-
-alert(
-"No se pudo cambiar el estado: "+e.message
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   IMÁGENES / STORAGE
+STORAGE
 ===================================================== */
 
 async function subirImagen(archivo,carpeta){
 
-if(!archivo)return null;
+    if(!archivo)return null;
 
+    if(!archivo.type.startsWith("image/"))
+        throw new Error("El archivo seleccionado no es una imagen.");
 
-const ext=
-(archivo.name.split(".").pop()||"jpg")
-.toLowerCase();
+    const ext=(archivo.name.split(".").pop()||"jpg").toLowerCase();
 
+    const ruta=
+        `${carpeta}/${Date.now()}-${crypto.randomUUID
+            ?crypto.randomUUID()
+            :Math.random().toString(36).slice(2)
+        }.${ext}`;
 
-const ruta=
-`${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2,10)}.${ext}`;
+    console.log("Subiendo imagen:",{
+        bucket:"restaurantes",
+        ruta,
+        nombre:archivo.name,
+        tipo:archivo.type,
+        tamaño:archivo.size
+    });
 
+    const {data,error}=await supabaseClient.storage
+        .from("restaurantes")
+        .upload(
+            ruta,
+            archivo,
+            {
+                cacheControl:"3600",
+                upsert:false,
+                contentType:archivo.type
+            }
+        );
 
-try{
+    if(error){
 
-console.log("================================");
+        console.error("ERROR STORAGE:",error);
 
-console.log("SUBIDA DE IMAGEN");
+        throw new Error(
+            "No se pudo subir la imagen: "+error.message
+        );
 
-console.log("Bucket:", "restaurantes");
+    }
 
-console.log("Archivo:", archivo.name);
+    console.log("Imagen subida:",data);
 
-console.log("Tipo:", archivo.type);
+    const {data:publicData}=
+        supabaseClient.storage
+        .from("restaurantes")
+        .getPublicUrl(ruta);
 
-console.log("Tamaño:", archivo.size);
+    const url=publicData?.publicUrl;
 
-console.log("Carpeta:", carpeta);
+    if(!url)
+        throw new Error(
+            "La imagen se subió pero no se pudo obtener su URL."
+        );
 
-console.log("Ruta:", ruta);
+    console.log("URL pública:",url);
 
-console.log("================================");
-
-
-const {data,error}=
-await supabaseClient.storage
-.from("restaurantes")
-.upload(
-ruta,
-archivo,
-{
-cacheControl:"3600",
-upsert:false,
-contentType:
-archivo.type ||
-"application/octet-stream"
-}
-);
-
-
-console.log(
-"Respuesta Storage:",
-{data,error}
-);
-
-
-if(error){
-
-console.error(
-"ERROR REAL DE STORAGE:",
-error
-);
-
-throw new Error(
-error.message ||
-error.error_description ||
-"Error desconocido de Storage"
-);
-
-}
-
-
-const {data:publicData}=
-supabaseClient.storage
-.from("restaurantes")
-.getPublicUrl(ruta);
-
-
-console.log(
-"URL pública:",
-publicData?.publicUrl
-);
-
-
-if(!publicData?.publicUrl){
-
-throw new Error(
-"Storage subió la imagen pero no se obtuvo la URL pública."
-);
-
-}
-
-
-return publicData.publicUrl;
-
-
-}catch(e){
-
-console.error(
-"ERROR FINAL SUBIENDO IMAGEN:",
-e
-);
-
-throw e;
-
-}
+    return url;
 
 }
 
 
 /* =====================================================
-   PREVISUALIZACIÓN BANNER NUEVO
+PREVIEW
 ===================================================== */
 
 function mostrarBanner(){
 
-const archivo=
-$id("bannerLocal").files[0]||null;
+    const archivo=$id("bannerLocal").files[0]||null;
 
+    bannerArchivo=archivo;
 
-bannerArchivo=archivo;
+    if(!archivo){
 
+        $id("previewBanner").classList.add("oculto");
+        return;
 
-if(!archivo){
+    }
 
-$id("previewBanner")
-.classList.add("oculto");
+    $id("imagenBanner").src=
+        URL.createObjectURL(archivo);
 
-return;
-
-}
-
-
-const url=
-URL.createObjectURL(archivo);
-
-
-$id("imagenBanner").src=url;
-
-
-$id("previewBanner")
-.classList.remove("oculto");
+    $id("previewBanner").classList.remove("oculto");
 
 }
 
-
-/* =====================================================
-   PREVISUALIZACIÓN BANNER EDICIÓN
-===================================================== */
 
 function mostrarBannerEdicion(){
 
-const archivo=
-$id("editarBanner").files[0]||null;
+    const archivo=$id("editarBanner").files[0]||null;
 
+    bannerEdicionArchivo=archivo;
 
-bannerEdicionArchivo=archivo;
+    if(!archivo)return;
 
+    $id("editarImagen").src=
+        URL.createObjectURL(archivo);
 
-if(!archivo){
+    $id("errorImagenEditar").classList.add("oculto");
 
-if(!$id("editarImagen").src){
+    $id("previewEditarBanner").classList.remove("oculto");
 
-$id("previewEditarBanner")
-.classList.add("oculto");
-
-}
-
-return;
-
-}
-
-
-const url=
-URL.createObjectURL(archivo);
-
-
-$id("editarImagen").src=url;
-
-
-$id("previewEditarBanner")
-.classList.remove("oculto");
-
-
-$id("quitarBanner").checked=false;
+    $id("quitarBanner").checked=false;
 
 }
 
 
 /* =====================================================
-   HORARIOS
+HORARIOS
 ===================================================== */
 
 function generarHorario(contenedor,datos={}){
 
-$id(contenedor).innerHTML=
+    $id(contenedor).innerHTML=
 
-dias.map((dia,i)=>{
+    dias.map((dia,i)=>{
 
-const d=datos[i]||{};
+        const d=datos[i]||{};
 
+        return`
 
-return `
+        <div class="dia">
 
-<div class="dia">
+            <label>${dia}</label>
 
-<label>
-${dia}
-</label>
+            <label>
+                <input
+                    type="checkbox"
+                    id="horario${contenedor}C${i}"
+                    ${d.cerrado?"checked":""}
+                    onchange="cambiarDia('${contenedor}',${i})">
+                Cerrado
+            </label>
 
+            <input
+                type="time"
+                id="horario${contenedor}A${i}"
+                value="${d.hora_apertura||""}"
+                ${d.cerrado?"disabled":""}>
 
-<label>
+            <input
+                type="time"
+                id="horario${contenedor}B${i}"
+                value="${d.hora_cierre||""}"
+                ${d.cerrado?"disabled":""}>
 
-<input
-type="checkbox"
-id="horario${contenedor}C${i}"
-${d.cerrado?"checked":""}
-onchange="cambiarDia('${contenedor}',${i})">
+        </div>
 
-Cerrado
+        `;
 
-</label>
-
-
-<input
-type="time"
-id="horario${contenedor}A${i}"
-value="${d.hora_apertura||""}"
-${d.cerrado?"disabled":""}>
-
-
-<input
-type="time"
-id="horario${contenedor}B${i}"
-value="${d.hora_cierre||""}"
-${d.cerrado?"disabled":""}>
-
-</div>
-
-`;
-
-}).join("");
+    }).join("");
 
 }
 
 
 function cambiarDia(contenedor,i){
 
-const cerrado=
-$id(`horario${contenedor}C${i}`).checked;
+    const cerrado=
+        $id(`horario${contenedor}C${i}`).checked;
 
-
-$id(`horario${contenedor}A${i}`)
-.disabled=cerrado;
-
-$id(`horario${contenedor}B${i}`)
-.disabled=cerrado;
+    $id(`horario${contenedor}A${i}`).disabled=cerrado;
+    $id(`horario${contenedor}B${i}`).disabled=cerrado;
 
 }
 
 
 function obtenerHorario(contenedor,localId){
 
-return dias.map((_,i)=>{
+    return dias.map((_,i)=>{
 
-const cerrado=
-$id(`horario${contenedor}C${i}`).checked;
+        const cerrado=
+            $id(`horario${contenedor}C${i}`).checked;
 
+        return{
 
-return{
+            restaurante_id:localId,
+            dia_semana:i,
 
-restaurante_id:localId,
+            hora_apertura:
+                cerrado
+                ?null
+                :$id(`horario${contenedor}A${i}`).value||null,
 
-dia_semana:i,
+            hora_cierre:
+                cerrado
+                ?null
+                :$id(`horario${contenedor}B${i}`).value||null,
 
-hora_apertura:
-cerrado
-?null
-:$id(`horario${contenedor}A${i}`).value||null,
+            cerrado
 
-hora_cierre:
-cerrado
-?null
-:$id(`horario${contenedor}B${i}`).value||null,
+        };
 
-cerrado
-
-};
-
-});
+    });
 
 }
 
 
 /* =====================================================
-   PRODUCTOS NUEVOS
+PRODUCTOS NUEVOS
 ===================================================== */
 
 function agregarProducto(){
 
-productos.push({
+    productos.push({
+        nombre:"",
+        precio:"",
+        imagen:null
+    });
 
-nombre:"",
-precio:"",
-imagen:null
-
-});
-
-
-renderProductos();
+    renderProductos();
 
 }
 
 
 function renderProductos(){
 
-$id("listaProductos").innerHTML=
+    $id("listaProductos").innerHTML=
 
-productos.map((p,i)=>`
+    productos.map((p,i)=>`
 
-<div class="producto">
+        <div class="producto">
 
-<div class="grid">
+            <div class="grid">
 
-<div>
+                <div>
 
-<label>
-Nombre
-</label>
+                    <label>Nombre</label>
 
-<input
-value="${escapar(p.nombre)}"
-oninput="productos[${i}].nombre=this.value"
-placeholder="Nombre del producto">
+                    <input
+                        value="${escapar(p.nombre)}"
+                        oninput="productos[${i}].nombre=this.value"
+                        placeholder="Nombre del producto">
 
-</div>
+                </div>
 
+                <div>
 
-<div>
+                    <label>Precio</label>
 
-<label>
-Precio
-</label>
+                    <input
+                        type="number"
+                        min="0"
+                        step=".01"
+                        value="${p.precio}"
+                        oninput="productos[${i}].precio=this.value">
 
-<input
-type="number"
-min="0"
-step=".01"
-value="${p.precio}"
-oninput="productos[${i}].precio=this.value">
+                </div>
 
-</div>
+            </div>
 
-</div>
+            <label>Imagen <small>(opcional)</small></label>
 
+            <input
+                type="file"
+                accept="image/*"
+                onchange="productos[${i}].imagen=this.files[0]||null">
 
-<label>
-Imagen <small>(opcional)</small>
-</label>
+            <button
+                class="danger"
+                onclick="productos.splice(${i},1);renderProductos()">
+                Eliminar
+            </button>
 
+        </div>
 
-<input
-type="file"
-accept="image/*"
-onchange="productos[${i}].imagen=this.files[0]||null">
-
-
-<button
-class="danger"
-onclick="productos.splice(${i},1);renderProductos()">
-
-Eliminar
-
-</button>
-
-</div>
-
-`).join("");
+    `).join("");
 
 }
 
 
 /* =====================================================
-   PUBLICAR LOCAL
+PUBLICAR LOCAL
 ===================================================== */
 
 async function publicarLocal(){
 
-const nombre=
-$id("nombreLocal").value.trim();
-
-const categoria=
-$id("categoriaLocal").value;
-
-const descripcion=
-$id("descripcionLocal").value.trim();
-
-
-if(!nombre){
-
-return mensaje(
-"mensajePublicacion",
-"Ingresa el nombre del local.",
-"error"
-);
-
-}
-
-
-if(!categoria){
-
-return mensaje(
-"mensajePublicacion",
-"Selecciona una categoría.",
-"error"
-);
-
-}
-
-
-try{
-
-mensaje(
-"mensajePublicacion",
-"Publicando local..."
-);
-
-
-/* =========================================
-   BANNER
-========================================= */
-
-let banner=null;
-
-
-if(bannerArchivo){
-
-banner=
-await subirImagen(
-bannerArchivo,
-"banners"
-);
-
-}
-
-
-/* =========================================
-   LOCAL
-========================================= */
-
-const {
-data:local,
-error
-}=await supabaseClient
-.from("restaurantes")
-.insert({
-
-nombre,
-categoria,
-descripcion,
-banner_url:banner,
-activo:true
-
-})
-.select()
-.single();
-
-
-if(error)throw error;
-
-
-/* =========================================
-   HORARIOS
-========================================= */
-
-const horarios=
-obtenerHorario(
-"horarioNuevo",
-local.id
-);
-
-
-const {error:eh}=
-await supabaseClient
-.from("horarios_restaurantes")
-.insert(horarios);
-
-
-if(eh)throw eh;
-
-
-/* =========================================
-   PRODUCTOS
-========================================= */
-
-for(const p of productos){
-
-if(!p.nombre.trim())continue;
-
-
-let imagen=null;
-
-
-if(p.imagen){
-
-imagen=
-await subirImagen(
-p.imagen,
-`productos/${local.id}`
-);
-
-}
-
-
-const {error:ep}=
-await supabaseClient
-.from("productos")
-.insert({
-
-restaurante_id:local.id,
-
-nombre:p.nombre.trim(),
-
-precio:Number(p.precio||0),
-
-imagen_url:imagen
-
-});
-
-
-if(ep)throw ep;
-
-}
-
-
-mensaje(
-"mensajePublicacion",
-"Local publicado correctamente."
-);
-
-
-limpiarNuevo();
-
-
-await cargarLocales();
-
-
-}catch(e){
-
-console.error(
-"ERROR PUBLICANDO LOCAL:",
-e
-);
-
-
-mensaje(
-"mensajePublicacion",
-"No se pudo publicar el local: "+e.message,
-"error"
-);
-
-}
+    const nombre=$id("nombreLocal").value.trim();
+    const categoria=$id("categoriaLocal").value;
+    const descripcion=$id("descripcionLocal").value.trim();
+
+    if(!nombre)
+        return mensaje(
+            "mensajePublicacion",
+            "Ingresa el nombre del local.",
+            "error"
+        );
+
+    if(!categoria)
+        return mensaje(
+            "mensajePublicacion",
+            "Selecciona una categoría.",
+            "error"
+        );
+
+    try{
+
+        mensaje(
+            "mensajePublicacion",
+            "Publicando local..."
+        );
+
+        let banner=null;
+
+        if(bannerArchivo)
+            banner=await subirImagen(
+                bannerArchivo,
+                "banners"
+            );
+
+        const {
+            data:local,
+            error
+        }=await supabaseClient
+        .from("restaurantes")
+        .insert({
+            nombre,
+            categoria,
+            descripcion,
+            banner_url:banner,
+            activo:true
+        })
+        .select()
+        .single();
+
+        if(error)throw error;
+
+        const horarios=
+            obtenerHorario(
+                "horarioNuevo",
+                local.id
+            );
+
+        const {error:eh}=
+            await supabaseClient
+            .from("horarios_restaurantes")
+            .insert(horarios);
+
+        if(eh)throw eh;
+
+        for(const p of productos){
+
+            if(!p.nombre.trim())continue;
+
+            let imagen=null;
+
+            if(p.imagen)
+                imagen=await subirImagen(
+                    p.imagen,
+                    `productos/${local.id}`
+                );
+
+            const {error:ep}=
+                await supabaseClient
+                .from("productos")
+                .insert({
+                    restaurante_id:local.id,
+                    nombre:p.nombre.trim(),
+                    precio:Number(p.precio||0),
+                    imagen_url:imagen
+                });
+
+            if(ep)throw ep;
+
+        }
+
+        mensaje(
+            "mensajePublicacion",
+            "Local publicado correctamente."
+        );
+
+        limpiarNuevo();
+
+        await cargarLocales();
+
+    }catch(e){
+
+        console.error(
+            "ERROR PUBLICANDO LOCAL:",
+            e
+        );
+
+        mensaje(
+            "mensajePublicacion",
+            "No se pudo publicar el local: "+e.message,
+            "error"
+        );
+
+    }
 
 }
 
 
 /* =====================================================
-   LIMPIAR CREACIÓN
+LIMPIAR
 ===================================================== */
 
 function limpiarNuevo(){
 
-$id("nombreLocal").value="";
+    $id("nombreLocal").value="";
+    $id("categoriaLocal").value="";
+    $id("descripcionLocal").value="";
+    $id("bannerLocal").value="";
 
-$id("categoriaLocal").value="";
+    $id("previewBanner")
+        .classList.add("oculto");
 
-$id("descripcionLocal").value="";
+    bannerArchivo=null;
 
-$id("bannerLocal").value="";
+    generarHorario("horarioNuevo");
 
-$id("previewBanner")
-.classList.add("oculto");
+    productos=[];
 
-
-bannerArchivo=null;
-
-
-generarHorario("horarioNuevo");
-
-
-productos=[];
-
-
-agregarProducto();
+    agregarProducto();
 
 }
 
 
 /* =====================================================
-   CARGAR LOCALES
+LOCALES
 ===================================================== */
 
 async function cargarLocales(){
 
-try{
+    try{
 
-const {data,error}=
-await supabaseClient
-.from("restaurantes")
-.select("*")
-.order("nombre");
+        const {data,error}=
+            await supabaseClient
+            .from("restaurantes")
+            .select("*")
+            .order("nombre");
 
+        if(error)throw error;
 
-if(error)throw error;
+        localesCache=data||[];
 
+        $id("localesLista").innerHTML=
 
-localesCache=data||[];
+        localesCache.length
 
+        ?
 
-$id("localesLista").innerHTML=
+        localesCache.map(l=>`
 
-localesCache.length
+            <div class="item">
 
-?
+                <div class="flex">
 
-localesCache.map(l=>`
+                    <div style="flex:1">
 
-<div class="item">
+                        <strong>
+                            ${escapar(l.nombre)}
+                        </strong>
 
-<div class="flex">
+                        <div>
+                            ${escapar(l.categoria||"Sin categoría")}
+                        </div>
 
-<div style="flex:1">
+                        <div class="estado ${
+                            l.activo?"activo":"inactivo"
+                        }">
 
-<strong>
-${escapar(l.nombre)}
-</strong>
+                            ${l.activo?"Activo":"Inactivo"}
 
+                        </div>
 
-<div>
-${escapar(l.categoria||"Sin categoría")}
-</div>
+                    </div>
 
+                    ${
+                    l.banner_url
 
-<div class="estado ${l.activo?"activo":"inactivo"}">
+                    ?
 
-${l.activo?"Activo":"Inactivo"}
+                    `<div>
 
-</div>
+                        <img
+                            class="img"
+                            src="${escapar(l.banner_url)}?v=${Date.now()}"
+                            alt="Banner ${escapar(l.nombre)}"
+                            onerror="imagenError(this,'localesLista')">
 
-</div>
+                        <div class="url-imagen">
+                            ${escapar(l.banner_url)}
+                        </div>
 
+                    </div>`
 
-${
-l.banner_url
+                    :
 
-?
+                    ""
 
-`
+                    }
 
-<div>
+                </div>
 
-<img
-class="img"
-src="${escapar(l.banner_url)}"
-alt="Banner ${escapar(l.nombre)}"
-onerror="this.style.display='none';">
+                <p>
+                    ${escapar(l.descripcion||"")}
+                </p>
 
-<div class="url-imagen">
-${escapar(l.banner_url)}
-</div>
+                <button
+                    class="btn"
+                    onclick="editarLocal(${l.id})">
+                    Editar local
+                </button>
 
-</div>
+                <button
+                    class="${l.activo?"danger":"ok"}"
+                    onclick="cambiarEstadoLocal(
+                        ${l.id},
+                        ${!l.activo}
+                    )">
 
-`
+                    ${l.activo?"Desactivar":"Activar"}
 
-:""
+                </button>
 
-}
+            </div>
 
-</div>
+        `).join("")
 
+        :
 
-<p>
-${escapar(l.descripcion||"")}
-</p>
+        "<p>No hay locales registrados.</p>";
 
+    }catch(e){
 
-<button
-class="btn"
-onclick="editarLocal(${l.id})">
+        console.error(e);
 
-Editar local
+        $id("localesLista").innerHTML=`
+            <div class="mensaje error">
+                No se pudieron cargar los locales:
+                ${escapar(e.message)}
+            </div>
+        `;
 
-</button>
-
-
-<button
-class="${l.activo?"danger":"ok"}"
-onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
-
-${l.activo?"Desactivar":"Activar"}
-
-</button>
-
-</div>
-
-`).join("")
-
-:
-
-"<p>No hay locales registrados.</p>";
-
-
-}catch(e){
-
-console.error(e);
-
-
-$id("localesLista").innerHTML=
-
-`<div class="mensaje error">
-
-No se pudieron cargar los locales:
-${escapar(e.message)}
-
-</div>`;
+    }
 
 }
+
+
+function imagenError(img){
+
+    console.error(
+        "No se pudo cargar imagen:",
+        img.src
+    );
+
+    img.style.display="none";
+
+    const aviso=document.createElement("div");
+
+    aviso.className="imagen-error";
+
+    aviso.textContent=
+        "No se pudo cargar esta imagen.";
+
+    img.parentElement.appendChild(aviso);
 
 }
 
 
 /* =====================================================
-   EDITAR LOCAL
+EDITAR LOCAL
 ===================================================== */
 
 async function editarLocal(id){
 
-try{
+    try{
 
-const local=
-localesCache.find(x=>x.id===id);
+        const local=
+            localesCache.find(x=>x.id===id);
 
+        if(!local)return;
 
-if(!local)return;
+        localEditandoId=id;
 
+        $id("editarId").value=id;
 
-localEditandoId=id;
+        $id("editarNombre").value=
+            local.nombre||"";
 
+        $id("editarCategoria").value=
+            local.categoria||"";
 
-$id("editarId").value=id;
+        $id("editarDescripcion").value=
+            local.descripcion||"";
 
-$id("editarNombre").value=
-local.nombre||"";
+        $id("editarActivo").checked=
+            !!local.activo;
 
-$id("editarCategoria").value=
-local.categoria||"";
+        $id("editarBanner").value="";
 
-$id("editarDescripcion").value=
-local.descripcion||"";
+        $id("quitarBanner").checked=false;
 
-$id("editarActivo").checked=
-!!local.activo;
+        bannerEdicionArchivo=null;
 
+        /* BANNER */
 
-$id("editarBanner").value="";
+        if(local.banner_url){
 
-$id("quitarBanner").checked=false;
+            const url=
+                local.banner_url+
+                (local.banner_url.includes("?")?"&":"?")+
+                "v="+Date.now();
 
-bannerEdicionArchivo=null;
+            $id("editarImagen").src=url;
 
+            $id("editarImagen").onload=()=>{
 
-/* =========================================
-   BANNER EXISTENTE
-========================================= */
+                $id("errorImagenEditar")
+                    .classList.add("oculto");
 
-if(local.banner_url){
+            };
 
-$id("editarImagen").src=
-local.banner_url;
+            $id("editarImagen").onerror=()=>{
 
-$id("editarImagen").onerror=function(){
+                console.error(
+                    "ERROR CARGANDO BANNER:",
+                    url
+                );
 
-console.error(
-"No se pudo cargar el banner:",
-local.banner_url
-);
+                $id("errorImagenEditar").textContent=
+                    "No se pudo cargar la imagen. Revisa Storage y la URL pública.";
 
-};
+                $id("errorImagenEditar")
+                    .classList.remove("oculto");
 
-$id("previewEditarBanner")
-.classList.remove("oculto");
+            };
 
-}else{
+            $id("previewEditarBanner")
+                .classList.remove("oculto");
 
-$id("editarImagen").src="";
+        }else{
 
-$id("previewEditarBanner")
-.classList.add("oculto");
+            $id("editarImagen").src="";
 
-}
+            $id("previewEditarBanner")
+                .classList.add("oculto");
 
+        }
 
-/* =========================================
-   HORARIOS
-========================================= */
+        /* HORARIOS */
 
-const {
-data:horarios,
-error:eh
-}=await supabaseClient
-.from("horarios_restaurantes")
-.select("*")
-.eq("restaurante_id",id)
-.order("dia_semana");
+        const {
+            data:horarios,
+            error:eh
+        }=await supabaseClient
+        .from("horarios_restaurantes")
+        .select("*")
+        .eq("restaurante_id",id)
+        .order("dia_semana");
 
+        if(eh)throw eh;
 
-if(eh)throw eh;
+        const datos={};
 
+        (horarios||[]).forEach(h=>{
+            datos[h.dia_semana]=h;
+        });
 
-const datos={};
+        generarHorario(
+            "horarioEditar",
+            datos
+        );
 
+        /* PRODUCTOS */
 
-(horarios||[]).forEach(h=>{
+        await cargarProductosEdicion(id);
 
-datos[h.dia_semana]=h;
+        $id("editor")
+            .classList.remove("oculto");
 
-});
+        window.scrollTo({
+            top:$id("editor").offsetTop-20,
+            behavior:"smooth"
+        });
 
+    }catch(e){
 
-generarHorario(
-"horarioEditar",
-datos
-);
+        console.error(e);
 
+        alert(
+            "No se pudo cargar el local: "+e.message
+        );
 
-/* =========================================
-   PRODUCTOS
-========================================= */
-
-await cargarProductosEdicion(id);
-
-
-$id("editor")
-.classList.remove("oculto");
-
-
-window.scrollTo({
-
-top:$id("editor").offsetTop-20,
-
-behavior:"smooth"
-
-});
-
-
-}catch(e){
-
-console.error(e);
-
-alert(
-"No se pudo cargar el local: "+e.message
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   PRODUCTOS EDICIÓN
+PRODUCTOS EDICIÓN
 ===================================================== */
 
 async function cargarProductosEdicion(localId){
 
-const {
-data,
-error
-}=await supabaseClient
-.from("productos")
-.select("*")
-.eq("restaurante_id",localId)
-.order("id");
+    const {
+        data,
+        error
+    }=await supabaseClient
+    .from("productos")
+    .select("*")
+    .eq("restaurante_id",localId)
+    .order("id");
 
+    if(error)throw error;
 
-if(error)throw error;
+    productosEdicion=data||[];
 
-
-productosEdicion=data||[];
-
-
-renderProductosEdicion();
+    renderProductosEdicion();
 
 }
 
 
 function renderProductosEdicion(){
 
-$id("productosEditar").innerHTML=
+    $id("productosEditar").innerHTML=
 
-productosEdicion.length
+    productosEdicion.length
 
-?
+    ?
 
-productosEdicion.map(p=>`
+    productosEdicion.map(p=>`
 
-<div class="producto">
+        <div class="producto">
 
-<div class="flex">
+            <div class="flex">
 
-${
-p.imagen_url
+                ${
+                p.imagen_url
 
-?
+                ?
 
-`
+                `<img
+                    src="${escapar(p.imagen_url)}?v=${Date.now()}"
+                    alt="${escapar(p.nombre)}"
+                    onerror="this.style.display='none'">`
 
-<img
-src="${escapar(p.imagen_url)}"
-alt="${escapar(p.nombre)}"
-onerror="this.style.display='none';">
+                :
 
-`
+                ""
 
-:""
+                }
 
-}
+                <div style="flex:1">
 
+                    <input
+                        type="text"
+                        value="${escapar(p.nombre)}"
+                        onchange="
+                            guardarProducto(
+                                ${p.id},
+                                this.value,
+                                this.parentElement
+                                    .querySelector(
+                                        'input[type=number]'
+                                    ).value
+                            )">
 
-<div style="flex:1">
+                    <input
+                        type="number"
+                        min="0"
+                        step=".01"
+                        value="${p.precio}"
+                        onchange="
+                            guardarProducto(
+                                ${p.id},
+                                this.parentElement
+                                    .querySelector(
+                                        'input[type=text]'
+                                    ).value,
+                                this.value
+                            )">
 
-<input
-type="text"
-value="${escapar(p.nombre)}"
-onchange="guardarProducto(
-${p.id},
-this.value,
-this.parentElement.querySelector('input[type=number]').value
-)">
+                </div>
 
+                <button
+                    class="danger"
+                    onclick="eliminarProducto(${p.id})">
+                    Eliminar
+                </button>
 
-<input
-type="number"
-min="0"
-step=".01"
-value="${p.precio}"
-onchange="guardarProducto(
-${p.id},
-this.parentElement.querySelector('input[type=text]').value,
-this.value
-)">
+            </div>
 
-</div>
+            ${
+            p.imagen_url
+            ?
+            `<div class="url-imagen">
+                ${escapar(p.imagen_url)}
+            </div>`
+            :
+            ""
+            }
 
+        </div>
 
-<button
-class="danger"
-onclick="eliminarProducto(${p.id})">
+    `).join("")
 
-Eliminar
+    :
 
-</button>
-
-</div>
-
-
-${
-p.imagen_url
-
-?
-
-`<div class="url-imagen">
-${escapar(p.imagen_url)}
-</div>`
-
-:""
-
-}
-
-</div>
-
-`).join("")
-
-:
-
-"<p>No hay productos registrados.</p>";
+    "<p>No hay productos registrados.</p>";
 
 }
 
 
 async function guardarProducto(id,nombre,precio){
 
-try{
+    try{
 
-const {error}=
-await supabaseClient
-.from("productos")
-.update({
+        const {error}=
+            await supabaseClient
+            .from("productos")
+            .update({
+                nombre:nombre.trim(),
+                precio:Number(precio||0)
+            })
+            .eq("id",id);
 
-nombre:nombre.trim(),
+        if(error)throw error;
 
-precio:Number(precio||0)
+    }catch(e){
 
-})
-.eq("id",id);
+        alert(
+            "No se pudo actualizar el producto: "+e.message
+        );
 
-
-if(error)throw error;
-
-
-}catch(e){
-
-alert(
-"No se pudo actualizar el producto: "+e.message
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   AGREGAR PRODUCTO EXISTENTE
+AGREGAR PRODUCTO
 ===================================================== */
 
 async function agregarProductoExistente(){
 
-if(!localEditandoId)return;
+    if(!localEditandoId)return;
 
+    const nombre=
+        $id("nuevoProductoNombre").value.trim();
 
-const nombre=
-$id("nuevoProductoNombre").value.trim();
+    const precio=
+        Number(
+            $id("nuevoProductoPrecio").value||0
+        );
 
-const precio=
-Number($id("nuevoProductoPrecio").value||0);
+    const archivo=
+        $id("nuevoProductoImagen")
+        .files[0]||null;
 
-const archivo=
-$id("nuevoProductoImagen").files[0]||null;
+    if(!nombre){
 
+        return mensaje(
+            "mensajeEdicion",
+            "Ingresa el nombre del producto.",
+            "error"
+        );
 
-if(!nombre){
+    }
 
-return mensaje(
-"mensajeEdicion",
-"Ingresa el nombre del producto.",
-"error"
-);
+    try{
 
-}
+        mensaje(
+            "mensajeEdicion",
+            "Agregando producto..."
+        );
 
+        let imagen=null;
 
-try{
+        if(archivo){
 
-mensaje(
-"mensajeEdicion",
-"Agregando producto..."
-);
+            imagen=await subirImagen(
+                archivo,
+                `productos/${localEditandoId}`
+            );
 
+        }
 
-let imagen=null;
+        const {error}=
+            await supabaseClient
+            .from("productos")
+            .insert({
+                restaurante_id:localEditandoId,
+                nombre,
+                precio,
+                imagen_url:imagen
+            });
 
+        if(error)throw error;
 
-if(archivo){
+        $id("nuevoProductoNombre").value="";
+        $id("nuevoProductoPrecio").value="";
+        $id("nuevoProductoImagen").value="";
 
-imagen=
-await subirImagen(
-archivo,
-`productos/${localEditandoId}`
-);
+        await cargarProductosEdicion(
+            localEditandoId
+        );
 
-}
+        mensaje(
+            "mensajeEdicion",
+            "Producto agregado correctamente."
+        );
 
+    }catch(e){
 
-const {error}=
-await supabaseClient
-.from("productos")
-.insert({
+        console.error(e);
 
-restaurante_id:localEditandoId,
+        mensaje(
+            "mensajeEdicion",
+            "No se pudo agregar el producto: "+e.message,
+            "error"
+        );
 
-nombre,
-
-precio,
-
-imagen_url:imagen
-
-});
-
-
-if(error)throw error;
-
-
-$id("nuevoProductoNombre").value="";
-
-$id("nuevoProductoPrecio").value="";
-
-$id("nuevoProductoImagen").value="";
-
-
-await cargarProductosEdicion(
-localEditandoId
-);
-
-
-mensaje(
-"mensajeEdicion",
-"Producto agregado correctamente."
-);
-
-
-}catch(e){
-
-console.error(e);
-
-
-mensaje(
-"mensajeEdicion",
-"No se pudo agregar el producto: "+e.message,
-"error"
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   ELIMINAR PRODUCTO
+ELIMINAR PRODUCTO
 ===================================================== */
 
 async function eliminarProducto(id){
 
-if(!confirm("¿Eliminar este producto?"))
-return;
+    if(!confirm("¿Eliminar este producto?"))
+        return;
 
+    try{
 
-try{
+        const {error}=
+            await supabaseClient
+            .from("productos")
+            .delete()
+            .eq("id",id);
 
-const {error}=
-await supabaseClient
-.from("productos")
-.delete()
-.eq("id",id);
+        if(error)throw error;
 
+        await cargarProductosEdicion(
+            localEditandoId
+        );
 
-if(error)throw error;
+    }catch(e){
 
+        alert(
+            "No se pudo eliminar el producto: "+e.message
+        );
 
-await cargarProductosEdicion(
-localEditandoId
-);
-
-
-}catch(e){
-
-alert(
-"No se pudo eliminar el producto: "+e.message
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   GUARDAR LOCAL COMPLETO
+GUARDAR LOCAL COMPLETO
 ===================================================== */
 
 async function guardarLocalCompleto(){
 
-if(!localEditandoId)return;
+    if(!localEditandoId)return;
 
+    const local=
+        localesCache.find(
+            x=>x.id===localEditandoId
+        );
 
-const local=
-localesCache.find(
-x=>x.id===localEditandoId
-);
+    if(!local)return;
 
+    const nombre=
+        $id("editarNombre").value.trim();
 
-if(!local)return;
+    if(!nombre){
 
+        return mensaje(
+            "mensajeEdicion",
+            "Ingresa el nombre del local.",
+            "error"
+        );
 
-const nombre=
-$id("editarNombre").value.trim();
+    }
 
+    try{
 
-if(!nombre){
+        mensaje(
+            "mensajeEdicion",
+            "Guardando cambios..."
+        );
 
-return mensaje(
-"mensajeEdicion",
-"Ingresa el nombre del local.",
-"error"
-);
+        /*
+        CONSERVAR IMAGEN ACTUAL
+        */
 
-}
+        let banner=
+            local.banner_url||null;
 
+        /*
+        SOLO SUBIR SI HAY NUEVA IMAGEN
+        */
 
-try{
+        if(bannerEdicionArchivo){
 
-mensaje(
-"mensajeEdicion",
-"Guardando cambios..."
-);
+            banner=await subirImagen(
+                bannerEdicionArchivo,
+                `banners/${localEditandoId}`
+            );
 
+        }
 
-/* =========================================
-   BANNER
-========================================= */
+        /*
+        QUITAR IMAGEN
+        */
 
-let banner=
-local.banner_url||null;
+        if($id("quitarBanner").checked){
 
+            banner=null;
 
-/*
-IMPORTANTE:
+        }
 
-Solo se sube una imagen si
-realmente se seleccionó una nueva.
-*/
+        /*
+        ACTUALIZAR LOCAL
+        */
 
-if(bannerEdicionArchivo){
+        const {error}=
+            await supabaseClient
+            .from("restaurantes")
+            .update({
 
-banner=
-await subirImagen(
-bannerEdicionArchivo,
-`banners/${localEditandoId}`
-);
+                nombre,
 
-}else if(
-$id("quitarBanner").checked
-){
+                categoria:
+                    $id("editarCategoria").value,
 
-banner=null;
+                descripcion:
+                    $id("editarDescripcion")
+                    .value.trim(),
 
-}
+                banner_url:banner,
 
+                activo:
+                    $id("editarActivo").checked
 
-/* =========================================
-   LOCAL
-========================================= */
+            })
+            .eq("id",localEditandoId);
 
-const {error}=
-await supabaseClient
-.from("restaurantes")
-.update({
+        if(error)throw error;
 
-nombre,
+        /*
+        HORARIOS
+        */
 
-categoria:
-$id("editarCategoria").value,
+        const {error:eh}=
+            await supabaseClient
+            .from("horarios_restaurantes")
+            .delete()
+            .eq(
+                "restaurante_id",
+                localEditandoId
+            );
 
-descripcion:
-$id("editarDescripcion").value.trim(),
+        if(eh)throw eh;
 
-banner_url:banner,
+        const horarios=
+            obtenerHorario(
+                "horarioEditar",
+                localEditandoId
+            );
 
-activo:
-$id("editarActivo").checked
+        const {error:ih}=
+            await supabaseClient
+            .from("horarios_restaurantes")
+            .insert(horarios);
 
-})
-.eq("id",localEditandoId);
+        if(ih)throw ih;
 
+        /*
+        REFRESCAR CACHE
+        */
 
-if(error)throw error;
+        await cargarLocales();
 
+        const actualizado=
+            localesCache.find(
+                x=>x.id===localEditandoId
+            );
 
-/* =========================================
-   HORARIOS
-========================================= */
+        if(actualizado){
 
-const {error:eh}=
-await supabaseClient
-.from("horarios_restaurantes")
-.delete()
-.eq("restaurante_id",localEditandoId);
+            local.banner_url=
+                actualizado.banner_url;
 
+        }
 
-if(eh)throw eh;
+        /*
+        LIMPIAR ESTADO DE IMAGEN
+        */
 
+        bannerEdicionArchivo=null;
 
-const horarios=
-obtenerHorario(
-"horarioEditar",
-localEditandoId
-);
+        $id("editarBanner").value="";
 
+        $id("quitarBanner").checked=false;
 
-const {error:ih}=
-await supabaseClient
-.from("horarios_restaurantes")
-.insert(horarios);
+        /*
+        RECARGAR PRODUCTOS
+        */
 
+        await cargarProductosEdicion(
+            localEditandoId
+        );
 
-if(ih)throw ih;
+        mensaje(
+            "mensajeEdicion",
+            "Local y horario actualizados correctamente."
+        );
 
+    }catch(e){
 
-mensaje(
-"mensajeEdicion",
-"Local y horario actualizados correctamente."
-);
+        console.error(
+            "ERROR ACTUALIZANDO LOCAL:",
+            e
+        );
 
+        mensaje(
+            "mensajeEdicion",
+            "No se pudo actualizar el local: "+e.message,
+            "error"
+        );
 
-await cargarLocales();
-
-
-await cargarProductosEdicion(
-localEditandoId
-);
-
-
-}catch(e){
-
-console.error(
-"ERROR ACTUALIZANDO LOCAL:",
-e
-);
-
-
-mensaje(
-"mensajeEdicion",
-"No se pudo actualizar el local: "+e.message,
-"error"
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   ESTADO DEL LOCAL
+ESTADO
 ===================================================== */
 
 async function cambiarEstadoLocal(id,activo){
 
-try{
+    try{
 
-const {error}=
-await supabaseClient
-.from("restaurantes")
-.update({activo})
-.eq("id",id);
+        const {error}=
+            await supabaseClient
+            .from("restaurantes")
+            .update({activo})
+            .eq("id",id);
 
+        if(error)throw error;
 
-if(error)throw error;
+        await cargarLocales();
 
+    }catch(e){
 
-await cargarLocales();
+        alert(
+            "No se pudo cambiar el estado del local: "+e.message
+        );
 
-
-}catch(e){
-
-alert(
-"No se pudo cambiar el estado del local: "+e.message
-);
-
-}
+    }
 
 }
 
 
 /* =====================================================
-   CERRAR EDITOR
+CERRAR EDITOR
 ===================================================== */
 
 function cerrarEditor(){
 
-localEditandoId=null;
+    localEditandoId=null;
+    bannerEdicionArchivo=null;
+    productosEdicion=[];
 
-bannerEdicionArchivo=null;
+    $id("editor")
+        .classList.add("oculto");
 
-productosEdicion=[];
-
-
-$id("editor")
-.classList.add("oculto");
-
-
-$id("mensajeEdicion").className=
-"mensaje";
+    $id("mensajeEdicion").className="mensaje";
 
 }
 
