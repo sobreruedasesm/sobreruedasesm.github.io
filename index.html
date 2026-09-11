@@ -229,16 +229,25 @@ main{
  font-weight:900;
 }
 
+/* ESTADO DEL LOCAL */
 .status{
  position:absolute;
  top:10px;
  right:10px;
- background:var(--verde);
- color:#fff;
  border-radius:20px;
  padding:5px 9px;
  font-size:11px;
  font-weight:bold;
+}
+
+.status.open{
+ background:var(--verde);
+ color:#fff;
+}
+
+.status.closed{
+ background:var(--rojo);
+ color:#fff;
 }
 
 .local-body{
@@ -315,6 +324,7 @@ main{
 }
 
 @media(max-width:600px){
+
  .logo{
   font-size:21px;
  }
@@ -341,6 +351,7 @@ main{
 <body>
 
 <header>
+
  <div class="header-inner">
 
   <div>
@@ -354,39 +365,56 @@ main{
   </a>
 
  </div>
+
 </header>
 
 <main>
 
  <section class="hero">
+
   <h1>¿Qué quieres pedir hoy?</h1>
-  <p>Encuentra tus locales favoritos y pide desde Sobre Ruedas.</p>
+
+  <p>
+   Encuentra tus locales favoritos y pide desde Sobre Ruedas.
+  </p>
 
   <div class="search">
+
    <input
     id="busqueda"
     type="search"
     placeholder="🔎 Buscar local..."
     autocomplete="off">
+
   </div>
+
  </section>
 
  <div id="categorias" class="categories"></div>
 
  <div class="section-title">
+
   <h2>Locales disponibles</h2>
+
   <span id="contador" class="count"></span>
+
  </div>
 
  <div id="locales" class="locales">
-  <div class="loading">Cargando locales...</div>
+
+  <div class="loading">
+   Cargando locales...
+  </div>
+
  </div>
 
 </main>
 
 <script>
+
 let locales=[];
 let categorias=[];
+let horarios={};
 let categoriaActual="";
 
 const $=id=>document.getElementById(id);
@@ -399,9 +427,18 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
  "'":"&#039;"
 }[m]));
 
+
+/* =========================================================
+   CARRITO
+========================================================= */
+
 function actualizarCarrito(){
+
  try{
-  const carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+
+  const carrito=JSON.parse(
+   localStorage.getItem("carrito")||"[]"
+  );
 
   const cantidad=carrito.reduce(
    (total,item)=>total+(Number(item.cantidad)||0),
@@ -409,10 +446,175 @@ function actualizarCarrito(){
   );
 
   $("cartCount").textContent=cantidad;
+
  }catch{
+
   $("cartCount").textContent="0";
+
  }
+
 }
+
+
+/* =========================================================
+   HORA ACTUAL DE ECUADOR
+========================================================= */
+
+function obtenerHoraEcuador(){
+
+ const ahora=new Date();
+
+ const partes=new Intl.DateTimeFormat(
+  "en-US",
+  {
+   timeZone:"America/Guayaquil",
+   weekday:"short",
+   hour:"2-digit",
+   minute:"2-digit",
+   hour12:false
+  }
+ ).formatToParts(ahora);
+
+ const valores={};
+
+ partes.forEach(p=>{
+  valores[p.type]=p.value;
+ });
+
+ const dias={
+  Sun:0,
+  Mon:1,
+  Tue:2,
+  Wed:3,
+  Thu:4,
+  Fri:5,
+  Sat:6
+ };
+
+ let hora=Number(valores.hour);
+
+ /*
+  Algunos navegadores pueden devolver 24 para medianoche.
+  Lo normalizamos a 0.
+ */
+ if(hora===24){
+  hora=0;
+ }
+
+ return{
+  dia:dias[valores.weekday],
+  minutos:hora*60+Number(valores.minute)
+ };
+
+}
+
+
+/* =========================================================
+   DETERMINAR SI UN LOCAL ESTA ABIERTO
+========================================================= */
+
+function localEstaAbierto(local){
+
+ const lista=horarios[local.id]||[];
+
+ /*
+  Si no existe configuración de horario,
+  lo consideramos cerrado para evitar mostrar
+  un local como disponible incorrectamente.
+ */
+ if(!lista.length){
+  return false;
+ }
+
+ /*
+  SIEMPRE ABIERTO:
+  7 días, todos abiertos, 00:00 - 23:59
+ */
+ const siempreAbierto=
+  lista.length===7 &&
+  lista.every(h=>
+   !h.cerrado &&
+   String(h.hora_apertura||"").substring(0,5)==="00:00" &&
+   String(h.hora_cierre||"").substring(0,5)==="23:59"
+  );
+
+ if(siempreAbierto){
+  return true;
+ }
+
+ const ahora=obtenerHoraEcuador();
+
+ const horario=lista.find(
+  h=>Number(h.dia_semana)===ahora.dia
+ );
+
+ if(!horario){
+  return false;
+ }
+
+ if(horario.cerrado){
+  return false;
+ }
+
+ if(!horario.hora_apertura || !horario.hora_cierre){
+  return false;
+ }
+
+ const apertura=convertirMinutos(horario.hora_apertura);
+ const cierre=convertirMinutos(horario.hora_cierre);
+
+ /*
+  Horario normal:
+  10:00 - 22:00
+ */
+ if(cierre>apertura){
+
+  return ahora.minutos>=apertura &&
+         ahora.minutos<=cierre;
+
+ }
+
+ /*
+  Horario que cruza medianoche:
+  por ejemplo 18:00 - 02:00
+ */
+ if(cierre<apertura){
+
+  return ahora.minutos>=apertura ||
+         ahora.minutos<=cierre;
+
+ }
+
+ /*
+  Apertura y cierre iguales:
+  se considera cerrado.
+ */
+ return false;
+
+}
+
+
+function convertirMinutos(hora){
+
+ const texto=String(hora||"").substring(0,5);
+
+ const partes=texto.split(":");
+
+ if(partes.length!==2){
+  return 0;
+ }
+
+ return(
+  Number(partes[0])*60+
+  Number(partes[1])
+ );
+
+}
+
+
+/* =========================================================
+   CARGAR INFORMACION
+========================================================= */
 
 async function cargar(){
 
@@ -445,6 +647,41 @@ async function cargar(){
   locales=localesData||[];
   categorias=categoriasData||[];
 
+
+  /* =======================================================
+     CARGAR HORARIOS DE TODOS LOS LOCALES
+  ======================================================= */
+
+  horarios={};
+
+  if(locales.length){
+
+   const ids=locales.map(local=>local.id);
+
+   const {
+    data:horariosData,
+    error:horariosError
+   }=await supabaseClient
+    .from("horarios_restaurantes")
+    .select("*")
+    .in("restaurante_id",ids);
+
+   if(horariosError)throw horariosError;
+
+   (horariosData||[]).forEach(h=>{
+
+    const id=Number(h.restaurante_id);
+
+    if(!horarios[id]){
+     horarios[id]=[];
+    }
+
+    horarios[id].push(h);
+
+   });
+
+  }
+
   renderCategorias();
   renderLocales();
 
@@ -455,36 +692,57 @@ async function cargar(){
   localesEl.innerHTML=`
    <div class="error">
     No se pudieron cargar los locales.
-    <br><small>${esc(error.message||"Error de conexión")}</small>
+    <br>
+    <small>${esc(error.message||"Error de conexión")}</small>
    </div>
   `;
+
  }
+
 }
+
+
+/* =========================================================
+   CATEGORIAS
+========================================================= */
 
 function renderCategorias(){
 
  const el=$("categorias");
 
  if(!categorias.length){
+
   el.innerHTML="";
+
   return;
+
  }
 
  el.innerHTML=`
+
   <button
    class="category ${categoriaActual===""?"active":""}"
    onclick="seleccionarCategoria('')">
+
    Todos
+
   </button>
+
  `+
  categorias.map(c=>`
+
   <button
    class="category ${categoriaActual===c.nombre?"active":""}"
    onclick='seleccionarCategoria(${JSON.stringify(c.nombre)})'>
+
    ${esc(c.nombre)}
+
   </button>
+
  `).join("");
+
 }
+
 
 function seleccionarCategoria(nombre){
 
@@ -494,15 +752,30 @@ function seleccionarCategoria(nombre){
  renderLocales();
 
  window.scrollTo({
-  top:document.querySelector(".section-title").offsetTop-80,
+
+  top:
+   document.querySelector(".section-title").offsetTop-80,
+
   behavior:"smooth"
+
  });
+
 }
+
+
+/* =========================================================
+   MOSTRAR LOCALES
+========================================================= */
 
 function renderLocales(){
 
  const contenedor=$("locales");
- const texto=$("busqueda").value.trim().toLowerCase();
+
+ const texto=
+  $("busqueda").value
+   .trim()
+   .toLowerCase();
+
 
  let filtrados=locales.filter(local=>{
 
@@ -517,49 +790,97 @@ function renderLocales(){
    norm(local.categoria)===norm(categoriaActual);
 
   return coincideTexto&&coincideCategoria;
+
  });
+
 
  $("contador").textContent=
   filtrados.length===1
    ?"1 local"
    :`${filtrados.length} locales`;
 
+
  if(!filtrados.length){
 
   contenedor.innerHTML=`
+
    <div class="empty">
-    <div class="empty-icon">🔎</div>
-    <strong>No encontramos locales</strong>
-    <div>Prueba con otra búsqueda o categoría.</div>
+
+    <div class="empty-icon">
+     🔎
+    </div>
+
+    <strong>
+     No encontramos locales
+    </strong>
+
+    <div>
+     Prueba con otra búsqueda o categoría.
+    </div>
+
    </div>
+
   `;
 
   return;
+
  }
+
 
  contenedor.innerHTML=filtrados.map(local=>{
 
+  const abierto=localEstaAbierto(local);
+
   const imagen=local.banner_url
    ?`
+
     <img
      src="${esc(local.banner_url)}?v=${Date.now()}"
      alt="${esc(local.nombre)}"
      loading="lazy"
      onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;>🍴</div>'">
+
    `
    :`
-    <div class="no-image">🍴</div>
+
+    <div class="no-image">
+     🍴
+    </div>
+
    `;
 
+
+  const estado=abierto
+   ?`
+
+    <span class="status open">
+     ● Disponible
+    </span>
+
+   `
+   :`
+
+    <span class="status closed">
+     ● Cerrado
+    </span>
+
+   `;
+
+
   return`
+
    <article
     class="local"
     onclick="abrirLocal(${Number(local.id)})">
 
     <div class="banner">
+
      ${imagen}
-     <span class="status">● Disponible</span>
+
+     ${estado}
+
     </div>
+
 
     <div class="local-body">
 
@@ -567,47 +888,142 @@ function renderLocales(){
       ${esc(local.nombre)}
      </div>
 
+
      ${local.categoria?`
+
       <div class="local-category">
        ${esc(local.categoria)}
       </div>
+
      `:""}
 
+
      <div class="local-description">
+
       ${esc(local.descripcion||"")}
+
      </div>
 
+
      <div class="local-footer">
-      <span class="delivery">🚴 Delivery</span>
-      <span class="view">Ver menú →</span>
+
+      <span class="delivery">
+       🚴 Delivery
+      </span>
+
+      <span class="view">
+       Ver menú →
+      </span>
+
      </div>
 
     </div>
 
    </article>
+
   `;
 
  }).join("");
+
 }
+
+
+/* =========================================================
+   ABRIR LOCAL
+========================================================= */
 
 function abrirLocal(id){
- window.location.href=`restaurante.html?id=${encodeURIComponent(id)}`;
+
+ window.location.href=
+  `restaurante.html?id=${encodeURIComponent(id)}`;
+
 }
+
+
+/* =========================================================
+   NORMALIZAR TEXTO
+========================================================= */
 
 function norm(valor){
- return String(valor??"").trim().toLowerCase();
+
+ return String(valor??"")
+  .trim()
+  .toLowerCase();
+
 }
 
-$("busqueda").addEventListener("input",renderLocales);
+
+/* =========================================================
+   ACTUALIZAR ESTADOS
+   CADA MINUTO
+========================================================= */
+
+function actualizarEstados(){
+
+ if(locales.length){
+  renderLocales();
+ }
+
+}
+
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+
+$("busqueda").addEventListener(
+ "input",
+ renderLocales
+);
+
+
+/* =========================================================
+   INICIO
+========================================================= */
 
 actualizarCarrito();
+
 cargar();
 
-window.addEventListener("storage",actualizarCarrito);
 
-document.addEventListener("visibilitychange",()=>{
- if(!document.hidden)actualizarCarrito();
-});
+/* =========================================================
+   SINCRONIZAR CARRITO ENTRE PESTAÑAS
+========================================================= */
+
+window.addEventListener(
+ "storage",
+ actualizarCarrito
+);
+
+
+/* =========================================================
+   ACTUALIZAR AL VOLVER A LA PESTAÑA
+========================================================= */
+
+document.addEventListener(
+ "visibilitychange",
+ ()=>{
+
+  if(!document.hidden){
+
+   actualizarCarrito();
+   actualizarEstados();
+
+  }
+
+ }
+);
+
+
+/* =========================================================
+   REVISAR HORARIOS CADA 60 SEGUNDOS
+========================================================= */
+
+setInterval(
+ actualizarEstados,
+ 60000
+);
+
 </script>
 
 </body>
