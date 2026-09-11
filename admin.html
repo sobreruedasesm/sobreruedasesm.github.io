@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -486,6 +485,29 @@
         }
 
 
+        .producto-preview {
+
+            margin-top: 10px;
+
+        }
+
+
+        .producto-preview img {
+
+            width: 160px;
+
+            height: 100px;
+
+            object-fit: cover;
+
+            border-radius: 8px;
+
+            border:
+                1px solid #d9e2de;
+
+        }
+
+
         /* ====================================================
            CATEGORÍAS
         ==================================================== */
@@ -736,7 +758,7 @@
         <div class="info">
 
             Estos valores corresponden a la configuración
-            general de Sobre Ruedas.
+            general de Sobre Ruedas y se almacenan en Supabase.
 
         </div>
 
@@ -962,9 +984,8 @@
 
             <div class="banner-info">
 
-                Este será el banner del restaurante.
-                Se utilizará también como imagen de los productos
-                que no tengan una imagen individual.
+                El banner del restaurante es opcional.
+                Puedes publicar el restaurante sin cargar una imagen.
 
             </div>
 
@@ -998,14 +1019,17 @@
 
         <div class="info">
 
-            Agrega los productos solamente con
+            Agrega los productos con
             <strong>nombre y precio</strong>.
 
             <br><br>
 
-            No necesitas subir una imagen para cada producto.
-            El banner del restaurante será utilizado
-            automáticamente como imagen del producto.
+            La imagen del producto es opcional.
+
+            <br><br>
+
+            Puedes subir una imagen individual para cada producto
+            o publicarlo sin imagen.
 
         </div>
 
@@ -1018,6 +1042,7 @@
         <div class="acciones">
 
             <button
+                type="button"
                 class="boton boton-secundario"
                 onclick="agregarProducto()"
             >
@@ -1191,6 +1216,8 @@
 
     let bannerArchivo = null;
 
+    let configuracionNegocioId = null;
+
 
 
     /*
@@ -1250,7 +1277,7 @@
         "DOMContentLoaded",
         async function() {
 
-            cargarConfiguracion();
+            await cargarConfiguracion();
 
             agregarProducto();
 
@@ -1343,29 +1370,148 @@
      * ========================================================
      */
 
-    function cargarConfiguracion() {
+    async function cargarConfiguracion() {
 
-        document.getElementById(
-            "tarifaDelivery"
-        ).value =
+        try {
 
-            Number(
-                CONFIG.tarifaDelivery
-            ).toFixed(2);
+            const {
+
+                data,
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "configuracion_negocio"
+                    )
+
+                    .select(
+                        "id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda"
+                    )
+
+                    .order(
+                        "id",
+                        {
+                            ascending:
+                                true
+                        }
+                    )
+
+                    .limit(1)
+                    
+                    .maybeSingle();
 
 
-        document.getElementById(
-            "whatsappNegocio"
-        ).value =
+            if (error) {
 
-            CONFIG.whatsappNegocio ||
-            "";
+                throw error;
+
+            }
+
+
+            if (data) {
+
+                configuracionNegocioId =
+                    data.id;
+
+
+                document.getElementById(
+                    "tarifaDelivery"
+                ).value =
+
+                    Number(
+                        data.tarifa_delivery
+                    ).toFixed(2);
+
+
+                document.getElementById(
+                    "whatsappNegocio"
+                ).value =
+
+                    data.whatsapp_negocio ||
+                    "";
+
+                return;
+
+            }
+
+
+
+            /*
+             * FALLBACK INICIAL
+             *
+             * Solo se utiliza si todavía no existe
+             * un registro en Supabase.
+             */
+
+            document.getElementById(
+                "tarifaDelivery"
+            ).value =
+
+                Number(
+                    CONFIG.tarifaDelivery
+                ).toFixed(2);
+
+
+            document.getElementById(
+                "whatsappNegocio"
+            ).value =
+
+                CONFIG.whatsappNegocio ||
+                "";
+
+
+        } catch (error) {
+
+            console.error(
+                "Error cargando configuración:",
+                error
+            );
+
+
+            /*
+             * Si Supabase no responde,
+             * mostramos temporalmente CONFIG.
+             */
+
+            document.getElementById(
+                "tarifaDelivery"
+            ).value =
+
+                Number(
+                    CONFIG.tarifaDelivery
+                ).toFixed(2);
+
+
+            document.getElementById(
+                "whatsappNegocio"
+            ).value =
+
+                CONFIG.whatsappNegocio ||
+                "";
+
+
+            mostrarMensaje(
+
+                "mensajeConfiguracion",
+
+                "No se pudo cargar la configuración desde Supabase: " +
+                error.message,
+
+                "error"
+
+            );
+
+        }
 
     }
 
 
 
-    function guardarConfiguracion() {
+    async function guardarConfiguracion() {
 
         const tarifa =
 
@@ -1405,37 +1551,157 @@
         }
 
 
-        const configuracion = {
+        if (!whatsapp) {
 
-            tarifaDelivery:
-                tarifa,
+            mostrarMensaje(
 
-            whatsappNegocio:
-                whatsapp
+                "mensajeConfiguracion",
 
-        };
+                "Ingresa el WhatsApp del negocio.",
 
+                "error"
 
-        localStorage.setItem(
+            );
 
-            "configSobreRuedas",
+            return;
 
-            JSON.stringify(
-                configuracion
-            )
-
-        );
+        }
 
 
-        mostrarMensaje(
+        try {
 
-            "mensajeConfiguracion",
+            const datos = {
 
-            "Configuración guardada correctamente.",
+                nombre_negocio:
+                    CONFIG.nombreNegocio ||
+                    "Sobre Ruedas",
 
-            "exito"
+                ciudad:
+                    CONFIG.ciudad ||
+                    "Esmeraldas",
 
-        );
+                tarifa_delivery:
+                    tarifa,
+
+                whatsapp_negocio:
+                    whatsapp,
+
+                moneda:
+                    CONFIG.moneda ||
+                    "USD",
+
+                actualizado_en:
+                    new Date().toISOString()
+
+            };
+
+
+            let error;
+
+
+            if (configuracionNegocioId) {
+
+                const resultado =
+
+                    await supabaseClient
+
+                        .from(
+                            "configuracion_negocio"
+                        )
+
+                        .update(
+                            datos
+                        )
+
+                        .eq(
+                            "id",
+                            configuracionNegocioId
+                        );
+
+
+                error =
+                    resultado.error;
+
+            } else {
+
+                const {
+
+                    data,
+
+                    error:
+                        errorInsert
+
+                } =
+
+                    await supabaseClient
+
+                        .from(
+                            "configuracion_negocio"
+                        )
+
+                        .insert(
+                            datos
+                        )
+
+                        .select(
+                            "id"
+                        )
+
+                        .single();
+
+
+                error =
+                    errorInsert;
+
+
+                if (data) {
+
+                    configuracionNegocioId =
+                        data.id;
+
+                }
+
+            }
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            mostrarMensaje(
+
+                "mensajeConfiguracion",
+
+                "Configuración guardada correctamente en Supabase.",
+
+                "exito"
+
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Error guardando configuración:",
+                error
+            );
+
+
+            mostrarMensaje(
+
+                "mensajeConfiguracion",
+
+                "No se pudo guardar la configuración: " +
+                error.message,
+
+                "error"
+
+            );
+
+        }
 
     }
 
@@ -1501,10 +1767,6 @@
             }
 
 
-            /*
-             * SELECTOR DEL RESTAURANTE
-             */
-
             select.innerHTML = `
 
                 <option value="">
@@ -1556,11 +1818,6 @@
 
             }
 
-
-
-            /*
-             * LISTA DE CATEGORÍAS
-             */
 
             if (
                 !data ||
@@ -1748,7 +2005,7 @@
                         "nombre",
                         nombre
                     )
-                    
+
                     .limit(1);
 
 
@@ -2029,7 +2286,13 @@
                 nombre,
 
             precio:
-                Number(precio) || 0
+                Number(precio) || 0,
+
+            archivoImagen:
+                null,
+
+            imagenUrl:
+                null
 
         });
 
@@ -2140,10 +2403,51 @@
                     </div>
 
 
-                    <div class="producto-sin-imagen">
+                    <div class="campo">
 
-                        🖼️ Este producto utilizará
-                        automáticamente el banner del restaurante.
+                        <label>
+                            🖼️ Imagen del producto
+                        </label>
+
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onchange="seleccionarImagenProducto(
+                                ${indice},
+                                this
+                            )"
+                        >
+
+
+                        <div
+                            id="preview-producto-${indice}"
+                            class="producto-preview"
+                            style="
+                                display:${
+                                    producto.imagenUrl
+                                        ? "block"
+                                        : "none"
+                                };
+                            "
+                        >
+
+                            <img
+                                id="imagen-producto-${indice}"
+                                src="${producto.imagenUrl || ""}"
+                                alt="Vista previa del producto"
+                            >
+
+                        </div>
+
+
+                        <div class="producto-sin-imagen">
+
+                            Esta imagen es opcional.
+                            Si no seleccionas una,
+                            el producto se publicará sin imagen.
+
+                        </div>
 
                     </div>
 
@@ -2156,6 +2460,101 @@
 
             }
 
+        );
+
+    }
+
+
+
+    function seleccionarImagenProducto(
+        indice,
+        input
+    ) {
+
+        if (!productos[indice]) {
+
+            return;
+
+        }
+
+
+        const archivo =
+            input.files[0];
+
+
+        if (!archivo) {
+
+            productos[indice].archivoImagen =
+                null;
+
+            productos[indice].imagenUrl =
+                null;
+
+            const preview =
+                document.getElementById(
+                    `preview-producto-${indice}`
+                );
+
+
+            if (preview) {
+
+                preview.style.display =
+                    "none";
+
+            }
+
+            return;
+
+        }
+
+
+        productos[indice].archivoImagen =
+            archivo;
+
+
+        const lector =
+            new FileReader();
+
+
+        lector.onload =
+            function(e) {
+
+                productos[indice].imagenUrl =
+                    e.target.result;
+
+
+                const preview =
+                    document.getElementById(
+                        `preview-producto-${indice}`
+                    );
+
+
+                const imagen =
+                    document.getElementById(
+                        `imagen-producto-${indice}`
+                    );
+
+
+                if (preview) {
+
+                    preview.style.display =
+                        "block";
+
+                }
+
+
+                if (imagen) {
+
+                    imagen.src =
+                        e.target.result;
+
+                }
+
+            };
+
+
+        lector.readAsDataURL(
+            archivo
         );
 
     }
@@ -2310,7 +2709,7 @@
 
             throw new Error(
 
-                "No se pudo subir el banner: " +
+                "No se pudo subir la imagen: " +
 
                 error.message
 
@@ -2420,21 +2819,9 @@
         }
 
 
-        if (!bannerArchivo) {
-
-            mostrarMensaje(
-
-                "mensajePublicacion",
-
-                "Selecciona un banner para el restaurante.",
-
-                "error"
-
-            );
-
-            return;
-
-        }
+        /*
+         * EL BANNER ES OPCIONAL
+         */
 
 
         if (
@@ -2522,6 +2909,8 @@
 
             /*
              * 1. SUBIR BANNER
+             *
+             * Si no existe, devuelve null.
              */
 
             const bannerUrl =
@@ -2597,38 +2986,75 @@
 
 
             /*
-             * 3. PREPARAR PRODUCTOS
+             * 3. SUBIR IMÁGENES INDIVIDUALES
+             *    Y PREPARAR PRODUCTOS
              */
 
             const productosParaInsertar =
+                [];
 
-                productos.map(
 
-                    producto => ({
+            for (
+                let i = 0;
+                i < productos.length;
+                i++
+            ) {
 
-                        restaurante_id:
-                            restaurante.id,
+                const producto =
+                    productos[i];
 
-                        nombre:
-                            producto.nombre.trim(),
 
-                        descripcion:
-                            null,
+                let imagenProductoUrl =
+                    null;
 
-                        precio:
-                            Number(
-                                producto.precio
-                            ) || 0,
 
-                        imagen_url:
-                            bannerUrl,
+                /*
+                 * Solo subimos imagen si
+                 * el administrador seleccionó una.
+                 */
 
-                        activo:
-                            true
+                if (
+                    producto.archivoImagen
+                ) {
 
-                    })
+                    imagenProductoUrl =
 
-                );
+                        await subirImagen(
+
+                            producto.archivoImagen,
+
+                            `productos/${restaurante.id}`
+
+                        );
+
+                }
+
+
+                productosParaInsertar.push({
+
+                    restaurante_id:
+                        restaurante.id,
+
+                    nombre:
+                        producto.nombre.trim(),
+
+                    descripcion:
+                        null,
+
+                    precio:
+                        Number(
+                            producto.precio
+                        ) || 0,
+
+                    imagen_url:
+                        imagenProductoUrl,
+
+                    activo:
+                        true
+
+                });
+
+            }
 
 
 
@@ -3728,4 +4154,3 @@
 </body>
 
 </html>
-```
