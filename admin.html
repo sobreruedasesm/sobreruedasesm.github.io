@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -232,6 +233,15 @@
             background: #fdecea;
 
             color: #a93226;
+
+        }
+
+
+        .boton-advertencia {
+
+            background: #fff4d6;
+
+            color: #8a6500;
 
         }
 
@@ -477,6 +487,96 @@
 
 
         /* ====================================================
+           CATEGORÍAS
+        ==================================================== */
+
+        .categoria-item {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 15px;
+
+            border:
+                1px solid #dce5e0;
+
+            border-radius: 10px;
+
+            margin-bottom: 10px;
+
+            background: #fafcfb;
+
+        }
+
+
+        .categoria-nombre {
+
+            font-weight: bold;
+
+            color: #17352b;
+
+        }
+
+
+        .categoria-info {
+
+            flex: 1;
+
+        }
+
+
+        .categoria-acciones {
+
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .categoria-estado {
+
+            display: inline-block;
+
+            margin-top: 5px;
+
+            padding: 4px 8px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+        }
+
+
+        .categoria-estado.activa {
+
+            background: #e6f5ef;
+
+            color: #087f5b;
+
+        }
+
+
+        .categoria-estado.inactiva {
+
+            background: #fdecea;
+
+            color: #a93226;
+
+        }
+
+
+        /* ====================================================
            HORARIOS
         ==================================================== */
 
@@ -571,6 +671,22 @@
             .horario-campos {
 
                 grid-template-columns: 1fr;
+
+            }
+
+
+            .categoria-item {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+
+            .categoria-acciones {
+
+                width: 100%;
 
             }
 
@@ -681,6 +797,78 @@
 
 
     <!-- =====================================================
+         CATEGORÍAS
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+            🏷️ Categorías
+        </h2>
+
+
+        <div class="info">
+
+            Las categorías se administran desde Supabase.
+
+            <br><br>
+
+            Las categorías activas estarán disponibles
+            automáticamente al crear un restaurante.
+
+        </div>
+
+
+        <div class="campo">
+
+            <label for="nuevaCategoria">
+
+                Nueva categoría
+
+            </label>
+
+
+            <input
+                type="text"
+                id="nuevaCategoria"
+                placeholder="Ej. Parrilladas y Asados"
+                maxlength="100"
+            >
+
+        </div>
+
+
+        <button
+            type="button"
+            class="boton boton-principal"
+            onclick="crearCategoria()"
+        >
+
+            ➕ Crear categoría
+
+        </button>
+
+
+        <div
+            id="mensajeCategoria"
+            class="mensaje"
+        ></div>
+
+
+        <div
+            id="listaCategorias"
+            style="margin-top:20px;"
+        >
+
+            Cargando categorías...
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
          CREAR RESTAURANTE
     ====================================================== -->
 
@@ -724,49 +912,7 @@
 
                 <option value="">
 
-                    Seleccionar categoría
-
-                </option>
-
-
-                <option value="Hamburguesas">
-
-                    Hamburguesas
-
-                </option>
-
-
-                <option value="Pizza">
-
-                    Pizza
-
-                </option>
-
-
-                <option value="Pollo">
-
-                    Pollo
-
-                </option>
-
-
-                <option value="Bebidas">
-
-                    Bebidas
-
-                </option>
-
-
-                <option value="Tiendas">
-
-                    Tiendas
-
-                </option>
-
-
-                <option value="Otros">
-
-                    Otros
+                    Cargando categorías...
 
                 </option>
 
@@ -1050,14 +1196,6 @@
     /*
      * ========================================================
      * DÍAS DE LA SEMANA
-     *
-     * 0 = Domingo
-     * 1 = Lunes
-     * 2 = Martes
-     * 3 = Miércoles
-     * 4 = Jueves
-     * 5 = Viernes
-     * 6 = Sábado
      * ========================================================
      */
 
@@ -1115,6 +1253,8 @@
             cargarConfiguracion();
 
             agregarProducto();
+
+            await cargarCategorias();
 
             await cargarRestaurantes();
 
@@ -1296,6 +1436,509 @@
             "exito"
 
         );
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * CATEGORÍAS
+     * ========================================================
+     */
+
+    async function cargarCategorias() {
+
+        const lista =
+            document.getElementById(
+                "listaCategorias"
+            );
+
+
+        const select =
+            document.getElementById(
+                "categoriaRestaurante"
+            );
+
+
+        lista.innerHTML =
+            "Cargando categorías...";
+
+
+        try {
+
+            const {
+
+                data,
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "categorias"
+                    )
+
+                    .select(
+                        "id,nombre,activo,creado_en"
+                    )
+
+                    .order(
+                        "nombre",
+                        {
+                            ascending:
+                                true
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            /*
+             * SELECTOR DEL RESTAURANTE
+             */
+
+            select.innerHTML = `
+
+                <option value="">
+
+                    Seleccionar categoría
+
+                </option>
+
+            `;
+
+
+            if (
+                data &&
+                data.length > 0
+            ) {
+
+                data
+
+                    .filter(
+                        categoria =>
+                            categoria.activo
+                    )
+
+                    .forEach(
+
+                        categoria => {
+
+                            const option =
+                                document.createElement(
+                                    "option"
+                                );
+
+
+                            option.value =
+                                categoria.nombre;
+
+
+                            option.textContent =
+                                categoria.nombre;
+
+
+                            select.appendChild(
+                                option
+                            );
+
+                        }
+
+                    );
+
+            }
+
+
+
+            /*
+             * LISTA DE CATEGORÍAS
+             */
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                lista.innerHTML = `
+
+                    <p>
+
+                        No existen categorías registradas.
+
+                    </p>
+
+                `;
+
+                return;
+
+            }
+
+
+            lista.innerHTML =
+
+                data.map(
+
+                    categoria => `
+
+                        <div class="categoria-item">
+
+                            <div class="categoria-info">
+
+                                <div class="categoria-nombre">
+
+                                    ${escaparHTML(
+                                        categoria.nombre
+                                    )}
+
+                                </div>
+
+
+                                <span
+                                    class="categoria-estado ${
+                                        categoria.activo
+                                            ? "activa"
+                                            : "inactiva"
+                                    }"
+                                >
+
+                                    ${
+                                        categoria.activo
+                                            ? "ACTIVA"
+                                            : "INACTIVA"
+                                    }
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="categoria-acciones">
+
+                                <button
+
+                                    type="button"
+
+                                    class="boton ${
+                                        categoria.activo
+                                            ? "boton-advertencia"
+                                            : "boton-secundario"
+                                    }"
+
+                                    onclick="cambiarEstadoCategoria(
+                                        ${categoria.id},
+                                        ${categoria.activo}
+                                    )"
+
+                                >
+
+                                    ${
+                                        categoria.activo
+                                            ? "Desactivar"
+                                            : "Activar"
+                                    }
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    `
+
+                ).join("");
+
+
+        } catch (error) {
+
+            console.error(
+                "Error cargando categorías:",
+                error
+            );
+
+
+            lista.innerHTML = `
+
+                <p style="color:#a93226;">
+
+                    Error cargando categorías:
+
+                    ${escaparHTML(
+                        error.message
+                    )}
+
+                </p>
+
+            `;
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * CREAR CATEGORÍA
+     * ========================================================
+     */
+
+    async function crearCategoria() {
+
+        const input =
+
+            document.getElementById(
+                "nuevaCategoria"
+            );
+
+
+        const nombre =
+
+            input.value
+                .trim();
+
+
+        if (!nombre) {
+
+            mostrarMensaje(
+
+                "mensajeCategoria",
+
+                "Ingresa el nombre de la categoría.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+
+                data:
+                    categoriaExistente,
+
+                error:
+                    errorBusqueda
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "categorias"
+                    )
+
+                    .select(
+                        "id,nombre,activo"
+                    )
+
+                    .ilike(
+                        "nombre",
+                        nombre
+                    )
+                    
+                    .limit(1);
+
+
+            if (errorBusqueda) {
+
+                throw errorBusqueda;
+
+            }
+
+
+            if (
+                categoriaExistente &&
+                categoriaExistente.length > 0
+            ) {
+
+                mostrarMensaje(
+
+                    "mensajeCategoria",
+
+                    "Esa categoría ya existe.",
+
+                    "error"
+
+                );
+
+                return;
+
+            }
+
+
+            const {
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "categorias"
+                    )
+
+                    .insert({
+
+                        nombre:
+                            nombre,
+
+                        activo:
+                            true
+
+                    });
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            input.value =
+                "";
+
+
+            mostrarMensaje(
+
+                "mensajeCategoria",
+
+                `Categoría "${nombre}" creada correctamente.`,
+
+                "exito"
+
+            );
+
+
+            await cargarCategorias();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error creando categoría:",
+                error
+            );
+
+
+            mostrarMensaje(
+
+                "mensajeCategoria",
+
+                "No se pudo crear la categoría: " +
+                error.message,
+
+                "error"
+
+            );
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * ACTIVAR / DESACTIVAR CATEGORÍA
+     * ========================================================
+     */
+
+    async function cambiarEstadoCategoria(
+        id,
+        estadoActual
+    ) {
+
+        const nuevoEstado =
+            !estadoActual;
+
+
+        try {
+
+            const {
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "categorias"
+                    )
+
+                    .update({
+
+                        activo:
+                            nuevoEstado
+
+                    })
+
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            mostrarMensaje(
+
+                "mensajeCategoria",
+
+                nuevoEstado
+
+                    ? "Categoría activada correctamente."
+
+                    : "Categoría desactivada correctamente.",
+
+                "exito"
+
+            );
+
+
+            await cargarCategorias();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error cambiando estado de categoría:",
+                error
+            );
+
+
+            mostrarMensaje(
+
+                "mensajeCategoria",
+
+                "No se pudo cambiar el estado: " +
+                error.message,
+
+                "error"
+
+            );
+
+        }
 
     }
 
@@ -2314,7 +2957,7 @@
 
     /*
      * ========================================================
-     * HORARIOS
+     * RESTAURANTES PARA HORARIOS
      * ========================================================
      */
 
@@ -2464,7 +3107,7 @@
 
     /*
      * ========================================================
-     * CARGAR HORARIOS DEL RESTAURANTE
+     * CARGAR HORARIOS
      * ========================================================
      */
 
@@ -2890,11 +3533,6 @@
                 ).value;
 
 
-
-            /*
-             * DÍA CERRADO
-             */
-
             if (cerrado) {
 
                 horarios.push({
@@ -2923,11 +3561,6 @@
 
             }
 
-
-
-            /*
-             * VALIDAR HORAS
-             */
 
             if (
                 !apertura ||
@@ -2995,11 +3628,6 @@
 
         try {
 
-
-            /*
-             * ELIMINAR HORARIOS ANTERIORES
-             */
-
             const {
 
                 error:
@@ -3030,11 +3658,6 @@
             }
 
 
-
-            /*
-             * INSERTAR NUEVOS HORARIOS
-             */
-
             const {
 
                 error:
@@ -3061,11 +3684,6 @@
 
             }
 
-
-
-            /*
-             * ÉXITO
-             */
 
             mostrarMensaje(
 
@@ -3110,3 +3728,4 @@
 </body>
 
 </html>
+```
