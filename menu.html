@@ -1,2606 +1,2532 @@
 <!DOCTYPE html>
-
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mi pedido | Sobre Ruedas</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<style>
-:root{
- --rojo:#d62828;
- --rojo2:#b51f1f;
- --verde:#198754;
- --verde2:#146c43;
- --azul:#1261a0;
- --azul2:#0d4f82;
- --amarillo:#f4c542;
- --negro:#171717;
- --blanco:#fff;
- --gris:#f4f5f7;
- --gris2:#e5e7eb;
- --muted:#626a73;
- --danger:#b42318;
- --shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-*{box-sizing:border-box}
-
-body{
- margin:0;
- background:var(--gris);
- color:var(--negro);
- font-family:Arial,Helvetica,sans-serif;
-}
-
-header{
- background:var(--negro);
- color:#fff;
- border-top:5px solid var(--rojo);
- position:sticky;
- top:0;
- z-index:50;
- box-shadow:0 2px 12px rgba(0,0,0,.18);
-}
-
-.header-inner{
- max-width:1100px;
- margin:auto;
- padding:13px 15px;
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:12px;
-}
-
-.logo{
- font-size:22px;
- font-weight:900;
-}
-
-.logo span{color:var(--rojo)}
-
-.sub{
- color:#ddd;
- font-size:11px;
- margin-top:2px;
-}
-
-.back{
- color:#fff;
- text-decoration:none;
- font-size:13px;
- font-weight:bold;
-}
-
-main{
- max-width:1100px;
- margin:auto;
- padding:15px 14px 35px;
-}
-
-h1{
- margin:0 0 15px;
- font-size:24px;
-}
-
-h2{
- margin:0 0 12px;
- font-size:19px;
-}
-
-section{
- background:#fff;
- border-radius:13px;
- padding:15px;
- margin-bottom:15px;
- box-shadow:var(--shadow);
-}
-
-.local-card{
- border:1px solid var(--gris2);
- border-radius:10px;
- padding:12px;
- margin-bottom:12px;
-}
-
-.local-title{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:10px;
- margin-bottom:10px;
-}
-
-.local-name{
- font-size:18px;
- font-weight:900;
-}
-
-.item{
- display:grid;
- grid-template-columns:65px 1fr auto;
- gap:10px;
- align-items:center;
- padding:10px 0;
- border-top:1px solid var(--gris2);
-}
-
-.item:first-child{border-top:0}
-
-.item-img{
- width:65px;
- height:65px;
- border-radius:8px;
- object-fit:cover;
- background:var(--gris);
-}
-
-.item-info{min-width:0}
-
-.item-name{
- font-weight:bold;
- font-size:14px;
- margin-bottom:3px;
-}
-
-.item-price{
- color:var(--muted);
- font-size:12px;
-}
-
-.item-total{
- color:var(--rojo);
- font-size:14px;
- font-weight:bold;
- margin-top:4px;
-}
-
-.controls{
- display:flex;
- align-items:center;
- gap:5px;
-}
-
-.qty{
- min-width:28px;
- text-align:center;
- font-weight:bold;
-}
-
-.qty-btn{
- width:30px;
- height:30px;
- padding:0;
- border:0;
- border-radius:7px;
- background:var(--gris2);
- color:var(--negro);
- font-size:17px;
- font-weight:bold;
- cursor:pointer;
-}
-
-.qty-btn:hover{background:#d5d8dc}
-
-.remove{
- display:block;
- border:0;
- background:none;
- color:var(--danger);
- font-size:11px;
- cursor:pointer;
- margin-top:4px;
- padding:0;
-}
-
-.local-total{
- border-top:1px solid var(--gris2);
- margin-top:8px;
- padding-top:10px;
-}
-
-.local-total-row{
- display:flex;
- justify-content:space-between;
- margin:5px 0;
- font-size:13px;
-}
-
-.local-total-row.final{
- margin-top:8px;
- padding-top:8px;
- border-top:1px dashed var(--gris2);
- font-size:16px;
- font-weight:900;
- color:var(--rojo);
-}
-
-.total-box{
- background:var(--negro);
- color:#fff;
- border-radius:12px;
- padding:15px;
-}
-
-.total-row{
- display:flex;
- justify-content:space-between;
- gap:10px;
- margin:7px 0;
- font-size:14px;
-}
-
-.total-row.final{
- border-top:1px solid #444;
- margin-top:12px;
- padding-top:12px;
- font-size:21px;
- font-weight:900;
-}
-
-.form-grid{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:12px;
-}
-
-.field{margin-bottom:2px}
-
-label{
- display:block;
- font-size:13px;
- font-weight:bold;
- margin-bottom:5px;
-}
-
-input,
-textarea,
-select{
- width:100%;
- border:1px solid var(--gris2);
- border-radius:9px;
- padding:11px;
- font:inherit;
- outline:none;
- background:#fff;
-}
-
-textarea{
- resize:vertical;
- min-height:80px;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
- border-color:var(--azul);
- box-shadow:0 0 0 3px rgba(18,97,160,.1);
-}
-
-input:disabled,
-textarea:disabled,
-select:disabled{
- background:#eefaf4;
- color:var(--negro);
- opacity:1;
- cursor:not-allowed;
- border-color:#b9dfca;
-}
-
-.invoice-box{
- border:1px solid var(--gris2);
- border-radius:10px;
- padding:13px;
- margin-top:15px;
- background:#fafafa;
-}
-
-.invoice-check{
- display:flex;
- align-items:center;
- gap:8px;
- cursor:pointer;
- font-size:13px;
- font-weight:bold;
-}
-
-.invoice-check input{
- width:auto;
- margin:0;
-}
-
-.invoice-fields{margin-top:12px}
-
-.invoice-fields.hidden{display:none}
-
-.location-box{
- border:1px solid #cfe2f3;
- background:#f3f9fd;
- border-radius:10px;
- padding:13px;
- margin-top:12px;
-}
-
-.location-title{
- font-weight:900;
- color:var(--azul2);
- margin-bottom:5px;
-}
-
-.location-status{
- font-size:13px;
- color:var(--muted);
- margin:6px 0 10px;
-}
-
-.location-actions{
- display:flex;
- flex-wrap:wrap;
- gap:8px;
-}
-
-#map{
- width:100%;
- height:300px;
- border-radius:10px;
- margin-top:12px;
- overflow:hidden;
- display:none;
-}
-
-.map-help{
- color:var(--muted);
- font-size:11px;
- margin-top:7px;
-}
-
-.location-result{
- display:none;
- margin-top:10px;
- padding:10px;
- background:#fff;
- border:1px solid var(--gris2);
- border-radius:8px;
- font-size:12px;
- line-height:1.5;
-}
-
-.location-result strong{color:var(--azul2)}
-
-.location-link{
- word-break:break-all;
- color:var(--azul);
-}
-
-.location-confirmed{
- border-left:4px solid var(--verde);
- background:#eefaf4;
- color:var(--verde2);
-}
-
-button{
- border:0;
- border-radius:9px;
- padding:10px 13px;
- font-weight:bold;
- cursor:pointer;
-}
-
-button:disabled{
- opacity:.6;
- cursor:not-allowed;
-}
-
-.btn-red{
- background:var(--rojo);
- color:#fff;
-}
-
-.btn-red:hover{background:var(--rojo2)}
-
-.btn-green{
- background:var(--verde);
- color:#fff;
-}
-
-.btn-green:hover{background:var(--verde2)}
-
-.btn-blue{
- background:var(--azul);
- color:#fff;
-}
-
-.btn-blue:hover{background:var(--azul2)}
-
-.btn-yellow{
- background:var(--amarillo);
- color:var(--negro);
-}
-
-.btn-gray{
- background:var(--gris2);
- color:var(--negro);
-}
-
-.btn-danger{
- background:var(--danger);
- color:#fff;
-}
-
-.empty{
- background:#fff;
- border-radius:13px;
- padding:35px 15px;
- text-align:center;
- box-shadow:var(--shadow);
- color:var(--muted);
-}
-
-.empty-icon{
- font-size:42px;
- margin-bottom:8px;
-}
-
-.clear{
- width:100%;
- margin-top:10px;
-}
-
-.send{
- width:100%;
- margin-top:12px;
- font-size:16px;
- padding:13px;
-}
-
-.notice{
- background:#fff8d9;
- border-left:4px solid var(--amarillo);
- padding:10px;
- border-radius:7px;
- font-size:12px;
- margin-bottom:12px;
-}
-
-.error{
- background:#fff0ef;
- color:var(--rojo2);
- border:1px solid #f2c5c1;
- padding:12px;
- border-radius:9px;
- margin-bottom:12px;
-}
-
-.hidden{display:none!important}
-
-@media(max-width:650px){
- .form-grid{grid-template-columns:1fr}
-
- .item{
-  grid-template-columns:55px 1fr;
- }
-
- .item>div:last-child{
-  grid-column:2;
- }
-
- .item-img{
-  width:55px;
-  height:55px;
- }
-
- #map{height:280px}
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Mi pedido | Sobre Ruedas</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <!-- MAPA -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --rojo: #d62828;
+            --rojo2: #b51f1f;
+            --verde: #198754;
+            --verde2: #146c43;
+            --azul: #1261a0;
+            --azul2: #0d4f82;
+            --amarillo: #f4c542;
+            --negro: #171717;
+            --blanco: #fff;
+            --gris: #f4f5f7;
+            --gris2: #e5e7eb;
+            --muted: #626a73;
+            --danger: #b42318;
+            --shadow: 0 4px 15px rgba(0, 0, 0, .08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--gris);
+            color: var(--negro);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        header {
+            background: var(--negro);
+            color: #fff;
+            border-top: 5px solid var(--rojo);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .18);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: auto;
+            padding: 13px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .logo span {
+            color: var(--rojo);
+        }
+
+        .sub {
+            color: #ddd;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .back {
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 15px 14px 35px;
+        }
+
+        h1 {
+            margin: 0 0 15px;
+            font-size: 24px;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 19px;
+        }
+
+        section {
+            background: #fff;
+            border-radius: 13px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .local-card {
+            border: 1px solid var(--gris2);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .local-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .local-name {
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: 65px 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid var(--gris2);
+        }
+
+        .item:first-child {
+            border-top: 0;
+        }
+
+        .item-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--gris);
+        }
+
+        .item-info {
+            min-width: 0;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .item-price {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .item-total {
+            color: var(--rojo);
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qty {
+            min-width: 28px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: 0;
+            border-radius: 7px;
+            background: var(--gris2);
+            color: var(--negro);
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .qty-btn:hover {
+            background: #d5d8dc;
+        }
+
+        .remove {
+            display: block;
+            border: 0;
+            background: none;
+            color: var(--danger);
+            font-size: 11px;
+            cursor: pointer;
+            margin-top: 4px;
+            padding: 0;
+        }
+
+        .local-total {
+            border-top: 1px solid var(--gris2);
+            margin-top: 8px;
+            padding-top: 10px;
+        }
+
+        .local-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 13px;
+        }
+
+        .local-total-row.final {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--gris2);
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--rojo);
+        }
+
+        .total-box {
+            background: var(--negro);
+            color: #fff;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 7px 0;
+            font-size: 14px;
+        }
+
+        .total-row.final {
+            border-top: 1px solid #444;
+            margin-top: 12px;
+            padding-top: 12px;
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .field {
+            margin-bottom: 2px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid var(--gris2);
+            border-radius: 9px;
+            padding: 11px;
+            font: inherit;
+            outline: none;
+            background: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--azul);
+            box-shadow: 0 0 0 3px rgba(18, 97, 160, .1);
+        }
+
+        /* FACTURA */
+
+        .invoice-box {
+            border: 1px solid var(--gris2);
+            border-radius: 10px;
+            padding: 13px;
+            margin-top: 15px;
+            background: #fafafa;
+        }
+
+        .invoice-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .invoice-check input {
+            width: auto;
+            margin: 0;
+        }
+
+        .invoice-fields {
+            margin-top: 12px;
+        }
+
+        .invoice-fields.hidden {
+            display: none;
+        }
+
+        /* UBICACION */
+
+        .location-box {
+            border: 1px solid #cfe2f3;
+            background: #f3f9fd;
+            border-radius: 10px;
+            padding: 13px;
+            margin-top: 12px;
+        }
+
+        .location-title {
+            font-weight: 900;
+            color: var(--azul2);
+            margin-bottom: 5px;
+        }
+
+        .location-status {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 6px 0 10px;
+        }
+
+        .location-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            margin-top: 12px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .map-help {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 7px;
+        }
+
+        .location-result {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid var(--gris2);
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .location-result strong {
+            color: var(--azul2);
+        }
+
+        .location-link {
+            word-break: break-all;
+            color: var(--azul);
+        }
+
+        .location-confirmed {
+            border-left: 4px solid var(--verde);
+            background: #eefaf4;
+            color: var(--verde2);
+        }
+
+        /* BOTONES */
+
+        button {
+            border: 0;
+            border-radius: 9px;
+            padding: 10px 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .btn-red {
+            background: var(--rojo);
+            color: #fff;
+        }
+
+        .btn-red:hover {
+            background: var(--rojo2);
+        }
+
+        .btn-green {
+            background: var(--verde);
+            color: #fff;
+        }
+
+        .btn-green:hover {
+            background: var(--verde2);
+        }
+
+        .btn-blue {
+            background: var(--azul);
+            color: #fff;
+        }
+
+        .btn-blue:hover {
+            background: var(--azul2);
+        }
+
+        .btn-yellow {
+            background: var(--amarillo);
+            color: var(--negro);
+        }
+
+        .btn-gray {
+            background: var(--gris2);
+            color: var(--negro);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .empty {
+            background: #fff;
+            border-radius: 13px;
+            padding: 35px 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .clear {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .send {
+            width: 100%;
+            margin-top: 12px;
+            font-size: 16px;
+            padding: 13px;
+        }
+
+        .notice {
+            background: #fff8d9;
+            border-left: 4px solid var(--amarillo);
+            padding: 10px;
+            border-radius: 7px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .error {
+            background: #fff0ef;
+            color: var(--rojo2);
+            border: 1px solid #f2c5c1;
+            padding: 12px;
+            border-radius: 9px;
+            margin-bottom: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 650px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .item {
+                grid-template-columns: 55px 1fr;
+            }
+
+            .item > div:last-child {
+                grid-column: 2;
+            }
+
+            .item-img {
+                width: 55px;
+                height: 55px;
+            }
+
+            #map {
+                height: 280px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
- <div class="header-inner">
-  <div>
-   <div class="logo">Sobre <span>Ruedas</span></div>
-   <div class="sub">Delivery en Esmeraldas</div>
-  </div>
-
-<a href="index.html" class="back">← Seguir comprando</a>
-
- </div>
-</header>
-
-<main>
- <h1>🛒 Mi pedido</h1>
- <div id="mensaje"></div>
- <div id="contenido"></div>
-</main>
-
-<script>
-
-const CONFIG_DEFAULT={
- nombreNegocio:"Sobre Ruedas",
- ciudad:"Esmeraldas",
- tarifaDelivery:1.50,
- whatsappNegocio:"593985459479",
- moneda:"USD"
-};
-
-let carrito=[];
-let configuracion={...CONFIG_DEFAULT};
-
-let ubicacionActual=null;
-let ubicacionMapsUrl="";
-let ubicacionDireccion="";
-let ubicacionConfirmada=false;
+    <header>
+        <div class="header-inner">
+            <div>
+                <div class="logo">
+                    Sobre <span>Ruedas</span>
+                </div>
+
+                <div class="sub">
+                    Delivery en Esmeraldas
+                </div>
+            </div>
+
+            <a href="index.html" class="back">
+                ← Seguir comprando
+            </a>
+        </div>
+    </header>
+
+    <main>
+
+        <h1>🛒 Mi pedido</h1>
+
+        <div id="mensaje"></div>
+
+        <div id="contenido"></div>
+
+    </main>
+
+    <script>
+        const CONFIG_DEFAULT = {
+            nombreNegocio: "Sobre Ruedas",
+            ciudad: "Esmeraldas",
+            tarifaDelivery: 1.50,
+            whatsappNegocio: "593985459479",
+            moneda: "USD"
+        };
+
+        let carrito = [];
+        let configuracion = { ...CONFIG_DEFAULT };
+
+        let ubicacionActual = null;
+        let ubicacionMapsUrl = "";
+        let ubicacionDireccion = "";
+        let ubicacionConfirmada = false;
+
+        let mapa = null;
+        let marcador = null;
+
+        /* =========================================================
+           UTILIDADES
+        ========================================================= */
+
+        const $ = id => document.getElementById(id);
+
+        const esc = s =>
+            String(s ?? "").replace(
+                /[&<>"']/g,
+                m => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+                }[m])
+            );
+
+        function mostrarError(mensaje) {
+            $("mensaje").innerHTML = `
+                <div class="error">
+                    ${esc(mensaje)}
+                </div>
+            `;
+        }
+
+        function limpiarMensaje() {
+            $("mensaje").innerHTML = "";
+        }
+
+        /* =========================================================
+           CARRITO
+        ========================================================= */
+
+        function cargarCarrito() {
+            try {
+                const data = JSON.parse(
+                    localStorage.getItem("carrito") || "[]"
+                );
+
+                carrito = Array.isArray(data) ? data : [];
+
+            } catch {
+                carrito = [];
+            }
+        }
+
+        function guardarCarrito() {
+            if (carrito.length) {
+                localStorage.setItem(
+                    "carrito",
+                    JSON.stringify(carrito)
+                );
+            } else {
+                localStorage.removeItem("carrito");
+            }
+        }
+
+        function agruparCarrito() {
+            const grupos = {};
 
-let ubicacionAnterior=null;
-let ubicacionMapsAnterior="";
-let ubicacionDireccionAnterior="";
-let ubicacionConfirmadaAnterior=false;
+            carrito.forEach(item => {
+
+                const id = String(item.restaurante_id);
 
-let mapa=null;
-let marcador=null;
+                if (!grupos[id]) {
+                    grupos[id] = {
+                        restaurante_id: item.restaurante_id,
+                        restaurante_nombre:
+                            item.restaurante_nombre || "Local",
+                        productos: []
+                    };
+                }
+
+                grupos[id].productos.push(item);
+            });
 
-let datosFormulario={};
+            return Object.values(grupos);
+        }
 
-const $=id=>document.getElementById(id);
+        function subtotalGrupo(grupo) {
+            return grupo.productos.reduce(
+                (total, item) =>
+                    total +
+                    (Number(item.precio) || 0) *
+                    (Number(item.cantidad) || 0),
+                0
+            );
+        }
 
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
- "&":"&amp;",
- "<":"&lt;",
- ">":"&gt;",
- '"':"&quot;",
- "'":"&#039;"
-}[m]));
+        /* =========================================================
+           CONFIGURACION
+        ========================================================= */
 
-function mostrarError(mensaje){
- $("mensaje").innerHTML=`
-  <div class="error">${esc(mensaje)}</div>
- `;
-}
+        async function cargarConfiguracion() {
 
-function limpiarMensaje(){
- $("mensaje").innerHTML="";
-}
+            try {
 
+                const { data, error } = await supabaseClient
+                    .from("configuracion_negocio")
+                    .select("*")
+                    .order("id", { ascending: true })
+                    .limit(1)
+                    .maybeSingle();
 
-/* =========================================================
-   FORMULARIO
-========================================================= */
+                if (error) {
+                    console.warn(error);
+                    return;
+                }
 
-function capturarDatosFormulario(){
+                if (data) {
 
- if(!$("clienteNombre"))return;
+                    configuracion = {
+                        nombreNegocio:
+                            data.nombre_negocio ||
+                            CONFIG_DEFAULT.nombreNegocio,
 
- datosFormulario={
-  clienteNombre:$("clienteNombre")?.value||"",
-  clienteTelefono:$("clienteTelefono")?.value||"",
-  direccion:$("direccion")?.value||"",
-  referencia:$("referencia")?.value||"",
-  requiereFactura:$("requiereFactura")?.checked||false,
-  tipoDocumento:$("tipoDocumento")?.value||"Cédula",
-  numeroDocumento:$("numeroDocumento")?.value||"",
-  correoFactura:$("correoFactura")?.value||""
- };
-}
+                        ciudad:
+                            data.ciudad ||
+                            CONFIG_DEFAULT.ciudad,
 
-function restaurarDatosFormulario(){
+                        tarifaDelivery:
+                            Number(data.tarifa_delivery) || 0,
 
- if(!$("clienteNombre"))return;
+                        whatsappNegocio:
+                            data.whatsapp_negocio ||
+                            CONFIG_DEFAULT.whatsappNegocio,
 
- $("clienteNombre").value=datosFormulario.clienteNombre||"";
- $("clienteTelefono").value=datosFormulario.clienteTelefono||"";
- $("direccion").value=datosFormulario.direccion||"";
- $("referencia").value=datosFormulario.referencia||"";
- $("requiereFactura").checked=!!datosFormulario.requiereFactura;
- $("tipoDocumento").value=datosFormulario.tipoDocumento||"Cédula";
- $("numeroDocumento").value=datosFormulario.numeroDocumento||"";
- $("correoFactura").value=datosFormulario.correoFactura||"";
+                        moneda:
+                            data.moneda || "USD"
+                    };
+                }
 
- mostrarDatosFactura();
- restaurarEstadoUbicacion();
-}
+            } catch (error) {
 
+                console.warn(
+                    "Configuración:",
+                    error
+                );
+            }
+        }
 
-/* =========================================================
-   UBICACION
-========================================================= */
+        /* =========================================================
+           RENDER
+        ========================================================= */
+
+        function render() {
+
+            const contenido = $("contenido");
+
+            if (!carrito.length) {
 
-function restaurarEstadoUbicacion(){
+                contenido.innerHTML = `
+                    <div class="empty">
 
- const direccion=$("direccion");
+                        <div class="empty-icon">
+                            🛒
+                        </div>
 
- if(!direccion)return;
+                        <strong>
+                            Tu carrito está vacío
+                        </strong>
 
- if(
-  ubicacionConfirmada&&
-  ubicacionActual&&
-  ubicacionMapsUrl
- ){
+                        <p>
+                            Agrega productos desde nuestros locales.
+                        </p>
 
-  direccion.value=
-   ubicacionDireccion||
-   datosFormulario.direccion||
-   "";
+                        <button
+                            class="btn-red"
+                            onclick="location.href='index.html'">
+                            Ver locales
+                        </button>
 
-  direccion.disabled=true;
-  direccion.style.background="#eefaf4";
+                    </div>
+                `;
 
-  mostrarResultadoUbicacion();
+                return;
+            }
 
-  mostrarEstadoUbicacion(
-   "✓ Ubicación de entrega guardada correctamente."
-  );
+            const grupos = agruparCarrito();
 
- }else{
+            let totalProductos = 0;
+            let totalDelivery = 0;
+            let html = "";
 
-  direccion.disabled=false;
-  direccion.style.background="#fff";
- }
-}
+            /* =====================================================
+               LOCALES
+            ===================================================== */
 
+            grupos.forEach(grupo => {
 
-/* =========================================================
-   CARRITO - SESSION STORAGE
-========================================================= */
+                const subtotal =
+                    subtotalGrupo(grupo);
+
+                const delivery =
+                    Number(configuracion.tarifaDelivery) || 0;
+
+                const totalLocal =
+                    subtotal + delivery;
 
-function cargarCarrito(){
+                totalProductos += subtotal;
+                totalDelivery += delivery;
+
+                html += `
+                    <section class="local-card">
+
+                        <div class="local-title">
+
+                            <div class="local-name">
+                                ${esc(grupo.restaurante_nombre)}
+                            </div>
+
+                        </div>
+                `;
+
+                grupo.productos.forEach(item => {
+
+                    const cantidad =
+                        Number(item.cantidad) || 0;
+
+                    const precio =
+                        Number(item.precio) || 0;
+
+                    const total =
+                        precio * cantidad;
+
+                    const imagen = item.imagen_url
+                        ? `
+                            <img
+                                class="item-img"
+                                src="${esc(item.imagen_url)}?v=${Date.now()}"
+                                alt=""
+                                onerror="this.style.visibility='hidden'"
+                            >
+                        `
+                        : `
+                            <div
+                                class="item-img"
+                                style="
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    font-size:25px;
+                                ">
+                                🍽️
+                            </div>
+                        `;
+
+                    html += `
+                        <div class="item">
+
+                            ${imagen}
+
+                            <div class="item-info">
+
+                                <div class="item-name">
+                                    ${esc(item.producto_nombre)}
+                                </div>
+
+                                <div class="item-price">
+                                    $${precio.toFixed(2)} c/u
+                                </div>
+
+                                <div class="item-total">
+                                    $${total.toFixed(2)}
+                                </div>
+
+                            </div>
+
+                            <div>
+
+                                <div class="controls">
+
+                                    <button
+                                        class="qty-btn"
+                                        onclick="cambiarCantidad(
+                                            ${item.producto_id},
+                                            ${item.restaurante_id},
+                                            -1
+                                        )">
+                                        −
+                                    </button>
+
+                                    <span class="qty">
+                                        ${cantidad}
+                                    </span>
+
+                                    <button
+                                        class="qty-btn"
+                                        onclick="cambiarCantidad(
+                                            ${item.producto_id},
+                                            ${item.restaurante_id},
+                                            1
+                                        )">
+                                        +
+                                    </button>
 
- try{
+                                </div>
+
+                                <button
+                                    class="remove"
+                                    onclick="eliminarProducto(
+                                        ${item.producto_id},
+                                        ${item.restaurante_id}
+                                    )">
+                                    Eliminar
+                                </button>
 
-  const data=JSON.parse(
-   sessionStorage.getItem("carrito")||"[]"
-  );
+                            </div>
 
-  carrito=Array.isArray(data)?data:[];
+                        </div>
+                    `;
+                });
 
- }catch(error){
+                html += `
+                        <div class="local-total">
 
-  console.warn("Error leyendo carrito:",error);
-  carrito=[];
+                            <div class="local-total-row">
+                                <span>
+                                    Productos
+                                </span>
 
- }
-}
+                                <strong>
+                                    $${subtotal.toFixed(2)}
+                                </strong>
+                            </div>
 
-function guardarCarrito(){
+                            <div class="local-total-row">
+                                <span>
+                                    Delivery
+                                </span>
 
- if(carrito.length){
+                                <strong>
+                                    $${delivery.toFixed(2)}
+                                </strong>
+                            </div>
 
-  sessionStorage.setItem(
-   "carrito",
-   JSON.stringify(carrito)
-  );
+                            <div class="local-total-row final">
+                                <span>
+                                    Total del local
+                                </span>
 
- }else{
+                                <strong>
+                                    $${totalLocal.toFixed(2)}
+                                </strong>
+                            </div>
 
-  sessionStorage.removeItem("carrito");
+                        </div>
 
- }
-}
+                    </section>
+                `;
+            });
 
-function agruparCarrito(){
+            const total =
+                totalProductos + totalDelivery;
 
- const grupos={};
+            /* =====================================================
+               DATOS DE ENTREGA
+            ===================================================== */
 
- carrito.forEach(item=>{
+            html += `
+                <section>
 
-  const id=String(item.restaurante_id);
+                    <h2>
+                        Datos de entrega
+                    </h2>
 
-  if(!grupos[id]){
+                    <div class="notice">
+                        Completa tus datos para registrar el pedido.
+                    </div>
 
-   grupos[id]={
-    restaurante_id:item.restaurante_id,
-    restaurante_nombre:item.restaurante_nombre||"Local",
-    productos:[]
-   };
+                    <div class="form-grid">
 
-  }
+                        <div class="field">
 
-  grupos[id].productos.push(item);
+                            <label for="clienteNombre">
+                                Nombre
+                            </label>
 
- });
+                            <input
+                                id="clienteNombre"
+                                placeholder="Tu nombre"
+                                autocomplete="name"
+                            >
 
- return Object.values(grupos);
-}
+                        </div>
 
-function subtotalGrupo(grupo){
+                        <div class="field">
 
- return grupo.productos.reduce(
-  (total,item)=>
-   total+
-   (Number(item.precio)||0)*
-   (Number(item.cantidad)||0),
-  0
- );
-}
+                            <label for="clienteTelefono">
+                                Teléfono
+                            </label>
 
+                            <input
+                                id="clienteTelefono"
+                                type="tel"
+                                placeholder="0999999999"
+                                autocomplete="tel"
+                            >
 
-/* =========================================================
-   CONFIGURACION
-========================================================= */
+                        </div>
 
-async function cargarConfiguracion(){
+                    </div>
 
- try{
+                    <div
+                        class="field"
+                        style="margin-top:12px">
 
-  const {data,error}=await supabaseClient
-   .from("configuracion_negocio")
-   .select("*")
-   .order("id",{ascending:true})
-   .limit(1)
-   .maybeSingle();
+                        <label for="direccion">
+                            Dirección de entrega
+                        </label>
 
-  if(error){
+                        <textarea
+                            id="direccion"
+                            placeholder="Se llenará automáticamente al seleccionar la ubicación"
+                        ></textarea>
 
-   console.warn(error);
-   return;
+                    </div>
 
-  }
+                    <div
+                        class="field"
+                        style="margin-top:12px">
 
-  if(data){
+                        <label for="referencia">
+                            Referencia adicional
+                        </label>
 
-   configuracion={
-    nombreNegocio:
-     data.nombre_negocio||
-     CONFIG_DEFAULT.nombreNegocio,
+                        <textarea
+                            id="referencia"
+                            placeholder="Ej. Casa de dos pisos, junto a..."
+                        ></textarea>
 
-    ciudad:
-     data.ciudad||
-     CONFIG_DEFAULT.ciudad,
+                    </div>
 
-    tarifaDelivery:
-     Number(data.tarifa_delivery)||0,
+                    <!-- FACTURA -->
 
-    whatsappNegocio:
-     data.whatsapp_negocio||
-     CONFIG_DEFAULT.whatsappNegocio,
+                    <div class="invoice-box">
 
-    moneda:
-     data.moneda||"USD"
-   };
-  }
+                        <label class="invoice-check">
 
- }catch(error){
+                            <input
+                                type="checkbox"
+                                id="requiereFactura"
+                                onchange="mostrarDatosFactura()"
+                            >
 
-  console.warn("Configuración:",error);
+                            ¿Necesitas factura?
 
- }
-}
+                        </label>
 
+                        <div
+                            id="invoiceFields"
+                            class="invoice-fields hidden">
 
-/* =========================================================
-   RENDER
-========================================================= */
+                            <div class="form-grid">
 
-function render(){
+                                <div class="field">
 
- capturarDatosFormulario();
+                                    <label for="tipoDocumento">
+                                        Tipo de documento
+                                    </label>
 
- if(mapa){
+                                    <select id="tipoDocumento">
 
-  try{
-   mapa.remove();
-  }catch(error){
-   console.warn(error);
-  }
+                                        <option value="Cédula">
+                                            Cédula
+                                        </option>
 
-  mapa=null;
-  marcador=null;
- }
+                                        <option value="RUC">
+                                            RUC
+                                        </option>
 
- const contenido=$("contenido");
+                                    </select>
 
- if(!carrito.length){
+                                </div>
 
-  contenido.innerHTML=`
+                                <div class="field">
 
-   <div class="empty">
+                                    <label for="numeroDocumento">
+                                        Número de cédula o RUC
+                                    </label>
 
-    <div class="empty-icon">🛒</div>
+                                    <input
+                                        id="numeroDocumento"
+                                        inputmode="numeric"
+                                        maxlength="13"
+                                        placeholder="10 o 13 dígitos"
+                                    >
 
-    <strong>Tu carrito está vacío</strong>
+                                </div>
 
-    <p>Agrega productos desde nuestros locales.</p>
+                            </div>
 
-    <button
-     class="btn-red"
-     onclick="location.href='index.html'">
+                            <div
+                                class="field"
+                                style="margin-top:12px">
 
-     Ver locales
+                                <label for="correoFactura">
+                                    Correo electrónico para la factura
+                                </label>
 
-    </button>
+                                <input
+                                    id="correoFactura"
+                                    type="email"
+                                    placeholder="ejemplo@correo.com"
+                                    autocomplete="email"
+                                >
 
-   </div>
+                            </div>
 
-  `;
+                            <div
+                                style="
+                                    margin-top:8px;
+                                    color:var(--muted);
+                                    font-size:11px;
+                                ">
 
-  return;
- }
+                                Los datos de facturación serán enviados
+                                al local junto con tu pedido.
 
- const grupos=agruparCarrito();
+                            </div>
 
- let totalProductos=0;
- let totalDelivery=0;
- let html="";
+                        </div>
 
- grupos.forEach(grupo=>{
+                    </div>
 
-  const subtotal=subtotalGrupo(grupo);
-  const delivery=Number(configuracion.tarifaDelivery)||0;
-  const totalLocal=subtotal+delivery;
+                    <!-- UBICACION -->
 
-  totalProductos+=subtotal;
-  totalDelivery+=delivery;
+                    <div class="location-box">
 
-  html+=`
+                        <div class="location-title">
+                            📍 Ubicación de entrega
+                        </div>
 
-   <section class="local-card">
+                        <div
+                            class="location-status"
+                            id="locationStatus">
 
-    <div class="local-title">
-     <div class="local-name">
-      ${esc(grupo.restaurante_nombre)}
-     </div>
-    </div>
-  `;
+                            Selecciona tu ubicación en el mapa
+                            o usa tu ubicación actual.
 
-  grupo.productos.forEach(item=>{
+                        </div>
 
-   const cantidad=Number(item.cantidad)||0;
-   const precio=Number(item.precio)||0;
-   const total=precio*cantidad;
+                        <div class="location-actions">
 
-   const imagen=item.imagen_url
-    ?`
-     <img
-      class="item-img"
-      src="${esc(item.imagen_url)}${item.imagen_url.includes("?")?"&":"?"}v=${Date.now()}"
-      alt=""
-      onerror="this.style.visibility='hidden'">
-    `
-    :`
-     <div
-      class="item-img"
-      style="
-       display:flex;
-       align-items:center;
-       justify-content:center;
-       font-size:25px">
+                            <button
+                                type="button"
+                                class="btn-green"
+                                onclick="usarMiUbicacion()">
 
-      🍽️
+                                📍 Usar mi ubicación
 
-     </div>
-    `;
+                            </button>
 
-   html+=`
+                            <button
+                                type="button"
+                                class="btn-blue"
+                                onclick="abrirSelectorUbicacion()">
 
-    <div class="item">
+                                🗺️ Elegir ubicación
 
-     ${imagen}
+                            </button>
 
-     <div class="item-info">
+                            <button
+                                type="button"
+                                class="btn-gray"
+                                id="btnConfirmarUbicacion"
+                                onclick="confirmarUbicacion()"
+                                style="display:none">
 
-      <div class="item-name">
-       ${esc(item.producto_nombre)}
-      </div>
+                                ✓ Aceptar y guardar
 
-      <div class="item-price">
-       $${precio.toFixed(2)} c/u
-      </div>
+                            </button>
 
-      <div class="item-total">
-       $${total.toFixed(2)}
-      </div>
+                        </div>
 
-     </div>
+                        <div id="map"></div>
 
-     <div>
+                        <div class="map-help">
 
-      <div class="controls">
+                            Toca el mapa o mueve el marcador hasta
+                            el punto exacto donde deseas recibir
+                            tu pedido.
 
-       <button
-        class="qty-btn"
-        onclick="cambiarCantidad(
-         ${Number(item.producto_id)},
-         ${Number(item.restaurante_id)},
-         -1
-        )">
+                        </div>
 
-        −
+                        <div
+                            id="locationResult"
+                            class="location-result">
+                        </div>
 
-       </button>
+                    </div>
 
-       <span class="qty">
-        ${cantidad}
-       </span>
+                </section>
 
-       <button
-        class="qty-btn"
-        onclick="cambiarCantidad(
-         ${Number(item.producto_id)},
-         ${Number(item.restaurante_id)},
-         1
-        )">
+                <!-- TOTALES -->
 
-        +
+                <section>
 
-       </button>
+                    <div class="total-box">
 
-      </div>
+                        <div class="total-row">
 
-      <button
-       class="remove"
-       onclick="eliminarProducto(
-        ${Number(item.producto_id)},
-        ${Number(item.restaurante_id)}
-       )">
+                            <span>
+                                Productos
+                            </span>
 
-       Eliminar
+                            <strong>
+                                $${totalProductos.toFixed(2)}
+                            </strong>
 
-      </button>
+                        </div>
 
-     </div>
+                        <div class="total-row">
 
-    </div>
+                            <span>
+                                Delivery
+                            </span>
 
-   `;
-  });
+                            <strong>
+                                $${totalDelivery.toFixed(2)}
+                            </strong>
 
-  html+=`
+                        </div>
 
-    <div class="local-total">
+                        <div class="total-row final">
 
-     <div class="local-total-row">
-      <span>Productos</span>
-      <strong>$${subtotal.toFixed(2)}</strong>
-     </div>
+                            <span>
+                                Total
+                            </span>
 
-     <div class="local-total-row">
-      <span>Delivery</span>
-      <strong>$${delivery.toFixed(2)}</strong>
-     </div>
+                            <strong>
+                                $${total.toFixed(2)}
+                            </strong>
 
-     <div class="local-total-row final">
-      <span>Total del local</span>
-      <strong>$${totalLocal.toFixed(2)}</strong>
-     </div>
+                        </div>
 
-    </div>
+                    </div>
 
-   </section>
+                    <button
+                        class="btn-gray clear"
+                        onclick="vaciarCarrito()">
 
-  `;
- });
+                        Vaciar carrito
 
- const total=totalProductos+totalDelivery;
+                    </button>
 
- html+=`
+                    <button
+                        class="btn-green send"
+                        onclick="confirmarPedido()">
 
-  <section>
+                        🚴 Confirmar pedido
 
-   <h2>Datos de entrega</h2>
+                    </button>
 
-   <div class="notice">
-    Completa tus datos para registrar el pedido.
-   </div>
+                </section>
+            `;
 
-   <div class="form-grid">
+            contenido.innerHTML = html;
+        }
 
-    <div class="field">
+        /* =========================================================
+           FACTURA
+        ========================================================= */
 
-     <label for="clienteNombre">
-      Nombre
-     </label>
+        function mostrarDatosFactura() {
 
-     <input
-      id="clienteNombre"
-      placeholder="Tu nombre"
-      autocomplete="name">
+            const check =
+                $("requiereFactura");
 
-    </div>
+            const campos =
+                $("invoiceFields");
 
-    <div class="field">
+            if (!check || !campos) return;
 
-     <label for="clienteTelefono">
-      Teléfono
-     </label>
+            campos.classList.toggle(
+                "hidden",
+                !check.checked
+            );
+        }
 
-     <input
-      id="clienteTelefono"
-      type="tel"
-      placeholder="0999999999"
-      autocomplete="tel">
+        /* =========================================================
+           VALIDACION FACTURA
+        ========================================================= */
 
-    </div>
+        function validarDocumento() {
 
-   </div>
+            const requiereFactura =
+                $("requiereFactura")?.checked || false;
 
-   <div
-    class="field"
-    style="margin-top:12px">
+            if (!requiereFactura) {
+                return null;
+            }
 
-    <label for="direccion">
-     Dirección de entrega
-    </label>
+            const tipo =
+                $("tipoDocumento")?.value || "";
 
-    <textarea
-     id="direccion"
-     placeholder="Se llenará automáticamente al seleccionar la ubicación"></textarea>
+            const numero =
+                $("numeroDocumento")?.value
+                    .trim()
+                    .replace(/\D/g, "") || "";
 
-   </div>
+            const correo =
+                $("correoFactura")?.value
+                    .trim() || "";
 
-   <div
-    class="field"
-    style="margin-top:12px">
+            if (tipo === "Cédula") {
 
-```
-<label for="referencia">
- Referencia adicional
-</label>
+                if (!/^\d{10}$/.test(numero)) {
+                    return "La cédula debe contener exactamente 10 dígitos.";
+                }
 
-<textarea
- id="referencia"
- placeholder="Ej. Casa de dos pisos, junto a..."></textarea>
-```
+            } else if (tipo === "RUC") {
 
-   </div>
+                if (!/^\d{13}$/.test(numero)) {
+                    return "El RUC debe contener exactamente 13 dígitos.";
+                }
+            }
 
-   <div class="invoice-box">
+            if (!correo) {
+                return "Ingresa el correo electrónico para la factura.";
+            }
 
-```
-<label class="invoice-check">
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                return "Ingresa un correo electrónico válido para la factura.";
+            }
 
- <input
-  type="checkbox"
-  id="requiereFactura"
-  onchange="mostrarDatosFactura()">
+            return null;
+        }
 
- ¿Necesitas factura?
+        /* =========================================================
+           CANTIDADES
+        ========================================================= */
 
-</label>
+        function cambiarCantidad(
+            productoId,
+            restauranteId,
+            cambio
+        ) {
 
-<div
- id="invoiceFields"
- class="invoice-fields hidden">
+            const item = carrito.find(
+                x =>
+                    Number(x.producto_id) === Number(productoId) &&
+                    Number(x.restaurante_id) === Number(restauranteId)
+            );
 
- <div class="form-grid">
+            if (!item) return;
 
-  <div class="field">
+            item.cantidad =
+                (Number(item.cantidad) || 0) + cambio;
 
-   <label for="tipoDocumento">
-    Tipo de documento
-   </label>
+            if (item.cantidad <= 0) {
 
-   <select id="tipoDocumento">
+                carrito = carrito.filter(
+                    x =>
+                        !(
+                            Number(x.producto_id) === Number(productoId) &&
+                            Number(x.restaurante_id) === Number(restauranteId)
+                        )
+                );
+            }
 
-    <option value="Cédula">Cédula</option>
-    <option value="RUC">RUC</option>
+            guardarCarrito();
+            render();
+        }
 
-   </select>
+        /* =========================================================
+           ELIMINAR
+        ========================================================= */
 
-  </div>
+        function eliminarProducto(
+            productoId,
+            restauranteId
+        ) {
 
-  <div class="field">
+            carrito = carrito.filter(
+                item =>
+                    !(
+                        Number(item.producto_id) === Number(productoId) &&
+                        Number(item.restaurante_id) === Number(restauranteId)
+                    )
+            );
 
-   <label for="numeroDocumento">
-    Número de cédula o RUC
-   </label>
+            guardarCarrito();
+            render();
+        }
 
-   <input
-    id="numeroDocumento"
-    inputmode="numeric"
-    maxlength="13"
-    placeholder="10 o 13 dígitos">
+        /* =========================================================
+           VACIAR
+        ========================================================= */
 
-  </div>
+        function vaciarCarrito() {
 
- </div>
+            if (!carrito.length) return;
 
- <div
-  class="field"
-  style="margin-top:12px">
+            if (!confirm("¿Vaciar todo el carrito?")) {
+                return;
+            }
 
-  <label for="correoFactura">
-   Correo electrónico para la factura
-  </label>
+            carrito = [];
 
-  <input
-   id="correoFactura"
-   type="email"
-   placeholder="ejemplo@correo.com"
-   autocomplete="email">
+            guardarCarrito();
 
- </div>
+            render();
+        }
 
- <div
-  style="
-   margin-top:8px;
-   color:var(--muted);
-   font-size:11px">
+        /* =========================================================
+           NUMERO PEDIDO
+        ========================================================= */
 
-  Los datos de facturación serán enviados al local junto con tu pedido.
+        function generarNumeroPedido() {
 
- </div>
+            const ahora = new Date();
 
-</div>
-```
+            const fecha =
+                ahora.getFullYear() +
+                String(ahora.getMonth() + 1).padStart(2, "0") +
+                String(ahora.getDate()).padStart(2, "0");
 
-   </div>
+            const aleatorio =
+                Math.floor(
+                    1000 + Math.random() * 9000
+                );
 
-   <div class="location-box">
+            return `SR-${fecha}-${aleatorio}`;
+        }
 
-```
-<div class="location-title">
- 📍 Ubicación de entrega
-</div>
+        /* =========================================================
+           MAPA
+        ========================================================= */
 
-<div
- class="location-status"
- id="locationStatus">
+        function abrirSelectorUbicacion() {
 
- Selecciona tu ubicación en el mapa o usa tu ubicación actual.
+            const mapEl = $("map");
 
-</div>
+            if (!mapEl) return;
 
-<div class="location-actions">
+            mapEl.style.display = "block";
 
- <button
-  type="button"
-  class="btn-green"
-  onclick="usarMiUbicacion()">
+            if (!mapa) {
 
-  📍 Usar mi ubicación
+                mapa = L.map("map").setView(
+                    [0.9592, -79.6539],
+                    14
+                );
 
- </button>
+                L.tileLayer(
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {
+                        maxZoom: 19,
+                        attribution: "© OpenStreetMap"
+                    }
+                ).addTo(mapa);
 
- <button
-  type="button"
-  class="btn-blue"
-  onclick="abrirSelectorUbicacion()">
+                marcador = L.marker(
+                    [0.9592, -79.6539],
+                    {
+                        draggable: true
+                    }
+                ).addTo(mapa);
 
-  🗺️ Elegir ubicación
+                marcador.on(
+                    "dragend",
+                    () => {
 
- </button>
+                        ubicacionConfirmada = false;
 
- <button
-  type="button"
-  class="btn-gray"
-  id="btnConfirmarUbicacion"
-  onclick="confirmarUbicacion()"
-  style="display:none">
+                        obtenerDireccionMarcador();
+                    }
+                );
 
-  ✓ Aceptar y guardar
+                mapa.on(
+                    "click",
+                    e => {
 
- </button>
+                        marcador.setLatLng(
+                            e.latlng
+                        );
 
-</div>
+                        ubicacionConfirmada = false;
 
-<div id="map"></div>
+                        obtenerDireccionMarcador();
+                    }
+                );
+            }
 
-<div class="map-help">
+            setTimeout(
+                () => {
+                    mapa.invalidateSize();
+                },
+                200
+            );
 
- Toca el mapa o mueve el marcador hasta el punto exacto donde deseas recibir tu pedido.
+            mostrarEstadoUbicacion(
+                "Mueve el marcador o toca el mapa para seleccionar tu ubicación."
+            );
 
-</div>
+            obtenerDireccionMarcador();
+        }
 
-<div
- id="locationResult"
- class="location-result">
-</div>
-```
+        /* =========================================================
+           OBTENER UBICACION ACTUAL
+        ========================================================= */
 
-   </div>
+        function usarMiUbicacion() {
 
-  </section>
+            if (!navigator.geolocation) {
 
-  <section>
+                mostrarEstadoUbicacion(
+                    "Tu navegador no permite obtener la ubicación."
+                );
 
-   <div class="total-box">
+                return;
+            }
 
-```
-<div class="total-row">
- <span>Productos</span>
- <strong>$${totalProductos.toFixed(2)}</strong>
-</div>
+            mostrarEstadoUbicacion(
+                "📍 Obteniendo tu ubicación..."
+            );
 
-<div class="total-row">
- <span>Delivery</span>
- <strong>$${totalDelivery.toFixed(2)}</strong>
-</div>
+            navigator.geolocation.getCurrentPosition(
 
-<div class="total-row final">
- <span>Total</span>
- <strong>$${total.toFixed(2)}</strong>
-</div>
-```
+                posicion => {
 
-   </div>
+                    const lat =
+                        posicion.coords.latitude;
 
-<button
- class="btn-gray clear"
- onclick="vaciarCarrito()">
+                    const lng =
+                        posicion.coords.longitude;
 
-```
-Vaciar carrito
-```
+                    ubicacionActual = {
+                        lat,
+                        lng
+                    };
 
-   </button>
+                    ubicacionMapsUrl =
+                        construirMapsUrl(
+                            lat,
+                            lng
+                        );
 
-<button
- class="btn-green send"
- onclick="confirmarPedido()">
+                    ubicacionConfirmada = false;
 
-```
-🚴 Confirmar pedido
-```
+                    if (!mapa) {
+                        abrirSelectorUbicacion();
+                    }
 
-   </button>
+                    mapa.setView(
+                        [lat, lng],
+                        17
+                    );
 
-  </section>
+                    marcador.setLatLng(
+                        [lat, lng]
+                    );
 
-`;
+                    obtenerDireccionMarcador();
+                },
 
-contenido.innerHTML=html;
+                error => {
 
-restaurarDatosFormulario();
-}
+                    console.error(error);
 
-/* =========================================================
-FACTURA
-========================================================= */
+                    let mensaje =
+                        "No se pudo obtener tu ubicación.";
 
-function mostrarDatosFactura(){
+                    if (error.code === 1) {
 
-const check=$("requiereFactura");
-const campos=$("invoiceFields");
+                        mensaje =
+                            "Permiso de ubicación denegado. Puedes elegir la ubicación manualmente.";
 
-if(!check||!campos)return;
+                    } else if (error.code === 2) {
 
-campos.classList.toggle(
-"hidden",
-!check.checked
-);
-}
+                        mensaje =
+                            "No se pudo determinar tu ubicación.";
 
-/* =========================================================
-VALIDACION FACTURA
-========================================================= */
+                    } else if (error.code === 3) {
 
-function validarDocumento(){
+                        mensaje =
+                            "La ubicación tardó demasiado. Intenta nuevamente.";
+                    }
 
-const requiereFactura=
-$("requiereFactura")?.checked||false;
+                    mostrarEstadoUbicacion(
+                        mensaje
+                    );
+                },
 
-if(!requiereFactura)return null;
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
+        }
 
-const tipo=
-$("tipoDocumento")?.value||"";
+        /* =========================================================
+           OBTENER DIRECCION
+        ========================================================= */
 
-const numero=
-$("numeroDocumento")?.value
-.trim()
-.replace(/\D/g,"")||"";
+        async function obtenerDireccionMarcador() {
 
-const correo=
-$("correoFactura")?.value
-.trim()||"";
+            if (!marcador) return;
 
-if(tipo==="Cédula"){
+            const posicion =
+                marcador.getLatLng();
 
-if(!/^\d{10}$/.test(numero)){
+            const lat =
+                posicion.lat;
 
-return"La cédula debe contener exactamente 10 dígitos.";
+            const lng =
+                posicion.lng;
 
-}
+            ubicacionActual = {
+                lat,
+                lng
+            };
 
-}else if(tipo==="RUC"){
+            ubicacionMapsUrl =
+                construirMapsUrl(
+                    lat,
+                    lng
+                );
 
-if(!/^\d{13}$/.test(numero)){
+            ubicacionConfirmada = false;
 
-return"El RUC debe contener exactamente 13 dígitos.";
+            const confirmar =
+                $("btnConfirmarUbicacion");
 
-}
+            if (confirmar) {
+                confirmar.style.display = "none";
+            }
 
-}
+            mostrarEstadoUbicacion(
+                "📍 Buscando dirección..."
+            );
 
-if(!correo){
+            try {
 
-return"Ingresa el correo electrónico para la factura.";
+                const respuesta =
+                    await fetch(
+                        "https://nominatim.openstreetmap.org/reverse" +
+                        "?format=json" +
+                        "&lat=" +
+                        encodeURIComponent(lat) +
+                        "&lon=" +
+                        encodeURIComponent(lng) +
+                        "&zoom=18" +
+                        "&addressdetails=1",
+                        {
+                            headers: {
+                                "Accept-Language": "es"
+                            }
+                        }
+                    );
 
-}
+                if (!respuesta.ok) {
+                    throw new Error(
+                        "No se pudo consultar la dirección."
+                    );
+                }
 
-if(!/^[^\s@]+@[^\s@]+.[^\s@]+$/.test(correo)){
+                const data =
+                    await respuesta.json();
 
-return"Ingresa un correo electrónico válido para la factura.";
+                ubicacionDireccion =
+                    data.display_name ||
+                    `Ubicación ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
-}
+                const direccion =
+                    $("direccion");
 
-return null;
-}
+                if (direccion) {
+                    direccion.value =
+                        ubicacionDireccion;
+                }
 
-/* =========================================================
-CANTIDADES
-========================================================= */
+                mostrarResultadoUbicacion();
 
-function cambiarCantidad(
-productoId,
-restauranteId,
-cambio
-){
+                mostrarEstadoUbicacion(
+                    "📍 Punto seleccionado. Revisa la dirección y presiona «Aceptar y guardar»."
+                );
 
-capturarDatosFormulario();
+                if (confirmar) {
+                    confirmar.style.display =
+                        "inline-block";
+                }
 
-const item=carrito.find(
-x=>
-Number(x.producto_id)===Number(productoId)&&
-Number(x.restaurante_id)===Number(restauranteId)
-);
+            } catch (error) {
 
-if(!item)return;
+                console.error(
+                    "Geocodificación:",
+                    error
+                );
 
-item.cantidad=
-(Number(item.cantidad)||0)+cambio;
+                ubicacionDireccion =
+                    `Ubicación ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
-if(item.cantidad<=0){
+                const direccion =
+                    $("direccion");
 
-carrito=carrito.filter(
-x=>!(
-Number(x.producto_id)===Number(productoId)&&
-Number(x.restaurante_id)===Number(restauranteId)
-)
-);
-}
+                if (direccion) {
+                    direccion.value =
+                        ubicacionDireccion;
+                }
 
-guardarCarrito();
-render();
-}
+                mostrarResultadoUbicacion();
 
-/* =========================================================
-ELIMINAR
-========================================================= */
+                mostrarEstadoUbicacion(
+                    "📍 Punto seleccionado. Revisa el enlace y presiona «Aceptar y guardar»."
+                );
 
-function eliminarProducto(
-productoId,
-restauranteId
-){
+                if (confirmar) {
+                    confirmar.style.display =
+                        "inline-block";
+                }
+            }
+        }
 
-capturarDatosFormulario();
+        /* =========================================================
+           MOSTRAR RESULTADO DE UBICACION
+        ========================================================= */
 
-carrito=carrito.filter(
-item=>!(
-Number(item.producto_id)===Number(productoId)&&
-Number(item.restaurante_id)===Number(restauranteId)
-)
-);
+        function mostrarResultadoUbicacion() {
 
-guardarCarrito();
-render();
-}
+            const resultado =
+                $("locationResult");
 
-/* =========================================================
-VACIAR
-========================================================= */
+            if (!resultado) return;
 
-function vaciarCarrito(){
+            resultado.style.display = "block";
 
-if(!carrito.length)return;
+            resultado.innerHTML = `
+                <strong>
+                    📍 Ubicación seleccionada
+                </strong>
 
-if(!confirm("¿Vaciar todo el carrito?"))return;
+                <br><br>
 
-capturarDatosFormulario();
+                <strong>
+                    Dirección:
+                </strong>
 
-carrito=[];
+                <br>
 
-guardarCarrito();
+                ${esc(ubicacionDireccion)}
 
-render();
-}
+                <br><br>
 
-/* =========================================================
-NUMERO PEDIDO
-========================================================= */
+                <strong>
+                    Link de Google Maps:
+                </strong>
 
-function generarNumeroPedido(){
+                <br>
 
-const ahora=new Date();
+                <a
+                    class="location-link"
+                    href="${esc(ubicacionMapsUrl)}"
+                    target="_blank"
+                    rel="noopener">
 
-const fecha=
-ahora.getFullYear()+
-String(ahora.getMonth()+1).padStart(2,"0")+
-String(ahora.getDate()).padStart(2,"0");
+                    ${esc(ubicacionMapsUrl)}
 
-const aleatorio=
-Math.floor(1000+Math.random()*9000);
+                </a>
+            `;
+        }
 
-return`SR-${fecha}-${aleatorio}`;
-}
+        /* =========================================================
+           CONFIRMAR / GUARDAR UBICACION
+        ========================================================= */
 
-/* =========================================================
-NUEVA SELECCION UBICACION
-========================================================= */
+        function confirmarUbicacion() {
 
-function iniciarNuevaSeleccion(){
+            if (!ubicacionActual) {
 
-ubicacionAnterior=
-ubicacionActual
-?{...ubicacionActual}
-:null;
+                mostrarEstadoUbicacion(
+                    "Primero selecciona una ubicación."
+                );
 
-ubicacionMapsAnterior=
-ubicacionMapsUrl;
+                return;
+            }
 
-ubicacionDireccionAnterior=
-ubicacionDireccion;
+            if (!ubicacionMapsUrl) {
 
-ubicacionConfirmadaAnterior=
-ubicacionConfirmada;
+                mostrarEstadoUbicacion(
+                    "No se pudo generar el enlace de ubicación."
+                );
 
-ubicacionActual=null;
-ubicacionMapsUrl="";
-ubicacionDireccion="";
-ubicacionConfirmada=false;
+                return;
+            }
 
-const direccion=$("direccion");
+            ubicacionConfirmada = true;
 
-if(direccion){
+            if (
+                ubicacionDireccion &&
+                $("direccion")
+            ) {
+                $("direccion").value =
+                    ubicacionDireccion;
+            }
 
-direccion.value="";
-direccion.disabled=true;
-direccion.style.background="#fff";
+            const resultado =
+                $("locationResult");
 
-}
+            if (resultado) {
 
-const resultado=$("locationResult");
+                resultado.classList.add(
+                    "location-confirmed"
+                );
 
-if(resultado){
+                resultado.innerHTML = `
+                    <strong>
+                        ✓ Ubicación guardada correctamente
+                    </strong>
 
-resultado.innerHTML="";
-resultado.style.display="none";
-resultado.classList.remove("location-confirmed");
+                    <br><br>
 
-}
+                    <strong>
+                        Dirección:
+                    </strong>
 
-const confirmar=$("btnConfirmarUbicacion");
+                    <br>
 
-if(confirmar){
-confirmar.style.display="none";
-}
-}
+                    ${esc(ubicacionDireccion)}
 
-/* =========================================================
-MAPA
-========================================================= */
+                    <br><br>
 
-function crearMapa(lat=0.9592,lng=-79.6539,zoom=14){
+                    <strong>
+                        Link de Google Maps:
+                    </strong>
 
-const mapEl=$("map");
+                    <br>
 
-if(!mapEl)return;
+                    <a
+                        class="location-link"
+                        href="${esc(ubicacionMapsUrl)}"
+                        target="_blank"
+                        rel="noopener">
 
-mapEl.style.display="block";
+                        ${esc(ubicacionMapsUrl)}
 
-if(!mapa){
+                    </a>
+                `;
+            }
 
-mapa=L.map("map").setView(
-[lat,lng],
-zoom
-);
+            mostrarEstadoUbicacion(
+                "✓ Ubicación de entrega guardada correctamente."
+            );
 
-L.tileLayer(
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-{
-maxZoom:19,
-attribution:"© OpenStreetMap"
-}
-).addTo(mapa);
+            const mapEl =
+                $("map");
 
-marcador=L.marker(
-[lat,lng],
-{
-draggable:true
-}
-).addTo(mapa);
+            if (mapEl) {
+                mapEl.style.display =
+                    "none";
+            }
 
-marcador.on(
-"dragend",
-()=>{
-iniciarNuevaSeleccionDesdeMapa();
-obtenerDireccionMarcador();
-}
-);
+            const btn =
+                $("btnConfirmarUbicacion");
 
-mapa.on(
-"click",
-e=>{
+            if (btn) {
+                btn.style.display =
+                    "none";
+            }
+        }
 
-```
-marcador.setLatLng(e.latlng);
+        /* =========================================================
+           ESTADO UBICACION
+        ========================================================= */
 
-iniciarNuevaSeleccionDesdeMapa();
+        function mostrarEstadoUbicacion(mensaje) {
 
-obtenerDireccionMarcador();
-```
+            const estado =
+                $("locationStatus");
 
-}
-);
+            if (estado) {
+                estado.textContent =
+                    mensaje;
+            }
+        }
 
-}else{
+        /* =========================================================
+           GOOGLE MAPS
+        ========================================================= */
 
-mapa.setView(
-[lat,lng],
-zoom
-);
+        function construirMapsUrl(
+            lat,
+            lng
+        ) {
 
-marcador.setLatLng(
-[lat,lng]
-);
-}
+            return (
+                "https://www.google.com/maps/search/?api=1&query=" +
+                encodeURIComponent(`${lat},${lng}`)
+            );
+        }
 
-setTimeout(
-()=>{
-if(mapa)mapa.invalidateSize();
-},
-200
-);
-}
+        /* =========================================================
+           VALIDAR URL UBICACION
+        ========================================================= */
 
-function abrirSelectorUbicacion(){
+        function obtenerUrlUbicacion() {
 
-const mapEl=$("map");
+            if (
+                !ubicacionActual ||
+                !ubicacionMapsUrl ||
+                !ubicacionConfirmada
+            ) {
+                return "";
+            }
 
-if(!mapEl)return;
+            return ubicacionMapsUrl;
+        }
 
-iniciarNuevaSeleccion();
+        function validarUrlUbicacion(url) {
 
-crearMapa();
+            if (!url) return false;
 
-mostrarEstadoUbicacion(
-"Mueve el marcador o toca el mapa para seleccionar una nueva ubicación."
-);
-}
+            try {
 
-function iniciarNuevaSeleccionDesdeMapa(){
+                const parsed =
+                    new URL(url);
 
-ubicacionActual=null;
-ubicacionMapsUrl="";
-ubicacionDireccion="";
-ubicacionConfirmada=false;
+                return (
+                    parsed.protocol === "https:" ||
+                    parsed.protocol === "http:"
+                );
 
-const direccion=$("direccion");
+            } catch {
+                return false;
+            }
+        }
 
-if(direccion){
+        /* =========================================================
+           DATOS
+        ========================================================= */
 
-direccion.value="";
-direccion.disabled=true;
-direccion.style.background="#fff";
+        function validarDatos() {
 
-}
+            const nombre =
+                $("clienteNombre").value.trim();
 
-const resultado=$("locationResult");
+            const telefono =
+                $("clienteTelefono").value.trim();
 
-if(resultado){
+            const direccion =
+                $("direccion").value.trim();
 
-resultado.style.display="none";
-resultado.innerHTML="";
-resultado.classList.remove("location-confirmed");
+            const ubicacion =
+                obtenerUrlUbicacion();
 
-}
+            if (!nombre) {
+                return "Ingresa tu nombre.";
+            }
 
-const confirmar=$("btnConfirmarUbicacion");
+            if (!telefono) {
+                return "Ingresa tu número de teléfono.";
+            }
 
-if(confirmar){
-confirmar.style.display="none";
-}
-}
+            if (!direccion && !ubicacion) {
+                return "Selecciona una ubicación o ingresa una dirección.";
+            }
 
-/* =========================================================
-USAR MI UBICACION
-========================================================= */
+            if (
+                ubicacion &&
+                !validarUrlUbicacion(ubicacion)
+            ) {
+                return "La ubicación seleccionada no es válida.";
+            }
 
-function usarMiUbicacion(){
+            /*
+                Si abrió el mapa y seleccionó un punto,
+                debe aceptar/guardar.
+            */
 
-iniciarNuevaSeleccion();
+            if (
+                ubicacionActual &&
+                ubicacionMapsUrl &&
+                !ubicacionConfirmada
+            ) {
+                return "Debes presionar «Aceptar y guardar» para confirmar la ubicación seleccionada.";
+            }
 
-if(!navigator.geolocation){
+            const errorFactura =
+                validarDocumento();
 
-mostrarEstadoUbicacion(
-"Tu navegador no permite obtener la ubicación."
-);
+            if (errorFactura) {
+                return errorFactura;
+            }
 
-return;
-}
+            return null;
+        }
 
-mostrarEstadoUbicacion(
-"📍 Obteniendo tu ubicación..."
-);
+        /* =========================================================
+           REFERENCIA
+        ========================================================= */
 
-navigator.geolocation.getCurrentPosition(
+        function construirReferencia() {
 
-posicion=>{
+            const referencia =
+                $("referencia")?.value.trim() || "";
 
-const lat=posicion.coords.latitude;
-const lng=posicion.coords.longitude;
+            const requiereFactura =
+                $("requiereFactura")?.checked || false;
 
-crearMapa(lat,lng,17);
+            const tipoDocumento =
+                $("tipoDocumento")?.value || "";
 
-obtenerDireccionMarcador();
+            const numeroDocumento =
+                $("numeroDocumento")?.value.trim() || "";
 
-},
+            const correoFactura =
+                $("correoFactura")?.value.trim() || "";
 
-error=>{
+            let partes = [];
 
-console.error(error);
+            if (referencia) {
+                partes.push(referencia);
+            }
 
-let mensaje=
-"No se pudo obtener tu ubicación.";
+            if (requiereFactura) {
 
-if(error.code===1){
+                partes.push(
+                    `FACTURA: ${tipoDocumento} ${numeroDocumento}`
+                );
 
-```
-mensaje=
- "Permiso de ubicación denegado. Puedes elegir la ubicación manualmente.";
-```
+                partes.push(
+                    `CORREO FACTURA: ${correoFactura}`
+                );
+            }
 
-}else if(error.code===2){
+            if (
+                ubicacionMapsUrl &&
+                ubicacionConfirmada
+            ) {
+                partes.push(
+                    `Ubicación GPS/Mapa: ${ubicacionMapsUrl}`
+                );
+            }
 
-```
-mensaje=
- "No se pudo determinar tu ubicación.";
-```
+            return partes.join("\n") || null;
+        }
 
-}else if(error.code===3){
+        /* =========================================================
+           CARRERAS
+        ========================================================= */
 
-```
-mensaje=
- "La ubicación tardó demasiado. Intenta nuevamente.";
-```
+        function construirCarreras() {
 
-}
+            const grupos =
+                agruparCarrito();
 
-restaurarUbicacionAnterior();
+            return grupos.map(grupo => {
 
-mostrarEstadoUbicacion(mensaje);
+                const subtotal =
+                    subtotalGrupo(grupo);
 
-},
+                const delivery =
+                    Number(configuracion.tarifaDelivery) || 0;
 
-{
-enableHighAccuracy:true,
-timeout:15000,
-maximumAge:60000
-}
-);
-}
+                return {
 
-/* =========================================================
-RESTAURAR UBICACION ANTERIOR
-========================================================= */
+                    restaurante_id:
+                        Number(grupo.restaurante_id),
 
-function restaurarUbicacionAnterior(){
+                    restaurante_nombre:
+                        grupo.restaurante_nombre || "Local",
 
-ubicacionActual=
-ubicacionAnterior
-?{...ubicacionAnterior}
-:null;
+                    subtotal,
 
-ubicacionMapsUrl=
-ubicacionMapsAnterior;
+                    delivery,
 
-ubicacionDireccion=
-ubicacionDireccionAnterior;
+                    total:
+                        subtotal + delivery,
 
-ubicacionConfirmada=
-ubicacionConfirmadaAnterior;
+                    productos:
+                        grupo.productos.map(item => ({
 
-ubicacionAnterior=null;
-ubicacionMapsAnterior="";
-ubicacionDireccionAnterior="";
-ubicacionConfirmadaAnterior=false;
+                            producto_id:
+                                item.producto_id,
 
-if(ubicacionConfirmada){
+                            producto_nombre:
+                                item.producto_nombre,
 
-const direccion=$("direccion");
+                            precio_unitario:
+                                Number(item.precio) || 0,
 
-if(direccion){
+                            cantidad:
+                                Number(item.cantidad) || 1,
 
-direccion.value=
-ubicacionDireccion;
+                            subtotal:
+                                (Number(item.precio) || 0) *
+                                (Number(item.cantidad) || 0)
+                        }))
+                };
+            });
+        }
 
-direccion.disabled=true;
-direccion.style.background="#eefaf4";
-}
+        /* =========================================================
+           REGISTRAR PEDIDO
+        ========================================================= */
 
-mostrarResultadoUbicacion();
+        async function registrarPedido() {
 
-}
-}
+            const nombre =
+                $("clienteNombre").value.trim();
 
-/* =========================================================
-OBTENER DIRECCION
-========================================================= */
+            const telefono =
+                $("clienteTelefono").value.trim();
 
-async function obtenerDireccionMarcador(){
+            const direccionOriginal =
+                $("direccion").value.trim();
 
-if(!marcador)return;
+            const ubicacion =
+                obtenerUrlUbicacion();
 
-const posicion=marcador.getLatLng();
+            const carreras =
+                construirCarreras();
 
-const lat=posicion.lat;
-const lng=posicion.lng;
+            const totalProductos =
+                carreras.reduce(
+                    (sum, c) =>
+                        sum + c.subtotal,
+                    0
+                );
 
-ubicacionActual={
-lat,
-lng
-};
+            const totalDelivery =
+                carreras.reduce(
+                    (sum, c) =>
+                        sum + c.delivery,
+                    0
+                );
 
-ubicacionMapsUrl=
-construirMapsUrl(lat,lng);
+            const total =
+                totalProductos + totalDelivery;
 
-ubicacionDireccion="";
-ubicacionConfirmada=false;
+            const numero =
+                generarNumeroPedido();
 
-const direccion=$("direccion");
+            let direccion =
+                direccionOriginal;
 
-if(direccion){
+            if (!direccion && ubicacion) {
+                direccion =
+                    "Ubicación indicada en el mapa";
+            }
 
-direccion.value="";
-direccion.disabled=true;
-direccion.style.background="#fff";
-}
+            const referencia =
+                construirReferencia();
 
-const confirmar=$("btnConfirmarUbicacion");
+            const {
+                data,
+                error
+            } = await supabaseClient.rpc(
+                "registrar_pedido_completo",
+                {
+                    p_numero:
+                        numero,
 
-if(confirmar){
-confirmar.style.display="none";
-}
+                    p_cliente_nombre:
+                        nombre,
 
-mostrarEstadoUbicacion(
-"📍 Buscando dirección..."
-);
+                    p_cliente_telefono:
+                        telefono,
 
-try{
+                    p_direccion:
+                        direccion,
 
-const respuesta=
-await fetch(
-"https://nominatim.openstreetmap.org/reverse"+
-"?format=json"+
-"&lat="+encodeURIComponent(lat)+
-"&lon="+encodeURIComponent(lng)+
-"&zoom=18"+
-"&addressdetails=1",
-{
-headers:{
-"Accept-Language":"es"
-}
-}
-);
+                    p_referencia:
+                        referencia,
 
-if(!respuesta.ok){
+                    p_total_productos:
+                        totalProductos,
 
-throw new Error(
-"No se pudo consultar la dirección."
-);
-}
+                    p_total_delivery:
+                        totalDelivery,
 
-const data=await respuesta.json();
+                    p_total:
+                        total,
 
-ubicacionDireccion=
-data.display_name||
-`Ubicación ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    p_carreras:
+                        carreras
+                }
+            );
 
-if(direccion){
+            if (error) {
+                throw error;
+            }
 
-direccion.value=
-ubicacionDireccion;
+            return {
+                id: data,
+                numero,
+                nombre,
+                telefono,
+                direccion,
+                referencia,
+                ubicacion,
+                carreras,
+                totalProductos,
+                totalDelivery,
+                total
+            };
+        }
 
-direccion.disabled=true;
-}
+        /* =========================================================
+           WHATSAPP
+        ========================================================= */
 
-mostrarResultadoUbicacion();
+        function construirMensajeWhatsApp(
+            pedido
+        ) {
 
-mostrarEstadoUbicacion(
-"📍 Nueva ubicación seleccionada. Revisa la dirección y presiona «Aceptar y guardar»."
-);
+            let texto =
+                `*${configuracion.nombreNegocio} - NUEVO PEDIDO*%0A%0A`;
 
-if(confirmar){
-confirmar.style.display="inline-block";
-}
+            texto +=
+                `*Pedido:* ${encodeURIComponent(pedido.numero)}%0A`;
 
-}catch(error){
+            texto +=
+                `*Cliente:* ${encodeURIComponent(pedido.nombre)}%0A`;
 
-console.error(
-"Geocodificación:",
-error
-);
+            texto +=
+                `*Teléfono:* ${encodeURIComponent(pedido.telefono)}%0A`;
 
-ubicacionDireccion=
-`Ubicación ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            texto +=
+                `*Dirección:* ${encodeURIComponent(pedido.direccion)}%0A`;
 
-if(direccion){
+            /* FACTURA */
 
-direccion.value=
-ubicacionDireccion;
+            const requiereFactura =
+                $("requiereFactura")?.checked || false;
 
-direccion.disabled=true;
-}
+            if (requiereFactura) {
 
-mostrarResultadoUbicacion();
+                const tipo =
+                    $("tipoDocumento")?.value || "";
 
-mostrarEstadoUbicacion(
-"📍 Punto seleccionado. Revisa la ubicación y presiona «Aceptar y guardar»."
-);
+                const numero =
+                    $("numeroDocumento")?.value.trim() || "";
 
-if(confirmar){
-confirmar.style.display="inline-block";
-}
-}
-}
+                const correo =
+                    $("correoFactura")?.value.trim() || "";
 
-/* =========================================================
-MOSTRAR RESULTADO
-========================================================= */
+                texto +=
+                    `*Factura:* ${encodeURIComponent(tipo)} ${encodeURIComponent(numero)}%0A`;
 
-function mostrarResultadoUbicacion(){
+                texto +=
+                    `*Correo factura:* ${encodeURIComponent(correo)}%0A`;
+            }
 
-const resultado=$("locationResult");
+            /* REFERENCIA */
 
-if(!resultado)return;
+            if (pedido.referencia) {
 
-resultado.style.display="block";
+                const referenciaLimpia =
+                    pedido.referencia
+                        .split("\n")
+                        .filter(
+                            linea =>
+                                !linea.startsWith("FACTURA:") &&
+                                !linea.startsWith("CORREO FACTURA:") &&
+                                !linea.startsWith("Ubicación GPS/Mapa:")
+                        )
+                        .join("\n");
 
-resultado.classList.remove(
-"location-confirmed"
-);
+                if (referenciaLimpia) {
 
-resultado.innerHTML=`
+                    texto +=
+                        `*Referencia:* ${encodeURIComponent(
+                            referenciaLimpia
+                        )}%0A`;
+                }
+            }
 
-  <strong>
-   📍 Nueva ubicación seleccionada
-  </strong>
+            /* UBICACION */
 
-<br><br>
+            if (pedido.ubicacion) {
 
-<strong>Dirección:</strong>
+                texto +=
+                    `*📍 Ubicación:* ${encodeURIComponent(
+                        pedido.ubicacion
+                    )}%0A`;
+            }
 
-  <br>
+            texto += "%0A";
 
-${esc(ubicacionDireccion)}
+            /* PEDIDOS POR LOCAL */
 
-<br><br>
+            pedido.carreras.forEach(
+                carrera => {
 
-<strong>Link de Google Maps:</strong>
+                    /* NOMBRE DEL LOCAL */
 
-  <br>
+                    const nombreLocal =
+                        carrera.restaurante_nombre ||
+                        buscarNombreLocal(
+                            carrera.restaurante_id
+                        ) ||
+                        "Local";
 
-<a
-class="location-link"
-href="${esc(ubicacionMapsUrl)}"
-target="_blank"
-rel="noopener">
+                    texto +=
+                        `*🏪 ${encodeURIComponent(
+                            nombreLocal
+                        )}*%0A`;
 
-${esc(ubicacionMapsUrl)}
+                    texto +=
+                        `--------------------%0A`;
 
-  </a>
- `;
-}
+                    /* PRODUCTOS */
 
-/* =========================================================
-CONFIRMAR UBICACION
-========================================================= */
+                    carrera.productos.forEach(
+                        item => {
 
-function confirmarUbicacion(){
+                            texto +=
+                                `${item.cantidad} x ` +
+                                `${encodeURIComponent(
+                                    item.producto_nombre
+                                )} = ` +
+                                `$${item.subtotal.toFixed(2)}%0A`;
+                        }
+                    );
 
-if(!ubicacionActual){
+                    /* TOTALES DEL LOCAL */
 
-mostrarEstadoUbicacion(
-"Primero selecciona una ubicación."
-);
+                    texto += "%0A";
 
-return;
-}
+                    texto +=
+                        `Subtotal productos: $${carrera.subtotal.toFixed(2)}%0A`;
 
-if(!ubicacionMapsUrl){
+                    texto +=
+                        `Delivery: $${carrera.delivery.toFixed(2)}%0A`;
 
-mostrarEstadoUbicacion(
-"No se pudo generar el enlace de ubicación."
-);
+                    texto +=
+                        `*TOTAL ${encodeURIComponent(
+                            nombreLocal
+                        )}: $${carrera.total.toFixed(2)}*%0A%0A`;
+                }
+            );
 
-return;
-}
+            /* TOTAL GENERAL */
 
-if(!ubicacionDireccion){
+            texto +=
+                `====================%0A`;
 
-mostrarEstadoUbicacion(
-"Espera a que se obtenga la dirección."
-);
+            texto +=
+                `*TOTAL PEDIDO: $${pedido.total.toFixed(2)}*`;
 
-return;
-}
+            return texto;
+        }
 
-ubicacionConfirmada=true;
+        /* =========================================================
+           BUSCAR LOCAL
+        ========================================================= */
 
-ubicacionAnterior=null;
-ubicacionMapsAnterior="";
-ubicacionDireccionAnterior="";
-ubicacionConfirmadaAnterior=false;
+        function buscarNombreLocal(id) {
 
-const direccion=$("direccion");
+            const grupo =
+                carrito.find(
+                    item =>
+                        Number(item.restaurante_id) ===
+                        Number(id)
+                );
 
-if(direccion){
+            return (
+                grupo?.restaurante_nombre ||
+                "Local"
+            );
+        }
 
-direccion.value=
-ubicacionDireccion;
+        /* =========================================================
+           CONFIRMAR PEDIDO
+        ========================================================= */
 
-direccion.disabled=true;
-direccion.style.background="#eefaf4";
-}
+        async function confirmarPedido() {
 
-const resultado=$("locationResult");
+            limpiarMensaje();
 
-if(resultado){
+            const error =
+                validarDatos();
 
-resultado.classList.add(
-"location-confirmed"
-);
+            if (error) {
 
-resultado.innerHTML=`
+                mostrarError(error);
 
-   <strong>
-    ✓ Ubicación guardada correctamente
-   </strong>
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
 
-<br><br>
+                return;
+            }
 
-<strong>Dirección:</strong>
+            if (!carrito.length) {
 
-   <br>
+                mostrarError(
+                    "El carrito está vacío."
+                );
 
-${esc(ubicacionDireccion)}
+                return;
+            }
 
-<br><br>
+            const boton =
+                document.querySelector(".send");
 
-<strong>Link de Google Maps:</strong>
+            if (boton) {
 
-   <br>
+                boton.disabled = true;
 
-<a
- class="location-link"
- href="${esc(ubicacionMapsUrl)}"
- target="_blank"
- rel="noopener">
+                boton.textContent =
+                    "Registrando pedido...";
+            }
 
-```
-${esc(ubicacionMapsUrl)}
-```
+            try {
 
-   </a>
-  `;
- }
+                const pedido =
+                    await registrarPedido();
 
-mostrarEstadoUbicacion(
-"✓ Ubicación de entrega guardada correctamente."
-);
+                /*
+                    CONSTRUIR WHATSAPP
+                    ANTES DE LIMPIAR EL CARRITO
+                */
 
-const mapEl=$("map");
+                const mensaje =
+                    construirMensajeWhatsApp(
+                        pedido
+                    );
 
-if(mapEl){
-mapEl.style.display="none";
-}
+                const numero =
+                    String(
+                        configuracion.whatsappNegocio || ""
+                    ).replace(/\D/g, "");
 
-const btn=$("btnConfirmarUbicacion");
+                const whatsappUrl =
+                    `https://wa.me/${numero}?text=${mensaje}`;
 
-if(btn){
-btn.style.display="none";
-}
-}
+                /*
+                    SOLO LIMPIAR CARRITO
+                    DESPUES DE REGISTRAR CORRECTAMENTE
+                */
 
-function mostrarEstadoUbicacion(mensaje){
+                carrito = [];
 
-const estado=$("locationStatus");
+                localStorage.removeItem(
+                    "carrito"
+                );
 
-if(estado){
-estado.textContent=mensaje;
-}
-}
+                $("contenido").innerHTML = `
+                    <section class="empty">
 
-/* =========================================================
-GOOGLE MAPS
-========================================================= */
+                        <div class="empty-icon">
+                            ✅
+                        </div>
 
-function construirMapsUrl(lat,lng){
+                        <h2>
+                            ¡Pedido registrado!
+                        </h2>
 
-return(
-"https://www.google.com/maps/search/?api=1&query="+
-encodeURIComponent(`${lat},${lng}`)
-);
-}
+                        <p>
+                            Tu pedido
+                            <strong>
+                                ${esc(pedido.numero)}
+                            </strong>
+                            fue registrado correctamente.
+                        </p>
 
-/* =========================================================
-VALIDAR UBICACION
-========================================================= */
+                        <p>
+                            Total:
+                            <strong>
+                                $${pedido.total.toFixed(2)}
+                            </strong>
+                        </p>
 
-function obtenerUrlUbicacion(){
+                        ${
+                            pedido.ubicacion
+                                ? `
+                                    <p>
+                                        📍 La ubicación fue incluida
+                                        en tu pedido.
+                                    </p>
+                                `
+                                : ""
+                        }
 
-if(
-!ubicacionActual||
-!ubicacionMapsUrl||
-!ubicacionConfirmada
-){
-return"";
-}
+                        <button
+                            class="btn-green"
+                            style="width:100%;margin-top:10px"
+                            onclick="window.location.href='${esc(whatsappUrl)}'">
 
-return ubicacionMapsUrl;
-}
+                            📲 Enviar pedido por WhatsApp
 
-function validarUrlUbicacion(url){
+                        </button>
 
-if(!url)return false;
+                        <button
+                            class="btn-blue"
+                            style="width:100%;margin-top:10px"
+                            onclick="window.location.href='index.html'">
 
-try{
+                            Seguir comprando
 
-const parsed=new URL(url);
+                        </button>
 
-return(
-parsed.protocol==="https:"||
-parsed.protocol==="http:"
-);
+                    </section>
+                `;
 
-}catch{
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
 
-return false;
-}
-}
+            } catch (error) {
 
-/* =========================================================
-VALIDAR DATOS
-========================================================= */
+                console.error(
+                    "REGISTRO PEDIDO:",
+                    error
+                );
 
-function validarDatos(){
+                mostrarError(
+                    error?.message ||
+                    "No se pudo registrar el pedido. El carrito se mantiene para que puedas intentarlo nuevamente."
+                );
 
-capturarDatosFormulario();
+                if (boton) {
 
-const nombre=
-$("clienteNombre").value.trim();
+                    boton.disabled = false;
 
-const telefono=
-$("clienteTelefono").value.trim();
+                    boton.textContent =
+                        "🚴 Confirmar pedido";
+                }
+            }
+        }
 
-const direccion=
-$("direccion").value.trim();
+        /* =========================================================
+           INICIO
+        ========================================================= */
 
-const ubicacion=
-obtenerUrlUbicacion();
+        async function iniciar() {
 
-if(!nombre)
-return"Ingresa tu nombre.";
+            cargarCarrito();
 
-if(!telefono)
-return"Ingresa tu número de teléfono.";
+            await cargarConfiguracion();
 
-if(!direccion&&!ubicacion)
-return"Selecciona una ubicación o ingresa una dirección.";
+            render();
+        }
 
-if(
-ubicacion&&
-!validarUrlUbicacion(ubicacion)
-)
-return"La ubicación seleccionada no es válida.";
-
-if(
-ubicacionActual&&
-ubicacionMapsUrl&&
-!ubicacionConfirmada
-){
-
-return"Debes presionar «Aceptar y guardar» para confirmar la nueva ubicación.";
-}
-
-const errorFactura=
-validarDocumento();
-
-if(errorFactura){
-return errorFactura;
-}
-
-return null;
-}
-
-/* =========================================================
-REFERENCIA
-========================================================= */
-
-function construirReferencia(){
-
-const referencia=
-$("referencia")?.value.trim()||"";
-
-const requiereFactura=
-$("requiereFactura")?.checked||false;
-
-const tipoDocumento=
-$("tipoDocumento")?.value||"";
-
-const numeroDocumento=
-$("numeroDocumento")?.value.trim()||"";
-
-const correoFactura=
-$("correoFactura")?.value.trim()||"";
-
-let partes=[];
-
-if(referencia){
-partes.push(referencia);
-}
-
-if(requiereFactura){
-
-partes.push(
-`FACTURA: ${tipoDocumento} ${numeroDocumento}`
-);
-
-partes.push(
-`CORREO FACTURA: ${correoFactura}`
-);
-}
-
-if(ubicacionMapsUrl&&ubicacionConfirmada){
-
-partes.push(
-`Ubicación GPS/Mapa: ${ubicacionMapsUrl}`
-);
-}
-
-return partes.join("\n")||null;
-}
-
-/* =========================================================
-CARRERAS
-========================================================= */
-
-function construirCarreras(){
-
-const grupos=agruparCarrito();
-
-return grupos.map(grupo=>{
-
-const subtotal=
-subtotalGrupo(grupo);
-
-const delivery=
-Number(configuracion.tarifaDelivery)||0;
-
-return{
-
-restaurante_id:
-Number(grupo.restaurante_id),
-
-restaurante_nombre:
-grupo.restaurante_nombre||"Local",
-
-subtotal,
-
-delivery,
-
-total:
-subtotal+delivery,
-
-productos:
-grupo.productos.map(item=>({
-
-```
- producto_id:
-  item.producto_id,
-
- producto_nombre:
-  item.producto_nombre,
-
- precio_unitario:
-  Number(item.precio)||0,
-
- cantidad:
-  Number(item.cantidad)||1,
-
- subtotal:
-  (Number(item.precio)||0)*
-  (Number(item.cantidad)||0)
-
-}))
-```
-
-};
-});
-}
-
-/* =========================================================
-REGISTRAR PEDIDO
-========================================================= */
-
-async function registrarPedido(){
-
-const nombre=
-$("clienteNombre").value.trim();
-
-const telefono=
-$("clienteTelefono").value.trim();
-
-const direccionOriginal=
-$("direccion").value.trim();
-
-const ubicacion=
-obtenerUrlUbicacion();
-
-const carreras=
-construirCarreras();
-
-const totalProductos=
-carreras.reduce(
-(sum,c)=>sum+c.subtotal,
-0
-);
-
-const totalDelivery=
-carreras.reduce(
-(sum,c)=>sum+c.delivery,
-0
-);
-
-const total=
-totalProductos+totalDelivery;
-
-const numero=
-generarNumeroPedido();
-
-let direccion=
-direccionOriginal;
-
-if(!direccion&&ubicacion){
-direccion="Ubicación indicada en el mapa";
-}
-
-const referencia=
-construirReferencia();
-
-const {
-data,
-error
-}=await supabaseClient.rpc(
-"registrar_pedido_completo",
-{
-p_numero:numero,
-p_cliente_nombre:nombre,
-p_cliente_telefono:telefono,
-p_direccion:direccion,
-p_referencia:referencia,
-p_total_productos:totalProductos,
-p_total_delivery:totalDelivery,
-p_total:total,
-p_carreras:carreras
-}
-);
-
-if(error)throw error;
-
-return{
-id:data,
-numero,
-nombre,
-telefono,
-direccion,
-referencia,
-ubicacion,
-carreras,
-totalProductos,
-totalDelivery,
-total
-};
-}
-
-/* =========================================================
-WHATSAPP
-========================================================= */
-
-function construirMensajeWhatsApp(pedido){
-
-let texto=
-`*${configuracion.nombreNegocio} - NUEVO PEDIDO*%0A%0A`;
-
-texto+=
-`*Pedido:* ${encodeURIComponent(pedido.numero)}%0A`;
-
-texto+=
-`*Cliente:* ${encodeURIComponent(pedido.nombre)}%0A`;
-
-texto+=
-`*Teléfono:* ${encodeURIComponent(pedido.telefono)}%0A`;
-
-texto+=
-`*Dirección:* ${encodeURIComponent(pedido.direccion)}%0A`;
-
-const requiereFactura=
-$("requiereFactura")?.checked||false;
-
-if(requiereFactura){
-
-const tipo=
-$("tipoDocumento")?.value||"";
-
-const numero=
-$("numeroDocumento")?.value.trim()||"";
-
-const correo=
-$("correoFactura")?.value.trim()||"";
-
-texto+=
-`*Factura:* ${encodeURIComponent(tipo)} ${encodeURIComponent(numero)}%0A`;
-
-texto+=
-`*Correo factura:* ${encodeURIComponent(correo)}%0A`;
-}
-
-if(pedido.referencia){
-
-const referenciaLimpia=
-pedido.referencia
-.split("\n")
-.filter(linea=>
-!linea.startsWith("FACTURA:")&&
-!linea.startsWith("CORREO FACTURA:")&&
-!linea.startsWith("Ubicación GPS/Mapa:")
-)
-.join("\n");
-
-if(referenciaLimpia){
-
-texto+=
-`*Referencia:* ${encodeURIComponent(
-     referenciaLimpia
-    )}%0A`;
-}
-}
-
-if(pedido.ubicacion){
-
-texto+=
-`*📍 Ubicación:* ${encodeURIComponent(
-    pedido.ubicacion
-   )}%0A`;
-}
-
-texto+="%0A";
-
-pedido.carreras.forEach(carrera=>{
-
-const nombreLocal=
-carrera.restaurante_nombre||
-buscarNombreLocal(carrera.restaurante_id)||
-"Local";
-
-texto+=
-`*🏪 ${encodeURIComponent(nombreLocal)}*%0A`;
-
-texto+=
-`--------------------%0A`;
-
-carrera.productos.forEach(item=>{
-
-texto+=
-`${item.cantidad} x `+
-`${encodeURIComponent(item.producto_nombre)} `+
-`= $${item.subtotal.toFixed(2)}%0A`;
-
-});
-
-texto+="%0A";
-
-texto+=
-`Subtotal productos: $${carrera.subtotal.toFixed(2)}%0A`;
-
-texto+=
-`Delivery: $${carrera.delivery.toFixed(2)}%0A`;
-
-texto+=
-`*TOTAL ${encodeURIComponent(
-    nombreLocal
-   )}: $${carrera.total.toFixed(2)}*%0A%0A`;
-
-});
-
-texto+=
-`====================%0A`;
-
-texto+=
-`*TOTAL PEDIDO: $${pedido.total.toFixed(2)}*`;
-
-return texto;
-}
-
-/* =========================================================
-BUSCAR LOCAL
-========================================================= */
-
-function buscarNombreLocal(id){
-
-const grupo=
-carrito.find(
-item=>
-Number(item.restaurante_id)===Number(id)
-);
-
-return grupo?.restaurante_nombre||"Local";
-}
-
-/* =========================================================
-CONFIRMAR PEDIDO
-========================================================= */
-
-async function confirmarPedido(){
-
-limpiarMensaje();
-
-const error=
-validarDatos();
-
-if(error){
-
-mostrarError(error);
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
-return;
-}
-
-if(!carrito.length){
-
-mostrarError(
-"El carrito está vacío."
-);
-
-return;
-}
-
-const boton=
-document.querySelector(".send");
-
-if(boton){
-
-boton.disabled=true;
-boton.textContent="Registrando pedido...";
-}
-
-try{
-
-const pedido=
-await registrarPedido();
-
-const mensaje=
-construirMensajeWhatsApp(pedido);
-
-const numero=
-String(
-configuracion.whatsappNegocio||""
-).replace(/\D/g,"");
-
-const whatsappUrl=
-`https://wa.me/${numero}?text=${mensaje}`;
-
-carrito=[];
-
-sessionStorage.removeItem("carrito");
-
-$("contenido").innerHTML=`
-
-   <section class="empty">
-
-```
-<div class="empty-icon">
- ✅
-</div>
-
-<h2>
- ¡Pedido registrado!
-</h2>
-
-<p>
- Tu pedido
- <strong>
-  ${esc(pedido.numero)}
- </strong>
- fue registrado correctamente.
-</p>
-
-<p>
- Total:
- <strong>
-  $${pedido.total.toFixed(2)}
- </strong>
-</p>
-
-${
- pedido.ubicacion
-  ?`
-   <p>
-    📍 La ubicación fue incluida en tu pedido.
-   </p>
-  `
-  :""
-}
-
-<button
- class="btn-green"
- style="width:100%;margin-top:10px"
- onclick="window.location.href='${esc(whatsappUrl)}'">
-
- 📲 Enviar pedido por WhatsApp
-
-</button>
-
-<button
- class="btn-blue"
- style="width:100%;margin-top:10px"
- onclick="window.location.href='index.html'">
-
- Seguir comprando
-
-</button>
-```
-
-   </section>
-
-`;
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
-}catch(error){
-
-console.error(
-"REGISTRO PEDIDO:",
-error
-);
-
-mostrarError(
-error?.message||
-"No se pudo registrar el pedido. El carrito se mantiene para que puedas intentarlo nuevamente."
-);
-
-if(boton){
-
-boton.disabled=false;
-
-boton.textContent=
-"🚴 Confirmar pedido";
-
-}
-}
-}
-
-/* =========================================================
-INICIO
-========================================================= */
-
-async function iniciar(){
-
-cargarCarrito();
-
-await cargarConfiguracion();
-
-render();
-}
-
-iniciar();
-
-</script>
+        iniciar();
+    </script>
 
 </body>
+
 </html>
