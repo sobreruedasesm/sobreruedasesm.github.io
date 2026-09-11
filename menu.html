@@ -1,1542 +1,564 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Mi pedido | Sobre Ruedas</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f8f6;
-            color: #1f2937;
-        }
-
-        header {
-            background: #087f5b;
-            color: white;
-            padding: 18px;
-        }
-
-        .header-content {
-            max-width: 900px;
-            margin: auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .volver {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 25px auto;
-            padding: 0 15px;
-        }
-
-        h1 {
-            color: #087f5b;
-            margin-bottom: 5px;
-        }
-
-        .subtitulo {
-            color: #6b7280;
-            margin-top: 0;
-        }
-
-        .card {
-            background: white;
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.08);
-        }
-
-        .restaurante {
-            border-left: 5px solid #087f5b;
-            margin-bottom: 18px;
-        }
-
-        .restaurante h2 {
-            margin-top: 0;
-            color: #087f5b;
-        }
-
-        .producto {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .producto:last-child {
-            border-bottom: none;
-        }
-
-        .producto-info {
-            flex: 1;
-        }
-
-        .producto-nombre {
-            font-weight: bold;
-        }
-
-        .producto-precio {
-            color: #087f5b;
-            font-weight: bold;
-            text-align: right;
-        }
-
-        /* ==============================
-           BOTÓN ELIMINAR PRODUCTO
-           ============================== */
-
-        .btn-eliminar {
-            border: none;
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .btn-eliminar:hover {
-            background: #fecaca;
-        }
-
-        /* ==============================
-           BOTÓN VACIAR CARRITO
-           ============================== */
-
-        .acciones-carrito {
-            display: flex;
-            justify-content: flex-end;
-            margin: 15px 0 20px;
-        }
-
-        .btn-vaciar {
-            border: none;
-            background: #dc2626;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-vaciar:hover {
-            background: #b91c1c;
-        }
-
-        .carrera-total {
-            margin-top: 12px;
-            font-weight: bold;
-            text-align: right;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .ubicacion-box {
-            margin-top: 18px;
-            padding: 15px;
-            background: #eefbf6;
-            border-radius: 10px;
-            border: 1px solid #b7ead7;
-        }
-
-        .btn-ubicacion {
-            border: none;
-            background: #087f5b;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-ubicacion:hover {
-            background: #066b4d;
-        }
-
-        #estadoUbicacion {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #475569;
-        }
-
-        .fila-total {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-        }
-
-        .total-final {
-            border-top: 2px solid #087f5b;
-            margin-top: 10px;
-            padding-top: 15px;
-            font-size: 23px;
-            font-weight: bold;
-            color: #087f5b;
-        }
-
-        .btn-whatsapp {
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            padding: 16px;
-            background: #25D366;
-            color: white;
-            text-align: center;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-whatsapp:hover {
-            background: #1ebe5d;
-        }
-
-        .vacio {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .vacio a {
-            color: #087f5b;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        @media (max-width: 600px) {
-
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .producto {
-                flex-direction: column;
-            }
-
-            .producto-precio {
-                text-align: left;
-            }
-
-            .acciones-carrito {
-                justify-content: stretch;
-            }
-
-            .btn-vaciar {
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mi pedido | Sobre Ruedas</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+header{background:#111;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:20px;font-weight:bold}
+header a{color:#fff;text-decoration:none}
+main{max-width:900px;margin:auto;padding:20px}
+.bloque{background:#fff;border-radius:10px;padding:16px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
+.carrera{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:12px}
+.carrera h3{margin:0 0 10px}
+.producto{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eee}
+.producto:last-child{border-bottom:0}
+.producto-info{flex:1}
+.producto-nombre{font-weight:bold}
+.producto-precio{font-size:13px;color:#666}
+.cantidad{font-weight:bold}
+.subtotal{font-weight:bold}
+button{border:0;border-radius:6px;padding:9px 12px;cursor:pointer}
+.btn{background:#111;color:#fff}
+.btn-ok{background:#198754;color:#fff}
+.btn-danger{background:#c0392b;color:#fff}
+.btn-light{background:#ddd;color:#222}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+input,textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-top:5px}
+textarea{min-height:80px;resize:vertical}
+label{display:block;margin-bottom:10px;font-size:14px}
+.resumen div{display:flex;justify-content:space-between;padding:5px 0}
+.total{font-size:20px;font-weight:bold;border-top:1px solid #ddd;margin-top:8px;padding-top:10px!important}
+.vacio,.error{background:#fff;border-radius:10px;padding:20px;text-align:center}
+.error{color:#a00}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ubicacion{font-size:13px;margin-top:5px}
+footer{text-align:center;color:#777;padding:25px;font-size:13px}
+</style>
 </head>
-
 <body>
 
 <header>
-
-    <div class="header-content">
-
-        <div class="logo">
-            🛵 Sobre Ruedas
-        </div>
-
-        <a
-            href="index.html"
-            class="volver"
-        >
-            ← Seguir comprando
-        </a>
-
-    </div>
-
+<div class="logo">🛵 Sobre Ruedas</div>
+<a href="index.html">← Seguir comprando</a>
 </header>
 
+<main id="contenidoPedido"></main>
 
-<div class="container">
-
-    <div id="contenidoPedido"></div>
-
-</div>
-
+<footer>Sobre Ruedas · Delivery Esmeraldas</footer>
 
 <script src="config.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
 
 <script>
+let carrito=[];
+let ubicacion=null;
+let configuracion=null;
 
-let carrito = JSON.parse(
-    localStorage.getItem("carrito") || "[]"
-);
+const $=id=>document.getElementById(id);
+const dinero=v=>`$${Number(v||0).toFixed(2)}`;
 
-let ubicacion = null;
-
-
-// ========================================
-// CONFIGURACIÓN
-// ========================================
-
-const TARIFA_DELIVERY =
-    Number(
-        localStorage.getItem("configSobreRuedas")
-            ? JSON.parse(
-                localStorage.getItem(
-                    "configSobreRuedas"
-                )
-            ).tarifaDelivery
-            : CONFIG.tarifaDelivery
-    ) || 1.50;
-
-
-const WHATSAPP =
-    CONFIG.whatsappNegocio ||
-    "593985459479";
-
-
-const contenido =
-    document.getElementById(
-        "contenidoPedido"
-    );
-
-
-// ========================================
-// UTILIDADES
-// ========================================
-
-function dinero(valor) {
-
-    return Number(
-        valor || 0
-    ).toFixed(2);
-
+function escapar(v){
+    return String(v??"").replace(/[&<>"']/g,m=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",
+        '"':"&quot;","'":"&#039;"
+    }[m]));
 }
 
-
-function escapar(texto) {
-
-    return String(
-        texto ?? ""
-    )
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-// ========================================
-// NORMALIZAR CARRITO
-// ========================================
-
-function normalizarCarrito() {
-
-    const mapa = new Map();
-
-
-    carrito.forEach(item => {
-
-        const restauranteId =
-            item.restaurante_id ?? "";
-
-        const productoId =
-            item.producto_id ?? "";
-
-        const nombre =
-            item.nombre ?? "Producto";
-
-
-        const clave =
-            restauranteId +
-            "|" +
-            productoId;
-
-
-        if (!mapa.has(clave)) {
-
-            mapa.set(
-                clave,
-                {
-                    producto_id:
-                        productoId,
-
-                    restaurante_id:
-                        restauranteId,
-
-                    restaurante_nombre:
-                        item.restaurante_nombre ||
-                        "Restaurante",
-
-                    nombre:
-                        nombre,
-
-                    descripcion:
-                        item.descripcion || "",
-
-                    precio:
-                        Number(
-                            item.precio || 0
-                        ),
-
-                    cantidad:
-                        Number(
-                            item.cantidad || 1
-                        )
-                }
-            );
-
-        } else {
-
-            mapa.get(
-                clave
-            ).cantidad += Number(
-                item.cantidad || 1
-            );
-
-        }
-
-    });
-
-
-    carrito =
-        Array.from(
-            mapa.values()
-        );
-
-
-    localStorage.setItem(
-        "carrito",
-        JSON.stringify(carrito)
-    );
-
-}
-
-
-// ========================================
-// ELIMINAR PRODUCTO
-// ========================================
-
-function eliminarProducto(
-    restauranteId,
-    productoId
-) {
-
-    const confirmar =
-        confirm(
-            "¿Quieres eliminar este producto del carrito?"
-        );
-
-
-    if (!confirmar) {
-        return;
-    }
-
-
-    carrito = carrito.filter(item => {
-
-        const itemRestauranteId =
-            String(
-                item.restaurante_id ?? ""
-            );
-
-        const itemProductoId =
-            String(
-                item.producto_id ?? ""
-            );
-
-
-        return !(
-            itemRestauranteId ===
-                String(restauranteId) &&
-            itemProductoId ===
-                String(productoId)
-        );
-
-    });
-
-
-    if (carrito.length) {
-
-        localStorage.setItem(
-            "carrito",
-            JSON.stringify(carrito)
-        );
-
-    } else {
-
-        localStorage.removeItem(
-            "carrito"
-        );
-
-    }
-
-
+document.addEventListener("DOMContentLoaded",async()=>{
+    cargarCarrito();
+    await cargarConfiguracion();
     mostrarCarrito();
+});
 
-}
-
-
-// ========================================
-// VACIAR CARRITO
-// ========================================
-
-function vaciarCarrito() {
-
-    if (!carrito.length) {
-
-        return;
-
+function cargarCarrito(){
+    try{
+        carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+        if(!Array.isArray(carrito))carrito=[];
+    }catch{
+        carrito=[];
     }
-
-
-    const confirmar =
-        confirm(
-            "¿Estás seguro de que quieres vaciar todo el carrito?"
-        );
-
-
-    if (!confirmar) {
-
-        return;
-
-    }
-
-
-    carrito = [];
-
-
-    localStorage.removeItem(
-        "carrito"
-    );
-
-
-    mostrarCarrito();
-
-}
-
-
-// ========================================
-// MOSTRAR CARRITO
-// ========================================
-
-function mostrarCarrito() {
-
     normalizarCarrito();
+}
 
+function normalizarCarrito(){
+    const mapa=new Map();
 
-    if (!carrito.length) {
+    carrito.forEach(p=>{
+        const productoId=Number(p.producto_id);
+        const restauranteId=Number(p.restaurante_id);
+        if(!productoId||!restauranteId)return;
 
-        contenido.innerHTML = `
+        const clave=`${restauranteId}_${productoId}`;
 
-            <div class="card vacio">
-
-                <h2>
-                    🛒 Tu carrito está vacío
-                </h2>
-
-                <p>
-                    Agrega productos antes de continuar.
-                </p>
-
-                <a href="index.html">
-                    Volver a restaurantes
-                </a>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    const grupos = {};
-
-
-    carrito.forEach(item => {
-
-        const id =
-            item.restaurante_id ||
-            item.restaurante_nombre;
-
-
-        if (!grupos[id]) {
-
-            grupos[id] = {
-
-                restaurante_id:
-                    item.restaurante_id,
-
-                restaurante_nombre:
-                    item.restaurante_nombre,
-
-                productos: []
-
-            };
-
+        if(!mapa.has(clave)){
+            mapa.set(clave,{
+                producto_id:productoId,
+                restaurante_id:restauranteId,
+                restaurante_nombre:p.restaurante_nombre||"Local",
+                nombre:p.nombre||"Producto",
+                descripcion:p.descripcion||"",
+                precio:Number(p.precio||0),
+                imagen_url:p.imagen_url||null,
+                cantidad:Math.max(1,Number(p.cantidad||1))
+            });
+        }else{
+            mapa.get(clave).cantidad+=Math.max(1,Number(p.cantidad||1));
         }
-
-
-        grupos[id].productos.push(
-            item
-        );
-
     });
 
+    carrito=[...mapa.values()];
+    guardarCarrito();
+}
 
-    let totalProductos = 0;
+function guardarCarrito(){
+    if(carrito.length)
+        localStorage.setItem("carrito",JSON.stringify(carrito));
+    else
+        localStorage.removeItem("carrito");
+}
 
-    let totalDelivery = 0;
+async function cargarConfiguracion(){
+    try{
+        const {data,error}=await supabaseClient
+            .from("configuracion_negocio")
+            .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda")
+            .order("id",{ascending:true})
+            .limit(1)
+            .maybeSingle();
 
+        if(error)throw error;
 
-    let html = `
+        configuracion=data||{
+            nombre_negocio:"Sobre Ruedas",
+            ciudad:"Esmeraldas",
+            tarifa_delivery:1.50,
+            whatsapp_negocio:"",
+            moneda:"USD"
+        };
+    }catch(e){
+        console.error("Configuración:",e);
+        configuracion={
+            nombre_negocio:"Sobre Ruedas",
+            ciudad:"Esmeraldas",
+            tarifa_delivery:1.50,
+            whatsapp_negocio:"593985459479",
+            moneda:"USD"
+        };
+    }
+}
 
-        <h1>
-            🛒 Mi pedido
-        </h1>
+function agruparCarrito(){
+    const grupos=new Map();
 
-        <p class="subtitulo">
-            Revisa tus productos antes de confirmar.
-        </p>
+    carrito.forEach(p=>{
+        const id=Number(p.restaurante_id);
 
-        <div class="acciones-carrito">
+        if(!grupos.has(id)){
+            grupos.set(id,{
+                id,
+                nombre:p.restaurante_nombre||"Local",
+                productos:[]
+            });
+        }
 
-            <button
-                type="button"
-                class="btn-vaciar"
-                onclick="vaciarCarrito()"
-            >
-                🗑️ Vaciar carrito
+        grupos.get(id).productos.push(p);
+    });
+
+    return [...grupos.values()];
+}
+
+function obtenerSubtotal(grupo){
+    return grupo.productos.reduce(
+        (t,p)=>t+Number(p.precio||0)*Number(p.cantidad||0),
+        0
+    );
+}
+
+function mostrarCarrito(){
+    const contenedor=$("contenidoPedido");
+
+    if(!carrito.length){
+        contenedor.innerHTML=`
+        <div class="vacio">
+            <h2>Tu carrito está vacío</h2>
+            <p>Agrega productos desde nuestros locales.</p>
+            <button class="btn" onclick="location.href='index.html'">
+                Ver locales
             </button>
+        </div>`;
+        return;
+    }
 
-        </div>
+    const grupos=agruparCarrito();
+    const delivery=Number(configuracion?.tarifa_delivery??1.50);
+    const subtotal=grupos.reduce((t,g)=>t+obtenerSubtotal(g),0);
+    const totalDelivery=delivery*grupos.length;
+    const total=subtotal+totalDelivery;
 
-    `;
+    contenedor.innerHTML=`
+    <div class="bloque">
+        <h2>Mi pedido</h2>
 
+        ${grupos.map(g=>`
+        <div class="carrera">
+            <h3>${escapar(g.nombre)}</h3>
 
-    Object.values(
-        grupos
-    ).forEach(grupo => {
-
-        let subtotal = 0;
-
-        let productosHTML = "";
-
-
-        grupo.productos.forEach(
-            producto => {
-
-                const cantidad =
-                    Number(
-                        producto.cantidad || 1
-                    );
-
-
-                const precio =
-                    Number(
-                        producto.precio || 0
-                    );
-
-
-                const subtotalProducto =
-                    cantidad *
-                    precio;
-
-
-                subtotal +=
-                    subtotalProducto;
-
-
-                const restauranteId =
-                    JSON.stringify(
-                        String(
-                            producto.restaurante_id ?? ""
-                        )
-                    );
-
-
-                const productoId =
-                    JSON.stringify(
-                        String(
-                            producto.producto_id ?? ""
-                        )
-                    );
-
-
-                productosHTML += `
-
-                    <div class="producto">
-
-                        <div class="producto-info">
-
-                            <div class="producto-nombre">
-
-                                ${escapar(
-                                    producto.nombre
-                                )}
-
-                            </div>
-
-                            <div>
-                                Cantidad: ${cantidad}
-                            </div>
-
-                            <div>
-                                Precio unitario:
-                                $${dinero(precio)}
-                            </div>
-
-                        </div>
-
-
-                        <div class="producto-precio">
-
-                            $${dinero(
-                                subtotalProducto
-                            )}
-
-                            <br>
-
-                            <button
-                                type="button"
-                                class="btn-eliminar"
-                                onclick='eliminarProducto(
-                                    ${restauranteId},
-                                    ${productoId}
-                                )'
-                            >
-                                🗑️ Eliminar
-                            </button>
-
-                        </div>
-
+            ${g.productos.map(p=>`
+            <div class="producto">
+                <div class="producto-info">
+                    <div class="producto-nombre">
+                        ${escapar(p.nombre)}
                     </div>
-
-                `;
-
-            }
-        );
-
-
-        const delivery =
-            TARIFA_DELIVERY;
-
-
-        const totalCarrera =
-            subtotal +
-            delivery;
-
-
-        totalProductos +=
-            subtotal;
-
-
-        totalDelivery +=
-            delivery;
-
-
-        html += `
-
-            <div class="card restaurante">
-
-                <h2>
-
-                    🏪
-                    ${escapar(
-                        grupo.restaurante_nombre
-                    )}
-
-                </h2>
-
-
-                ${productosHTML}
-
-
-                <div class="carrera-total">
-
-                    Subtotal:
-                    $${dinero(subtotal)}
-
-                    <br>
-
-                    Delivery:
-                    $${dinero(delivery)}
-
-                    <br>
-
-                    Total carrera:
-                    $${dinero(totalCarrera)}
-
+                    <div class="producto-precio">
+                        ${dinero(p.precio)} × ${p.cantidad}
+                    </div>
                 </div>
 
-            </div>
-
-        `;
-
-    });
-
-
-    const totalGeneral =
-        totalProductos +
-        totalDelivery;
-
-
-    html += `
-
-        <div class="card">
-
-            <h2>
-                📋 Datos de entrega
-            </h2>
-
-
-            <label>
-                Nombre
-            </label>
-
-            <input
-                id="clienteNombre"
-                type="text"
-                placeholder="Tu nombre"
-            >
-
-
-            <label>
-                Teléfono
-            </label>
-
-            <input
-                id="clienteTelefono"
-                type="tel"
-                placeholder="Ej: 0999999999"
-            >
-
-
-            <label>
-                Dirección
-            </label>
-
-            <textarea
-                id="clienteDireccion"
-                placeholder="Ej: Calle, número de casa, sector..."
-            ></textarea>
-
-
-            <div class="ubicacion-box">
-
-                <strong>
-                    📍 Comparte tu ubicación
-                </strong>
-
-                <p>
-                    Si estás en el lugar donde recibirás
-                    el pedido, puedes compartir tu ubicación
-                    para facilitar la entrega.
-                </p>
-
+                <div class="cantidad">
+                    ${dinero(Number(p.precio)*Number(p.cantidad))}
+                </div>
 
                 <button
-                    type="button"
-                    class="btn-ubicacion"
-                    onclick="obtenerUbicacion()"
-                >
-                    📍 Usar mi ubicación
+                    class="btn-danger"
+                    onclick="eliminarProducto(${p.restaurante_id},${p.producto_id})">
+                    ×
                 </button>
-
-
-                <div id="estadoUbicacion">
-
-                    No se ha compartido ubicación.
-
-                </div>
-
             </div>
+            `).join("")}
 
+            <div class="resumen">
+                <div>
+                    <span>Subtotal</span>
+                    <strong>${dinero(obtenerSubtotal(g))}</strong>
+                </div>
+                <div>
+                    <span>Delivery</span>
+                    <strong>${dinero(delivery)}</strong>
+                </div>
+            </div>
+        </div>
+        `).join("")}
 
+        <div class="resumen">
+            <div>
+                <span>Productos</span>
+                <strong>${dinero(subtotal)}</strong>
+            </div>
+            <div>
+                <span>Delivery</span>
+                <strong>${dinero(totalDelivery)}</strong>
+            </div>
+            <div class="total">
+                <span>Total</span>
+                <strong>${dinero(total)}</strong>
+            </div>
+        </div>
+
+        <div class="acciones">
+            <button class="btn-light" onclick="vaciarCarrito()">
+                Vaciar carrito
+            </button>
+            <button class="btn" onclick="location.href='index.html'">
+                Seguir comprando
+            </button>
+        </div>
+    </div>
+
+    <div class="bloque">
+        <h2>Datos de entrega</h2>
+
+        <div class="form-grid">
             <label>
-                Referencia
+                Nombre *
+                <input id="clienteNombre" maxlength="100">
             </label>
 
-            <textarea
-                id="clienteReferencia"
-                placeholder="Ej: Casa de dos pisos, junto a una tienda..."
-            ></textarea>
-
+            <label>
+                Teléfono *
+                <input id="clienteTelefono" type="tel" maxlength="30">
+            </label>
         </div>
 
+        <label>
+            Dirección *
+            <textarea id="clienteDireccion" maxlength="300"></textarea>
+        </label>
 
-        <div class="card">
+        <label>
+            Referencia
+            <textarea id="clienteReferencia" maxlength="300"></textarea>
+        </label>
 
-            <h2>
-                💰 Resumen
-            </h2>
+        <button class="btn-light" onclick="obtenerUbicacion()">
+            📍 Compartir ubicación
+        </button>
 
+        <div id="ubicacionEstado" class="ubicacion"></div>
 
-            <div class="fila-total">
-
-                <span>
-                    Total productos
-                </span>
-
-                <strong>
-                    $${dinero(totalProductos)}
-                </strong>
-
-            </div>
-
-
-            <div class="fila-total">
-
-                <span>
-                    Delivery
-                </span>
-
-                <strong>
-                    $${dinero(totalDelivery)}
-                </strong>
-
-            </div>
-
-
-            <div class="fila-total total-final">
-
-                <span>
-                    Total
-                </span>
-
-                <strong>
-                    $${dinero(totalGeneral)}
-                </strong>
-
-            </div>
-
-
-            <button
-                class="btn-whatsapp"
-                onclick="enviarPedidoWhatsApp()"
-            >
-
-                📲 Enviar pedido por WhatsApp
-
+        <div class="acciones">
+            <button class="btn-ok" onclick="enviarPedidoWhatsApp()">
+                Enviar pedido por WhatsApp
             </button>
-
         </div>
 
-    `;
-
-
-    contenido.innerHTML =
-        html;
-
+        <div id="mensajePedido"></div>
+    </div>`;
 }
 
+function eliminarProducto(restauranteId,productoId){
+    carrito=carrito.filter(p=>!(
+        Number(p.restaurante_id)===Number(restauranteId)&&
+        Number(p.producto_id)===Number(productoId)
+    ));
 
-// ========================================
-// UBICACIÓN
-// ========================================
+    guardarCarrito();
+    mostrarCarrito();
+}
 
-function obtenerUbicacion() {
+function vaciarCarrito(){
+    if(!carrito.length)return;
 
-    const estado =
-        document.getElementById(
-            "estadoUbicacion"
-        );
+    if(!confirm("¿Vaciar todo el carrito?"))return;
 
+    carrito=[];
+    localStorage.removeItem("carrito");
+    mostrarCarrito();
+}
 
-    if (!navigator.geolocation) {
-
-        estado.innerHTML =
-            "❌ Tu navegador no permite obtener ubicación.";
-
+function obtenerUbicacion(){
+    if(!navigator.geolocation){
+        mostrarMensaje("Este navegador no permite obtener ubicación.","error");
         return;
-
     }
 
-
-    estado.innerHTML =
-        "📍 Obteniendo ubicación...";
-
+    $("ubicacionEstado").textContent="Obteniendo ubicación...";
 
     navigator.geolocation.getCurrentPosition(
-
-        function(position) {
-
-            const lat =
-                position.coords.latitude;
-
-
-            const lon =
-                position.coords.longitude;
-
-
-            ubicacion = {
-
-                lat: lat,
-
-                lon: lon
-
+        posicion=>{
+            ubicacion={
+                lat:Number(posicion.coords.latitude),
+                lon:Number(posicion.coords.longitude)
             };
 
-
-            estado.innerHTML = `
-
-                ✅ Ubicación obtenida.
-
-                <br>
-
-                <a
-                    href="https://www.google.com/maps?q=${lat},${lon}"
-                    target="_blank"
-                >
-                    Ver ubicación en Google Maps
-                </a>
-
-            `;
-
+            $("ubicacionEstado").innerHTML=`
+                Ubicación obtenida correctamente.
+                <a target="_blank"
+                   rel="noopener"
+                   href="https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lon}">
+                   Ver en mapa
+                </a>`;
         },
-
-
-        function(error) {
-
+        error=>{
             console.error(error);
-
-
-            estado.innerHTML =
-
-                "❌ No se pudo obtener la ubicación. " +
-
-                "Puedes escribir la dirección manualmente.";
-
+            ubicacion=null;
+            $("ubicacionEstado").textContent=
+                "No se pudo obtener la ubicación.";
         },
-
-
         {
-
-            enableHighAccuracy: true,
-
-            timeout: 10000,
-
-            maximumAge: 0
-
+            enableHighAccuracy:true,
+            timeout:10000,
+            maximumAge:0
         }
-
     );
-
 }
 
-
-// ========================================
-// NÚMERO DE PEDIDO
-// ========================================
-
-function generarNumeroPedido() {
-
-    const numero =
-        Math.floor(
-            100000 +
-            Math.random() * 900000
-        );
-
-
-    return "SR-" + numero;
-
+function generarNumeroPedido(){
+    return "SR-"+Date.now().toString().slice(-6);
 }
 
+async function enviarPedidoWhatsApp(){
 
-// ========================================
-// ENVIAR WHATSAPP
-// ========================================
-
-function enviarPedidoWhatsApp() {
-
-    if (!carrito.length) {
-
-        alert(
-            "Tu carrito está vacío."
-        );
-
+    if(!carrito.length){
+        mostrarMensaje("El carrito está vacío.","error");
         return;
-
     }
 
+    const nombre=$("clienteNombre").value.trim();
+    const telefono=$("clienteTelefono").value.trim();
+    const direccion=$("clienteDireccion").value.trim();
+    const referencia=$("clienteReferencia").value.trim();
 
-    const nombre =
-        document
-            .getElementById(
-                "clienteNombre"
-            )
-            .value
-            .trim();
-
-
-    const telefono =
-        document
-            .getElementById(
-                "clienteTelefono"
-            )
-            .value
-            .trim();
-
-
-    const direccion =
-        document
-            .getElementById(
-                "clienteDireccion"
-            )
-            .value
-            .trim();
-
-
-    const referencia =
-        document
-            .getElementById(
-                "clienteReferencia"
-            )
-            .value
-            .trim();
-
-
-    if (!nombre) {
-
-        alert(
-            "Ingresa tu nombre."
-        );
-
+    if(!nombre){
+        mostrarMensaje("Ingresa tu nombre.","error");
         return;
-
     }
 
-
-    if (!telefono) {
-
-        alert(
-            "Ingresa tu teléfono."
-        );
-
+    if(!telefono){
+        mostrarMensaje("Ingresa tu teléfono.","error");
         return;
-
     }
 
-
-    if (!direccion && !ubicacion) {
-
-        alert(
-            "Ingresa tu dirección o comparte tu ubicación."
-        );
-
+    if(!direccion){
+        mostrarMensaje("Ingresa la dirección de entrega.","error");
         return;
-
     }
 
-
-    const numeroPedido =
-        generarNumeroPedido();
-
-
-    const grupos = {};
-
-
-    carrito.forEach(item => {
-
-        const id =
-            item.restaurante_id ||
-            item.restaurante_nombre;
-
-
-        if (!grupos[id]) {
-
-            grupos[id] = {
-
-                restaurante_nombre:
-                    item.restaurante_nombre,
-
-                productos: []
-
-            };
-
-        }
-
-
-        grupos[id].productos.push(
-            item
-        );
-
-    });
-
-
-    let totalProductos = 0;
-
-    let totalDelivery = 0;
-
-
-    let mensaje = "";
-
-
-    mensaje +=
-        "🛵 *SOBRE RUEDAS*";
-
-
-    mensaje += "\n";
-
-
-    mensaje +=
-        "📦 *PEDIDO: " +
-        numeroPedido +
-        "*";
-
-
-    mensaje += "\n\n";
-
-
-    mensaje +=
-        "👤 *Cliente:* " +
-        nombre;
-
-
-    mensaje += "\n";
-
-
-    mensaje +=
-        "📱 *Teléfono:* " +
-        telefono;
-
-
-    mensaje += "\n";
-
-
-    if (direccion) {
-
-        mensaje +=
-            "📍 *Dirección:* " +
-            direccion;
-
-        mensaje += "\n";
-
-    }
-
-
-    if (referencia) {
-
-        mensaje +=
-            "📌 *Referencia:* " +
-            referencia;
-
-        mensaje += "\n";
-
-    }
-
-
-    if (ubicacion) {
-
-        const mapa =
-            "https://www.google.com/maps?q=" +
-            ubicacion.lat +
-            "," +
-            ubicacion.lon;
-
-
-        mensaje +=
-            "🗺️ *Ubicación:* " +
-            mapa;
-
-
-        mensaje += "\n";
-
-    }
-
-
-    mensaje += "\n";
-
-
-    let contadorCarrera = 0;
-
-
-    Object.values(
-        grupos
-    ).forEach(grupo => {
-
-        contadorCarrera++;
-
-
-        let subtotal = 0;
-
-
-        mensaje +=
-            "🏪 *CARRERA " +
-            contadorCarrera +
-            "*";
-
-
-        mensaje += "\n";
-
-
-        mensaje +=
-            "*" +
-            grupo.restaurante_nombre +
-            "*";
-
-
-        mensaje += "\n";
-
-
-        grupo.productos.forEach(
-            producto => {
-
-                const cantidad =
-                    Number(
-                        producto.cantidad || 1
-                    );
-
-
-                const precio =
-                    Number(
-                        producto.precio || 0
-                    );
-
-
-                const subtotalProducto =
-                    cantidad *
-                    precio;
-
-
-                subtotal +=
-                    subtotalProducto;
-
-
-                mensaje +=
-                    "• " +
-                    producto.nombre +
-                    " x" +
-                    cantidad +
-                    " — $" +
-                    dinero(
-                        subtotalProducto
-                    );
-
-
-                mensaje += "\n";
-
-            }
-        );
-
-
-        const delivery =
-            TARIFA_DELIVERY;
-
-
-        const totalCarrera =
-            subtotal +
-            delivery;
-
-
-        totalProductos +=
-            subtotal;
-
-
-        totalDelivery +=
-            delivery;
-
-
-        mensaje +=
-            "🛵 Delivery: $" +
-            dinero(delivery);
-
-
-        mensaje += "\n";
-
-
-        mensaje +=
-            "💰 Total carrera: $" +
-            dinero(totalCarrera);
-
-
-        mensaje += "\n\n";
-
-    });
-
-
-    const total =
-        totalProductos +
-        totalDelivery;
-
-
-    mensaje +=
-        "🧾 *TOTAL PRODUCTOS:* $" +
-        dinero(totalProductos);
-
-
-    mensaje += "\n";
-
-
-    mensaje +=
-        "🛵 *TOTAL DELIVERY:* $" +
-        dinero(totalDelivery);
-
-
-    mensaje += "\n";
-
-
-    mensaje +=
-        "💰 *TOTAL PEDIDO: $" +
-        dinero(total) +
-        "*";
-
-
-    mensaje += "\n\n";
-
-
-    mensaje +=
-        "Pedido generado desde Sobre Ruedas.";
-
-
-    // ========================================
-    // GUARDAR ÚLTIMO PEDIDO
-    // ========================================
-
-    const pedido = {
-
-        numero:
-            numeroPedido,
-
-        cliente: {
-
-            nombre:
-                nombre,
-
-            telefono:
-                telefono,
-
-            direccion:
+    const grupos=agruparCarrito();
+    const delivery=Number(configuracion?.tarifa_delivery??1.50);
+    const subtotal=grupos.reduce((t,g)=>t+obtenerSubtotal(g),0);
+    const totalDelivery=delivery*grupos.length;
+    const total=subtotal+totalDelivery;
+    const numero=generarNumeroPedido();
+
+    try{
+        mostrarMensaje("Registrando pedido...");
+
+        const {data:pedido,error:ep}=await supabaseClient
+            .from("pedidos")
+            .insert({
+                numero,
+                cliente_nombre:nombre,
+                cliente_telefono:telefono,
                 direccion,
+                referencia:referencia||null,
+                total_productos:subtotal,
+                total_delivery:totalDelivery,
+                total
+            })
+            .select("id,numero")
+            .single();
 
-            referencia:
-                referencia
+        if(ep)throw ep;
 
-        },
+        for(const grupo of grupos){
 
-        ubicacion:
-            ubicacion,
+            const subtotalCarrera=obtenerSubtotal(grupo);
+            const totalCarrera=subtotalCarrera+delivery;
 
-        total_productos:
-            totalProductos,
+            const {data:carrera,error:ec}=await supabaseClient
+                .from("carreras")
+                .insert({
+                    pedido_id:pedido.id,
+                    restaurante_id:grupo.id,
+                    numero:`${numero}-${grupo.id}`,
+                    subtotal:subtotalCarrera,
+                    delivery,
+                    total:totalCarrera,
+                    estado:"Pendiente de asignación"
+                })
+                .select("id")
+                .single();
 
-        total_delivery:
+            if(ec)throw ec;
+
+            const detalles=grupo.productos.map(p=>({
+                carrera_id:carrera.id,
+                producto_id:Number(p.producto_id),
+                producto_nombre:p.nombre,
+                precio_unitario:Number(p.precio||0),
+                cantidad:Number(p.cantidad||0),
+                subtotal:Number(p.precio||0)*Number(p.cantidad||0)
+            }));
+
+            const {error:ed}=await supabaseClient
+                .from("detalle_carreras")
+                .insert(detalles);
+
+            if(ed)throw ed;
+        }
+
+        const mensaje=generarMensajeWhatsApp({
+            numero,
+            nombre,
+            telefono,
+            direccion,
+            referencia,
+            grupos,
+            delivery,
+            subtotal,
             totalDelivery,
+            total
+        });
 
-        total:
-            total,
+        const whatsapp=
+            String(configuracion?.whatsapp_negocio||"")
+            .replace(/\D/g,"");
 
-        carreras:
-            Object.values(
-                grupos
-            ),
+        if(!whatsapp){
+            mostrarMensaje(
+                "Pedido registrado, pero no existe un WhatsApp configurado.",
+                "error"
+            );
+            return;
+        }
 
-        creado_en:
-            new Date().toISOString()
+        const url=
+            `https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`;
 
-    };
+        localStorage.removeItem("carrito");
+        carrito=[];
 
+        window.location.href=url;
 
-    localStorage.setItem(
-        "ultimoPedido",
-        JSON.stringify(
-            pedido
-        )
-    );
-
-
-    // ========================================
-    // ABRIR WHATSAPP
-    // ========================================
-
-    const url =
-        "https://wa.me/" +
-        WHATSAPP +
-        "?text=" +
-        encodeURIComponent(
-            mensaje
+    }catch(e){
+        console.error("ERROR REGISTRANDO PEDIDO:",e);
+        mostrarMensaje(
+            "No se pudo registrar el pedido: "+e.message,
+            "error"
         );
-
-
-    /*
-     * IMPORTANTE:
-     * Primero eliminamos el carrito.
-     * De esta forma, cuando el cliente
-     * regrese a la página, comenzará
-     * con un carrito nuevo.
-     */
-
-    carrito = [];
-
-    localStorage.removeItem(
-        "carrito"
-    );
-
-
-    // Finalmente abrir WhatsApp
-
-    window.location.href =
-        url;
-
+    }
 }
 
+function generarMensajeWhatsApp(datos){
 
-// ========================================
-// INICIO
-// ========================================
+    let texto=
+`*SOBRE RUEDAS - NUEVO PEDIDO*
+Pedido: ${datos.numero}
 
-mostrarCarrito();
+*CLIENTE*
+Nombre: ${datos.nombre}
+Teléfono: ${datos.telefono}
+Dirección: ${datos.direccion}`;
 
+    if(datos.referencia)
+        texto+=`\nReferencia: ${datos.referencia}`;
+
+    if(ubicacion)
+        texto+=
+            `\nUbicación: https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lon}`;
+
+    texto+="\n\n*PEDIDO*";
+
+    datos.grupos.forEach(g=>{
+        texto+=`\n\n*${g.nombre}*`;
+
+        g.productos.forEach(p=>{
+            texto+=
+                `\n${p.cantidad} x ${p.nombre} - `+
+                `${dinero(Number(p.precio)*Number(p.cantidad))}`;
+        });
+
+        texto+=`\nSubtotal: ${dinero(obtenerSubtotal(g))}`;
+        texto+=`\nDelivery: ${dinero(datos.delivery)}`;
+        texto+=`\nTotal local: ${dinero(obtenerSubtotal(g)+datos.delivery)}`;
+    });
+
+    texto+=
+`\n\nSubtotal productos: ${dinero(datos.subtotal)}
+Delivery: ${dinero(datos.totalDelivery)}
+*TOTAL: ${dinero(datos.total)}*`;
+
+    return texto;
+}
+
+function mostrarMensaje(texto,tipo="ok"){
+    const e=$("mensajePedido");
+    if(!e)return;
+
+    e.textContent=texto;
+    e.style.padding="10px";
+    e.style.marginTop="10px";
+    e.style.borderRadius="6px";
+    e.style.background=
+        tipo==="error"?"#fde2e2":"#dff5e5";
+    e.style.color=
+        tipo==="error"?"#8b1e1e":"#176b35";
+}
 </script>
-
 </body>
 </html>
-```
