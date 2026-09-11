@@ -3,599 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sobre Ruedas - Delivery Esmeraldas</title>
-
+<title>Sobre Ruedas | Esmeraldas</title>
 <style>
 *{box-sizing:border-box}
-
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f5f5f5;
-    color:#222;
-}
-
-header{
-    background:#111;
-    color:#fff;
-    padding:14px 18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-}
-
-.logo{
-    font-size:20px;
-    font-weight:bold;
-}
-
-.carrito{
-    background:#fff;
-    color:#111;
-    border:0;
-    border-radius:20px;
-    padding:8px 13px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.hero{
-    background:#222;
-    color:#fff;
-    padding:35px 20px;
-    text-align:center;
-}
-
-.hero h1{
-    margin:0 0 8px;
-    font-size:32px;
-}
-
-.hero p{
-    margin:0 0 18px;
-    color:#ddd;
-}
-
-.badge{
-    display:inline-block;
-    background:#fff;
-    color:#222;
-    border-radius:20px;
-    padding:7px 14px;
-    font-size:13px;
-}
-
-main{
-    max-width:1100px;
-    margin:auto;
-    padding:20px;
-}
-
-.buscar{
-    width:100%;
-    padding:13px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:16px;
-    margin-bottom:15px;
-}
-
-.categorias{
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    padding-bottom:8px;
-    margin-bottom:20px;
-}
-
-.categoria{
-    flex:0 0 auto;
-    border:1px solid #ccc;
-    background:#fff;
-    padding:9px 14px;
-    border-radius:20px;
-    cursor:pointer;
-}
-
-.categoria.activa{
-    background:#111;
-    color:#fff;
-    border-color:#111;
-}
-
-#restaurantes{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:15px;
-}
-
-.card{
-    background:#fff;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 2px 8px #0001;
-}
-
-.card img{
-    width:100%;
-    height:170px;
-    object-fit:cover;
-    display:block;
-}
-
-.card-body{
-    padding:14px;
-}
-
-.card h3{
-    margin:0 0 6px;
-}
-
-.categoria-local{
-    color:#666;
-    font-size:13px;
-    margin-bottom:8px;
-}
-
-.descripcion{
-    color:#555;
-    font-size:14px;
-    min-height:40px;
-}
-
-.card button{
-    width:100%;
-    background:#111;
-    color:#fff;
-    border:0;
-    padding:11px;
-    border-radius:6px;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-.vacio,
-.cargando,
-.error{
-    background:#fff;
-    padding:18px;
-    border-radius:8px;
-    text-align:center;
-}
-
-.error{
-    color:#a11;
-}
-
-footer{
-    text-align:center;
-    padding:25px;
-    color:#777;
-    font-size:13px;
-}
-
-.imagen-error{
-    height:170px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#eee;
-    color:#a00;
-    font-size:13px;
-    text-align:center;
-    padding:10px;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f8f5ee;color:#26352d}
+header{background:#2f5d45;color:#fff;padding:18px 20px}
+header h1{margin:0;font-size:24px}
+header div{margin-top:4px;color:#e7f0e8}
+main{max-width:1100px;margin:auto;padding:20px}
+.buscador{margin-bottom:15px}
+input{width:100%;padding:12px;border:1px solid #d8d0c3;border-radius:9px;font-size:16px;background:#fffdf9;color:#26352d}
+.categorias{display:flex;gap:8px;overflow-x:auto;padding-bottom:15px}
+.categorias button{border:1px solid #d8cbb8;background:#fffaf2;color:#53665a;border-radius:20px;padding:9px 15px;white-space:nowrap;cursor:pointer}
+.categorias button.activo{background:#d97941;color:#fff;border-color:#d97941}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+.card{background:#fffdf9;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px #5b463322;cursor:pointer;border:1px solid #eee5d8}
+.card:hover{transform:translateY(-2px);transition:.15s}
+.banner{width:100%;height:180px;object-fit:cover;background:#e9e1d3;display:block}
+.sin-imagen{height:180px;display:flex;align-items:center;justify-content:center;background:#ebe3d5;color:#7a8178}
+.info{padding:14px}
+.info h3{margin:0 0 6px;color:#2f5d45}
+.info p{margin:5px 0;color:#68736b;font-size:14px}
+.badge{font-size:12px;color:#d06f39;font-weight:600}
+.carrito{position:fixed;right:20px;bottom:20px;background:#d97941;color:#fff;border-radius:50px;padding:14px 18px;cursor:pointer;box-shadow:0 4px 12px #5b463344;font-weight:bold}
+.carrito:hover{background:#c86832}
 </style>
 </head>
-
 <body>
 
 <header>
-    <div class="logo">🛵 Sobre Ruedas</div>
-
-    <button class="carrito" onclick="irAlCarrito()">
-        🛒 Carrito
-        <span id="cantidadCarrito">0</span>
-    </button>
+<h1>Sobre Ruedas</h1>
+<div>Delivery en Esmeraldas</div>
 </header>
 
-<section class="hero">
-    <h1>¿Qué quieres pedir hoy?</h1>
-    <p>Encuentra tus locales favoritos en Esmeraldas</p>
-    <span class="badge">📍 Esmeraldas</span>
-</section>
-
 <main>
+<div class="buscador">
+<input id="buscar" placeholder="Buscar locales..." oninput="render()">
+</div>
 
-    <input
-        id="buscar"
-        class="buscar"
-        type="search"
-        placeholder="Buscar local..."
-        oninput="aplicarFiltros()">
-
-    <div id="categorias" class="categorias">
-        <button
-            class="categoria activa"
-            data-categoria=""
-            onclick="seleccionarCategoria(this,'')">
-            Ver todos
-        </button>
-    </div>
-
-    <div id="restaurantes">
-        <div class="cargando">
-            Cargando locales...
-        </div>
-    </div>
-
+<div id="categorias" class="categorias"></div>
+<div id="locales" class="grid">Cargando...</div>
 </main>
 
-<footer>
-    Sobre Ruedas · Delivery Esmeraldas
-</footer>
+<div class="carrito" onclick="location.href='menu.html'">
+🛒 Carrito <span id="contador">0</span>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
 <script>
+let locales=[];
+let categorias=[];
+let categoriaActual="Todos";
 
-let restaurantesActuales=[];
-let categoriaSeleccionada="";
-
-
-document.addEventListener("DOMContentLoaded",async()=>{
-
-    actualizarCarrito();
-
-    await Promise.all([
-        cargarCategorias(),
-        cargarRestaurantes()
-    ]);
-
-});
-
-
-/* =====================================================
-UTILIDADES
-===================================================== */
-
-function $id(id){
-    return document.getElementById(id);
+function escapeHtml(v=""){
+ return String(v).replace(/[&<>"']/g,m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[m]));
 }
 
-
-function escapeHTML(valor){
-
-    return String(valor??"").replace(
-        /[&<>"']/g,
-        caracter=>({
-            "&":"&amp;",
-            "<":"&lt;",
-            ">":"&gt;",
-            '"':"&quot;",
-            "'":"&#039;"
-        }[caracter])
-    );
-
+function imagenUrl(url){
+ if(!url)return "";
+ const separador=url.includes("?")?"&":"?";
+ return url+separador+"v="+Date.now();
 }
 
+async function cargar(){
+ try{
+  const [r,c]=await Promise.all([
+   supabaseClient
+    .from("restaurantes")
+    .select("*")
+    .eq("activo",true)
+    .order("nombre"),
+   supabaseClient
+    .from("categorias")
+    .select("*")
+    .eq("activo",true)
+    .order("nombre")
+  ]);
 
-/* =====================================================
-CATEGORÍAS
-===================================================== */
+  if(r.error)throw r.error;
+  if(c.error)throw c.error;
 
-async function cargarCategorias(){
+  locales=r.data||[];
+  categorias=c.data||[];
 
-    try{
+  renderCategorias();
+  render();
+ }catch(e){
+  localesEl.innerHTML="<p>No se pudieron cargar los locales.</p>";
+  console.error(e);
+ }
+}
 
-        const {data,error}=await supabaseClient
-            .from("categorias")
-            .select("id,nombre")
-            .eq("activo",true)
-            .order("nombre");
+function renderCategorias(){
+ categoriasEl.innerHTML=
+  `<button class="activo" onclick="seleccionarCategoria('Todos',this)">Todos</button>`+
+  categorias.map(c=>
+   `<button onclick="seleccionarCategoria('${escapeHtml(c.nombre)}',this)">
+    ${escapeHtml(c.nombre)}
+   </button>`
+  ).join("");
+}
 
-        if(error)throw error;
+function seleccionarCategoria(nombre,btn){
+ categoriaActual=nombre;
+ document.querySelectorAll(".categorias button")
+  .forEach(x=>x.classList.remove("activo"));
+ btn.classList.add("activo");
+ render();
+}
 
-        const categorias=$id("categorias");
+function render(){
+ const texto=buscar.value.trim().toLowerCase();
 
-        categorias.innerHTML=`
-            <button
-                class="categoria activa"
-                data-categoria=""
-                onclick="seleccionarCategoria(this,'')">
-                Ver todos
-            </button>
-        `;
+ const filtrados=locales.filter(l=>{
+  const coincideCategoria=
+   categoriaActual==="Todos"||
+   (l.categoria||"").toLowerCase()===categoriaActual.toLowerCase();
 
-        (data||[]).forEach(c=>{
+  const coincideTexto=
+   !texto||
+   (l.nombre||"").toLowerCase().includes(texto)||
+   (l.descripcion||"").toLowerCase().includes(texto)||
+   (l.categoria||"").toLowerCase().includes(texto);
 
-            const boton=document.createElement("button");
+  return coincideCategoria&&coincideTexto;
+ });
 
-            boton.className="categoria";
-            boton.dataset.categoria=c.nombre;
-            boton.textContent=c.nombre;
+ if(!filtrados.length){
+  localesEl.innerHTML="<p>No se encontraron locales.</p>";
+  return;
+ }
 
-            boton.onclick=()=>{
-                seleccionarCategoria(
-                    boton,
-                    c.nombre
-                );
-            };
+ localesEl.innerHTML=filtrados.map(l=>{
+  const imagen=imagenUrl(l.banner_url);
 
-            categorias.appendChild(boton);
-
-        });
-
-    }catch(error){
-
-        console.error(
-            "Error cargando categorías:",
-            error
-        );
-
-        /*
-        No bloqueamos los locales si las categorías
-        fallan. Simplemente dejamos "Ver todos".
-        */
-
+  return `
+   <div class="card" onclick="verMenu(${l.id})">
+    ${
+     imagen
+     ? `<img class="banner"
+          src="${escapeHtml(imagen)}"
+          alt="${escapeHtml(l.nombre)}"
+          onerror="this.outerHTML='<div class=\\'sin-imagen\\'>Sin imagen</div>'">`
+     : `<div class="sin-imagen">Sin imagen</div>`
     }
-
+    <div class="info">
+     <h3>${escapeHtml(l.nombre)}</h3>
+     <div class="badge">${escapeHtml(l.categoria||"")}</div>
+     <p>${escapeHtml(l.descripcion||"")}</p>
+    </div>
+   </div>
+  `;
+ }).join("");
 }
-
-
-function seleccionarCategoria(boton,nombre){
-
-    categoriaSeleccionada=nombre;
-
-    document
-        .querySelectorAll(".categoria")
-        .forEach(b=>{
-            b.classList.remove("activa");
-        });
-
-    boton.classList.add("activa");
-
-    aplicarFiltros();
-
-}
-
-
-/* =====================================================
-LOCALES
-===================================================== */
-
-async function cargarRestaurantes(){
-
-    const contenedor=$id("restaurantes");
-
-    try{
-
-        const {data,error}=await supabaseClient
-            .from("restaurantes")
-            .select(`
-                id,
-                nombre,
-                categoria,
-                descripcion,
-                banner_url,
-                activo
-            `)
-            .eq("activo",true)
-            .order("nombre");
-
-        if(error)throw error;
-
-        restaurantesActuales=data||[];
-
-        aplicarFiltros();
-
-    }catch(error){
-
-        console.error(
-            "Error cargando locales:",
-            error
-        );
-
-        contenedor.innerHTML=`
-            <div class="error">
-                No se pudieron cargar los locales.
-                <br>
-                ${escapeHTML(error.message)}
-            </div>
-        `;
-
-    }
-
-}
-
-
-function aplicarFiltros(){
-
-    const texto=
-        $id("buscar")
-        .value
-        .trim()
-        .toLowerCase();
-
-    const lista=restaurantesActuales.filter(local=>{
-
-        const nombre=
-            String(local.nombre||"")
-            .toLowerCase();
-
-        const descripcion=
-            String(local.descripcion||"")
-            .toLowerCase();
-
-        const categoria=
-            String(local.categoria||"")
-            .toLowerCase();
-
-        const coincideTexto=
-            !texto ||
-            nombre.includes(texto) ||
-            descripcion.includes(texto) ||
-            categoria.includes(texto);
-
-        const coincideCategoria=
-            !categoriaSeleccionada ||
-            categoria===
-            categoriaSeleccionada.toLowerCase();
-
-        return coincideTexto && coincideCategoria;
-
-    });
-
-    mostrarRestaurantes(lista);
-
-}
-
-
-function mostrarRestaurantes(lista){
-
-    const contenedor=$id("restaurantes");
-
-    if(!lista.length){
-
-        contenedor.innerHTML=`
-            <div class="vacio">
-                No se encontraron locales.
-            </div>
-        `;
-
-        return;
-
-    }
-
-    contenedor.innerHTML=lista.map(local=>{
-
-        const imagen=local.banner_url
-            ?`
-                <img
-                    src="${escapeHTML(local.banner_url)}"
-                    alt="${escapeHTML(local.nombre)}"
-                    loading="lazy"
-                    onerror="imagenError(this)">
-            `
-            :`
-                <div class="imagen-error">
-                    Imagen no disponible
-                </div>
-            `;
-
-        return`
-
-            <article class="card">
-
-                ${imagen}
-
-                <div class="card-body">
-
-                    <h3>
-                        ${escapeHTML(local.nombre)}
-                    </h3>
-
-                    <div class="categoria-local">
-                        ${escapeHTML(
-                            local.categoria||
-                            "Sin categoría"
-                        )}
-                    </div>
-
-                    <div class="descripcion">
-                        ${escapeHTML(
-                            local.descripcion||
-                            "Sin descripción"
-                        )}
-                    </div>
-
-                    <button
-                        onclick="verMenu(${Number(local.id)})">
-                        Ver menú
-                    </button>
-
-                </div>
-
-            </article>
-
-        `;
-
-    }).join("");
-
-}
-
-
-function imagenError(img){
-
-    const aviso=document.createElement("div");
-
-    aviso.className="imagen-error";
-    aviso.textContent="Imagen no disponible";
-
-    img.replaceWith(aviso);
-
-}
-
-
-/* =====================================================
-NAVEGACIÓN
-===================================================== */
 
 function verMenu(id){
-
-    if(!id)return;
-
-    window.location.href=
-        `restaurante.html?id=${encodeURIComponent(id)}`;
-
+ location.href="restaurante.html?id="+encodeURIComponent(id);
 }
-
-
-function irAlCarrito(){
-
-    window.location.href="menu.html";
-
-}
-
-
-/* =====================================================
-CARRITO
-===================================================== */
 
 function actualizarCarrito(){
-
-    let carrito=[];
-
-    try{
-
-        carrito=JSON.parse(
-            localStorage.getItem("carrito")||"[]"
-        );
-
-        if(!Array.isArray(carrito))
-            carrito=[];
-
-    }catch{
-
-        carrito=[];
-
-    }
-
-    const cantidad=carrito.reduce(
-        (total,item)=>
-            total+
-            Number(item.cantidad||0),
-        0
-    );
-
-    $id("cantidadCarrito").textContent=
-        cantidad;
-
+ try{
+  const carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+  contador.textContent=carrito.reduce((s,p)=>s+(Number(p.cantidad)||0),0);
+ }catch{
+  contador.textContent="0";
+ }
 }
 
-</script>
+const buscar=document.getElementById("buscar");
+const categoriasEl=document.getElementById("categorias");
+const localesEl=document.getElementById("locales");
+const contador=document.getElementById("contador");
 
+actualizarCarrito();
+cargar();
+
+window.addEventListener("storage",actualizarCarrito);
+</script>
 </body>
 </html>
