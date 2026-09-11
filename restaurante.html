@@ -3,257 +3,229 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Menú | Sobre Ruedas</title>
+<title>Local | Sobre Ruedas</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-header{background:#111;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:20px;font-weight:bold}
-.carrito{background:#fff;color:#111;border:0;border-radius:20px;padding:8px 13px;cursor:pointer;font-weight:bold}
-.hero{background:#222;color:#fff;padding:30px 20px;text-align:center}
-.hero h1{margin:0 0 8px;font-size:30px}
-.hero p{margin:5px auto;color:#ddd;max-width:700px}
-.categoria{font-size:13px;color:#ccc}
+body{margin:0;font-family:Arial,sans-serif;background:#f8f5ee;color:#26352d}
+header{background:#2f5d45;color:#fff;padding:18px 20px}
+header h1{margin:0;font-size:24px}
+header p{margin:6px 0 0;color:#e7f0e8}
 main{max-width:1100px;margin:auto;padding:20px}
-.volver{display:inline-block;color:#222;text-decoration:none;margin-bottom:18px}
-#productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
-.producto{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px #0001}
-.producto img{width:100%;height:180px;object-fit:cover;display:block}
-.sin-imagen{height:180px;background:#eee;display:flex;align-items:center;justify-content:center;color:#888}
-.producto-body{padding:14px}
-.producto h3{margin:0 0 7px}
-.descripcion{font-size:14px;color:#666;min-height:38px}
-.precio{font-weight:bold;font-size:18px;margin:10px 0}
-.producto button{width:100%;background:#111;color:#fff;border:0;padding:11px;border-radius:6px;cursor:pointer}
-.vacio,.cargando,.error{background:#fff;padding:20px;border-radius:8px;text-align:center}
-.error{color:#a00}
-.notificacion{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#198754;color:#fff;padding:11px 18px;border-radius:7px;display:none;z-index:20}
-footer{text-align:center;padding:25px;color:#777;font-size:13px}
+.volver{display:inline-block;margin-bottom:15px;color:#2f5d45;text-decoration:none;font-weight:bold}
+.local{background:#fffdf9;border-radius:14px;overflow:hidden;border:1px solid #eee5d8;box-shadow:0 3px 12px #5b463322;margin-bottom:20px}
+.banner{width:100%;height:240px;object-fit:cover;display:block;background:#e9e1d3}
+.sin-imagen{height:180px;display:flex;align-items:center;justify-content:center;background:#ebe3d5;color:#7a8178}
+.info{padding:18px}
+.info h2{margin:0 0 6px;color:#2f5d45}
+.info p{margin:6px 0;color:#68736b}
+.badge{color:#d06f39;font-size:13px;font-weight:bold}
+.productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.producto{background:#fffdf9;border:1px solid #eee5d8;border-radius:14px;overflow:hidden;box-shadow:0 3px 10px #5b46331c}
+.producto img{width:100%;height:170px;object-fit:cover;display:block;background:#e9e1d3}
+.producto-info{padding:14px}
+.producto h3{margin:0 0 6px;color:#2f5d45}
+.producto p{margin:5px 0;color:#68736b;font-size:14px}
+.precio{font-size:18px;font-weight:bold;color:#d06f39;margin:10px 0}
+button{width:100%;border:0;border-radius:9px;background:#d97941;color:#fff;padding:11px;cursor:pointer;font-weight:bold}
+button:hover{background:#c86832}
+.carrito{position:fixed;right:20px;bottom:20px;background:#d97941;color:#fff;border-radius:50px;padding:14px 18px;cursor:pointer;box-shadow:0 4px 12px #5b463344;font-weight:bold}
+.carrito:hover{background:#c86832}
+.mensaje{padding:25px;background:#fffdf9;border-radius:12px;border:1px solid #eee5d8;color:#68736b}
 </style>
 </head>
+
 <body>
 
 <header>
-<div class="logo">🛵 Sobre Ruedas</div>
-<button class="carrito" onclick="irAlCarrito()">🛒 Carrito <span id="cantidadCarrito">0</span></button>
+<h1 id="nombreHeader">Sobre Ruedas</h1>
+<p>Delivery en Esmeraldas</p>
 </header>
 
-<section class="hero">
-<div id="categoria" class="categoria">Cargando...</div>
-<h1 id="nombreRestaurante">Cargando...</h1>
-<p id="descripcionRestaurante"></p>
-</section>
-
 <main>
-<a href="index.html" class="volver">← Ver locales</a>
-<div id="productos"><div class="cargando">Cargando productos...</div></div>
+<a class="volver" href="index.html">← Volver a locales</a>
+
+<div id="local"></div>
+<div id="productos" class="productos"></div>
 </main>
 
-<div id="notificacion" class="notificacion"></div>
-
-<footer>Sobre Ruedas · Delivery Esmeraldas</footer>
+<div class="carrito" onclick="location.href='menu.html'">
+🛒 Carrito <span id="contador">0</span>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
 <script>
-let restauranteActual=null;
+const params=new URLSearchParams(location.search);
+const restauranteId=params.get("id");
 
-const $=id=>document.getElementById(id);
+let restaurante=null;
+let productos=[];
 
-document.addEventListener("DOMContentLoaded",async()=>{
-    actualizarCarrito();
-    await cargarRestaurante();
-});
-
-function escapeHTML(v){
-    return String(v??"").replace(/[&<>"']/g,m=>({
-        "&":"&amp;","<":"&lt;",">":"&gt;",
-        '"':"&quot;","'":"&#039;"
-    }[m]));
+function escapeHtml(v=""){
+ return String(v).replace(/[&<>"']/g,m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[m]));
 }
 
-function obtenerIdRestaurante(){
-    const id=new URLSearchParams(location.search).get("id");
-    const numero=Number(id);
-    return Number.isInteger(numero)&&numero>0?numero:null;
+function imagenUrl(url){
+ if(!url)return "";
+ const separador=url.includes("?")?"&":"?";
+ return url+separador+"v="+Date.now();
 }
 
-async function cargarRestaurante(){
-    const id=obtenerIdRestaurante();
+async function cargar(){
+ if(!restauranteId){
+  localEl.innerHTML='<div class="mensaje">No se especificó el local.</div>';
+  return;
+ }
 
-    if(!id){
-        mostrarError("Local no válido.");
-        return;
+ try{
+  const {data,error}=await supabaseClient
+   .from("restaurantes")
+   .select("*")
+   .eq("id",restauranteId)
+   .eq("activo",true)
+   .single();
+
+  if(error)throw error;
+
+  restaurante=data;
+  nombreHeader.textContent=restaurante.nombre;
+
+  const respuesta=await supabaseClient
+   .from("productos")
+   .select("*")
+   .eq("restaurante_id",restaurante.id)
+   .eq("activo",true)
+   .order("nombre");
+
+  if(respuesta.error)throw respuesta.error;
+
+  productos=respuesta.data||[];
+
+  renderLocal();
+  renderProductos();
+ }catch(e){
+  console.error(e);
+  localEl.innerHTML='<div class="mensaje">No se pudo cargar el local.</div>';
+ }
+}
+
+function renderLocal(){
+ const imagen=imagenUrl(restaurante.banner_url);
+
+ localEl.innerHTML=`
+  <div class="local">
+   ${
+    imagen
+    ? `<img class="banner"
+        src="${escapeHtml(imagen)}"
+        alt="${escapeHtml(restaurante.nombre)}"
+        onerror="this.outerHTML='<div class=\\'sin-imagen\\'>Sin imagen</div>'">`
+    : `<div class="sin-imagen">Sin imagen</div>`
+   }
+   <div class="info">
+    <h2>${escapeHtml(restaurante.nombre)}</h2>
+    <div class="badge">${escapeHtml(restaurante.categoria||"")}</div>
+    <p>${escapeHtml(restaurante.descripcion||"")}</p>
+   </div>
+  </div>
+ `;
+}
+
+function renderProductos(){
+ if(!productos.length){
+  productosEl.innerHTML='<div class="mensaje">Este local no tiene productos disponibles.</div>';
+  return;
+ }
+
+ productosEl.innerHTML=productos.map(p=>{
+  const imagen=imagenUrl(p.imagen_url);
+
+  return `
+   <article class="producto">
+    ${
+     imagen
+     ? `<img
+          src="${escapeHtml(imagen)}"
+          alt="${escapeHtml(p.nombre)}"
+          onerror="this.style.display='none'">`
+     : ""
     }
-
-    try{
-        const {data,error}=await supabaseClient
-            .from("restaurantes")
-            .select("id,nombre,categoria,descripcion,banner_url,activo")
-            .eq("id",id)
-            .eq("activo",true)
-            .maybeSingle();
-
-        if(error)throw error;
-        if(!data){
-            mostrarError("El local no existe o no está disponible.");
-            return;
-        }
-
-        restauranteActual=data;
-        $("categoria").textContent=data.categoria||"Sin categoría";
-        $("nombreRestaurante").textContent=data.nombre;
-        $("descripcionRestaurante").textContent=data.descripcion||"";
-
-        await cargarProductos(data.id);
-    }catch(e){
-        console.error(e);
-        mostrarError("No se pudo cargar el local.");
-    }
-}
-
-async function cargarProductos(restauranteId){
-    try{
-        const {data,error}=await supabaseClient
-            .from("productos")
-            .select("id,restaurante_id,nombre,descripcion,precio,imagen_url,activo")
-            .eq("restaurante_id",restauranteId)
-            .eq("activo",true)
-            .order("nombre");
-
-        if(error)throw error;
-
-        renderProductos(data||[]);
-    }catch(e){
-        console.error(e);
-        mostrarError("No se pudieron cargar los productos.");
-    }
-}
-
-function renderProductos(lista){
-    const contenedor=$("productos");
-
-    if(!lista.length){
-        contenedor.innerHTML='<div class="vacio">Este local no tiene productos disponibles.</div>';
-        return;
-    }
-
-    contenedor.innerHTML=lista.map(p=>{
-        const imagen=p.imagen_url
-            ?`<img src="${escapeHTML(p.imagen_url)}" alt="${escapeHTML(p.nombre)}" loading="lazy" onerror="imagenError(this)">`
-            :'<div class="sin-imagen">Sin imagen</div>';
-
-        return`
-        <article class="producto">
-            ${imagen}
-            <div class="producto-body">
-                <h3>${escapeHTML(p.nombre)}</h3>
-                <div class="descripcion">${escapeHTML(p.descripcion||"")}</div>
-                <div class="precio">$${Number(p.precio||0).toFixed(2)}</div>
-                <button onclick="agregarProducto(${Number(p.id)})">Agregar al carrito</button>
-            </div>
-        </article>`;
-    }).join("");
-}
-
-function imagenError(img){
-    const d=document.createElement("div");
-    d.className="sin-imagen";
-    d.textContent="Imagen no disponible";
-    img.replaceWith(d);
+    <div class="producto-info">
+     <h3>${escapeHtml(p.nombre)}</h3>
+     <p>${escapeHtml(p.descripcion||"")}</p>
+     <div class="precio">$${Number(p.precio||0).toFixed(2)}</div>
+     <button onclick="agregarProducto(${p.id})">
+      Agregar al carrito
+     </button>
+    </div>
+   </article>
+  `;
+ }).join("");
 }
 
 function agregarProducto(id){
-    const productoEncontrado=document.querySelector(`button[onclick="agregarProducto(${id})"]`);
-    if(!productoEncontrado)return;
+ const producto=productos.find(p=>Number(p.id)===Number(id));
+ if(!producto)return;
 
-    cargarProductoPorId(id);
-}
+ let carrito=[];
 
-async function cargarProductoPorId(id){
-    try{
-        const {data,error}=await supabaseClient
-            .from("productos")
-            .select("id,restaurante_id,nombre,descripcion,precio,imagen_url")
-            .eq("id",id)
-            .eq("restaurante_id",restauranteActual.id)
-            .eq("activo",true)
-            .maybeSingle();
+ try{
+  carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+  if(!Array.isArray(carrito))carrito=[];
+ }catch{
+  carrito=[];
+ }
 
-        if(error)throw error;
-        if(!data)return;
+ const existente=carrito.find(p=>
+  Number(p.producto_id)===Number(producto.id)
+ );
 
-        let carrito=[];
+ if(existente){
+  existente.cantidad=(Number(existente.cantidad)||0)+1;
+ }else{
+  carrito.push({
+   producto_id:producto.id,
+   restaurante_id:restaurante.id,
+   restaurante_nombre:restaurante.nombre,
+   producto_nombre:producto.nombre,
+   precio:Number(producto.precio)||0,
+   cantidad:1,
+   imagen_url:producto.imagen_url||""
+  });
+ }
 
-        try{
-            carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
-            if(!Array.isArray(carrito))carrito=[];
-        }catch{
-            carrito=[];
-        }
-
-        const existente=carrito.find(x=>
-            Number(x.producto_id)===Number(data.id)&&
-            Number(x.restaurante_id)===Number(restauranteActual.id)
-        );
-
-        if(existente){
-            existente.cantidad=Number(existente.cantidad||0)+1;
-        }else{
-            carrito.push({
-                producto_id:data.id,
-                restaurante_id:restauranteActual.id,
-                restaurante_nombre:restauranteActual.nombre,
-                nombre:data.nombre,
-                descripcion:data.descripcion||"",
-                precio:Number(data.precio||0),
-                imagen_url:data.imagen_url||null,
-                cantidad:1
-            });
-        }
-
-        localStorage.setItem("carrito",JSON.stringify(carrito));
-        actualizarCarrito();
-        notificar(`${data.nombre} agregado al carrito`);
-    }catch(e){
-        console.error(e);
-        notificar("No se pudo agregar el producto","error");
-    }
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ actualizarCarrito();
 }
 
 function actualizarCarrito(){
-    let carrito=[];
-    try{
-        carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
-        if(!Array.isArray(carrito))carrito=[];
-    }catch{
-        carrito=[];
-    }
-
-    $("cantidadCarrito").textContent=carrito.reduce(
-        (t,p)=>t+Number(p.cantidad||0),0
-    );
+ try{
+  const carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+  contador.textContent=carrito.reduce(
+   (total,p)=>total+(Number(p.cantidad)||0),0
+  );
+ }catch{
+  contador.textContent="0";
+ }
 }
 
-function irAlCarrito(){
-    location.href="menu.html";
-}
+const localEl=document.getElementById("local");
+const productosEl=document.getElementById("productos");
+const contador=document.getElementById("contador");
+const nombreHeader=document.getElementById("nombreHeader");
 
-function notificar(texto,tipo="ok"){
-    const n=$("notificacion");
-    n.textContent=texto;
-    n.style.background=tipo==="error"?"#c0392b":"#198754";
-    n.style.display="block";
-    clearTimeout(window.timerNotificacion);
-    window.timerNotificacion=setTimeout(()=>{
-        n.style.display="none";
-    },2200);
-}
+actualizarCarrito();
+cargar();
 
-function mostrarError(texto){
-    $("productos").innerHTML=`<div class="error">${escapeHTML(texto)}</div>`;
-}
+window.addEventListener("storage",actualizarCarrito);
 </script>
+
 </body>
 </html>
