@@ -114,6 +114,7 @@ main{
 
 .search{
  margin-top:15px;
+ position:relative;
 }
 
 .search input{
@@ -128,6 +129,12 @@ main{
 .search input:focus{
  border-color:var(--azul);
  box-shadow:0 0 0 3px rgba(18,97,160,.1);
+}
+
+.search-hint{
+ margin-top:7px;
+ color:var(--muted);
+ font-size:11px;
 }
 
 .categories{
@@ -230,6 +237,7 @@ main{
 }
 
 /* ESTADO DEL LOCAL */
+
 .status{
  position:absolute;
  top:10px;
@@ -248,6 +256,19 @@ main{
 .status.closed{
  background:var(--rojo);
  color:#fff;
+}
+
+/* RESULTADO DE PRODUCTO */
+
+.product-match{
+ display:inline-block;
+ margin-top:8px;
+ padding:5px 8px;
+ border-radius:7px;
+ background:#eef6ff;
+ color:var(--azul);
+ font-size:11px;
+ font-weight:bold;
 }
 
 .local-body{
@@ -344,6 +365,7 @@ main{
  .banner{
   height:180px;
  }
+
 }
 </style>
 </head>
@@ -355,8 +377,15 @@ main{
  <div class="header-inner">
 
   <div>
-   <div class="logo">Sobre <span>Ruedas</span></div>
-   <div class="subtitle">Delivery en Esmeraldas</div>
+
+   <div class="logo">
+    Sobre <span>Ruedas</span>
+   </div>
+
+   <div class="subtitle">
+    Delivery en Esmeraldas
+   </div>
+
   </div>
 
   <a class="cart" href="menu.html">
@@ -368,14 +397,17 @@ main{
 
 </header>
 
+
 <main>
 
  <section class="hero">
 
-  <h1>¿Qué quieres pedir hoy?</h1>
+  <h1>
+   ¿Qué quieres pedir hoy?
+  </h1>
 
   <p>
-   Encuentra tus locales favoritos y pide desde Sobre Ruedas.
+   Busca un local o directamente el producto que quieres comprar.
   </p>
 
   <div class="search">
@@ -383,22 +415,31 @@ main{
    <input
     id="busqueda"
     type="search"
-    placeholder="🔎 Buscar local..."
+    placeholder="🔎 Buscar local o producto..."
     autocomplete="off">
+
+   <div class="search-hint">
+    Ejemplo: hamburguesa, pizza, pollo, ceviche...
+   </div>
 
   </div>
 
  </section>
 
+
  <div id="categorias" class="categories"></div>
+
 
  <div class="section-title">
 
-  <h2>Locales disponibles</h2>
+  <h2 id="tituloLocales">
+   Locales disponibles
+  </h2>
 
   <span id="contador" class="count"></span>
 
  </div>
+
 
  <div id="locales" class="locales">
 
@@ -410,14 +451,28 @@ main{
 
 </main>
 
+
 <script>
 
 let locales=[];
 let categorias=[];
 let horarios={};
+
+/*
+ Productos activos.
+ Se cargan una sola vez y luego se relacionan
+ con los locales mediante restaurante_id.
+*/
+let productos=[];
+
 let categoriaActual="";
 
 const $=id=>document.getElementById(id);
+
+
+/* =========================================================
+   ESCAPAR HTML
+========================================================= */
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
  "&":"&amp;",
@@ -457,7 +512,7 @@ function actualizarCarrito(){
 
 
 /* =========================================================
-   HORA ACTUAL DE ECUADOR
+   HORA ECUADOR
 ========================================================= */
 
 function obtenerHoraEcuador(){
@@ -493,10 +548,6 @@ function obtenerHoraEcuador(){
 
  let hora=Number(valores.hour);
 
- /*
-  Algunos navegadores pueden devolver 24 para medianoche.
-  Lo normalizamos a 0.
- */
  if(hora===24){
   hora=0;
  }
@@ -510,93 +561,13 @@ function obtenerHoraEcuador(){
 
 
 /* =========================================================
-   DETERMINAR SI UN LOCAL ESTA ABIERTO
+   CONVERTIR HORA A MINUTOS
 ========================================================= */
-
-function localEstaAbierto(local){
-
- const lista=horarios[local.id]||[];
-
- /*
-  Si no existe configuración de horario,
-  lo consideramos cerrado para evitar mostrar
-  un local como disponible incorrectamente.
- */
- if(!lista.length){
-  return false;
- }
-
- /*
-  SIEMPRE ABIERTO:
-  7 días, todos abiertos, 00:00 - 23:59
- */
- const siempreAbierto=
-  lista.length===7 &&
-  lista.every(h=>
-   !h.cerrado &&
-   String(h.hora_apertura||"").substring(0,5)==="00:00" &&
-   String(h.hora_cierre||"").substring(0,5)==="23:59"
-  );
-
- if(siempreAbierto){
-  return true;
- }
-
- const ahora=obtenerHoraEcuador();
-
- const horario=lista.find(
-  h=>Number(h.dia_semana)===ahora.dia
- );
-
- if(!horario){
-  return false;
- }
-
- if(horario.cerrado){
-  return false;
- }
-
- if(!horario.hora_apertura || !horario.hora_cierre){
-  return false;
- }
-
- const apertura=convertirMinutos(horario.hora_apertura);
- const cierre=convertirMinutos(horario.hora_cierre);
-
- /*
-  Horario normal:
-  10:00 - 22:00
- */
- if(cierre>apertura){
-
-  return ahora.minutos>=apertura &&
-         ahora.minutos<=cierre;
-
- }
-
- /*
-  Horario que cruza medianoche:
-  por ejemplo 18:00 - 02:00
- */
- if(cierre<apertura){
-
-  return ahora.minutos>=apertura ||
-         ahora.minutos<=cierre;
-
- }
-
- /*
-  Apertura y cierre iguales:
-  se considera cerrado.
- */
- return false;
-
-}
-
 
 function convertirMinutos(hora){
 
- const texto=String(hora||"").substring(0,5);
+ const texto=
+  String(hora||"").substring(0,5);
 
  const partes=texto.split(":");
 
@@ -613,7 +584,93 @@ function convertirMinutos(hora){
 
 
 /* =========================================================
-   CARGAR INFORMACION
+   SABER SI LOCAL ESTA ABIERTO
+========================================================= */
+
+function localEstaAbierto(local){
+
+ const lista=horarios[local.id]||[];
+
+ if(!lista.length){
+  return false;
+ }
+
+
+ /* SIEMPRE ABIERTO */
+
+ const siempreAbierto=
+  lista.length===7 &&
+  lista.every(h=>
+   !h.cerrado &&
+   String(h.hora_apertura||"").substring(0,5)==="00:00" &&
+   String(h.hora_cierre||"").substring(0,5)==="23:59"
+  );
+
+ if(siempreAbierto){
+  return true;
+ }
+
+
+ const ahora=obtenerHoraEcuador();
+
+ const horario=lista.find(
+  h=>Number(h.dia_semana)===ahora.dia
+ );
+
+ if(!horario){
+  return false;
+ }
+
+ if(horario.cerrado){
+  return false;
+ }
+
+ if(
+  !horario.hora_apertura ||
+  !horario.hora_cierre
+ ){
+  return false;
+ }
+
+
+ const apertura=
+  convertirMinutos(horario.hora_apertura);
+
+ const cierre=
+  convertirMinutos(horario.hora_cierre);
+
+
+ /* HORARIO NORMAL */
+
+ if(cierre>apertura){
+
+  return(
+   ahora.minutos>=apertura &&
+   ahora.minutos<=cierre
+  );
+
+ }
+
+
+ /* HORARIO QUE CRUZA MEDIANOCHE */
+
+ if(cierre<apertura){
+
+  return(
+   ahora.minutos>=apertura ||
+   ahora.minutos<=cierre
+  );
+
+ }
+
+
+ return false;
+
+}
+
+
+/* =========================================================
+   CARGAR DATOS
 ========================================================= */
 
 async function cargar(){
@@ -624,8 +681,11 @@ async function cargar(){
 
   const [
    {data:localesData,error:localesError},
-   {data:categoriasData,error:categoriasError}
+   {data:categoriasData,error:categoriasError},
+   {data:productosData,error:productosError}
   ]=await Promise.all([
+
+   /* LOCALES */
 
    supabaseClient
     .from("restaurantes")
@@ -633,30 +693,59 @@ async function cargar(){
     .eq("activo",true)
     .order("nombre"),
 
+
+   /* CATEGORIAS */
+
    supabaseClient
     .from("categorias")
     .select("*")
+    .eq("activo",true)
+    .order("nombre"),
+
+
+   /* PRODUCTOS ACTIVOS */
+
+   supabaseClient
+    .from("productos")
+    .select(
+     "id,restaurante_id,nombre,descripcion,precio,imagen_url"
+    )
     .eq("activo",true)
     .order("nombre")
 
   ]);
 
-  if(localesError)throw localesError;
-  if(categoriasError)throw categoriasError;
+
+  if(localesError){
+   throw localesError;
+  }
+
+  if(categoriasError){
+   throw categoriasError;
+  }
+
+  if(productosError){
+   throw productosError;
+  }
+
 
   locales=localesData||[];
+
   categorias=categoriasData||[];
+
+  productos=productosData||[];
 
 
   /* =======================================================
-     CARGAR HORARIOS DE TODOS LOS LOCALES
+     CARGAR HORARIOS
   ======================================================= */
 
   horarios={};
 
   if(locales.length){
 
-   const ids=locales.map(local=>local.id);
+   const ids=
+    locales.map(local=>local.id);
 
    const {
     data:horariosData,
@@ -666,11 +755,15 @@ async function cargar(){
     .select("*")
     .in("restaurante_id",ids);
 
-   if(horariosError)throw horariosError;
+   if(horariosError){
+    throw horariosError;
+   }
+
 
    (horariosData||[]).forEach(h=>{
 
-    const id=Number(h.restaurante_id);
+    const id=
+     Number(h.restaurante_id);
 
     if(!horarios[id]){
      horarios[id]=[];
@@ -682,19 +775,30 @@ async function cargar(){
 
   }
 
+
   renderCategorias();
+
   renderLocales();
+
 
  }catch(error){
 
   console.error(error);
 
   localesEl.innerHTML=`
+
    <div class="error">
+
     No se pudieron cargar los locales.
+
     <br>
-    <small>${esc(error.message||"Error de conexión")}</small>
+
+    <small>
+     ${esc(error.message||"Error de conexión")}
+    </small>
+
    </div>
+
   `;
 
  }
@@ -718,6 +822,7 @@ function renderCategorias(){
 
  }
 
+
  el.innerHTML=`
 
   <button
@@ -729,6 +834,7 @@ function renderCategorias(){
   </button>
 
  `+
+
  categorias.map(c=>`
 
   <button
@@ -749,6 +855,7 @@ function seleccionarCategoria(nombre){
  categoriaActual=nombre;
 
  renderCategorias();
+
  renderLocales();
 
  window.scrollTo({
@@ -764,6 +871,140 @@ function seleccionarCategoria(nombre){
 
 
 /* =========================================================
+   BUSCAR PRODUCTOS DE UN LOCAL
+========================================================= */
+
+function obtenerProductosCoincidentes(
+ localId,
+ texto
+){
+
+ if(!texto){
+  return [];
+ }
+
+
+ return productos.filter(producto=>{
+
+  if(
+   Number(producto.restaurante_id)!==
+   Number(localId)
+  ){
+   return false;
+  }
+
+
+  const nombre=
+   norm(producto.nombre);
+
+  const descripcion=
+   norm(producto.descripcion);
+
+
+  return(
+   nombre.includes(texto) ||
+   descripcion.includes(texto)
+  );
+
+ });
+
+}
+
+
+/* =========================================================
+   DETERMINAR SI EL TEXTO ES PRODUCTO
+========================================================= */
+
+function buscarLocales(){
+
+ const texto=
+  norm($("busqueda").value);
+
+
+ /*
+  Si no hay texto:
+  mostrar todos los locales.
+ */
+
+ if(!texto){
+
+  return locales.filter(local=>{
+
+   const coincideCategoria=
+    !categoriaActual ||
+    norm(local.categoria)===
+    norm(categoriaActual);
+
+   return coincideCategoria;
+
+  });
+
+ }
+
+
+ /*
+  Con texto:
+  Primero buscamos coincidencias
+  en nombre, descripción y categoría
+  del local.
+ */
+
+ const resultadosLocales=[];
+
+
+ locales.forEach(local=>{
+
+  const coincideLocal=
+   norm(local.nombre).includes(texto) ||
+   norm(local.descripcion).includes(texto) ||
+   norm(local.categoria).includes(texto);
+
+
+  /*
+   Buscamos productos pertenecientes
+   a ese local.
+  */
+
+  const productosCoincidentes=
+   obtenerProductosCoincidentes(
+    local.id,
+    texto
+   );
+
+
+  const coincideProducto=
+   productosCoincidentes.length>0;
+
+
+  const coincideCategoria=
+   !categoriaActual ||
+   norm(local.categoria)===
+   norm(categoriaActual);
+
+
+  if(
+   coincideCategoria &&
+   (coincideLocal||coincideProducto)
+  ){
+
+   resultadosLocales.push({
+
+    local,
+    productosCoincidentes
+
+   });
+
+  }
+
+ });
+
+
+ return resultadosLocales;
+
+}
+
+
+/* =========================================================
    MOSTRAR LOCALES
 ========================================================= */
 
@@ -772,35 +1013,45 @@ function renderLocales(){
  const contenedor=$("locales");
 
  const texto=
-  $("busqueda").value
-   .trim()
-   .toLowerCase();
+  norm($("busqueda").value);
 
 
- let filtrados=locales.filter(local=>{
+ const resultados=
+  buscarLocales();
 
-  const coincideTexto=
-   !texto ||
-   norm(local.nombre).includes(texto) ||
-   norm(local.descripcion).includes(texto) ||
-   norm(local.categoria).includes(texto);
 
-  const coincideCategoria=
-   !categoriaActual ||
-   norm(local.categoria)===norm(categoriaActual);
+ /*
+  TITULO
+ */
 
-  return coincideTexto&&coincideCategoria;
+ if(texto){
 
- });
+  $("tituloLocales").textContent=
+   "Locales que coinciden con tu búsqueda";
 
+ }else{
+
+  $("tituloLocales").textContent=
+   "Locales disponibles";
+
+ }
+
+
+ /*
+  CONTADOR
+ */
 
  $("contador").textContent=
-  filtrados.length===1
+  resultados.length===1
    ?"1 local"
-   :`${filtrados.length} locales`;
+   :`${resultados.length} locales`;
 
 
- if(!filtrados.length){
+ /*
+  SIN RESULTADOS
+ */
+
+ if(!resultados.length){
 
   contenedor.innerHTML=`
 
@@ -811,11 +1062,11 @@ function renderLocales(){
     </div>
 
     <strong>
-     No encontramos locales
+     No encontramos resultados
     </strong>
 
-    <div>
-     Prueba con otra búsqueda o categoría.
+    <div style="margin-top:6px">
+     Prueba con otro local o producto.
     </div>
 
    </div>
@@ -827,103 +1078,165 @@ function renderLocales(){
  }
 
 
- contenedor.innerHTML=filtrados.map(local=>{
+ /*
+  RENDER
+ */
 
-  const abierto=localEstaAbierto(local);
+ contenedor.innerHTML=
+  resultados.map(resultado=>{
 
-  const imagen=local.banner_url
-   ?`
+   /*
+    Cuando no hay búsqueda,
+    resultado es directamente el local.
+   */
 
-    <img
-     src="${esc(local.banner_url)}?v=${Date.now()}"
-     alt="${esc(local.nombre)}"
-     loading="lazy"
-     onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;>🍴</div>'">
-
-   `
-   :`
-
-    <div class="no-image">
-     🍴
-    </div>
-
-   `;
+   const local=
+    texto
+     ?resultado.local
+     :resultado;
 
 
-  const estado=abierto
-   ?`
-
-    <span class="status open">
-     ● Disponible
-    </span>
-
-   `
-   :`
-
-    <span class="status closed">
-     ● Cerrado
-    </span>
-
-   `;
+   const coincidencias=
+    texto
+     ?resultado.productosCoincidentes
+     :[];
 
 
-  return`
-
-   <article
-    class="local"
-    onclick="abrirLocal(${Number(local.id)})">
-
-    <div class="banner">
-
-     ${imagen}
-
-     ${estado}
-
-    </div>
+   const abierto=
+    localEstaAbierto(local);
 
 
-    <div class="local-body">
+   const imagen=
+    local.banner_url
+     ?`
 
-     <div class="local-name">
-      ${esc(local.nombre)}
-     </div>
+      <img
+       src="${esc(local.banner_url)}?v=${Date.now()}"
+       alt="${esc(local.nombre)}"
+       loading="lazy"
+       onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;>🍴</div>'">
 
+     `
+     :`
 
-     ${local.categoria?`
-
-      <div class="local-category">
-       ${esc(local.categoria)}
+      <div class="no-image">
+       🍴
       </div>
 
-     `:""}
+     `;
 
 
-     <div class="local-description">
+   const estado=
+    abierto
+     ?`
 
-      ${esc(local.descripcion||"")}
+      <span class="status open">
+       ● Disponible
+      </span>
+
+     `
+     :`
+
+      <span class="status closed">
+       ● Cerrado
+      </span>
+
+     `;
+
+
+   /*
+    Mostrar productos encontrados.
+   */
+
+   let coincidenciasHTML="";
+
+
+   if(coincidencias.length){
+
+    const nombres=
+     coincidencias
+      .slice(0,3)
+      .map(p=>esc(p.nombre))
+      .join(", ");
+
+
+    const extra=
+     coincidencias.length>3
+      ?` +${coincidencias.length-3} más`
+      :"";
+
+
+    coincidenciasHTML=`
+
+     <div class="product-match">
+      🍴 Tiene: ${nombres}${extra}
+     </div>
+
+    `;
+
+   }
+
+
+   return`
+
+    <article
+     class="local"
+     onclick="abrirLocal(${Number(local.id)})">
+
+     <div class="banner">
+
+      ${imagen}
+
+      ${estado}
 
      </div>
 
 
-     <div class="local-footer">
+     <div class="local-body">
 
-      <span class="delivery">
-       🚴 Delivery
-      </span>
+      <div class="local-name">
+       ${esc(local.nombre)}
+      </div>
 
-      <span class="view">
-       Ver menú →
-      </span>
+
+      ${local.categoria?`
+
+       <div class="local-category">
+        ${esc(local.categoria)}
+       </div>
+
+      `:""}
+
+
+      <div class="local-description">
+
+       ${esc(local.descripcion||"")}
+
+      </div>
+
+
+      ${coincidenciasHTML}
+
+
+      <div class="local-footer">
+
+       <span class="delivery">
+        🚴 Delivery
+       </span>
+
+       <span class="view">
+        Ver menú →
+       </span>
+
+      </div>
 
      </div>
 
-    </div>
+    </article>
 
-   </article>
+   `;
 
-  `;
-
- }).join("");
+  }).join("");
 
 }
 
@@ -948,20 +1261,23 @@ function norm(valor){
 
  return String(valor??"")
   .trim()
-  .toLowerCase();
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"");
 
 }
 
 
 /* =========================================================
-   ACTUALIZAR ESTADOS
-   CADA MINUTO
+   ESTADOS
 ========================================================= */
 
 function actualizarEstados(){
 
  if(locales.length){
+
   renderLocales();
+
  }
 
 }
@@ -1007,6 +1323,7 @@ document.addEventListener(
   if(!document.hidden){
 
    actualizarCarrito();
+
    actualizarEstados();
 
   }
