@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -14,266 +16,573 @@
     <script src="supabase.js"></script>
     <script src="config.js"></script>
 
+
     <style>
 
         * {
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
+
             font-family: Arial, sans-serif;
+
             background: #f4f7f5;
+
             color: #17352b;
+
         }
+
 
         header {
+
             background: #087f5b;
+
             color: white;
+
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.12);
+
         }
+
 
         header h1 {
+
             margin: 0;
+
             text-align: center;
+
         }
+
 
         header p {
+
             text-align: center;
+
             margin: 7px 0 0;
+
             opacity: 0.9;
+
         }
+
 
         .contenedor {
+
             width: 94%;
+
             max-width: 1000px;
+
             margin: 30px auto 60px;
+
         }
+
 
         .volver {
+
             display: inline-block;
+
             margin-bottom: 20px;
+
             color: #087f5b;
+
             text-decoration: none;
+
             font-weight: bold;
+
         }
+
 
         .seccion {
+
             background: white;
+
             padding: 25px;
+
             border-radius: 14px;
+
             margin-bottom: 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.08);
+
         }
+
 
         .seccion h2 {
+
             margin-top: 0;
+
             color: #087f5b;
-            border-bottom: 1px solid #e1e8e4;
+
+            border-bottom:
+                1px solid #e1e8e4;
+
             padding-bottom: 12px;
+
         }
+
 
         .campo {
+
             margin-bottom: 18px;
+
         }
 
+
         label {
+
             display: block;
+
             font-weight: bold;
+
             margin-bottom: 7px;
+
         }
+
 
         input,
         textarea,
         select {
+
             width: 100%;
+
             padding: 12px;
-            border: 1px solid #ccd7d2;
+
+            border:
+                1px solid #ccd7d2;
+
             border-radius: 8px;
+
             font-size: 15px;
+
             font-family: inherit;
+
         }
+
 
         input:focus,
         textarea:focus,
         select:focus {
+
             outline: none;
+
             border-color: #087f5b;
+
         }
+
 
         textarea {
+
             min-height: 100px;
+
             resize: vertical;
+
         }
+
 
         .boton {
+
             border: none;
+
             border-radius: 8px;
+
             padding: 12px 18px;
+
             font-size: 15px;
+
             font-weight: bold;
+
             cursor: pointer;
+
         }
+
 
         .boton-principal {
+
             background: #087f5b;
+
             color: white;
+
         }
+
 
         .boton-principal:hover {
+
             background: #066b4c;
+
         }
+
 
         .boton-secundario {
+
             background: #e6f5ef;
+
             color: #087f5b;
+
         }
+
 
         .boton-peligro {
+
             background: #fdecea;
+
             color: #a93226;
+
         }
+
 
         .boton:disabled {
+
             opacity: 0.6;
+
             cursor: not-allowed;
+
         }
+
 
         .preview {
+
             margin-top: 15px;
+
             display: none;
+
         }
+
 
         .preview img {
+
             width: 100%;
+
             max-height: 300px;
+
             object-fit: cover;
+
             border-radius: 10px;
-            border: 1px solid #d9e2de;
+
+            border:
+                1px solid #d9e2de;
+
         }
+
 
         .producto-editor {
-            border: 1px solid #dce5e0;
+
+            border:
+                1px solid #dce5e0;
+
             padding: 18px;
+
             border-radius: 12px;
+
             margin-bottom: 15px;
+
             background: #fafcfb;
+
         }
+
 
         .producto-header {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             margin-bottom: 15px;
+
             gap: 10px;
+
         }
+
 
         .producto-header strong {
+
             color: #087f5b;
+
         }
+
 
         .producto-grid {
+
             display: grid;
+
             grid-template-columns: 2fr 1fr;
+
             gap: 15px;
+
         }
+
 
         .acciones {
+
             display: flex;
+
             gap: 10px;
+
             flex-wrap: wrap;
+
         }
+
 
         .mensaje {
+
             display: none;
+
             padding: 15px;
+
             border-radius: 9px;
+
             margin-top: 20px;
+
         }
+
 
         .mensaje.exito {
+
             display: block;
+
             background: #e6f5ef;
+
             color: #145c43;
-            border: 1px solid #9dd2bd;
+
+            border:
+                1px solid #9dd2bd;
+
         }
+
 
         .mensaje.error {
+
             display: block;
+
             background: #fdecea;
+
             color: #8a2d24;
-            border: 1px solid #f3b6af;
+
+            border:
+                1px solid #f3b6af;
+
         }
+
 
         .restaurantes-lista {
+
             margin-top: 20px;
+
         }
+
 
         .restaurante-item {
+
             padding: 15px;
-            border: 1px solid #dce5e0;
+
+            border:
+                1px solid #dce5e0;
+
             border-radius: 10px;
+
             margin-bottom: 10px;
+
             background: #fafcfb;
+
         }
+
 
         .restaurante-item strong {
+
             color: #087f5b;
+
         }
+
 
         .estado {
+
             display: inline-block;
+
             margin-top: 6px;
+
             padding: 4px 9px;
+
             border-radius: 20px;
+
             font-size: 12px;
+
             font-weight: bold;
+
         }
+
 
         .estado.activo {
+
             background: #e6f5ef;
+
             color: #087f5b;
+
         }
+
 
         .estado.inactivo {
+
             background: #fdecea;
+
             color: #a93226;
+
         }
+
 
         .info {
+
             background: #eef7f3;
-            border-left: 4px solid #087f5b;
+
+            border-left:
+                4px solid #087f5b;
+
             padding: 13px 15px;
+
             border-radius: 6px;
+
             margin-bottom: 20px;
+
             line-height: 1.5;
+
         }
+
 
         .banner-info {
+
             margin-top: 10px;
+
             color: #536b61;
+
             font-size: 14px;
+
         }
 
+
         .producto-sin-imagen {
+
             margin-top: 8px;
+
             color: #536b61;
+
             font-size: 13px;
+
         }
+
+
+        /* ====================================================
+           HORARIOS
+        ==================================================== */
+
+        .horario-editor {
+
+            border:
+                1px solid #dce5e0;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            margin-bottom: 12px;
+
+            background: #fafcfb;
+
+        }
+
+
+        .horario-dia {
+
+            margin-bottom: 15px;
+
+            color: #087f5b;
+
+            font-size: 17px;
+
+        }
+
+
+        .horario-campos {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr 1fr;
+
+            gap: 15px;
+
+            align-items: end;
+
+        }
+
+
+        .horario-cerrado {
+
+            padding-bottom: 12px;
+
+        }
+
+
+        .horario-cerrado label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            cursor: pointer;
+
+        }
+
+
+        .horario-cerrado input {
+
+            width: auto;
+
+        }
+
+
+        .horario-ayuda {
+
+            margin-top: 5px;
+
+            font-size: 13px;
+
+            color: #536b61;
+
+        }
+
 
         @media (max-width: 700px) {
 
             .producto-grid {
+
                 grid-template-columns: 1fr;
+
+            }
+
+
+            .horario-campos {
+
+                grid-template-columns: 1fr;
+
             }
 
         }
 
     </style>
+
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -287,6 +596,7 @@
 
 
 <div class="contenedor">
+
 
     <a
         href="index.html"
@@ -306,6 +616,7 @@
             ⚙️ Configuración
         </h2>
 
+
         <div class="info">
 
             Estos valores corresponden a la configuración
@@ -317,8 +628,11 @@
         <div class="campo">
 
             <label for="tarifaDelivery">
+
                 Tarifa de delivery por carrera
+
             </label>
+
 
             <input
                 type="number"
@@ -333,8 +647,11 @@
         <div class="campo">
 
             <label for="whatsappNegocio">
+
                 WhatsApp del negocio
+
             </label>
+
 
             <input
                 type="text"
@@ -348,7 +665,9 @@
             class="boton boton-principal"
             onclick="guardarConfiguracion()"
         >
+
             Guardar configuración
+
         </button>
 
 
@@ -358,6 +677,7 @@
         ></div>
 
     </div>
+
 
 
     <!-- =====================================================
@@ -374,8 +694,11 @@
         <div class="campo">
 
             <label for="nombreRestaurante">
+
                 Nombre del restaurante *
+
             </label>
+
 
             <input
                 type="text"
@@ -389,39 +712,62 @@
         <div class="campo">
 
             <label for="categoriaRestaurante">
+
                 Categoría *
+
             </label>
+
 
             <select
                 id="categoriaRestaurante"
             >
 
                 <option value="">
+
                     Seleccionar categoría
+
                 </option>
+
 
                 <option value="Hamburguesas">
+
                     Hamburguesas
+
                 </option>
+
 
                 <option value="Pizza">
+
                     Pizza
+
                 </option>
+
 
                 <option value="Pollo">
+
                     Pollo
+
                 </option>
+
 
                 <option value="Bebidas">
+
                     Bebidas
+
                 </option>
+
 
                 <option value="Tiendas">
+
                     Tiendas
+
                 </option>
 
+
                 <option value="Otros">
+
                     Otros
+
                 </option>
 
             </select>
@@ -432,8 +778,11 @@
         <div class="campo">
 
             <label for="descripcionRestaurante">
+
                 Descripción
+
             </label>
+
 
             <textarea
                 id="descripcionRestaurante"
@@ -443,6 +792,7 @@
         </div>
 
 
+
         <!-- =================================================
              BANNER
         ================================================== -->
@@ -450,8 +800,11 @@
         <div class="campo">
 
             <label for="bannerRestaurante">
+
                 🖼️ Banner del restaurante
+
             </label>
+
 
             <input
                 type="file"
@@ -459,6 +812,7 @@
                 accept="image/*"
                 onchange="mostrarBanner()"
             >
+
 
             <div class="banner-info">
 
@@ -482,6 +836,7 @@
             >
 
         </div>
+
 
 
         <!-- =================================================
@@ -520,7 +875,9 @@
                 class="boton boton-secundario"
                 onclick="agregarProducto()"
             >
+
                 + Agregar producto
+
             </button>
 
         </div>
@@ -534,7 +891,9 @@
             class="boton boton-principal"
             onclick="publicarRestaurante()"
         >
+
             🚀 Publicar restaurante
+
         </button>
 
 
@@ -546,6 +905,95 @@
     </div>
 
 
+
+    <!-- =====================================================
+         HORARIOS
+    ====================================================== -->
+
+    <div class="seccion">
+
+        <h2>
+
+            🕐 Horarios de atención
+
+        </h2>
+
+
+        <div class="info">
+
+            Configura los días y horarios en los que cada
+            restaurante acepta pedidos.
+
+            <br><br>
+
+            Si un restaurante está marcado como
+            <strong>cerrado</strong>, los clientes no podrán
+            agregar productos al carrito.
+
+        </div>
+
+
+        <div class="campo">
+
+            <label for="restauranteHorario">
+
+                Restaurante
+
+            </label>
+
+
+            <select
+                id="restauranteHorario"
+                onchange="cargarHorariosRestaurante()"
+            >
+
+                <option value="">
+
+                    Seleccionar restaurante
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            id="editorHorarios"
+            style="display:none;"
+        >
+
+            <div
+                id="listaHorarios"
+            ></div>
+
+
+            <div class="acciones">
+
+                <button
+                    type="button"
+                    class="boton boton-principal"
+                    onclick="guardarHorarios()"
+                >
+
+                    💾 Guardar horarios
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="mensajeHorarios"
+            class="mensaje"
+        ></div>
+
+    </div>
+
+
+
     <!-- =====================================================
          RESTAURANTES EXISTENTES
     ====================================================== -->
@@ -553,7 +1001,9 @@
     <div class="seccion">
 
         <h2>
+
             🏪 Restaurantes registrados
+
         </h2>
 
 
@@ -561,7 +1011,9 @@
             class="boton boton-secundario"
             onclick="cargarRestaurantes()"
         >
+
             🔄 Actualizar lista
+
         </button>
 
 
@@ -569,7 +1021,9 @@
             id="restaurantesLista"
             class="restaurantes-lista"
         >
+
             Cargando...
+
         </div>
 
     </div>
@@ -577,7 +1031,9 @@
 </div>
 
 
+
 <script>
+
 
     /*
      * ========================================================
@@ -588,6 +1044,62 @@
     let productos = [];
 
     let bannerArchivo = null;
+
+
+
+    /*
+     * ========================================================
+     * DÍAS DE LA SEMANA
+     *
+     * 0 = Domingo
+     * 1 = Lunes
+     * 2 = Martes
+     * 3 = Miércoles
+     * 4 = Jueves
+     * 5 = Viernes
+     * 6 = Sábado
+     * ========================================================
+     */
+
+    const DIAS_SEMANA = [
+
+        {
+            numero: 0,
+            nombre: "Domingo"
+        },
+
+        {
+            numero: 1,
+            nombre: "Lunes"
+        },
+
+        {
+            numero: 2,
+            nombre: "Martes"
+        },
+
+        {
+            numero: 3,
+            nombre: "Miércoles"
+        },
+
+        {
+            numero: 4,
+            nombre: "Jueves"
+        },
+
+        {
+            numero: 5,
+            nombre: "Viernes"
+        },
+
+        {
+            numero: 6,
+            nombre: "Sábado"
+        }
+
+    ];
+
 
 
     /*
@@ -606,8 +1118,11 @@
 
             await cargarRestaurantes();
 
+            await cargarRestaurantesParaHorarios();
+
         }
     );
+
 
 
     /*
@@ -622,17 +1137,41 @@
             texto === null ||
             texto === undefined
         ) {
+
             return "";
+
         }
 
+
         return String(texto)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
 
     }
+
 
 
     function mostrarMensaje(
@@ -646,12 +1185,16 @@
                 elementoId
             );
 
-        elemento.textContent = texto;
+
+        elemento.textContent =
+            texto;
+
 
         elemento.className =
             "mensaje " + tipo;
 
     }
+
 
 
     /*
@@ -665,6 +1208,7 @@
         document.getElementById(
             "tarifaDelivery"
         ).value =
+
             Number(
                 CONFIG.tarifaDelivery
             ).toFixed(2);
@@ -673,14 +1217,18 @@
         document.getElementById(
             "whatsappNegocio"
         ).value =
-            CONFIG.whatsappNegocio || "";
+
+            CONFIG.whatsappNegocio ||
+            "";
 
     }
+
 
 
     function guardarConfiguracion() {
 
         const tarifa =
+
             Number(
                 document.getElementById(
                     "tarifaDelivery"
@@ -689,9 +1237,11 @@
 
 
         const whatsapp =
+
             document.getElementById(
                 "whatsappNegocio"
-            ).value
+            )
+            .value
             .trim();
 
 
@@ -701,9 +1251,13 @@
         ) {
 
             mostrarMensaje(
+
                 "mensajeConfiguracion",
+
                 "Ingresa una tarifa válida.",
+
                 "error"
+
             );
 
             return;
@@ -723,20 +1277,28 @@
 
 
         localStorage.setItem(
+
             "configSobreRuedas",
+
             JSON.stringify(
                 configuracion
             )
+
         );
 
 
         mostrarMensaje(
+
             "mensajeConfiguracion",
+
             "Configuración guardada correctamente.",
+
             "exito"
+
         );
 
     }
+
 
 
     /*
@@ -748,6 +1310,7 @@
     function mostrarBanner() {
 
         const input =
+
             document.getElementById(
                 "bannerRestaurante"
             );
@@ -761,34 +1324,41 @@
 
             bannerArchivo = null;
 
+
             document.getElementById(
                 "previewBanner"
-            ).style.display = "none";
+            ).style.display =
+                "none";
+
 
             return;
 
         }
 
 
-        bannerArchivo = archivo;
+        bannerArchivo =
+            archivo;
 
 
         const lector =
             new FileReader();
 
 
-        lector.onload = function(e) {
+        lector.onload =
+            function(e) {
 
-            document.getElementById(
-                "imagenBanner"
-            ).src = e.target.result;
+                document.getElementById(
+                    "imagenBanner"
+                ).src =
+                    e.target.result;
 
 
-            document.getElementById(
-                "previewBanner"
-            ).style.display = "block";
+                document.getElementById(
+                    "previewBanner"
+                ).style.display =
+                    "block";
 
-        };
+            };
 
 
         lector.readAsDataURL(
@@ -796,6 +1366,7 @@
         );
 
     }
+
 
 
     /*
@@ -825,19 +1396,26 @@
     }
 
 
+
     function mostrarProductos() {
 
         const contenedor =
+
             document.getElementById(
                 "listaProductos"
             );
 
 
-        contenedor.innerHTML = "";
+        contenedor.innerHTML =
+            "";
 
 
         productos.forEach(
-            (producto, indice) => {
+
+            (
+                producto,
+                indice
+            ) => {
 
                 const div =
                     document.createElement(
@@ -857,14 +1435,15 @@
                             Producto ${indice + 1}
                         </strong>
 
+
                         <button
                             type="button"
                             class="boton boton-peligro"
-                            onclick="eliminarProducto(
-                                ${indice}
-                            )"
+                            onclick="eliminarProducto(${indice})"
                         >
+
                             🗑️ Eliminar
+
                         </button>
 
                     </div>
@@ -872,11 +1451,13 @@
 
                     <div class="producto-grid">
 
+
                         <div class="campo">
 
                             <label>
                                 Nombre del producto *
                             </label>
+
 
                             <input
                                 type="text"
@@ -898,6 +1479,7 @@
                             <label>
                                 Precio *
                             </label>
+
 
                             <input
                                 type="number"
@@ -930,9 +1512,11 @@
                 );
 
             }
+
         );
 
     }
+
 
 
     function actualizarNombreProducto(
@@ -943,13 +1527,17 @@
         if (
             !productos[indice]
         ) {
+
             return;
+
         }
+
 
         productos[indice].nombre =
             valor;
 
     }
+
 
 
     function actualizarPrecioProducto(
@@ -960,8 +1548,11 @@
         if (
             !productos[indice]
         ) {
+
             return;
+
         }
+
 
         productos[indice].precio =
             Number(valor) || 0;
@@ -969,15 +1560,22 @@
     }
 
 
+
     function eliminarProducto(
         indice
     ) {
 
         if (
+
             indice < 0 ||
-            indice >= productos.length
+
+            indice >=
+                productos.length
+
         ) {
+
             return;
+
         }
 
 
@@ -992,9 +1590,10 @@
     }
 
 
+
     /*
      * ========================================================
-     * SUBIR IMAGEN A SUPABASE STORAGE
+     * SUBIR IMAGEN
      * ========================================================
      */
 
@@ -1004,18 +1603,23 @@
     ) {
 
         if (!archivo) {
+
             return null;
+
         }
 
 
         const extension =
+
             archivo.name
+
                 .split(".")
                 .pop()
                 .toLowerCase();
 
 
         const nombreArchivo =
+
             `${carpeta}/${Date.now()}-${Math.random()
                 .toString(36)
                 .substring(2, 10)}.${extension}`;
@@ -1023,23 +1627,34 @@
 
         const {
             error
-        } = await supabaseClient
-            .storage
-            .from("restaurantes")
-            .upload(
-                nombreArchivo,
-                archivo,
-                {
-                    cacheControl:
-                        "3600",
+        } =
 
-                    upsert:
-                        false,
+            await supabaseClient
 
-                    contentType:
-                        archivo.type
-                }
-            );
+                .storage
+
+                .from("restaurantes")
+
+                .upload(
+
+                    nombreArchivo,
+
+                    archivo,
+
+                    {
+
+                        cacheControl:
+                            "3600",
+
+                        upsert:
+                            false,
+
+                        contentType:
+                            archivo.type
+
+                    }
+
+                );
 
 
         if (error) {
@@ -1049,9 +1664,13 @@
                 error
             );
 
+
             throw new Error(
+
                 "No se pudo subir el banner: " +
+
                 error.message
+
             );
 
         }
@@ -1060,9 +1679,13 @@
         const {
             data
         } =
+
             supabaseClient
+
                 .storage
+
                 .from("restaurantes")
+
                 .getPublicUrl(
                     nombreArchivo
                 );
@@ -1071,6 +1694,7 @@
         return data.publicUrl;
 
     }
+
 
 
     /*
@@ -1082,12 +1706,14 @@
     async function publicarRestaurante() {
 
         const boton =
+
             document.getElementById(
                 "btnPublicar"
             );
 
 
         const nombre =
+
             document.getElementById(
                 "nombreRestaurante"
             )
@@ -1096,6 +1722,7 @@
 
 
         const categoria =
+
             document.getElementById(
                 "categoriaRestaurante"
             )
@@ -1103,11 +1730,13 @@
 
 
         const descripcion =
+
             document.getElementById(
                 "descripcionRestaurante"
             )
             .value
             .trim();
+
 
 
         /*
@@ -1117,9 +1746,13 @@
         if (!nombre) {
 
             mostrarMensaje(
+
                 "mensajePublicacion",
+
                 "Ingresa el nombre del restaurante.",
+
                 "error"
+
             );
 
             return;
@@ -1130,9 +1763,13 @@
         if (!categoria) {
 
             mostrarMensaje(
+
                 "mensajePublicacion",
+
                 "Selecciona una categoría.",
+
                 "error"
+
             );
 
             return;
@@ -1143,9 +1780,13 @@
         if (!bannerArchivo) {
 
             mostrarMensaje(
+
                 "mensajePublicacion",
+
                 "Selecciona un banner para el restaurante.",
+
                 "error"
+
             );
 
             return;
@@ -1158,9 +1799,13 @@
         ) {
 
             mostrarMensaje(
+
                 "mensajePublicacion",
+
                 "Agrega al menos un producto.",
+
                 "error"
+
             );
 
             return;
@@ -1179,9 +1824,13 @@
             ) {
 
                 mostrarMensaje(
+
                     "mensajePublicacion",
+
                     `El producto ${i + 1} no tiene nombre.`,
+
                     "error"
+
                 );
 
                 return;
@@ -1190,13 +1839,19 @@
 
 
             if (
-                Number(productos[i].precio) < 0
+                Number(
+                    productos[i].precio
+                ) < 0
             ) {
 
                 mostrarMensaje(
+
                     "mensajePublicacion",
+
                     `El precio del producto ${i + 1} no es válido.`,
+
                     "error"
+
                 );
 
                 return;
@@ -1206,11 +1861,14 @@
         }
 
 
+
         /*
          * DESACTIVAR BOTÓN
          */
 
-        boton.disabled = true;
+        boton.disabled =
+            true;
+
 
         boton.textContent =
             "⏳ Publicando...";
@@ -1218,32 +1876,43 @@
 
         try {
 
+
             /*
-             * ================================================
              * 1. SUBIR BANNER
-             * ================================================
              */
 
             const bannerUrl =
+
                 await subirImagen(
+
                     bannerArchivo,
+
                     "banners"
+
                 );
 
 
+
             /*
-             * ================================================
              * 2. CREAR RESTAURANTE
-             * ================================================
              */
 
             const {
-                data: restaurante,
+
+                data:
+                    restaurante,
+
                 error:
                     errorRestaurante
+
             } =
+
                 await supabaseClient
-                    .from("restaurantes")
+
+                    .from(
+                        "restaurantes"
+                    )
+
                     .insert({
 
                         nombre:
@@ -1262,7 +1931,9 @@
                             true
 
                     })
+
                     .select()
+
                     .single();
 
 
@@ -1271,23 +1942,25 @@
             ) {
 
                 throw new Error(
+
                     "No se pudo crear el restaurante: " +
+
                     errorRestaurante.message
+
                 );
 
             }
 
 
+
             /*
-             * ================================================
              * 3. PREPARAR PRODUCTOS
-             *
-             * Todos utilizan el mismo banner.
-             * ================================================
              */
 
             const productosParaInsertar =
+
                 productos.map(
+
                     producto => ({
 
                         restaurante_id:
@@ -1311,21 +1984,28 @@
                             true
 
                     })
+
                 );
 
 
+
             /*
-             * ================================================
              * 4. INSERTAR PRODUCTOS
-             * ================================================
              */
 
             const {
+
                 error:
                     errorProductos
+
             } =
+
                 await supabaseClient
-                    .from("productos")
+
+                    .from(
+                        "productos"
+                    )
+
                     .insert(
                         productosParaInsertar
                     );
@@ -1335,16 +2015,16 @@
                 errorProductos
             ) {
 
-                /*
-                 * Si falla la creación de productos,
-                 * desactivamos el restaurante.
-                 */
-
                 await supabaseClient
-                    .from("restaurantes")
+
+                    .from(
+                        "restaurantes"
+                    )
+
                     .update({
                         activo: false
                     })
+
                     .eq(
                         "id",
                         restaurante.id
@@ -1352,60 +2032,69 @@
 
 
                 throw new Error(
+
                     "No se pudieron guardar los productos: " +
+
                     errorProductos.message
+
                 );
 
             }
 
 
+
             /*
-             * ================================================
              * 5. ÉXITO
-             * ================================================
              */
 
             mostrarMensaje(
+
                 "mensajePublicacion",
 
                 `Restaurante "${nombre}" publicado correctamente con ${productos.length} producto(s).`,
 
                 "exito"
+
             );
 
-
-            /*
-             * Limpiar formulario
-             */
 
             limpiarFormulario();
 
 
-            /*
-             * Actualizar lista
-             */
-
             await cargarRestaurantes();
+
+
+            await cargarRestaurantesParaHorarios();
 
 
         } catch (error) {
 
             console.error(
+
                 "Error publicando restaurante:",
+
                 error
+
             );
 
 
             mostrarMensaje(
+
                 "mensajePublicacion",
+
                 error.message ||
+
                 "Ocurrió un error al publicar.",
+
                 "error"
+
             );
 
         } finally {
 
-            boton.disabled = false;
+            boton.disabled =
+                false;
+
 
             boton.textContent =
                 "🚀 Publicar restaurante";
@@ -1413,6 +2102,7 @@
         }
 
     }
+
 
 
     /*
@@ -1425,43 +2115,52 @@
 
         document.getElementById(
             "nombreRestaurante"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "categoriaRestaurante"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "descripcionRestaurante"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "bannerRestaurante"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "previewBanner"
-        ).style.display = "none";
+        ).style.display =
+            "none";
 
 
         document.getElementById(
             "imagenBanner"
-        ).src = "";
+        ).src =
+            "";
 
 
-        bannerArchivo = null;
+        bannerArchivo =
+            null;
 
 
-        productos = [];
+        productos =
+            [];
 
 
         agregarProducto();
 
     }
+
 
 
     /*
@@ -1473,6 +2172,7 @@
     async function cargarRestaurantes() {
 
         const contenedor =
+
             document.getElementById(
                 "restaurantesLista"
             );
@@ -1485,19 +2185,32 @@
         try {
 
             const {
+
                 data,
+
                 error
+
             } =
+
                 await supabaseClient
-                    .from("restaurantes")
+
+                    .from(
+                        "restaurantes"
+                    )
+
                     .select(
                         "id,nombre,categoria,descripcion,activo,creado_en"
                     )
+
                     .order(
+
                         "creado_en",
+
                         {
-                            ascending: false
+                            ascending:
+                                false
                         }
+
                     );
 
 
@@ -1514,6 +2227,7 @@
             ) {
 
                 contenedor.innerHTML =
+
                     "<p>No existen restaurantes registrados.</p>";
 
                 return;
@@ -1522,20 +2236,25 @@
 
 
             contenedor.innerHTML =
+
                 data.map(
+
                     restaurante => `
 
                         <div class="restaurante-item">
 
                             <strong>
+
                                 ${escaparHTML(
                                     restaurante.nombre
                                 )}
+
                             </strong>
 
                             <br>
 
                             Categoría:
+
                             ${escaparHTML(
                                 restaurante.categoria ||
                                 "Sin categoría"
@@ -1550,16 +2269,19 @@
                                         : "inactivo"
                                 }"
                             >
+
                                 ${
                                     restaurante.activo
                                         ? "ACTIVO"
                                         : "INACTIVO"
                                 }
+
                             </span>
 
                         </div>
 
                     `
+
                 ).join("");
 
 
@@ -1575,6 +2297,7 @@
                 <p style="color:#a93226;">
 
                     Error cargando restaurantes:
+
                     ${escaparHTML(
                         error.message
                     )}
@@ -1587,7 +2310,803 @@
 
     }
 
+
+
+    /*
+     * ========================================================
+     * HORARIOS
+     * ========================================================
+     */
+
+    async function cargarRestaurantesParaHorarios() {
+
+        const select =
+
+            document.getElementById(
+                "restauranteHorario"
+            );
+
+
+        if (!select) {
+
+            return;
+
+        }
+
+
+        select.innerHTML = `
+
+            <option value="">
+
+                Seleccionar restaurante
+
+            </option>
+
+        `;
+
+
+        try {
+
+            const {
+
+                data,
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "restaurantes"
+                    )
+
+                    .select(
+                        "id,nombre,activo"
+                    )
+
+                    .order(
+
+                        "nombre",
+
+                        {
+                            ascending:
+                                true
+                        }
+
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            data.forEach(
+
+                restaurante => {
+
+                    const option =
+
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        restaurante.id;
+
+
+                    option.textContent =
+
+                        restaurante.nombre +
+
+                        (
+
+                            restaurante.activo
+
+                                ? ""
+
+                                : " (INACTIVO)"
+
+                        );
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+
+            );
+
+
+        } catch (error) {
+
+            console.error(
+
+                "Error cargando restaurantes para horarios:",
+
+                error
+
+            );
+
+
+            mostrarMensaje(
+
+                "mensajeHorarios",
+
+                "No se pudieron cargar los restaurantes: " +
+
+                error.message,
+
+                "error"
+
+            );
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * CARGAR HORARIOS DEL RESTAURANTE
+     * ========================================================
+     */
+
+    async function cargarHorariosRestaurante() {
+
+        const select =
+
+            document.getElementById(
+                "restauranteHorario"
+            );
+
+
+        const restauranteId =
+            select.value;
+
+
+        const editor =
+
+            document.getElementById(
+                "editorHorarios"
+            );
+
+
+        const lista =
+
+            document.getElementById(
+                "listaHorarios"
+            );
+
+
+        if (!restauranteId) {
+
+            editor.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        lista.innerHTML =
+            "Cargando horarios...";
+
+
+        editor.style.display =
+            "block";
+
+
+        try {
+
+            const {
+
+                data,
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "horarios_restaurantes"
+                    )
+
+                    .select(
+                        "id,restaurante_id,dia_semana,hora_apertura,hora_cierre,cerrado"
+                    )
+
+                    .eq(
+                        "restaurante_id",
+                        restauranteId
+                    )
+
+                    .order(
+
+                        "dia_semana",
+
+                        {
+                            ascending:
+                                true
+                        }
+
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            const horarios = {};
+
+
+            if (data) {
+
+                data.forEach(
+
+                    horario => {
+
+                        horarios[
+                            horario.dia_semana
+                        ] = horario;
+
+                    }
+
+                );
+
+            }
+
+
+            lista.innerHTML =
+                "";
+
+
+            DIAS_SEMANA.forEach(
+
+                dia => {
+
+                    const horario =
+
+                        horarios[
+                            dia.numero
+                        ];
+
+
+                    const cerrado =
+
+                        horario
+
+                            ? horario.cerrado
+
+                            : false;
+
+
+                    const apertura =
+
+                        horario &&
+                        horario.hora_apertura
+
+                            ? horario.hora_apertura
+                                .substring(
+                                    0,
+                                    5
+                                )
+
+                            : "10:00";
+
+
+                    const cierre =
+
+                        horario &&
+                        horario.hora_cierre
+
+                            ? horario.hora_cierre
+                                .substring(
+                                    0,
+                                    5
+                                )
+
+                            : "22:00";
+
+
+                    const div =
+
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "horario-editor";
+
+
+                    div.innerHTML = `
+
+                        <div class="horario-dia">
+
+                            <strong>
+
+                                ${dia.nombre}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="horario-campos">
+
+
+                            <div>
+
+                                <label>
+
+                                    Apertura
+
+                                </label>
+
+
+                                <input
+
+                                    type="time"
+
+                                    id="apertura-${dia.numero}"
+
+                                    value="${apertura}"
+
+                                    ${
+                                        cerrado
+                                            ? "disabled"
+                                            : ""
+                                    }
+
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label>
+
+                                    Cierre
+
+                                </label>
+
+
+                                <input
+
+                                    type="time"
+
+                                    id="cierre-${dia.numero}"
+
+                                    value="${cierre}"
+
+                                    ${
+                                        cerrado
+                                            ? "disabled"
+                                            : ""
+                                    }
+
+                                >
+
+                            </div>
+
+
+                            <div class="horario-cerrado">
+
+                                <label>
+
+                                    <input
+
+                                        type="checkbox"
+
+                                        id="cerrado-${dia.numero}"
+
+                                        ${
+                                            cerrado
+                                                ? "checked"
+                                                : ""
+                                        }
+
+                                        onchange="cambiarEstadoDia(
+                                            ${dia.numero}
+                                        )"
+
+                                    >
+
+                                    Cerrado
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    lista.appendChild(
+                        div
+                    );
+
+                }
+
+            );
+
+
+        } catch (error) {
+
+            console.error(
+
+                "Error cargando horarios:",
+
+                error
+
+            );
+
+
+            lista.innerHTML =
+                "";
+
+
+            mostrarMensaje(
+
+                "mensajeHorarios",
+
+                "No se pudieron cargar los horarios: " +
+
+                error.message,
+
+                "error"
+
+            );
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * ACTIVAR / DESACTIVAR HORARIO
+     * ========================================================
+     */
+
+    function cambiarEstadoDia(
+        dia
+    ) {
+
+        const cerrado =
+
+            document.getElementById(
+                `cerrado-${dia}`
+            ).checked;
+
+
+        const apertura =
+
+            document.getElementById(
+                `apertura-${dia}`
+            );
+
+
+        const cierre =
+
+            document.getElementById(
+                `cierre-${dia}`
+            );
+
+
+        apertura.disabled =
+            cerrado;
+
+
+        cierre.disabled =
+            cerrado;
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * GUARDAR HORARIOS
+     * ========================================================
+     */
+
+    async function guardarHorarios() {
+
+        const restauranteId =
+
+            document.getElementById(
+                "restauranteHorario"
+            ).value;
+
+
+        if (!restauranteId) {
+
+            mostrarMensaje(
+
+                "mensajeHorarios",
+
+                "Selecciona un restaurante.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        const horarios =
+            [];
+
+
+        for (
+            const dia of DIAS_SEMANA
+        ) {
+
+            const cerrado =
+
+                document.getElementById(
+                    `cerrado-${dia.numero}`
+                ).checked;
+
+
+            const apertura =
+
+                document.getElementById(
+                    `apertura-${dia.numero}`
+                ).value;
+
+
+            const cierre =
+
+                document.getElementById(
+                    `cierre-${dia.numero}`
+                ).value;
+
+
+
+            /*
+             * DÍA CERRADO
+             */
+
+            if (cerrado) {
+
+                horarios.push({
+
+                    restaurante_id:
+                        Number(
+                            restauranteId
+                        ),
+
+                    dia_semana:
+                        dia.numero,
+
+                    hora_apertura:
+                        null,
+
+                    hora_cierre:
+                        null,
+
+                    cerrado:
+                        true
+
+                });
+
+
+                continue;
+
+            }
+
+
+
+            /*
+             * VALIDAR HORAS
+             */
+
+            if (
+                !apertura ||
+                !cierre
+            ) {
+
+                mostrarMensaje(
+
+                    "mensajeHorarios",
+
+                    `Debes ingresar apertura y cierre para ${dia.nombre}.`,
+
+                    "error"
+
+                );
+
+                return;
+
+            }
+
+
+            if (
+                apertura >= cierre
+            ) {
+
+                mostrarMensaje(
+
+                    "mensajeHorarios",
+
+                    `La hora de cierre debe ser posterior a la apertura del ${dia.nombre}.`,
+
+                    "error"
+
+                );
+
+                return;
+
+            }
+
+
+            horarios.push({
+
+                restaurante_id:
+                    Number(
+                        restauranteId
+                    ),
+
+                dia_semana:
+                    dia.numero,
+
+                hora_apertura:
+                    apertura,
+
+                hora_cierre:
+                    cierre,
+
+                cerrado:
+                    false
+
+            });
+
+        }
+
+
+
+        try {
+
+
+            /*
+             * ELIMINAR HORARIOS ANTERIORES
+             */
+
+            const {
+
+                error:
+                    errorEliminar
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "horarios_restaurantes"
+                    )
+
+                    .delete()
+
+                    .eq(
+                        "restaurante_id",
+                        restauranteId
+                    );
+
+
+            if (
+                errorEliminar
+            ) {
+
+                throw errorEliminar;
+
+            }
+
+
+
+            /*
+             * INSERTAR NUEVOS HORARIOS
+             */
+
+            const {
+
+                error:
+                    errorInsertar
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "horarios_restaurantes"
+                    )
+
+                    .insert(
+                        horarios
+                    );
+
+
+            if (
+                errorInsertar
+            ) {
+
+                throw errorInsertar;
+
+            }
+
+
+
+            /*
+             * ÉXITO
+             */
+
+            mostrarMensaje(
+
+                "mensajeHorarios",
+
+                "Horarios guardados correctamente.",
+
+                "exito"
+
+            );
+
+
+        } catch (error) {
+
+            console.error(
+
+                "Error guardando horarios:",
+
+                error
+
+            );
+
+
+            mostrarMensaje(
+
+                "mensajeHorarios",
+
+                "No se pudieron guardar los horarios: " +
+
+                error.message,
+
+                "error"
+
+            );
+
+        }
+
+    }
+
 </script>
 
 </body>
+
 </html>
