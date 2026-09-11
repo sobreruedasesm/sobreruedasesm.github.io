@@ -389,14 +389,14 @@
 
         .restaurante-item {
 
-            padding: 15px;
+            padding: 18px;
 
             border:
                 1px solid #dce5e0;
 
             border-radius: 10px;
 
-            margin-bottom: 10px;
+            margin-bottom: 12px;
 
             background: #fafcfb;
 
@@ -406,6 +406,30 @@
         .restaurante-item strong {
 
             color: #087f5b;
+
+            font-size: 17px;
+
+        }
+
+
+        .restaurante-datos {
+
+            line-height: 1.7;
+
+            margin-top: 8px;
+
+        }
+
+
+        .restaurante-acciones {
+
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+            margin-top: 15px;
 
         }
 
@@ -504,6 +528,91 @@
 
             border:
                 1px solid #d9e2de;
+
+        }
+
+
+        /* ====================================================
+           EDICIÓN DE RESTAURANTE
+        ==================================================== */
+
+        .edicion-restaurante {
+
+            display: none;
+
+            margin-top: 18px;
+
+            padding: 20px;
+
+            border:
+                1px solid #b9d9cc;
+
+            border-radius: 12px;
+
+            background: white;
+
+        }
+
+
+        .edicion-restaurante.activa {
+
+            display: block;
+
+        }
+
+
+        .edicion-restaurante h3 {
+
+            margin-top: 0;
+
+            color: #087f5b;
+
+        }
+
+
+        .banner-edicion {
+
+            margin-top: 12px;
+
+        }
+
+
+        .banner-edicion img {
+
+            width: 100%;
+
+            max-height: 220px;
+
+            object-fit: cover;
+
+            border-radius: 10px;
+
+            border:
+                1px solid #d9e2de;
+
+        }
+
+
+        .check-eliminar {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 10px;
+
+            font-weight: normal;
+
+            cursor: pointer;
+
+        }
+
+
+        .check-eliminar input {
+
+            width: auto;
 
         }
 
@@ -670,17 +779,6 @@
         }
 
 
-        .horario-ayuda {
-
-            margin-top: 5px;
-
-            font-size: 13px;
-
-            color: #536b61;
-
-        }
-
-
         @media (max-width: 700px) {
 
             .producto-grid {
@@ -707,6 +805,13 @@
 
 
             .categoria-acciones {
+
+                width: 100%;
+
+            }
+
+
+            .restaurante-acciones {
 
                 width: 100%;
 
@@ -836,7 +941,7 @@
             <br><br>
 
             Las categorías activas estarán disponibles
-            automáticamente al crear un restaurante.
+            automáticamente al crear o editar un restaurante.
 
         </div>
 
@@ -958,7 +1063,6 @@
             ></textarea>
 
         </div>
-
 
 
         <!-- =================================================
@@ -1178,6 +1282,19 @@
         </h2>
 
 
+        <div class="info">
+
+            Desde aquí puedes editar los datos básicos de cada
+            restaurante o activar/desactivar su publicación.
+
+            <br><br>
+
+            La edición del restaurante no modifica sus productos
+            ni sus horarios.
+
+        </div>
+
+
         <button
             class="boton boton-secundario"
             onclick="cargarRestaurantes()"
@@ -1217,6 +1334,10 @@
     let bannerArchivo = null;
 
     let configuracionNegocioId = null;
+
+    let restauranteEditandoId = null;
+
+    let bannerEdicionArchivo = null;
 
 
 
@@ -1401,7 +1522,7 @@
                     )
 
                     .limit(1)
-                    
+
                     .maybeSingle();
 
 
@@ -1439,14 +1560,6 @@
             }
 
 
-
-            /*
-             * FALLBACK INICIAL
-             *
-             * Solo se utiliza si todavía no existe
-             * un registro en Supabase.
-             */
-
             document.getElementById(
                 "tarifaDelivery"
             ).value =
@@ -1471,11 +1584,6 @@
                 error
             );
 
-
-            /*
-             * Si Supabase no responde,
-             * mostramos temporalmente CONFIG.
-             */
 
             document.getElementById(
                 "tarifaDelivery"
@@ -2203,7 +2311,7 @@
 
     /*
      * ========================================================
-     * BANNER
+     * BANNER - CREAR RESTAURANTE
      * ========================================================
      */
 
@@ -2489,6 +2597,7 @@
 
             productos[indice].imagenUrl =
                 null;
+
 
             const preview =
                 document.getElementById(
@@ -2780,11 +2889,6 @@
             .trim();
 
 
-
-        /*
-         * VALIDACIONES
-         */
-
         if (!nombre) {
 
             mostrarMensaje(
@@ -2817,11 +2921,6 @@
             return;
 
         }
-
-
-        /*
-         * EL BANNER ES OPCIONAL
-         */
 
 
         if (
@@ -2891,11 +2990,6 @@
         }
 
 
-
-        /*
-         * DESACTIVAR BOTÓN
-         */
-
         boton.disabled =
             true;
 
@@ -2906,11 +3000,11 @@
 
         try {
 
-
             /*
-             * 1. SUBIR BANNER
+             * 1. BANNER
              *
-             * Si no existe, devuelve null.
+             * Si no hay imagen:
+             * bannerUrl = null
              */
 
             const bannerUrl =
@@ -2922,7 +3016,6 @@
                     "banners"
 
                 );
-
 
 
             /*
@@ -2984,10 +3077,8 @@
             }
 
 
-
             /*
-             * 3. SUBIR IMÁGENES INDIVIDUALES
-             *    Y PREPARAR PRODUCTOS
+             * 3. PRODUCTOS
              */
 
             const productosParaInsertar =
@@ -3007,11 +3098,6 @@
                 let imagenProductoUrl =
                     null;
 
-
-                /*
-                 * Solo subimos imagen si
-                 * el administrador seleccionó una.
-                 */
 
                 if (
                     producto.archivoImagen
@@ -3055,7 +3141,6 @@
                 });
 
             }
-
 
 
             /*
@@ -3109,7 +3194,6 @@
                 );
 
             }
-
 
 
             /*
@@ -3268,7 +3352,7 @@
                     )
 
                     .select(
-                        "id,nombre,categoria,descripcion,activo,creado_en"
+                        "id,nombre,categoria,descripcion,banner_url,activo,creado_en"
                     )
 
                     .order(
@@ -3320,32 +3404,305 @@
 
                             </strong>
 
-                            <br>
 
-                            Categoría:
+                            <div class="restaurante-datos">
 
-                            ${escaparHTML(
-                                restaurante.categoria ||
-                                "Sin categoría"
-                            )}
+                                <div>
 
-                            <br>
+                                    Categoría:
 
-                            <span
-                                class="estado ${
-                                    restaurante.activo
-                                        ? "activo"
-                                        : "inactivo"
-                                }"
+                                    ${escaparHTML(
+                                        restaurante.categoria ||
+                                        "Sin categoría"
+                                    )}
+
+                                </div>
+
+
+                                <div>
+
+                                    ${
+                                        restaurante.descripcion
+                                            ? escaparHTML(
+                                                restaurante.descripcion
+                                            )
+                                            : "Sin descripción"
+                                    }
+
+                                </div>
+
+
+                                <span
+                                    class="estado ${
+                                        restaurante.activo
+                                            ? "activo"
+                                            : "inactivo"
+                                    }"
+                                >
+
+                                    ${
+                                        restaurante.activo
+                                            ? "ACTIVO"
+                                            : "INACTIVO"
+                                    }
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="restaurante-acciones">
+
+                                <button
+                                    type="button"
+                                    class="boton boton-secundario"
+                                    onclick="editarRestaurante(${restaurante.id})"
+                                >
+
+                                    ✏️ Editar
+
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="boton ${
+                                        restaurante.activo
+                                            ? "boton-advertencia"
+                                            : "boton-principal"
+                                    }"
+                                    onclick="cambiarEstadoRestaurante(
+                                        ${restaurante.id},
+                                        ${restaurante.activo}
+                                    )"
+                                >
+
+                                    ${
+                                        restaurante.activo
+                                            ? "🔴 Desactivar"
+                                            : "🟢 Activar"
+                                    }
+
+                                </button>
+
+                            </div>
+
+
+                            <div
+                                id="edicion-restaurante-${restaurante.id}"
+                                class="edicion-restaurante"
                             >
 
-                                ${
-                                    restaurante.activo
-                                        ? "ACTIVO"
-                                        : "INACTIVO"
-                                }
+                                <h3>
 
-                            </span>
+                                    ✏️ Editar restaurante
+
+                                </h3>
+
+
+                                <div class="campo">
+
+                                    <label>
+
+                                        Nombre del restaurante *
+
+                                    </label>
+
+
+                                    <input
+                                        type="text"
+                                        id="editar-nombre-${restaurante.id}"
+                                        value="${escaparHTML(
+                                            restaurante.nombre
+                                        )}"
+                                    >
+
+                                </div>
+
+
+                                <div class="campo">
+
+                                    <label>
+
+                                        Categoría *
+
+                                    </label>
+
+
+                                    <select
+                                        id="editar-categoria-${restaurante.id}"
+                                    >
+
+                                        <option value="">
+
+                                            Seleccionar categoría
+
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="campo">
+
+                                    <label>
+
+                                        Descripción
+
+                                    </label>
+
+
+                                    <textarea
+                                        id="editar-descripcion-${restaurante.id}"
+                                    >${escaparHTML(
+                                        restaurante.descripcion || ""
+                                    )}</textarea>
+
+                                </div>
+
+
+                                <div class="campo">
+
+                                    <label>
+
+                                        🖼️ Banner
+
+                                    </label>
+
+
+                                    ${
+                                        restaurante.banner_url
+
+                                            ? `
+
+                                                <div
+                                                    class="banner-edicion"
+                                                    id="banner-actual-${restaurante.id}"
+                                                >
+
+                                                    <img
+                                                        src="${escaparHTML(
+                                                            restaurante.banner_url
+                                                        )}"
+                                                        alt="Banner actual"
+                                                    >
+
+                                                </div>
+
+                                            `
+
+                                            : `
+
+                                                <div
+                                                    class="banner-info"
+                                                >
+
+                                                    Este restaurante
+                                                    actualmente no tiene banner.
+
+                                                </div>
+
+                                            `
+                                    }
+
+
+                                    <br>
+
+
+                                    <input
+                                        type="file"
+                                        id="editar-banner-${restaurante.id}"
+                                        accept="image/*"
+                                        onchange="seleccionarBannerEdicion(
+                                            ${restaurante.id}
+                                        )"
+                                    >
+
+
+                                    ${
+                                        restaurante.banner_url
+
+                                            ? `
+
+                                                <label
+                                                    class="check-eliminar"
+                                                >
+
+                                                    <input
+                                                        type="checkbox"
+                                                        id="eliminar-banner-${restaurante.id}"
+                                                    >
+
+                                                    Quitar banner actual
+
+                                                </label>
+
+                                            `
+
+                                            : ""
+                                    }
+
+
+                                    <div
+                                        id="preview-banner-edicion-${restaurante.id}"
+                                        class="preview"
+                                    >
+
+                                        <img
+                                            id="imagen-banner-edicion-${restaurante.id}"
+                                            alt="Vista previa del nuevo banner"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="banner-info">
+
+                                        Si seleccionas una nueva imagen,
+                                        reemplazará el banner actual.
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="acciones">
+
+                                    <button
+                                        type="button"
+                                        class="boton boton-principal"
+                                        onclick="guardarEdicionRestaurante(
+                                            ${restaurante.id}
+                                        )"
+                                    >
+
+                                        💾 Guardar cambios
+
+                                    </button>
+
+
+                                    <button
+                                        type="button"
+                                        class="boton boton-secundario"
+                                        onclick="cancelarEdicionRestaurante(
+                                            ${restaurante.id}
+                                        )"
+                                    >
+
+                                        Cancelar
+
+                                    </button>
+
+                                </div>
+
+
+                                <div
+                                    id="mensaje-edicion-${restaurante.id}"
+                                    class="mensaje"
+                                ></div>
+
+                            </div>
 
                         </div>
 
@@ -3354,9 +3711,30 @@
                 ).join("");
 
 
+            /*
+             * Después de construir la lista,
+             * cargamos las categorías en cada
+             * selector de edición.
+             */
+
+            data.forEach(
+
+                restaurante => {
+
+                    cargarCategoriasEdicion(
+                        restaurante.id,
+                        restaurante.categoria
+                    );
+
+                }
+
+            );
+
+
         } catch (error) {
 
             console.error(
+                "Error cargando restaurantes:",
                 error
             );
 
@@ -3374,6 +3752,763 @@
                 </p>
 
             `;
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * CARGAR CATEGORÍAS EN EDICIÓN
+     * ========================================================
+     */
+
+    async function cargarCategoriasEdicion(
+        restauranteId,
+        categoriaActual
+    ) {
+
+        const select =
+
+            document.getElementById(
+                `editar-categoria-${restauranteId}`
+            );
+
+
+        if (!select) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+
+                data,
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "categorias"
+                    )
+
+                    .select(
+                        "id,nombre,activo"
+                    )
+
+                    .order(
+                        "nombre",
+                        {
+                            ascending:
+                                true
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            select.innerHTML = `
+
+                <option value="">
+
+                    Seleccionar categoría
+
+                </option>
+
+            `;
+
+
+            if (data) {
+
+                data
+
+                    .filter(
+                        categoria =>
+                            categoria.activo ||
+                            categoria.nombre === categoriaActual
+                    )
+
+                    .forEach(
+
+                        categoria => {
+
+                            const option =
+                                document.createElement(
+                                    "option"
+                                );
+
+
+                            option.value =
+                                categoria.nombre;
+
+
+                            option.textContent =
+                                categoria.nombre;
+
+
+                            if (
+                                categoria.nombre ===
+                                categoriaActual
+                            ) {
+
+                                option.selected =
+                                    true;
+
+                            }
+
+
+                            select.appendChild(
+                                option
+                            );
+
+                        }
+
+                    );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+
+                "Error cargando categorías para edición:",
+
+                error
+
+            );
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * ABRIR EDICIÓN
+     * ========================================================
+     */
+
+    function editarRestaurante(
+        id
+    ) {
+
+        /*
+         * Cierra cualquier otro editor abierto.
+         */
+
+        document
+            .querySelectorAll(
+                ".edicion-restaurante.activa"
+            )
+            .forEach(
+
+                elemento => {
+
+                    elemento.classList.remove(
+                        "activa"
+                    );
+
+                }
+
+            );
+
+
+        const editor =
+
+            document.getElementById(
+                `edicion-restaurante-${id}`
+            );
+
+
+        if (!editor) {
+
+            return;
+
+        }
+
+
+        editor.classList.add(
+            "activa"
+        );
+
+
+        restauranteEditandoId =
+            id;
+
+
+        bannerEdicionArchivo =
+            null;
+
+
+        /*
+         * Llevar el editor a la vista.
+         */
+
+        setTimeout(
+
+            function() {
+
+                editor.scrollIntoView({
+
+                    behavior:
+                        "smooth",
+
+                    block:
+                        "start"
+
+                });
+
+            },
+
+            50
+
+        );
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * CANCELAR EDICIÓN
+     * ========================================================
+     */
+
+    function cancelarEdicionRestaurante(
+        id
+    ) {
+
+        const editor =
+
+            document.getElementById(
+                `edicion-restaurante-${id}`
+            );
+
+
+        if (editor) {
+
+            editor.classList.remove(
+                "activa"
+            );
+
+        }
+
+
+        if (
+            restauranteEditandoId === id
+        ) {
+
+            restauranteEditandoId =
+                null;
+
+        }
+
+
+        bannerEdicionArchivo =
+            null;
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * SELECCIONAR NUEVO BANNER
+     * ========================================================
+     */
+
+    function seleccionarBannerEdicion(
+        id
+    ) {
+
+        const input =
+
+            document.getElementById(
+                `editar-banner-${id}`
+            );
+
+
+        const archivo =
+            input.files[0];
+
+
+        if (!archivo) {
+
+            bannerEdicionArchivo =
+                null;
+
+            return;
+
+        }
+
+
+        bannerEdicionArchivo =
+            archivo;
+
+
+        const lector =
+            new FileReader();
+
+
+        lector.onload =
+            function(e) {
+
+                const preview =
+
+                    document.getElementById(
+                        `preview-banner-edicion-${id}`
+                    );
+
+
+                const imagen =
+
+                    document.getElementById(
+                        `imagen-banner-edicion-${id}`
+                    );
+
+
+                if (imagen) {
+
+                    imagen.src =
+                        e.target.result;
+
+                }
+
+
+                if (preview) {
+
+                    preview.style.display =
+                        "block";
+
+                }
+
+            };
+
+
+        lector.readAsDataURL(
+            archivo
+        );
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * GUARDAR EDICIÓN DEL RESTAURANTE
+     * ========================================================
+     */
+
+    async function guardarEdicionRestaurante(
+        id
+    ) {
+
+        const nombreInput =
+
+            document.getElementById(
+                `editar-nombre-${id}`
+            );
+
+
+        const categoriaInput =
+
+            document.getElementById(
+                `editar-categoria-${id}`
+            );
+
+
+        const descripcionInput =
+
+            document.getElementById(
+                `editar-descripcion-${id}`
+            );
+
+
+        const nombre =
+            nombreInput.value.trim();
+
+
+        const categoria =
+            categoriaInput.value;
+
+
+        const descripcion =
+            descripcionInput.value.trim();
+
+
+        const mensajeId =
+            `mensaje-edicion-${id}`;
+
+
+        if (!nombre) {
+
+            mostrarMensaje(
+
+                mensajeId,
+
+                "Ingresa el nombre del restaurante.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        if (!categoria) {
+
+            mostrarMensaje(
+
+                mensajeId,
+
+                "Selecciona una categoría.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        const botonGuardar =
+
+            document.querySelector(
+
+                `#edicion-restaurante-${id} .boton-principal`
+
+            );
+
+
+        if (botonGuardar) {
+
+            botonGuardar.disabled =
+                true;
+
+            botonGuardar.textContent =
+                "⏳ Guardando...";
+
+        }
+
+
+        try {
+
+            /*
+             * Primero obtenemos el restaurante actual.
+             */
+
+            const {
+
+                data:
+                    restauranteActual,
+
+                error:
+                    errorConsulta
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "restaurantes"
+                    )
+
+                    .select(
+                        "id,nombre,categoria,descripcion,banner_url,activo"
+                    )
+
+                    .eq(
+                        "id",
+                        id
+                    )
+
+                    .single();
+
+
+            if (errorConsulta) {
+
+                throw errorConsulta;
+
+            }
+
+
+            /*
+             * Determinamos qué hacer con el banner.
+             */
+
+            let bannerUrl =
+                restauranteActual.banner_url;
+
+
+            const checkboxEliminar =
+
+                document.getElementById(
+                    `eliminar-banner-${id}`
+                );
+
+
+            const eliminarBanner =
+
+                checkboxEliminar
+                    ? checkboxEliminar.checked
+                    : false;
+
+
+            /*
+             * Si se seleccionó una nueva imagen,
+             * la nueva imagen tiene prioridad.
+             */
+
+            if (bannerEdicionArchivo) {
+
+                bannerUrl =
+
+                    await subirImagen(
+
+                        bannerEdicionArchivo,
+
+                        "banners"
+
+                    );
+
+            } else if (eliminarBanner) {
+
+                bannerUrl =
+                    null;
+
+            }
+
+
+            /*
+             * Actualizamos SOLO restaurantes.
+             */
+
+            const {
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "restaurantes"
+                    )
+
+                    .update({
+
+                        nombre:
+                            nombre,
+
+                        categoria:
+                            categoria,
+
+                        descripcion:
+                            descripcion,
+
+                        banner_url:
+                            bannerUrl
+
+                    })
+
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            mostrarMensaje(
+
+                mensajeId,
+
+                "Restaurante actualizado correctamente.",
+
+                "exito"
+
+            );
+
+
+            bannerEdicionArchivo =
+                null;
+
+
+            /*
+             * Refrescamos la lista.
+             */
+
+            await cargarRestaurantes();
+
+
+            /*
+             * También refrescamos los selectores
+             * de horarios.
+             */
+
+            await cargarRestaurantesParaHorarios();
+
+
+        } catch (error) {
+
+            console.error(
+
+                "Error actualizando restaurante:",
+
+                error
+
+            );
+
+
+            mostrarMensaje(
+
+                mensajeId,
+
+                "No se pudo actualizar el restaurante: " +
+                error.message,
+
+                "error"
+
+            );
+
+        } finally {
+
+            if (botonGuardar) {
+
+                botonGuardar.disabled =
+                    false;
+
+                botonGuardar.textContent =
+                    "💾 Guardar cambios";
+
+            }
+
+        }
+
+    }
+
+
+
+    /*
+     * ========================================================
+     * ACTIVAR / DESACTIVAR RESTAURANTE
+     * ========================================================
+     */
+
+    async function cambiarEstadoRestaurante(
+        id,
+        estadoActual
+    ) {
+
+        const nuevoEstado =
+            !estadoActual;
+
+
+        const accion =
+            nuevoEstado
+                ? "activar"
+                : "desactivar";
+
+
+        const confirmado =
+
+            confirm(
+
+                nuevoEstado
+
+                    ? "¿Deseas activar este restaurante?"
+
+                    : "¿Deseas desactivar este restaurante?"
+
+            );
+
+
+        if (!confirmado) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+
+                error
+
+            } =
+
+                await supabaseClient
+
+                    .from(
+                        "restaurantes"
+                    )
+
+                    .update({
+
+                        activo:
+                            nuevoEstado
+
+                    })
+
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            await cargarRestaurantes();
+
+
+            await cargarRestaurantesParaHorarios();
+
+
+        } catch (error) {
+
+            console.error(
+
+                `Error al ${accion} restaurante:`,
+
+                error
+
+            );
+
+
+            alert(
+
+                `No se pudo ${accion} el restaurante: ` +
+                error.message
+
+            );
 
         }
 
