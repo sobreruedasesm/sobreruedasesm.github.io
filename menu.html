@@ -295,8 +295,6 @@ select:disabled{
  border-color:#b9dfca;
 }
 
-/* FACTURA */
-
 .invoice-box{
  border:1px solid var(--gris2);
  border-radius:10px;
@@ -322,8 +320,6 @@ select:disabled{
 .invoice-fields{margin-top:12px}
 
 .invoice-fields.hidden{display:none}
-
-/* UBICACION */
 
 .location-box{
  border:1px solid #cfe2f3;
@@ -389,8 +385,6 @@ select:disabled{
  background:#eefaf4;
  color:var(--verde2);
 }
-
-/* BOTONES */
 
 button{
  border:0;
@@ -488,7 +482,6 @@ button:disabled{
 .hidden{display:none!important}
 
 @media(max-width:650px){
-
  .form-grid{grid-template-columns:1fr}
 
  .item{
@@ -505,7 +498,6 @@ button:disabled{
  }
 
  #map{height:280px}
-
 }
 </style>
 
@@ -515,7 +507,6 @@ button:disabled{
 
 <header>
  <div class="header-inner">
-
   <div>
    <div class="logo">Sobre <span>Ruedas</span></div>
    <div class="sub">Delivery en Esmeraldas</div>
@@ -527,13 +518,9 @@ button:disabled{
 </header>
 
 <main>
-
  <h1>🛒 Mi pedido</h1>
-
  <div id="mensaje"></div>
-
  <div id="contenido"></div>
-
 </main>
 
 <script>
@@ -554,13 +541,6 @@ let ubicacionMapsUrl="";
 let ubicacionDireccion="";
 let ubicacionConfirmada=false;
 
-/*
- Ubicación temporal:
- mientras el usuario está seleccionando una nueva ubicación,
- estos valores representan la nueva selección.
- La ubicación anterior solo se reemplaza definitivamente
- cuando se pulsa "Aceptar y guardar".
-*/
 let ubicacionAnterior=null;
 let ubicacionMapsAnterior="";
 let ubicacionDireccionAnterior="";
@@ -569,16 +549,7 @@ let ubicacionConfirmadaAnterior=false;
 let mapa=null;
 let marcador=null;
 
-/*
- Datos del formulario.
- Se mantienen aunque render() reconstruya el HTML.
-*/
 let datosFormulario={};
-
-
-/* =========================================================
-   UTILIDADES
-========================================================= */
 
 const $=id=>document.getElementById(id);
 
@@ -590,27 +561,19 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
  "'":"&#039;"
 }[m]));
 
-
 function mostrarError(mensaje){
-
  $("mensaje").innerHTML=`
-  <div class="error">
-   ${esc(mensaje)}
-  </div>
+  <div class="error">${esc(mensaje)}</div>
  `;
-
 }
 
-
 function limpiarMensaje(){
-
  $("mensaje").innerHTML="";
-
 }
 
 
 /* =========================================================
-   PRESERVAR DATOS DEL FORMULARIO
+   FORMULARIO
 ========================================================= */
 
 function capturarDatosFormulario(){
@@ -627,47 +590,28 @@ function capturarDatosFormulario(){
   numeroDocumento:$("numeroDocumento")?.value||"",
   correoFactura:$("correoFactura")?.value||""
  };
-
 }
-
 
 function restaurarDatosFormulario(){
 
  if(!$("clienteNombre"))return;
 
- $("clienteNombre").value=
-  datosFormulario.clienteNombre||"";
-
- $("clienteTelefono").value=
-  datosFormulario.clienteTelefono||"";
-
- $("direccion").value=
-  datosFormulario.direccion||"";
-
- $("referencia").value=
-  datosFormulario.referencia||"";
-
- $("requiereFactura").checked=
-  !!datosFormulario.requiereFactura;
-
- $("tipoDocumento").value=
-  datosFormulario.tipoDocumento||"Cédula";
-
- $("numeroDocumento").value=
-  datosFormulario.numeroDocumento||"";
-
- $("correoFactura").value=
-  datosFormulario.correoFactura||"";
+ $("clienteNombre").value=datosFormulario.clienteNombre||"";
+ $("clienteTelefono").value=datosFormulario.clienteTelefono||"";
+ $("direccion").value=datosFormulario.direccion||"";
+ $("referencia").value=datosFormulario.referencia||"";
+ $("requiereFactura").checked=!!datosFormulario.requiereFactura;
+ $("tipoDocumento").value=datosFormulario.tipoDocumento||"Cédula";
+ $("numeroDocumento").value=datosFormulario.numeroDocumento||"";
+ $("correoFactura").value=datosFormulario.correoFactura||"";
 
  mostrarDatosFactura();
-
  restaurarEstadoUbicacion();
-
 }
 
 
 /* =========================================================
-   RESTAURAR ESTADO DE UBICACION
+   UBICACION
 ========================================================= */
 
 function restaurarEstadoUbicacion(){
@@ -676,10 +620,6 @@ function restaurarEstadoUbicacion(){
 
  if(!direccion)return;
 
- /*
-  Si existe una ubicación confirmada,
-  la dirección queda congelada.
- */
  if(
   ubicacionConfirmada&&
   ubicacionActual&&
@@ -692,7 +632,6 @@ function restaurarEstadoUbicacion(){
    "";
 
   direccion.disabled=true;
-
   direccion.style.background="#eefaf4";
 
   mostrarResultadoUbicacion();
@@ -704,16 +643,13 @@ function restaurarEstadoUbicacion(){
  }else{
 
   direccion.disabled=false;
-
   direccion.style.background="#fff";
-
  }
-
 }
 
 
 /* =========================================================
-   CARRITO
+   CARRITO - SESSION STORAGE
 ========================================================= */
 
 function cargarCarrito(){
@@ -721,37 +657,34 @@ function cargarCarrito(){
  try{
 
   const data=JSON.parse(
-   localStorage.getItem("carrito")||"[]"
+   sessionStorage.getItem("carrito")||"[]"
   );
 
   carrito=Array.isArray(data)?data:[];
 
- }catch{
+ }catch(error){
 
+  console.warn("Error leyendo carrito:",error);
   carrito=[];
 
  }
-
 }
-
 
 function guardarCarrito(){
 
  if(carrito.length){
 
-  localStorage.setItem(
+  sessionStorage.setItem(
    "carrito",
    JSON.stringify(carrito)
   );
 
  }else{
 
-  localStorage.removeItem("carrito");
+  sessionStorage.removeItem("carrito");
 
  }
-
 }
-
 
 function agruparCarrito(){
 
@@ -765,8 +698,7 @@ function agruparCarrito(){
 
    grupos[id]={
     restaurante_id:item.restaurante_id,
-    restaurante_nombre:
-     item.restaurante_nombre||"Local",
+    restaurante_nombre:item.restaurante_nombre||"Local",
     productos:[]
    };
 
@@ -777,9 +709,7 @@ function agruparCarrito(){
  });
 
  return Object.values(grupos);
-
 }
-
 
 function subtotalGrupo(grupo){
 
@@ -790,7 +720,6 @@ function subtotalGrupo(grupo){
    (Number(item.cantidad)||0),
   0
  );
-
 }
 
 
@@ -812,7 +741,6 @@ async function cargarConfiguracion(){
   if(error){
 
    console.warn(error);
-
    return;
 
   }
@@ -820,7 +748,6 @@ async function cargarConfiguracion(){
   if(data){
 
    configuracion={
-
     nombreNegocio:
      data.nombre_negocio||
      CONFIG_DEFAULT.nombreNegocio,
@@ -837,22 +764,15 @@ async function cargarConfiguracion(){
      CONFIG_DEFAULT.whatsappNegocio,
 
     moneda:
-     data.moneda||
-     "USD"
-
+     data.moneda||"USD"
    };
-
   }
 
  }catch(error){
 
-  console.warn(
-   "Configuración:",
-   error
-  );
+  console.warn("Configuración:",error);
 
  }
-
 }
 
 
@@ -862,16 +782,8 @@ async function cargarConfiguracion(){
 
 function render(){
 
- /*
-  Antes de reconstruir el HTML,
-  guardamos todos los datos escritos.
- */
  capturarDatosFormulario();
 
- /*
-  Si existe un mapa anterior, lo destruimos correctamente
-  porque el elemento #map será reemplazado.
- */
  if(mapa){
 
   try{
@@ -882,7 +794,6 @@ function render(){
 
   mapa=null;
   marcador=null;
-
  }
 
  const contenido=$("contenido");
@@ -895,13 +806,9 @@ function render(){
 
     <div class="empty-icon">🛒</div>
 
-    <strong>
-     Tu carrito está vacío
-    </strong>
+    <strong>Tu carrito está vacío</strong>
 
-    <p>
-     Agrega productos desde nuestros locales.
-    </p>
+    <p>Agrega productos desde nuestros locales.</p>
 
     <button
      class="btn-red"
@@ -916,76 +823,49 @@ function render(){
   `;
 
   return;
-
  }
-
 
  const grupos=agruparCarrito();
 
  let totalProductos=0;
  let totalDelivery=0;
-
  let html="";
-
-
- /* =======================================================
-    LOCALES
- ======================================================= */
 
  grupos.forEach(grupo=>{
 
-  const subtotal=
-   subtotalGrupo(grupo);
-
-  const delivery=
-   Number(configuracion.tarifaDelivery)||0;
-
-  const totalLocal=
-   subtotal+delivery;
+  const subtotal=subtotalGrupo(grupo);
+  const delivery=Number(configuracion.tarifaDelivery)||0;
+  const totalLocal=subtotal+delivery;
 
   totalProductos+=subtotal;
   totalDelivery+=delivery;
-
 
   html+=`
 
    <section class="local-card">
 
     <div class="local-title">
-
      <div class="local-name">
       ${esc(grupo.restaurante_nombre)}
      </div>
-
     </div>
-
   `;
-
 
   grupo.productos.forEach(item=>{
 
-   const cantidad=
-    Number(item.cantidad)||0;
-
-   const precio=
-    Number(item.precio)||0;
-
-   const total=
-    precio*cantidad;
-
+   const cantidad=Number(item.cantidad)||0;
+   const precio=Number(item.precio)||0;
+   const total=precio*cantidad;
 
    const imagen=item.imagen_url
     ?`
-
      <img
       class="item-img"
-      src="${esc(item.imagen_url)}?v=${Date.now()}"
+      src="${esc(item.imagen_url)}${item.imagen_url.includes("?")?"&":"?"}v=${Date.now()}"
       alt=""
       onerror="this.style.visibility='hidden'">
-
     `
     :`
-
      <div
       class="item-img"
       style="
@@ -997,9 +877,7 @@ function render(){
       🍽️
 
      </div>
-
     `;
-
 
    html+=`
 
@@ -1023,7 +901,6 @@ function render(){
 
      </div>
 
-
      <div>
 
       <div class="controls">
@@ -1031,8 +908,8 @@ function render(){
        <button
         class="qty-btn"
         onclick="cambiarCantidad(
-         ${item.producto_id},
-         ${item.restaurante_id},
+         ${Number(item.producto_id)},
+         ${Number(item.restaurante_id)},
          -1
         )">
 
@@ -1040,17 +917,15 @@ function render(){
 
        </button>
 
-
        <span class="qty">
         ${cantidad}
        </span>
 
-
        <button
         class="qty-btn"
         onclick="cambiarCantidad(
-         ${item.producto_id},
-         ${item.restaurante_id},
+         ${Number(item.producto_id)},
+         ${Number(item.restaurante_id)},
          1
         )">
 
@@ -1060,12 +935,11 @@ function render(){
 
       </div>
 
-
       <button
        class="remove"
        onclick="eliminarProducto(
-        ${item.producto_id},
-        ${item.restaurante_id}
+        ${Number(item.producto_id)},
+        ${Number(item.restaurante_id)}
        )">
 
        Eliminar
@@ -1077,44 +951,25 @@ function render(){
     </div>
 
    `;
-
   });
-
 
   html+=`
 
     <div class="local-total">
 
      <div class="local-total-row">
-
       <span>Productos</span>
-
-      <strong>
-       $${subtotal.toFixed(2)}
-      </strong>
-
+      <strong>$${subtotal.toFixed(2)}</strong>
      </div>
-
 
      <div class="local-total-row">
-
       <span>Delivery</span>
-
-      <strong>
-       $${delivery.toFixed(2)}
-      </strong>
-
+      <strong>$${delivery.toFixed(2)}</strong>
      </div>
 
-
      <div class="local-total-row final">
-
       <span>Total del local</span>
-
-      <strong>
-       $${totalLocal.toFixed(2)}
-      </strong>
-
+      <strong>$${totalLocal.toFixed(2)}</strong>
      </div>
 
     </div>
@@ -1122,32 +977,19 @@ function render(){
    </section>
 
   `;
-
  });
 
-
- const total=
-  totalProductos+
-  totalDelivery;
-
-
- /* =======================================================
-    DATOS DE ENTREGA
- ======================================================= */
+ const total=totalProductos+totalDelivery;
 
  html+=`
 
   <section>
 
-   <h2>
-    Datos de entrega
-   </h2>
-
+   <h2>Datos de entrega</h2>
 
    <div class="notice">
     Completa tus datos para registrar el pedido.
    </div>
-
 
    <div class="form-grid">
 
@@ -1164,7 +1006,6 @@ function render(){
 
     </div>
 
-
     <div class="field">
 
      <label for="clienteTelefono">
@@ -1180,7 +1021,6 @@ function render(){
     </div>
 
    </div>
-
 
    <div
     class="field"
@@ -1212,8 +1052,6 @@ function render(){
 
    </div>
 
-   <!-- FACTURA -->
-
    <div class="invoice-box">
 
 ```
@@ -1227,7 +1065,6 @@ function render(){
  ¿Necesitas factura?
 
 </label>
-
 
 <div
  id="invoiceFields"
@@ -1243,18 +1080,12 @@ function render(){
 
    <select id="tipoDocumento">
 
-    <option value="Cédula">
-     Cédula
-    </option>
-
-    <option value="RUC">
-     RUC
-    </option>
+    <option value="Cédula">Cédula</option>
+    <option value="RUC">RUC</option>
 
    </select>
 
   </div>
-
 
   <div class="field">
 
@@ -1272,7 +1103,6 @@ function render(){
 
  </div>
 
-
  <div
   class="field"
   style="margin-top:12px">
@@ -1289,7 +1119,6 @@ function render(){
 
  </div>
 
-
  <div
   style="
    margin-top:8px;
@@ -1305,15 +1134,12 @@ function render(){
 
    </div>
 
-   <!-- UBICACION -->
-
    <div class="location-box">
 
 ```
 <div class="location-title">
  📍 Ubicación de entrega
 </div>
-
 
 <div
  class="location-status"
@@ -1322,7 +1148,6 @@ function render(){
  Selecciona tu ubicación en el mapa o usa tu ubicación actual.
 
 </div>
-
 
 <div class="location-actions">
 
@@ -1335,7 +1160,6 @@ function render(){
 
  </button>
 
-
  <button
   type="button"
   class="btn-blue"
@@ -1344,7 +1168,6 @@ function render(){
   🗺️ Elegir ubicación
 
  </button>
-
 
  <button
   type="button"
@@ -1359,9 +1182,7 @@ function render(){
 
 </div>
 
-
 <div id="map"></div>
-
 
 <div class="map-help">
 
@@ -1369,11 +1190,9 @@ function render(){
 
 </div>
 
-
 <div
  id="locationResult"
  class="location-result">
-
 </div>
 ```
 
@@ -1381,43 +1200,24 @@ function render(){
 
   </section>
 
-  <!-- TOTALES -->
-
   <section>
 
    <div class="total-box">
 
 ```
 <div class="total-row">
-
  <span>Productos</span>
-
- <strong>
-  $${totalProductos.toFixed(2)}
- </strong>
-
+ <strong>$${totalProductos.toFixed(2)}</strong>
 </div>
-
 
 <div class="total-row">
-
  <span>Delivery</span>
-
- <strong>
-  $${totalDelivery.toFixed(2)}
- </strong>
-
+ <strong>$${totalDelivery.toFixed(2)}</strong>
 </div>
 
-
 <div class="total-row final">
-
  <span>Total</span>
-
- <strong>
-  $${total.toFixed(2)}
- </strong>
-
+ <strong>$${total.toFixed(2)}</strong>
 </div>
 ```
 
@@ -1449,12 +1249,7 @@ Vaciar carrito
 
 contenido.innerHTML=html;
 
-/*
-Recuperamos los datos después de reconstruir
-todo el formulario.
-*/
 restaurarDatosFormulario();
-
 }
 
 /* =========================================================
@@ -1472,7 +1267,6 @@ campos.classList.toggle(
 "hidden",
 !check.checked
 );
-
 }
 
 /* =========================================================
@@ -1529,7 +1323,6 @@ return"Ingresa un correo electrónico válido para la factura.";
 }
 
 return null;
-
 }
 
 /* =========================================================
@@ -1542,18 +1335,12 @@ restauranteId,
 cambio
 ){
 
-/*
-MUY IMPORTANTE:
-Capturamos los datos antes de reconstruir el formulario.
-*/
 capturarDatosFormulario();
 
 const item=carrito.find(
 x=>
-Number(x.producto_id)===
-Number(productoId)&&
-Number(x.restaurante_id)===
-Number(restauranteId)
+Number(x.producto_id)===Number(productoId)&&
+Number(x.restaurante_id)===Number(restauranteId)
 );
 
 if(!item)return;
@@ -1565,19 +1352,14 @@ if(item.cantidad<=0){
 
 carrito=carrito.filter(
 x=>!(
-Number(x.producto_id)===
-Number(productoId)&&
-Number(x.restaurante_id)===
-Number(restauranteId)
+Number(x.producto_id)===Number(productoId)&&
+Number(x.restaurante_id)===Number(restauranteId)
 )
 );
-
 }
 
 guardarCarrito();
-
 render();
-
 }
 
 /* =========================================================
@@ -1593,17 +1375,13 @@ capturarDatosFormulario();
 
 carrito=carrito.filter(
 item=>!(
-Number(item.producto_id)===
-Number(productoId)&&
-Number(item.restaurante_id)===
-Number(restauranteId)
+Number(item.producto_id)===Number(productoId)&&
+Number(item.restaurante_id)===Number(restauranteId)
 )
 );
 
 guardarCarrito();
-
 render();
-
 }
 
 /* =========================================================
@@ -1614,9 +1392,7 @@ function vaciarCarrito(){
 
 if(!carrito.length)return;
 
-if(!confirm(
-"¿Vaciar todo el carrito?"
-))return;
+if(!confirm("¿Vaciar todo el carrito?"))return;
 
 capturarDatosFormulario();
 
@@ -1625,7 +1401,6 @@ carrito=[];
 guardarCarrito();
 
 render();
-
 }
 
 /* =========================================================
@@ -1642,25 +1417,17 @@ String(ahora.getMonth()+1).padStart(2,"0")+
 String(ahora.getDate()).padStart(2,"0");
 
 const aleatorio=
-Math.floor(
-1000+
-Math.random()*9000
-);
+Math.floor(1000+Math.random()*9000);
 
 return`SR-${fecha}-${aleatorio}`;
-
 }
 
 /* =========================================================
-INICIAR NUEVA SELECCION DE UBICACION
+NUEVA SELECCION UBICACION
 ========================================================= */
 
 function iniciarNuevaSeleccion(){
 
-/*
-Guardamos temporalmente la ubicación que ya estaba confirmada.
-Así no se pierde hasta que el usuario acepte la nueva.
-*/
 ubicacionAnterior=
 ubicacionActual
 ?{...ubicacionActual}
@@ -1675,9 +1442,6 @@ ubicacionDireccion;
 ubicacionConfirmadaAnterior=
 ubicacionConfirmada;
 
-/*
-La nueva selección comienza limpia.
-*/
 ubicacionActual=null;
 ubicacionMapsUrl="";
 ubicacionDireccion="";
@@ -1690,6 +1454,7 @@ if(direccion){
 direccion.value="";
 direccion.disabled=true;
 direccion.style.background="#fff";
+
 }
 
 const resultado=$("locationResult");
@@ -1698,46 +1463,34 @@ if(resultado){
 
 resultado.innerHTML="";
 resultado.style.display="none";
-resultado.classList.remove(
-"location-confirmed"
-);
+resultado.classList.remove("location-confirmed");
 
 }
 
-const confirmar=
-$("btnConfirmarUbicacion");
+const confirmar=$("btnConfirmarUbicacion");
 
 if(confirmar){
-
 confirmar.style.display="none";
-
 }
-
 }
 
 /* =========================================================
 MAPA
 ========================================================= */
 
-function abrirSelectorUbicacion(){
+function crearMapa(lat=0.9592,lng=-79.6539,zoom=14){
 
 const mapEl=$("map");
 
 if(!mapEl)return;
-
-/*
-Cada clic en "Elegir ubicación" comienza
-una NUEVA selección.
-*/
-iniciarNuevaSeleccion();
 
 mapEl.style.display="block";
 
 if(!mapa){
 
 mapa=L.map("map").setView(
-[0.9592,-79.6539],
-14
+[lat,lng],
+zoom
 );
 
 L.tileLayer(
@@ -1749,7 +1502,7 @@ attribution:"© OpenStreetMap"
 ).addTo(mapa);
 
 marcador=L.marker(
-[0.9592,-79.6539],
+[lat,lng],
 {
 draggable:true
 }
@@ -1758,13 +1511,8 @@ draggable:true
 marcador.on(
 "dragend",
 ()=>{
-
-```
 iniciarNuevaSeleccionDesdeMapa();
-
 obtenerDireccionMarcador();
-```
-
 }
 );
 
@@ -1773,9 +1521,7 @@ mapa.on(
 e=>{
 
 ```
-marcador.setLatLng(
- e.latlng
-);
+marcador.setLatLng(e.latlng);
 
 iniciarNuevaSeleccionDesdeMapa();
 
@@ -1785,40 +1531,43 @@ obtenerDireccionMarcador();
 }
 );
 
+}else{
+
+mapa.setView(
+[lat,lng],
+zoom
+);
+
+marcador.setLatLng(
+[lat,lng]
+);
 }
 
 setTimeout(
 ()=>{
-mapa.invalidateSize();
+if(mapa)mapa.invalidateSize();
 },
 200
 );
+}
+
+function abrirSelectorUbicacion(){
+
+const mapEl=$("map");
+
+if(!mapEl)return;
+
+iniciarNuevaSeleccion();
+
+crearMapa();
 
 mostrarEstadoUbicacion(
 "Mueve el marcador o toca el mapa para seleccionar una nueva ubicación."
 );
-
-/*
-IMPORTANTE:
-ya NO hacemos obtenerDireccionMarcador()
-automáticamente al abrir el mapa.
-La dirección se busca únicamente cuando
-el usuario realmente selecciona un punto.
-*/
-
 }
-
-/* =========================================================
-NUEVA SELECCION DESDE MAPA
-========================================================= */
 
 function iniciarNuevaSeleccionDesdeMapa(){
 
-/*
-Aquí no debemos sobrescribir la ubicación anterior
-como "ubicación guardada".
-Simplemente iniciamos la nueva selección.
-*/
 ubicacionActual=null;
 ubicacionMapsUrl="";
 ubicacionDireccion="";
@@ -1831,6 +1580,7 @@ if(direccion){
 direccion.value="";
 direccion.disabled=true;
 direccion.style.background="#fff";
+
 }
 
 const resultado=$("locationResult");
@@ -1839,33 +1589,23 @@ if(resultado){
 
 resultado.style.display="none";
 resultado.innerHTML="";
-resultado.classList.remove(
-"location-confirmed"
-);
+resultado.classList.remove("location-confirmed");
 
 }
 
-const confirmar=
-$("btnConfirmarUbicacion");
+const confirmar=$("btnConfirmarUbicacion");
 
 if(confirmar){
-
 confirmar.style.display="none";
-
 }
-
 }
 
 /* =========================================================
-OBTENER UBICACION ACTUAL
+USAR MI UBICACION
 ========================================================= */
 
 function usarMiUbicacion(){
 
-/*
-Cada clic en "Usar mi ubicación"
-también inicia una nueva selección.
-*/
 iniciarNuevaSeleccion();
 
 if(!navigator.geolocation){
@@ -1875,7 +1615,6 @@ mostrarEstadoUbicacion(
 );
 
 return;
-
 }
 
 mostrarEstadoUbicacion(
@@ -1886,101 +1625,10 @@ navigator.geolocation.getCurrentPosition(
 
 posicion=>{
 
-const lat=
-posicion.coords.latitude;
+const lat=posicion.coords.latitude;
+const lng=posicion.coords.longitude;
 
-const lng=
-posicion.coords.longitude;
-
-/*
-Abrimos el mapa sin iniciar otra selección,
-porque esta ya es la selección actual.
-*/
-const mapEl=$("map");
-
-if(mapEl){
-
-```
-mapEl.style.display="block";
-```
-
-}
-
-if(!mapa){
-
-```
-mapa=L.map("map").setView(
- [lat,lng],
- 17
-);
-
-
-L.tileLayer(
- "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
- {
-  maxZoom:19,
-  attribution:"© OpenStreetMap"
- }
-).addTo(mapa);
-
-
-marcador=L.marker(
- [lat,lng],
- {
-  draggable:true
- }
-).addTo(mapa);
-
-
-marcador.on(
- "dragend",
- ()=>{
-
-  iniciarNuevaSeleccionDesdeMapa();
-
-  obtenerDireccionMarcador();
-
- }
-);
-
-
-mapa.on(
- "click",
- e=>{
-
-  marcador.setLatLng(
-   e.latlng
-  );
-
-  iniciarNuevaSeleccionDesdeMapa();
-
-  obtenerDireccionMarcador();
-
- }
-);
-```
-
-}else{
-
-```
-mapa.setView(
- [lat,lng],
- 17
-);
-
-marcador.setLatLng(
- [lat,lng]
-);
-```
-
-}
-
-setTimeout(
-()=>{
-mapa.invalidateSize();
-},
-200
-);
+crearMapa(lat,lng,17);
 
 obtenerDireccionMarcador();
 
@@ -2016,15 +1664,9 @@ mensaje=
 
 }
 
-/*
-Si falló la nueva selección,
-recuperamos la ubicación anteriormente guardada.
-*/
 restaurarUbicacionAnterior();
 
-mostrarEstadoUbicacion(
-mensaje
-);
+mostrarEstadoUbicacion(mensaje);
 
 },
 
@@ -2033,9 +1675,7 @@ enableHighAccuracy:true,
 timeout:15000,
 maximumAge:60000
 }
-
 );
-
 }
 
 /* =========================================================
@@ -2074,11 +1714,11 @@ ubicacionDireccion;
 
 direccion.disabled=true;
 direccion.style.background="#eefaf4";
-
 }
 
-}
+mostrarResultadoUbicacion();
 
+}
 }
 
 /* =========================================================
@@ -2089,14 +1729,10 @@ async function obtenerDireccionMarcador(){
 
 if(!marcador)return;
 
-const posicion=
-marcador.getLatLng();
+const posicion=marcador.getLatLng();
 
-const lat=
-posicion.lat;
-
-const lng=
-posicion.lng;
+const lat=posicion.lat;
+const lng=posicion.lng;
 
 ubicacionActual={
 lat,
@@ -2104,10 +1740,7 @@ lng
 };
 
 ubicacionMapsUrl=
-construirMapsUrl(
-lat,
-lng
-);
+construirMapsUrl(lat,lng);
 
 ubicacionDireccion="";
 ubicacionConfirmada=false;
@@ -2119,16 +1752,12 @@ if(direccion){
 direccion.value="";
 direccion.disabled=true;
 direccion.style.background="#fff";
-
 }
 
-const confirmar=
-$("btnConfirmarUbicacion");
+const confirmar=$("btnConfirmarUbicacion");
 
 if(confirmar){
-
 confirmar.style.display="none";
-
 }
 
 mostrarEstadoUbicacion(
@@ -2141,10 +1770,8 @@ const respuesta=
 await fetch(
 "https://nominatim.openstreetmap.org/reverse"+
 "?format=json"+
-"&lat="+
-encodeURIComponent(lat)+
-"&lon="+
-encodeURIComponent(lng)+
+"&lat="+encodeURIComponent(lat)+
+"&lon="+encodeURIComponent(lng)+
 "&zoom=18"+
 "&addressdetails=1",
 {
@@ -2159,11 +1786,9 @@ if(!respuesta.ok){
 throw new Error(
 "No se pudo consultar la dirección."
 );
-
 }
 
-const data=
-await respuesta.json();
+const data=await respuesta.json();
 
 ubicacionDireccion=
 data.display_name||
@@ -2175,7 +1800,6 @@ direccion.value=
 ubicacionDireccion;
 
 direccion.disabled=true;
-
 }
 
 mostrarResultadoUbicacion();
@@ -2185,10 +1809,7 @@ mostrarEstadoUbicacion(
 );
 
 if(confirmar){
-
-confirmar.style.display=
-"inline-block";
-
+confirmar.style.display="inline-block";
 }
 
 }catch(error){
@@ -2207,7 +1828,6 @@ direccion.value=
 ubicacionDireccion;
 
 direccion.disabled=true;
-
 }
 
 mostrarResultadoUbicacion();
@@ -2217,24 +1837,18 @@ mostrarEstadoUbicacion(
 );
 
 if(confirmar){
-
-confirmar.style.display=
-"inline-block";
-
+confirmar.style.display="inline-block";
 }
-
 }
-
 }
 
 /* =========================================================
-MOSTRAR RESULTADO DE UBICACION
+MOSTRAR RESULTADO
 ========================================================= */
 
 function mostrarResultadoUbicacion(){
 
-const resultado=
-$("locationResult");
+const resultado=$("locationResult");
 
 if(!resultado)return;
 
@@ -2252,9 +1866,7 @@ resultado.innerHTML=`
 
 <br><br>
 
-  <strong>
-   Dirección:
-  </strong>
+<strong>Dirección:</strong>
 
   <br>
 
@@ -2262,9 +1874,7 @@ ${esc(ubicacionDireccion)}
 
 <br><br>
 
-  <strong>
-   Link de Google Maps:
-  </strong>
+<strong>Link de Google Maps:</strong>
 
   <br>
 
@@ -2277,13 +1887,11 @@ rel="noopener">
 ${esc(ubicacionMapsUrl)}
 
   </a>
-
-`;
-
+ `;
 }
 
 /* =========================================================
-CONFIRMAR / GUARDAR UBICACION
+CONFIRMAR UBICACION
 ========================================================= */
 
 function confirmarUbicacion(){
@@ -2295,7 +1903,6 @@ mostrarEstadoUbicacion(
 );
 
 return;
-
 }
 
 if(!ubicacionMapsUrl){
@@ -2305,7 +1912,6 @@ mostrarEstadoUbicacion(
 );
 
 return;
-
 }
 
 if(!ubicacionDireccion){
@@ -2315,19 +1921,10 @@ mostrarEstadoUbicacion(
 );
 
 return;
-
 }
 
-/*
-AHORA SÍ reemplazamos definitivamente
-la ubicación anterior.
-*/
 ubicacionConfirmada=true;
 
-/*
-Guardamos los datos de la nueva ubicación
-como datos definitivos.
-*/
 ubicacionAnterior=null;
 ubicacionMapsAnterior="";
 ubicacionDireccionAnterior="";
@@ -2342,11 +1939,9 @@ ubicacionDireccion;
 
 direccion.disabled=true;
 direccion.style.background="#eefaf4";
-
 }
 
-const resultado=
-$("locationResult");
+const resultado=$("locationResult");
 
 if(resultado){
 
@@ -2362,9 +1957,7 @@ resultado.innerHTML=`
 
 <br><br>
 
-   <strong>
-    Dirección:
-   </strong>
+<strong>Dirección:</strong>
 
    <br>
 
@@ -2372,9 +1965,7 @@ ${esc(ubicacionDireccion)}
 
 <br><br>
 
-   <strong>
-    Link de Google Maps:
-   </strong>
+<strong>Link de Google Maps:</strong>
 
    <br>
 
@@ -2389,10 +1980,8 @@ ${esc(ubicacionMapsUrl)}
 ```
 
    </a>
-
-`;
-
-}
+  `;
+ }
 
 mostrarEstadoUbicacion(
 "✓ Ubicación de entrega guardada correctamente."
@@ -2401,59 +1990,39 @@ mostrarEstadoUbicacion(
 const mapEl=$("map");
 
 if(mapEl){
-
 mapEl.style.display="none";
-
 }
 
 const btn=$("btnConfirmarUbicacion");
 
 if(btn){
-
 btn.style.display="none";
-
 }
-
 }
-
-/* =========================================================
-ESTADO UBICACION
-========================================================= */
 
 function mostrarEstadoUbicacion(mensaje){
 
-const estado=
-$("locationStatus");
+const estado=$("locationStatus");
 
 if(estado){
-
-estado.textContent=
-mensaje;
-
+estado.textContent=mensaje;
 }
-
 }
 
 /* =========================================================
 GOOGLE MAPS
 ========================================================= */
 
-function construirMapsUrl(
-lat,
-lng
-){
+function construirMapsUrl(lat,lng){
 
 return(
 "https://www.google.com/maps/search/?api=1&query="+
-encodeURIComponent(
-`${lat},${lng}`
-)
+encodeURIComponent(`${lat},${lng}`)
 );
-
 }
 
 /* =========================================================
-VALIDAR URL UBICACION
+VALIDAR UBICACION
 ========================================================= */
 
 function obtenerUrlUbicacion(){
@@ -2463,13 +2032,10 @@ if(
 !ubicacionMapsUrl||
 !ubicacionConfirmada
 ){
-
 return"";
-
 }
 
 return ubicacionMapsUrl;
-
 }
 
 function validarUrlUbicacion(url){
@@ -2478,8 +2044,7 @@ if(!url)return false;
 
 try{
 
-const parsed=
-new URL(url);
+const parsed=new URL(url);
 
 return(
 parsed.protocol==="https:"||
@@ -2489,20 +2054,15 @@ parsed.protocol==="http:"
 }catch{
 
 return false;
-
 }
-
 }
 
 /* =========================================================
-DATOS
+VALIDAR DATOS
 ========================================================= */
 
 function validarDatos(){
 
-/*
-Capturamos los datos actuales antes de validar.
-*/
 capturarDatosFormulario();
 
 const nombre=
@@ -2532,10 +2092,6 @@ ubicacion&&
 )
 return"La ubicación seleccionada no es válida.";
 
-/*
-Si hay una selección pendiente,
-todavía no debe permitirse confirmar.
-*/
 if(
 ubicacionActual&&
 ubicacionMapsUrl&&
@@ -2543,20 +2099,16 @@ ubicacionMapsUrl&&
 ){
 
 return"Debes presionar «Aceptar y guardar» para confirmar la nueva ubicación.";
-
 }
 
 const errorFactura=
 validarDocumento();
 
 if(errorFactura){
-
 return errorFactura;
-
 }
 
 return null;
-
 }
 
 /* =========================================================
@@ -2583,11 +2135,7 @@ $("correoFactura")?.value.trim()||"";
 let partes=[];
 
 if(referencia){
-
-partes.push(
-referencia
-);
-
+partes.push(referencia);
 }
 
 if(requiereFactura){
@@ -2599,7 +2147,6 @@ partes.push(
 partes.push(
 `CORREO FACTURA: ${correoFactura}`
 );
-
 }
 
 if(ubicacionMapsUrl&&ubicacionConfirmada){
@@ -2607,11 +2154,9 @@ if(ubicacionMapsUrl&&ubicacionConfirmada){
 partes.push(
 `Ubicación GPS/Mapa: ${ubicacionMapsUrl}`
 );
-
 }
 
 return partes.join("\n")||null;
-
 }
 
 /* =========================================================
@@ -2620,8 +2165,7 @@ CARRERAS
 
 function construirCarreras(){
 
-const grupos=
-agruparCarrito();
+const grupos=agruparCarrito();
 
 return grupos.map(grupo=>{
 
@@ -2670,9 +2214,7 @@ grupo.productos.map(item=>({
 ```
 
 };
-
 });
-
 }
 
 /* =========================================================
@@ -2698,21 +2240,18 @@ construirCarreras();
 
 const totalProductos=
 carreras.reduce(
-(sum,c)=>
-sum+c.subtotal,
+(sum,c)=>sum+c.subtotal,
 0
 );
 
 const totalDelivery=
 carreras.reduce(
-(sum,c)=>
-sum+c.delivery,
+(sum,c)=>sum+c.delivery,
 0
 );
 
 const total=
-totalProductos+
-totalDelivery;
+totalProductos+totalDelivery;
 
 const numero=
 generarNumeroPedido();
@@ -2721,10 +2260,7 @@ let direccion=
 direccionOriginal;
 
 if(!direccion&&ubicacion){
-
-direccion=
-"Ubicación indicada en el mapa";
-
+direccion="Ubicación indicada en el mapa";
 }
 
 const referencia=
@@ -2734,80 +2270,42 @@ const {
 data,
 error
 }=await supabaseClient.rpc(
-
 "registrar_pedido_completo",
-
 {
-
-p_numero:
-numero,
-
-p_cliente_nombre:
-nombre,
-
-p_cliente_telefono:
-telefono,
-
-p_direccion:
-direccion,
-
-p_referencia:
-referencia,
-
-p_total_productos:
-totalProductos,
-
-p_total_delivery:
-totalDelivery,
-
-p_total:
-total,
-
-p_carreras:
-carreras
-
+p_numero:numero,
+p_cliente_nombre:nombre,
+p_cliente_telefono:telefono,
+p_direccion:direccion,
+p_referencia:referencia,
+p_total_productos:totalProductos,
+p_total_delivery:totalDelivery,
+p_total:total,
+p_carreras:carreras
 }
-
 );
 
-if(error)
-throw error;
+if(error)throw error;
 
 return{
-
 id:data,
-
 numero,
-
 nombre,
-
 telefono,
-
 direccion,
-
 referencia,
-
 ubicacion,
-
 carreras,
-
 totalProductos,
-
 totalDelivery,
-
 total
-
 };
-
 }
 
 /* =========================================================
 WHATSAPP
 ========================================================= */
 
-function construirMensajeWhatsApp(
-pedido
-){
+function construirMensajeWhatsApp(pedido){
 
 let texto=
 `*${configuracion.nombreNegocio} - NUEVO PEDIDO*%0A%0A`;
@@ -2843,7 +2341,6 @@ texto+=
 
 texto+=
 `*Correo factura:* ${encodeURIComponent(correo)}%0A`;
-
 }
 
 if(pedido.referencia){
@@ -2864,9 +2361,7 @@ texto+=
 `*Referencia:* ${encodeURIComponent(
      referenciaLimpia
     )}%0A`;
-
 }
-
 }
 
 if(pedido.ubicacion){
@@ -2875,46 +2370,33 @@ texto+=
 `*📍 Ubicación:* ${encodeURIComponent(
     pedido.ubicacion
    )}%0A`;
-
 }
 
 texto+="%0A";
 
-pedido.carreras.forEach(
-carrera=>{
+pedido.carreras.forEach(carrera=>{
 
 const nombreLocal=
 carrera.restaurante_nombre||
-buscarNombreLocal(
-carrera.restaurante_id
-)||
+buscarNombreLocal(carrera.restaurante_id)||
 "Local";
 
 texto+=
-`*🏪 ${encodeURIComponent(
-     nombreLocal
-    )}*%0A`;
+`*🏪 ${encodeURIComponent(nombreLocal)}*%0A`;
 
 texto+=
 `--------------------%0A`;
 
-carrera.productos.forEach(
-item=>{
+carrera.productos.forEach(item=>{
 
-```
- texto+=
-  `${item.cantidad} x `+
-  `${encodeURIComponent(
-   item.producto_nombre
-  )} `+
-  `= $${item.subtotal.toFixed(2)}%0A`;
+texto+=
+`${item.cantidad} x `+
+`${encodeURIComponent(item.producto_nombre)} `+
+`= $${item.subtotal.toFixed(2)}%0A`;
 
-}
-```
+});
 
-);
-
-texto+=`%0A`;
+texto+="%0A";
 
 texto+=
 `Subtotal productos: $${carrera.subtotal.toFixed(2)}%0A`;
@@ -2924,11 +2406,10 @@ texto+=
 
 texto+=
 `*TOTAL ${encodeURIComponent(
-     nombreLocal
-    )}: $${carrera.total.toFixed(2)}*%0A%0A`;
+    nombreLocal
+   )}: $${carrera.total.toFixed(2)}*%0A%0A`;
 
-}
-);
+});
 
 texto+=
 `====================%0A`;
@@ -2937,7 +2418,6 @@ texto+=
 `*TOTAL PEDIDO: $${pedido.total.toFixed(2)}*`;
 
 return texto;
-
 }
 
 /* =========================================================
@@ -2949,13 +2429,10 @@ function buscarNombreLocal(id){
 const grupo=
 carrito.find(
 item=>
-Number(item.restaurante_id)===
-Number(id)
+Number(item.restaurante_id)===Number(id)
 );
 
-return grupo?.restaurante_nombre||
-"Local";
-
+return grupo?.restaurante_nombre||"Local";
 }
 
 /* =========================================================
@@ -2979,7 +2456,6 @@ behavior:"smooth"
 });
 
 return;
-
 }
 
 if(!carrito.length){
@@ -2989,7 +2465,6 @@ mostrarError(
 );
 
 return;
-
 }
 
 const boton=
@@ -2998,10 +2473,7 @@ document.querySelector(".send");
 if(boton){
 
 boton.disabled=true;
-
-boton.textContent=
-"Registrando pedido...";
-
+boton.textContent="Registrando pedido...";
 }
 
 try{
@@ -3010,24 +2482,19 @@ const pedido=
 await registrarPedido();
 
 const mensaje=
-construirMensajeWhatsApp(
-pedido
-);
+construirMensajeWhatsApp(pedido);
 
 const numero=
 String(
 configuracion.whatsappNegocio||""
-)
-.replace(/\D/g,"");
+).replace(/\D/g,"");
 
 const whatsappUrl=
 `https://wa.me/${numero}?text=${mensaje}`;
 
 carrito=[];
 
-localStorage.removeItem(
-"carrito"
-);
+sessionStorage.removeItem("carrito");
 
 $("contenido").innerHTML=`
 
@@ -3038,46 +2505,34 @@ $("contenido").innerHTML=`
  ✅
 </div>
 
-
 <h2>
  ¡Pedido registrado!
 </h2>
 
-
 <p>
-
  Tu pedido
  <strong>
   ${esc(pedido.numero)}
  </strong>
-
  fue registrado correctamente.
-
 </p>
 
-
 <p>
-
  Total:
  <strong>
   $${pedido.total.toFixed(2)}
  </strong>
-
 </p>
-
 
 ${
  pedido.ubicacion
   ?`
-
    <p>
     📍 La ubicación fue incluida en tu pedido.
    </p>
-
   `
   :""
 }
-
 
 <button
  class="btn-green"
@@ -3087,7 +2542,6 @@ ${
  📲 Enviar pedido por WhatsApp
 
 </button>
-
 
 <button
  class="btn-blue"
@@ -3128,9 +2582,7 @@ boton.textContent=
 "🚴 Confirmar pedido";
 
 }
-
 }
-
 }
 
 /* =========================================================
@@ -3144,7 +2596,6 @@ cargarCarrito();
 await cargarConfiguracion();
 
 render();
-
 }
 
 iniciar();
