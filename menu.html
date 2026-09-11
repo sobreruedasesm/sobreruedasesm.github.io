@@ -6,559 +6,543 @@
 <title>Mi pedido | Sobre Ruedas</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-header{background:#111;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:20px;font-weight:bold}
-header a{color:#fff;text-decoration:none}
+body{margin:0;font-family:Arial,sans-serif;background:#f8f5ee;color:#26352d}
+header{background:#2f5d45;color:#fff;padding:18px 20px}
+header h1{margin:0;font-size:24px}
+header p{margin:5px 0 0;color:#e7f0e8}
 main{max-width:900px;margin:auto;padding:20px}
-.bloque{background:#fff;border-radius:10px;padding:16px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
-.carrera{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:12px}
-.carrera h3{margin:0 0 10px}
-.producto{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eee}
-.producto:last-child{border-bottom:0}
-.producto-info{flex:1}
-.producto-nombre{font-weight:bold}
-.producto-precio{font-size:13px;color:#666}
-.cantidad{font-weight:bold}
-.subtotal{font-weight:bold}
-button{border:0;border-radius:6px;padding:9px 12px;cursor:pointer}
-.btn{background:#111;color:#fff}
-.btn-ok{background:#198754;color:#fff}
-.btn-danger{background:#c0392b;color:#fff}
-.btn-light{background:#ddd;color:#222}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-input,textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-top:5px}
-textarea{min-height:80px;resize:vertical}
-label{display:block;margin-bottom:10px;font-size:14px}
-.resumen div{display:flex;justify-content:space-between;padding:5px 0}
-.total{font-size:20px;font-weight:bold;border-top:1px solid #ddd;margin-top:8px;padding-top:10px!important}
-.vacio,.error{background:#fff;border-radius:10px;padding:20px;text-align:center}
-.error{color:#a00}
-.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.ubicacion{font-size:13px;margin-top:5px}
-footer{text-align:center;color:#777;padding:25px;font-size:13px}
+.volver{display:inline-block;margin-bottom:15px;color:#2f5d45;text-decoration:none;font-weight:bold}
+.seccion{background:#fffdf9;border:1px solid #eee5d8;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 3px 10px #5b46331c}
+.seccion h2{margin:0 0 15px;color:#2f5d45;font-size:20px}
+.item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #eee5d8}
+.item:last-child{border-bottom:0}
+.item-img{width:70px;height:70px;border-radius:9px;object-fit:cover;background:#e9e1d3;flex:none}
+.item-info{flex:1;min-width:0}
+.item-info h3{margin:0 0 4px;color:#2f5d45;font-size:16px}
+.item-info p{margin:3px 0;color:#68736b;font-size:14px}
+.cantidad{display:flex;align-items:center;gap:7px;margin-top:7px}
+.cantidad button{width:30px;height:30px;padding:0;border:0;border-radius:7px;background:#2f5d45;color:#fff;font-weight:bold;cursor:pointer}
+.cantidad span{min-width:22px;text-align:center;font-weight:bold}
+.item-total{font-weight:bold;color:#d06f39;white-space:nowrap}
+.eliminar{border:0;background:#eee2d7;color:#9b4f31;border-radius:7px;padding:7px 9px;cursor:pointer}
+.vacio{text-align:center;padding:30px 15px;color:#68736b}
+.total-linea{display:flex;justify-content:space-between;margin:8px 0;color:#59675e}
+.total-final{display:flex;justify-content:space-between;margin-top:15px;padding-top:15px;border-top:1px solid #ddd3c5;font-size:21px;font-weight:bold;color:#2f5d45}
+.campo{margin-bottom:12px}
+.campo label{display:block;margin-bottom:5px;font-weight:bold;color:#53665a}
+.campo input,.campo textarea{width:100%;padding:11px;border:1px solid #d8d0c3;border-radius:8px;background:#fff;color:#26352d;font-size:15px}
+.campo textarea{min-height:80px;resize:vertical}
+.ubicacion{display:flex;gap:8px;margin-top:7px}
+.ubicacion button{width:auto;padding:9px 12px;background:#e7dfd2;color:#2f5d45}
+button{border:0;border-radius:9px;background:#d97941;color:#fff;padding:12px;cursor:pointer;font-weight:bold}
+button:hover{background:#c86832}
+.btn-pedido{width:100%;font-size:17px;margin-top:8px}
+.btn-pedido:disabled{background:#b9b2a8;cursor:not-allowed}
+.aviso{background:#f5eadf;color:#76543d;border-radius:8px;padding:10px;font-size:13px;margin-top:10px}
+.cargando{text-align:center;padding:20px;color:#68736b}
 </style>
 </head>
+
 <body>
 
 <header>
-<div class="logo">🛵 Sobre Ruedas</div>
-<a href="index.html">← Seguir comprando</a>
+<h1>Sobre Ruedas</h1>
+<p>Mi pedido</p>
 </header>
 
-<main id="contenidoPedido"></main>
+<main>
 
-<footer>Sobre Ruedas · Delivery Esmeraldas</footer>
+<a class="volver" href="index.html">← Seguir comprando</a>
 
-<script src="config.js"></script>
+<div id="contenido"></div>
+
+</main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
 <script>
 let carrito=[];
-let ubicacion=null;
-let configuracion=null;
+let config={};
 
-const $=id=>document.getElementById(id);
-const dinero=v=>`$${Number(v||0).toFixed(2)}`;
+const contenido=document.getElementById("contenido");
 
-function escapar(v){
-    return String(v??"").replace(/[&<>"']/g,m=>({
-        "&":"&amp;","<":"&lt;",">":"&gt;",
-        '"':"&quot;","'":"&#039;"
-    }[m]));
+function escapeHtml(v=""){
+ return String(v).replace(/[&<>"']/g,m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[m]));
 }
-
-document.addEventListener("DOMContentLoaded",async()=>{
-    cargarCarrito();
-    await cargarConfiguracion();
-    mostrarCarrito();
-});
 
 function cargarCarrito(){
-    try{
-        carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
-        if(!Array.isArray(carrito))carrito=[];
-    }catch{
-        carrito=[];
-    }
-    normalizarCarrito();
-}
-
-function normalizarCarrito(){
-    const mapa=new Map();
-
-    carrito.forEach(p=>{
-        const productoId=Number(p.producto_id);
-        const restauranteId=Number(p.restaurante_id);
-        if(!productoId||!restauranteId)return;
-
-        const clave=`${restauranteId}_${productoId}`;
-
-        if(!mapa.has(clave)){
-            mapa.set(clave,{
-                producto_id:productoId,
-                restaurante_id:restauranteId,
-                restaurante_nombre:p.restaurante_nombre||"Local",
-                nombre:p.nombre||"Producto",
-                descripcion:p.descripcion||"",
-                precio:Number(p.precio||0),
-                imagen_url:p.imagen_url||null,
-                cantidad:Math.max(1,Number(p.cantidad||1))
-            });
-        }else{
-            mapa.get(clave).cantidad+=Math.max(1,Number(p.cantidad||1));
-        }
-    });
-
-    carrito=[...mapa.values()];
-    guardarCarrito();
+ try{
+  const datos=JSON.parse(localStorage.getItem("carrito")||"[]");
+  carrito=Array.isArray(datos)?datos:[];
+ }catch{
+  carrito=[];
+ }
 }
 
 function guardarCarrito(){
-    if(carrito.length)
-        localStorage.setItem("carrito",JSON.stringify(carrito));
-    else
-        localStorage.removeItem("carrito");
+ if(carrito.length){
+  localStorage.setItem("carrito",JSON.stringify(carrito));
+ }else{
+  localStorage.removeItem("carrito");
+ }
 }
 
-async function cargarConfiguracion(){
-    try{
-        const {data,error}=await supabaseClient
-            .from("configuracion_negocio")
-            .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda")
-            .order("id",{ascending:true})
-            .limit(1)
-            .maybeSingle();
+async function cargarConfig(){
+ try{
+  const {data,error}=await supabaseClient
+   .from("configuracion_negocio")
+   .select("*")
+   .order("id")
+   .limit(1)
+   .maybeSingle();
 
-        if(error)throw error;
+  if(error)throw error;
 
-        configuracion=data||{
-            nombre_negocio:"Sobre Ruedas",
-            ciudad:"Esmeraldas",
-            tarifa_delivery:1.50,
-            whatsapp_negocio:"",
-            moneda:"USD"
-        };
-    }catch(e){
-        console.error("Configuración:",e);
-        configuracion={
-            nombre_negocio:"Sobre Ruedas",
-            ciudad:"Esmeraldas",
-            tarifa_delivery:1.50,
-            whatsapp_negocio:"593985459479",
-            moneda:"USD"
-        };
-    }
+  config=data||{
+   nombre_negocio:"Sobre Ruedas",
+   ciudad:"Esmeraldas",
+   tarifa_delivery:1.50,
+   whatsapp_negocio:"593985459479",
+   moneda:"USD"
+  };
+ }catch(e){
+  console.error(e);
+
+  config={
+   nombre_negocio:"Sobre Ruedas",
+   ciudad:"Esmeraldas",
+   tarifa_delivery:1.50,
+   whatsapp_negocio:"593985459479",
+   moneda:"USD"
+  };
+ }
 }
 
 function agruparCarrito(){
-    const grupos=new Map();
+ const grupos={};
 
-    carrito.forEach(p=>{
-        const id=Number(p.restaurante_id);
+ carrito.forEach(item=>{
+  const id=String(item.restaurante_id);
 
-        if(!grupos.has(id)){
-            grupos.set(id,{
-                id,
-                nombre:p.restaurante_nombre||"Local",
-                productos:[]
-            });
-        }
+  if(!grupos[id]){
+   grupos[id]={
+    restaurante_id:item.restaurante_id,
+    restaurante_nombre:item.restaurante_nombre||"Local",
+    productos:[]
+   };
+  }
 
-        grupos.get(id).productos.push(p);
-    });
+  grupos[id].productos.push(item);
+ });
 
-    return [...grupos.values()];
+ return Object.values(grupos);
 }
 
-function obtenerSubtotal(grupo){
-    return grupo.productos.reduce(
-        (t,p)=>t+Number(p.precio||0)*Number(p.cantidad||0),
-        0
-    );
+function calcularSubtotalGrupo(grupo){
+ return grupo.productos.reduce(
+  (s,p)=>s+(Number(p.precio)||0)*(Number(p.cantidad)||0),
+  0
+ );
 }
 
-function mostrarCarrito(){
-    const contenedor=$("contenidoPedido");
+function calcularSubtotal(){
+ return carrito.reduce(
+  (s,p)=>s+(Number(p.precio)||0)*(Number(p.cantidad)||0),
+  0
+ );
+}
 
-    if(!carrito.length){
-        contenedor.innerHTML=`
-        <div class="vacio">
-            <h2>Tu carrito está vacío</h2>
-            <p>Agrega productos desde nuestros locales.</p>
-            <button class="btn" onclick="location.href='index.html'">
-                Ver locales
-            </button>
-        </div>`;
-        return;
-    }
+function calcularDelivery(){
+ const tarifa=Number(config.tarifa_delivery);
 
-    const grupos=agruparCarrito();
-    const delivery=Number(configuracion?.tarifa_delivery??1.50);
-    const subtotal=grupos.reduce((t,g)=>t+obtenerSubtotal(g),0);
-    const totalDelivery=delivery*grupos.length;
-    const total=subtotal+totalDelivery;
+ return agruparCarrito().length*
+  (Number.isFinite(tarifa)?tarifa:1.50);
+}
 
-    contenedor.innerHTML=`
-    <div class="bloque">
-        <h2>Mi pedido</h2>
+function calcularTotal(){
+ return calcularSubtotal()+calcularDelivery();
+}
 
-        ${grupos.map(g=>`
-        <div class="carrera">
-            <h3>${escapar(g.nombre)}</h3>
+function imagenUrl(url){
+ if(!url)return "";
+ const separador=url.includes("?")?"&":"?";
+ return url+separador+"v="+Date.now();
+}
 
-            ${g.productos.map(p=>`
-            <div class="producto">
-                <div class="producto-info">
-                    <div class="producto-nombre">
-                        ${escapar(p.nombre)}
-                    </div>
-                    <div class="producto-precio">
-                        ${dinero(p.precio)} × ${p.cantidad}
-                    </div>
-                </div>
+function render(){
+ if(!carrito.length){
+  contenido.innerHTML=`
+   <div class="seccion vacio">
+    <h2>Tu carrito está vacío</h2>
+    <p>Agrega productos desde nuestros locales.</p>
+    <button onclick="location.href='index.html'">
+     Ver locales
+    </button>
+   </div>
+  `;
+  return;
+ }
 
-                <div class="cantidad">
-                    ${dinero(Number(p.precio)*Number(p.cantidad))}
-                </div>
+ const grupos=agruparCarrito();
 
-                <button
-                    class="btn-danger"
-                    onclick="eliminarProducto(${p.restaurante_id},${p.producto_id})">
-                    ×
-                </button>
-            </div>
-            `).join("")}
+ contenido.innerHTML=`
+  <div class="seccion">
+   <h2>Tu pedido</h2>
 
-            <div class="resumen">
-                <div>
-                    <span>Subtotal</span>
-                    <strong>${dinero(obtenerSubtotal(g))}</strong>
-                </div>
-                <div>
-                    <span>Delivery</span>
-                    <strong>${dinero(delivery)}</strong>
-                </div>
-            </div>
+   ${grupos.map(grupo=>`
+    <div style="margin-bottom:20px">
+     <h3 style="color:#2f5d45;margin:0 0 8px">
+      ${escapeHtml(grupo.restaurante_nombre)}
+     </h3>
+
+     ${grupo.productos.map(item=>`
+      <div class="item">
+       ${
+        item.imagen_url
+        ? `<img
+             class="item-img"
+             src="${escapeHtml(imagenUrl(item.imagen_url))}"
+             alt="${escapeHtml(item.producto_nombre)}"
+             onerror="this.style.display='none'">`
+        : `<div class="item-img"></div>`
+       }
+
+       <div class="item-info">
+        <h3>${escapeHtml(item.producto_nombre)}</h3>
+        <p>$${Number(item.precio||0).toFixed(2)} c/u</p>
+
+        <div class="cantidad">
+         <button onclick="cambiarCantidad(${item.producto_id},-1)">−</button>
+         <span>${Number(item.cantidad)||0}</span>
+         <button onclick="cambiarCantidad(${item.producto_id},1)">+</button>
+         <button class="eliminar" onclick="eliminarProducto(${item.producto_id})">
+          Eliminar
+         </button>
         </div>
-        `).join("")}
+       </div>
 
-        <div class="resumen">
-            <div>
-                <span>Productos</span>
-                <strong>${dinero(subtotal)}</strong>
-            </div>
-            <div>
-                <span>Delivery</span>
-                <strong>${dinero(totalDelivery)}</strong>
-            </div>
-            <div class="total">
-                <span>Total</span>
-                <strong>${dinero(total)}</strong>
-            </div>
-        </div>
-
-        <div class="acciones">
-            <button class="btn-light" onclick="vaciarCarrito()">
-                Vaciar carrito
-            </button>
-            <button class="btn" onclick="location.href='index.html'">
-                Seguir comprando
-            </button>
-        </div>
+       <div class="item-total">
+        $${(
+         (Number(item.precio)||0)*
+         (Number(item.cantidad)||0)
+        ).toFixed(2)}
+       </div>
+      </div>
+     `).join("")}
     </div>
+   `).join("")}
 
-    <div class="bloque">
-        <h2>Datos de entrega</h2>
+   <button
+    style="background:#e7dfd2;color:#2f5d45;width:100%"
+    onclick="vaciarCarrito()">
+    Vaciar carrito
+   </button>
+  </div>
 
-        <div class="form-grid">
-            <label>
-                Nombre *
-                <input id="clienteNombre" maxlength="100">
-            </label>
+  <div class="seccion">
+   <h2>Resumen</h2>
 
-            <label>
-                Teléfono *
-                <input id="clienteTelefono" type="tel" maxlength="30">
-            </label>
-        </div>
+   <div class="total-linea">
+    <span>Productos</span>
+    <span>$${calcularSubtotal().toFixed(2)}</span>
+   </div>
 
-        <label>
-            Dirección *
-            <textarea id="clienteDireccion" maxlength="300"></textarea>
-        </label>
+   <div class="total-linea">
+    <span>Delivery</span>
+    <span>$${calcularDelivery().toFixed(2)}</span>
+   </div>
 
-        <label>
-            Referencia
-            <textarea id="clienteReferencia" maxlength="300"></textarea>
-        </label>
+   <div class="total-final">
+    <span>Total</span>
+    <span>$${calcularTotal().toFixed(2)}</span>
+   </div>
+  </div>
 
-        <button class="btn-light" onclick="obtenerUbicacion()">
-            📍 Compartir ubicación
-        </button>
+  <div class="seccion">
+   <h2>Datos de entrega</h2>
 
-        <div id="ubicacionEstado" class="ubicacion"></div>
+   <div class="campo">
+    <label for="cliente">Nombre</label>
+    <input id="cliente" placeholder="Tu nombre">
+   </div>
 
-        <div class="acciones">
-            <button class="btn-ok" onclick="enviarPedidoWhatsApp()">
-                Enviar pedido por WhatsApp
-            </button>
-        </div>
+   <div class="campo">
+    <label for="telefono">Teléfono</label>
+    <input id="telefono" type="tel" placeholder="Tu número de teléfono">
+   </div>
 
-        <div id="mensajePedido"></div>
-    </div>`;
+   <div class="campo">
+    <label for="direccion">Dirección</label>
+    <input id="direccion" placeholder="Calle, sector, número de casa">
+    <div class="ubicacion">
+     <button onclick="obtenerUbicacion()">
+      📍 Usar mi ubicación
+     </button>
+    </div>
+   </div>
+
+   <div class="campo">
+    <label for="referencia">Referencia</label>
+    <textarea id="referencia" placeholder="Ej.: casa de color azul, junto a..."></textarea>
+   </div>
+
+   <div id="aviso"></div>
+
+   <button class="btn-pedido" id="btnPedido" onclick="realizarPedido()">
+    Confirmar pedido por WhatsApp
+   </button>
+  </div>
+ `;
 }
 
-function eliminarProducto(restauranteId,productoId){
-    carrito=carrito.filter(p=>!(
-        Number(p.restaurante_id)===Number(restauranteId)&&
-        Number(p.producto_id)===Number(productoId)
-    ));
+function cambiarCantidad(productoId,cambio){
+ const item=carrito.find(
+  p=>Number(p.producto_id)===Number(productoId)
+ );
 
-    guardarCarrito();
-    mostrarCarrito();
+ if(!item)return;
+
+ item.cantidad=(Number(item.cantidad)||0)+cambio;
+
+ if(item.cantidad<=0){
+  carrito=carrito.filter(
+   p=>Number(p.producto_id)!==Number(productoId)
+  );
+ }
+
+ guardarCarrito();
+ render();
+}
+
+function eliminarProducto(productoId){
+ carrito=carrito.filter(
+  p=>Number(p.producto_id)!==Number(productoId)
+ );
+
+ guardarCarrito();
+ render();
 }
 
 function vaciarCarrito(){
-    if(!carrito.length)return;
-
-    if(!confirm("¿Vaciar todo el carrito?"))return;
-
-    carrito=[];
-    localStorage.removeItem("carrito");
-    mostrarCarrito();
+ carrito=[];
+ guardarCarrito();
+ render();
 }
 
 function obtenerUbicacion(){
-    if(!navigator.geolocation){
-        mostrarMensaje("Este navegador no permite obtener ubicación.","error");
-        return;
-    }
+ if(!navigator.geolocation){
+  mostrarAviso("Tu navegador no permite obtener la ubicación.");
+  return;
+ }
 
-    $("ubicacionEstado").textContent="Obteniendo ubicación...";
+ mostrarAviso("Obteniendo ubicación...");
 
-    navigator.geolocation.getCurrentPosition(
-        posicion=>{
-            ubicacion={
-                lat:Number(posicion.coords.latitude),
-                lon:Number(posicion.coords.longitude)
-            };
+ navigator.geolocation.getCurrentPosition(
+  posicion=>{
+   const lat=posicion.coords.latitude;
+   const lon=posicion.coords.longitude;
 
-            $("ubicacionEstado").innerHTML=`
-                Ubicación obtenida correctamente.
-                <a target="_blank"
-                   rel="noopener"
-                   href="https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lon}">
-                   Ver en mapa
-                </a>`;
-        },
-        error=>{
-            console.error(error);
-            ubicacion=null;
-            $("ubicacionEstado").textContent=
-                "No se pudo obtener la ubicación.";
-        },
-        {
-            enableHighAccuracy:true,
-            timeout:10000,
-            maximumAge:0
-        }
-    );
+   direccion.value=
+    `Ubicación GPS: ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+
+   mostrarAviso("Ubicación agregada correctamente.");
+  },
+  ()=>{
+   mostrarAviso(
+    "No se pudo obtener la ubicación. Ingresa la dirección manualmente."
+   );
+  },
+  {
+   enableHighAccuracy:true,
+   timeout:10000,
+   maximumAge:60000
+  }
+ );
+}
+
+function mostrarAviso(texto){
+ const aviso=document.getElementById("aviso");
+ if(aviso)aviso.innerHTML=`<div class="aviso">${escapeHtml(texto)}</div>`;
 }
 
 function generarNumeroPedido(){
-    return "SR-"+Date.now().toString().slice(-6);
+ const ahora=Date.now().toString().slice(-6);
+ return "SR-"+ahora;
 }
 
-async function enviarPedidoWhatsApp(){
-
-    if(!carrito.length){
-        mostrarMensaje("El carrito está vacío.","error");
-        return;
-    }
-
-    const nombre=$("clienteNombre").value.trim();
-    const telefono=$("clienteTelefono").value.trim();
-    const direccion=$("clienteDireccion").value.trim();
-    const referencia=$("clienteReferencia").value.trim();
-
-    if(!nombre){
-        mostrarMensaje("Ingresa tu nombre.","error");
-        return;
-    }
-
-    if(!telefono){
-        mostrarMensaje("Ingresa tu teléfono.","error");
-        return;
-    }
-
-    if(!direccion){
-        mostrarMensaje("Ingresa la dirección de entrega.","error");
-        return;
-    }
-
-    const grupos=agruparCarrito();
-    const delivery=Number(configuracion?.tarifa_delivery??1.50);
-    const subtotal=grupos.reduce((t,g)=>t+obtenerSubtotal(g),0);
-    const totalDelivery=delivery*grupos.length;
-    const total=subtotal+totalDelivery;
-    const numero=generarNumeroPedido();
-
-    try{
-        mostrarMensaje("Registrando pedido...");
-
-        const {data:pedido,error:ep}=await supabaseClient
-            .from("pedidos")
-            .insert({
-                numero,
-                cliente_nombre:nombre,
-                cliente_telefono:telefono,
-                direccion,
-                referencia:referencia||null,
-                total_productos:subtotal,
-                total_delivery:totalDelivery,
-                total
-            })
-            .select("id,numero")
-            .single();
-
-        if(ep)throw ep;
-
-        for(const grupo of grupos){
-
-            const subtotalCarrera=obtenerSubtotal(grupo);
-            const totalCarrera=subtotalCarrera+delivery;
-
-            const {data:carrera,error:ec}=await supabaseClient
-                .from("carreras")
-                .insert({
-                    pedido_id:pedido.id,
-                    restaurante_id:grupo.id,
-                    numero:`${numero}-${grupo.id}`,
-                    subtotal:subtotalCarrera,
-                    delivery,
-                    total:totalCarrera,
-                    estado:"Pendiente de asignación"
-                })
-                .select("id")
-                .single();
-
-            if(ec)throw ec;
-
-            const detalles=grupo.productos.map(p=>({
-                carrera_id:carrera.id,
-                producto_id:Number(p.producto_id),
-                producto_nombre:p.nombre,
-                precio_unitario:Number(p.precio||0),
-                cantidad:Number(p.cantidad||0),
-                subtotal:Number(p.precio||0)*Number(p.cantidad||0)
-            }));
-
-            const {error:ed}=await supabaseClient
-                .from("detalle_carreras")
-                .insert(detalles);
-
-            if(ed)throw ed;
-        }
-
-        const mensaje=generarMensajeWhatsApp({
-            numero,
-            nombre,
-            telefono,
-            direccion,
-            referencia,
-            grupos,
-            delivery,
-            subtotal,
-            totalDelivery,
-            total
-        });
-
-        const whatsapp=
-            String(configuracion?.whatsapp_negocio||"")
-            .replace(/\D/g,"");
-
-        if(!whatsapp){
-            mostrarMensaje(
-                "Pedido registrado, pero no existe un WhatsApp configurado.",
-                "error"
-            );
-            return;
-        }
-
-        const url=
-            `https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`;
-
-        localStorage.removeItem("carrito");
-        carrito=[];
-
-        window.location.href=url;
-
-    }catch(e){
-        console.error("ERROR REGISTRANDO PEDIDO:",e);
-        mostrarMensaje(
-            "No se pudo registrar el pedido: "+e.message,
-            "error"
-        );
-    }
+function construirCarreras(){
+ return agruparCarrito().map(grupo=>({
+  restaurante_id:Number(grupo.restaurante_id),
+  subtotal:Number(calcularSubtotalGrupo(grupo).toFixed(2)),
+  delivery:Number(Number(config.tarifa_delivery||1.50).toFixed(2)),
+  total:Number(
+   (
+    calcularSubtotalGrupo(grupo)+
+    Number(config.tarifa_delivery||1.50)
+   ).toFixed(2)
+  ),
+  productos:grupo.productos.map(p=>({
+   producto_id:Number(p.producto_id),
+   producto_nombre:p.producto_nombre,
+   precio_unitario:Number(p.precio)||0,
+   cantidad:Number(p.cantidad)||0,
+   subtotal:Number(
+    (
+     (Number(p.precio)||0)*
+     (Number(p.cantidad)||0)
+    ).toFixed(2)
+   )
+  }))
+ }));
 }
 
-function generarMensajeWhatsApp(datos){
+async function registrarPedido(numero,cliente,telefono,direccionTexto,referencia){
+ const carreras=construirCarreras();
 
-    let texto=
-`*SOBRE RUEDAS - NUEVO PEDIDO*
-Pedido: ${datos.numero}
+ const payload={
+  p_numero:numero,
+  p_cliente_nombre:cliente,
+  p_cliente_telefono:telefono,
+  p_direccion:direccionTexto,
+  p_referencia:referencia||null,
+  p_total_productos:Number(calcularSubtotal().toFixed(2)),
+  p_total_delivery:Number(calcularDelivery().toFixed(2)),
+  p_total:Number(calcularTotal().toFixed(2)),
+  p_carreras:carreras
+ };
 
-*CLIENTE*
-Nombre: ${datos.nombre}
-Teléfono: ${datos.telefono}
-Dirección: ${datos.direccion}`;
+ const {data,error}=await supabaseClient.rpc(
+  "registrar_pedido_completo",
+  payload
+ );
 
-    if(datos.referencia)
-        texto+=`\nReferencia: ${datos.referencia}`;
+ if(error)throw error;
 
-    if(ubicacion)
-        texto+=
-            `\nUbicación: https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lon}`;
-
-    texto+="\n\n*PEDIDO*";
-
-    datos.grupos.forEach(g=>{
-        texto+=`\n\n*${g.nombre}*`;
-
-        g.productos.forEach(p=>{
-            texto+=
-                `\n${p.cantidad} x ${p.nombre} - `+
-                `${dinero(Number(p.precio)*Number(p.cantidad))}`;
-        });
-
-        texto+=`\nSubtotal: ${dinero(obtenerSubtotal(g))}`;
-        texto+=`\nDelivery: ${dinero(datos.delivery)}`;
-        texto+=`\nTotal local: ${dinero(obtenerSubtotal(g)+datos.delivery)}`;
-    });
-
-    texto+=
-`\n\nSubtotal productos: ${dinero(datos.subtotal)}
-Delivery: ${dinero(datos.totalDelivery)}
-*TOTAL: ${dinero(datos.total)}*`;
-
-    return texto;
+ return data;
 }
 
-function mostrarMensaje(texto,tipo="ok"){
-    const e=$("mensajePedido");
-    if(!e)return;
+async function realizarPedido(){
+ if(!carrito.length){
+  render();
+  return;
+ }
 
-    e.textContent=texto;
-    e.style.padding="10px";
-    e.style.marginTop="10px";
-    e.style.borderRadius="6px";
-    e.style.background=
-        tipo==="error"?"#fde2e2":"#dff5e5";
-    e.style.color=
-        tipo==="error"?"#8b1e1e":"#176b35";
+ const cliente=document.getElementById("cliente").value.trim();
+ const telefono=document.getElementById("telefono").value.trim();
+ const direccionTexto=document.getElementById("direccion").value.trim();
+ const referencia=document.getElementById("referencia").value.trim();
+ const boton=document.getElementById("btnPedido");
+
+ if(!cliente||!telefono||!direccionTexto){
+  mostrarAviso("Completa nombre, teléfono y dirección.");
+  return;
+ }
+
+ if(!config.whatsapp_negocio){
+  mostrarAviso("No está configurado el WhatsApp del negocio.");
+  return;
+ }
+
+ boton.disabled=true;
+ boton.textContent="Registrando pedido...";
+
+ try{
+  const numero=generarNumeroPedido();
+
+  await registrarPedido(
+   numero,
+   cliente,
+   telefono,
+   direccionTexto,
+   referencia
+  );
+
+  boton.textContent="Abriendo WhatsApp...";
+
+  let mensaje=
+`*NUEVO PEDIDO - SOBRE RUEDAS*%0A`+
+`Pedido: ${numero}%0A`+
+`Cliente: ${encodeURIComponent(cliente)}%0A`+
+`Teléfono: ${encodeURIComponent(telefono)}%0A`+
+`Dirección: ${encodeURIComponent(direccionTexto)}%0A`;
+
+  if(referencia){
+   mensaje+=
+    `Referencia: ${encodeURIComponent(referencia)}%0A`;
+  }
+
+  mensaje+=`%0A*DETALLE DEL PEDIDO*%0A`;
+
+  agruparCarrito().forEach(grupo=>{
+   mensaje+=
+    `%0A*${encodeURIComponent(grupo.restaurante_nombre)}*%0A`;
+
+   grupo.productos.forEach(p=>{
+    const cantidad=Number(p.cantidad)||0;
+    const precio=Number(p.precio)||0;
+    const subtotal=cantidad*precio;
+
+    mensaje+=
+     `${cantidad} x ${encodeURIComponent(p.producto_nombre)} `+
+     `- $${subtotal.toFixed(2)}%0A`;
+   });
+
+   mensaje+=
+    `Subtotal: $${calcularSubtotalGrupo(grupo).toFixed(2)}%0A`;
+   mensaje+=
+    `Delivery: $${Number(config.tarifa_delivery||1.50).toFixed(2)}%0A`;
+  });
+
+  mensaje+=
+   `%0A*TOTAL: $${calcularTotal().toFixed(2)}*`;
+
+  const telefonoWhatsApp=
+   String(config.whatsapp_negocio).replace(/\D/g,"");
+
+  const url=
+   "https://wa.me/"+
+   telefonoWhatsApp+
+   "?text="+
+   mensaje;
+
+  guardarCarrito();
+  localStorage.removeItem("carrito");
+
+  location.href=url;
+
+ }catch(e){
+  console.error(e);
+
+  boton.disabled=false;
+  boton.textContent="Confirmar pedido por WhatsApp";
+
+  mostrarAviso(
+   "No se pudo registrar el pedido. Verifica tu conexión e inténtalo nuevamente."
+  );
+ }
 }
+
+async function iniciar(){
+ cargarCarrito();
+
+ if(!carrito.length){
+  render();
+  return;
+ }
+
+ await cargarConfig();
+ render();
+}
+
+iniciar();
 </script>
+
 </body>
 </html>
