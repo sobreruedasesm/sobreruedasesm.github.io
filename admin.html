@@ -9,200 +9,377 @@
 <script src="supabase.js"></script>
 
 <style>
-:root{
- --rojo:#d62828;--rojo2:#b51f1f;--verde:#198754;--verde2:#146c43;
- --azul:#1261a0;--azul2:#0d4f82;--amarillo:#f4c542;
- --negro:#171717;--blanco:#fff;--gris:#f4f5f7;--gris2:#e5e7eb;
- --muted:#5f6670;--danger:#b42318;--shadow:0 4px 14px rgba(23,23,23,.08);
-}
 *{box-sizing:border-box}
-body{margin:0;background:var(--gris);font-family:Arial,sans-serif;color:var(--negro)}
-header{background:var(--negro);color:#fff;padding:16px 20px;border-top:5px solid var(--rojo)}
-header h1{margin:0;font-size:22px}
-header small{color:#ddd}
-main{max-width:1200px;margin:auto;padding:16px}
-section{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
-h2{margin:0 0 14px;font-size:19px}
-h3{margin:12px 0 8px;font-size:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-input,select,textarea{width:100%;padding:10px;border:1px solid var(--gris2);border-radius:8px;font:inherit;background:#fff}
-textarea{resize:vertical;min-height:80px}
-label{font-size:13px;font-weight:bold;display:block;margin-bottom:5px}
-.field{margin-bottom:10px}
-button{border:0;border-radius:8px;padding:9px 12px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.btn-red{background:var(--rojo);color:#fff}
-.btn-red:hover{background:var(--rojo2)}
-.btn-green{background:var(--verde);color:#fff}
-.btn-green:hover{background:var(--verde2)}
-.btn-blue{background:var(--azul);color:#fff}
-.btn-blue:hover{background:var(--azul2)}
-.btn-yellow{background:var(--amarillo);color:var(--negro)}
-.btn-gray{background:var(--gris2);color:var(--negro)}
-.btn-danger{background:var(--danger);color:#fff}
-.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.card{border:1px solid var(--gris2);border-radius:10px;padding:12px;margin-top:10px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.badge{padding:4px 8px;border-radius:20px;font-size:11px;font-weight:bold}
-.on{background:#dff5e8;color:var(--verde2)}
-.off{background:#eee;color:#666}
-.img-preview{width:100%;height:130px;object-fit:cover;border-radius:8px;background:var(--gris);margin-top:7px}
-.product-img{width:75px;height:75px;object-fit:cover;border-radius:8px;background:var(--gris)}
-.product-row{display:grid;grid-template-columns:1fr 120px 150px 90px;gap:8px;align-items:end}
-.product-row img{width:70px;height:70px;object-fit:cover;border-radius:8px}
-.mini{font-size:12px;color:var(--muted)}
-.notice{padding:10px;border-radius:8px;background:#fff8d9;border-left:4px solid var(--amarillo);margin-bottom:10px}
-.loading{text-align:center;padding:20px;color:var(--muted)}
-hr{border:0;border-top:1px solid var(--gris2);margin:15px 0}
-@media(max-width:700px){
- .product-row{grid-template-columns:1fr 1fr}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f5f7;color:#171717}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.header{background:#171717;color:#fff;padding:16px 20px;position:sticky;top:0;z-index:20}
+.header h1{margin:0;font-size:22px}
+.header small{color:#ccc}
+.wrap{max-width:1200px;margin:auto;padding:20px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.nav button{border:0;border-radius:8px;padding:10px 14px;background:#fff;color:#171717;font-weight:700}
+.nav button.active{background:#d62828;color:#fff}
+.section{display:none}
+.section.active{display:block}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:16px}
+h2{margin:0 0 15px;font-size:20px}
+h3{margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+label{font-size:13px;font-weight:700}
+input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:10px;background:#fff}
+textarea{min-height:90px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:700}
+.primary{background:#d62828;color:#fff}
+.success{background:#198754;color:#fff}
+.info{background:#1261a0;color:#fff}
+.warning{background:#f4c542;color:#171717}
+.danger{background:#b42318;color:#fff}
+.secondary{background:#e5e7eb;color:#171717}
+.muted{color:#5f6670;font-size:13px}
+.msg{padding:10px;border-radius:8px;margin-bottom:14px;display:none}
+.msg.ok{display:block;background:#dcfce7;color:#166534}
+.msg.err{display:block;background:#fee2e2;color:#991b1b}
+.preview{width:100%;max-width:300px;max-height:150px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin-top:5px}
+.local-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.local-card{border:1px solid #ddd;border-radius:12px;overflow:hidden;background:#fff}
+.local-banner{width:100%;height:160px;object-fit:cover;background:#e5e7eb}
+.local-body{padding:15px}
+.local-title{font-size:18px;font-weight:800}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:700}
+.badge.on{background:#dcfce7;color:#166534}
+.badge.off{background:#fee2e2;color:#991b1b}
+.category-list{display:grid;gap:10px}
+.category-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #ddd;border-radius:9px;padding:10px;background:#fff}
+.product-row{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;border:1px solid #ddd;border-radius:10px;padding:10px;margin-bottom:8px}
+.product-img{width:70px;height:70px;border-radius:8px;object-fit:cover;background:#eee}
+.product-info strong{display:block}
+.product-info small{color:#5f6670}
+.product-actions{display:flex;gap:5px;flex-wrap:wrap}
+.horario-box{border:1px solid #ddd;border-radius:10px;overflow:hidden}
+.horario-row{display:grid;grid-template-columns:110px 100px 1fr 1fr;gap:10px;align-items:center;padding:9px;border-bottom:1px solid #eee}
+.horario-row:last-child{border-bottom:0}
+.day{font-weight:700}
+.toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.toggle input{display:none}
+.eye{width:34px;height:24px;border-radius:20px;background:#d1d5db;display:flex;align-items:center;justify-content:center;font-size:14px}
+.toggle input:checked+.eye{background:#198754;color:#fff}
+.time-wrap{display:flex;align-items:center;gap:6px}
+.time-wrap input:disabled{background:#f3f4f6;color:#9ca3af}
+.mode-box{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+.mode-option{display:flex;align-items:center;gap:7px;font-weight:700}
+.mode-option input{width:auto}
+.products-editor{margin-top:10px}
+.hidden{display:none!important}
+@media(max-width:800px){
+.grid,.local-list{grid-template-columns:1fr}
+.horario-row{grid-template-columns:1fr 80px 1fr 1fr}
+}
+@media(max-width:600px){
+.wrap{padding:12px}
+.product-row{grid-template-columns:55px 1fr}
+.product-actions{grid-column:1/-1}
+.product-img{width:55px;height:55px}
+.horario-row{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 
-<header>
- <h1>Sobre Ruedas — Administración</h1>
- <small>Gestión de locales, categorías, productos y configuración</small>
+<header class="header">
+<h1>Sobre Ruedas · Administración</h1>
+<small>Gestión del negocio</small>
 </header>
 
-<main>
+<div class="wrap">
+
+<nav class="nav">
+<button class="active" onclick="mostrarSeccion('config',this)">Configuración</button>
+<button onclick="mostrarSeccion('categorias',this)">Categorías</button>
+<button onclick="mostrarSeccion('locales',this)">Locales</button>
+</nav>
+
+<div id="mensaje" class="msg"></div>
 
 <!-- CONFIGURACIÓN -->
-<section>
-<h2>⚙️ Configuración del negocio</h2>
+<section id="config" class="section active">
+
+<div class="card">
+<h2>Configuración del negocio</h2>
 
 <div class="grid">
- <div class="field">
-  <label>Nombre del negocio</label>
-  <input id="cfgNombre">
- </div>
+<div class="field">
+<label>Nombre del negocio</label>
+<input id="cfgNombre">
+</div>
 
- <div class="field">
-  <label>Ciudad</label>
-  <input id="cfgCiudad">
- </div>
+<div class="field">
+<label>Ciudad</label>
+<input id="cfgCiudad">
+</div>
 
- <div class="field">
-  <label>Tarifa delivery</label>
-  <input id="cfgDelivery" type="number" step="0.01" min="0">
- </div>
+<div class="field">
+<label>Tarifa delivery</label>
+<input id="cfgDelivery" type="number" min="0" step="0.01">
+</div>
 
- <div class="field">
-  <label>WhatsApp</label>
-  <input id="cfgWhatsapp">
- </div>
+<div class="field">
+<label>WhatsApp del negocio</label>
+<input id="cfgWhatsapp">
+</div>
 
- <div class="field">
-  <label>Moneda</label>
-  <input id="cfgMoneda" value="USD">
- </div>
+<div class="field">
+<label>Moneda</label>
+<input id="cfgMoneda">
+</div>
 </div>
 
 <div class="actions">
- <button class="btn-blue" onclick="guardarConfiguracion()">Guardar configuración</button>
+<button class="btn primary" onclick="guardarConfiguracion()">Guardar configuración</button>
 </div>
-</section>
+</div>
 
+</section>
 
 <!-- CATEGORÍAS -->
-<section>
-<h2>🏷️ Categorías</h2>
+<section id="categorias" class="section">
+
+<div class="card">
+<h2>Registrar categoría</h2>
 
 <div class="grid">
- <div class="field">
-  <label>Nueva categoría</label>
-  <input id="nuevaCategoria" placeholder="Ej. Comida rápida">
- </div>
+<div class="field">
+<label>Nombre</label>
+<input id="catNombre" placeholder="Ej. Hamburguesas">
+</div>
 </div>
 
 <div class="actions">
- <button class="btn-red" onclick="crearCategoria()">+ Crear categoría</button>
+<button class="btn primary" onclick="crearCategoria()">Crear categoría</button>
+</div>
 </div>
 
-<div id="listaCategorias" class="loading">Cargando...</div>
+<div class="card">
+<h2>Lista de categorías</h2>
+<div id="listaCategorias"></div>
+</div>
+
 </section>
 
-
 <!-- LOCALES -->
-<section>
-<h2>🏪 Locales</h2>
+<section id="locales" class="section">
 
-<div class="notice">
-Las imágenes son opcionales. Si editas un local y no seleccionas una imagen nueva, la imagen actual se conserva.
-</div>
+<div class="card">
+<h2>Registro de nuevo local</h2>
+<p class="muted">Crea el local y configura su horario y productos.</p>
 
 <div class="grid">
 
- <div class="field">
-  <label>Nombre del local</label>
-  <input id="localNombre">
- </div>
+<div class="field">
+<label>Nombre del local</label>
+<input id="locNombre" placeholder="Ej. AGUA VIVA">
+</div>
 
- <div class="field">
-  <label>Categoría</label>
-  <select id="localCategoria"></select>
- </div>
+<div class="field">
+<label>Categoría</label>
+<select id="locCategoria"></select>
+</div>
 
- <div class="field">
-  <label>Descripción</label>
-  <textarea id="localDescripcion"></textarea>
- </div>
+<div class="field full">
+<label>Descripción</label>
+<textarea id="locDescripcion" placeholder="Descripción del local"></textarea>
+</div>
 
- <div class="field">
-  <label>Banner</label>
-  <input id="localBanner" type="file" accept="image/*" onchange="previewBanner(this)">
-  <img id="bannerPreview" class="img-preview" style="display:none">
- </div>
+<div class="field">
+<label>Banner opcional</label>
+<input id="locBanner" type="file" accept="image/*" onchange="previewArchivo(this,'previewBanner')">
+<img id="previewBanner" class="preview hidden">
+</div>
 
 </div>
 
-<h3>Horario</h3>
-<div id="horariosNuevos"></div>
+<div class="card" style="margin-top:15px;background:#fafafa">
+<h3>Horario de atención</h3>
 
+<div class="mode-box">
+
+<label class="mode-option">
+<input type="radio" name="modoHorario" value="siempre" onchange="cambiarModoHorario()">
+Siempre abierto
+</label>
+
+<label class="mode-option">
+<input type="radio" name="modoHorario" value="personalizado" checked onchange="cambiarModoHorario()">
+Horario personalizado
+</label>
+
+<label class="mode-option">
+<input type="radio" name="modoHorario" value="cerrado" onchange="cambiarModoHorario()">
+Cerrado
+</label>
+
+</div>
+
+<div id="horarioEditor"></div>
+</div>
+
+<div class="card" style="margin-top:15px;background:#fafafa">
 <h3>Productos</h3>
 <div id="productosNuevos"></div>
 
 <div class="actions">
- <button class="btn-green" onclick="agregarProductoNuevo()">+ Producto</button>
- <button class="btn-red" onclick="guardarLocal()">Guardar local</button>
- <button class="btn-gray" onclick="limpiarFormulario()">Limpiar</button>
+<button class="btn success" onclick="agregarProductoNuevo()">+ Agregar producto</button>
+</div>
 </div>
 
-<hr>
+<div class="actions">
+<button class="btn primary" onclick="guardarNuevoLocal()">Guardar nuevo local</button>
+<button class="btn secondary" onclick="limpiarFormularioLocal()">Limpiar</button>
+</div>
 
-<div id="listaLocales" class="loading">Cargando...</div>
+</div>
+
+<!-- LISTA -->
+<div class="card">
+<h2>Lista de locales</h2>
+<div id="listaLocales" class="local-list"></div>
+</div>
+
+<!-- EDICIÓN -->
+<div id="editorLocal" class="card hidden">
+<h2>Editar local</h2>
+
+<input id="editId" type="hidden">
+
+<div class="grid">
+
+<div class="field">
+<label>Nombre del local</label>
+<input id="editNombre">
+</div>
+
+<div class="field">
+<label>Categoría</label>
+<select id="editCategoria"></select>
+</div>
+
+<div class="field full">
+<label>Descripción</label>
+<textarea id="editDescripcion"></textarea>
+</div>
+
+<div class="field">
+<label>Banner actual</label>
+<img id="editBannerPreview" class="preview hidden">
+</div>
+
+<div class="field">
+<label>Nueva imagen de banner opcional</label>
+<input id="editBanner" type="file" accept="image/*" onchange="previewArchivo(this,'editBannerPreview')">
+</div>
+
+</div>
+
+<div class="card" style="margin-top:15px;background:#fafafa">
+<h3>Horario de atención</h3>
+
+<div class="mode-box">
+
+<label class="mode-option">
+<input type="radio" name="editModoHorario" value="siempre" onchange="cambiarModoHorarioEdit()">
+Siempre abierto
+</label>
+
+<label class="mode-option">
+<input type="radio" name="editModoHorario" value="personalizado" onchange="cambiarModoHorarioEdit()">
+Horario personalizado
+</label>
+
+<label class="mode-option">
+<input type="radio" name="editModoHorario" value="cerrado" onchange="cambiarModoHorarioEdit()">
+Cerrado
+</label>
+
+</div>
+
+<div id="editHorarioEditor"></div>
+</div>
+
+<div class="card" style="margin-top:15px;background:#fafafa">
+<h3>Productos</h3>
+<div id="productosEditados"></div>
+
+<div class="actions">
+<button class="btn success" onclick="agregarProductoEditado()">+ Agregar producto</button>
+</div>
+</div>
+
+<div class="actions">
+<button class="btn primary" onclick="guardarEdicionLocal()">Guardar cambios</button>
+<button class="btn secondary" onclick="cerrarEditor()">Cancelar</button>
+</div>
+
+</div>
+
 </section>
 
-</main>
+</div>
 
 <script>
 const BUCKET="restaurantes";
-const DIAS=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const DIAS=[
+ {n:"Domingo",d:0},
+ {n:"Lunes",d:1},
+ {n:"Martes",d:2},
+ {n:"Miércoles",d:3},
+ {n:"Jueves",d:4},
+ {n:"Viernes",d:5},
+ {n:"Sábado",d:6}
+];
 
 let categorias=[];
 let locales=[];
+let productosEdit=[];
 let productosNuevos=[];
-let localEditando=null;
-let productosEditando=[];
 
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const norm=s=>String(s??"").trim().toLowerCase();
-const uid=()=>crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
-const ext=n=>(String(n||"jpg").split(".").pop()||"jpg").toLowerCase();
+document.addEventListener("DOMContentLoaded",async()=>{
+ await cargarTodo();
+ construirHorario("horarioEditor","nuevo");
+ construirHorario("editHorarioEditor","edit");
+});
 
-function mostrarError(e){
- console.error(e);
- alert(e?.message||"Ocurrió un error.");
+function mostrarSeccion(id,btn){
+ document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+ btn.classList.add("active");
 }
 
-async function cargar(){
+function mensaje(texto,tipo="ok"){
+ const el=document.getElementById("mensaje");
+ el.textContent=texto;
+ el.className="msg "+(tipo==="ok"?"ok":"err");
+ clearTimeout(window.msgTimer);
+ window.msgTimer=setTimeout(()=>el.className="msg",4000);
+}
+
+function err(e){
+ console.error(e);
+ mensaje(e?.message||"Ocurrió un error.","err");
+}
+
+async function cargarTodo(){
  try{
-  await Promise.all([cargarConfiguracion(),cargarCategorias(),cargarLocales()]);
-  crearHorarios();
- }catch(e){mostrarError(e)}
+  await Promise.all([
+   cargarConfiguracion(),
+   cargarCategorias(),
+   cargarLocales()
+  ]);
+ }catch(e){err(e)}
 }
 
 async function cargarConfiguracion(){
@@ -214,57 +391,50 @@ async function cargarConfiguracion(){
   .maybeSingle();
 
  if(error)throw error;
+ if(!data)return;
 
- if(data){
-  $("cfgNombre").value=data.nombre_negocio||"";
-  $("cfgCiudad").value=data.ciudad||"";
-  $("cfgDelivery").value=data.tarifa_delivery??1.5;
-  $("cfgWhatsapp").value=data.whatsapp_negocio||"";
-  $("cfgMoneda").value=data.moneda||"USD";
- }
+ cfgNombre.value=data.nombre_negocio||"";
+ cfgCiudad.value=data.ciudad||"";
+ cfgDelivery.value=data.tarifa_delivery??1.5;
+ cfgWhatsapp.value=data.whatsapp_negocio||"";
+ cfgMoneda.value=data.moneda||"USD";
 }
 
 async function guardarConfiguracion(){
  try{
   const payload={
-   nombre_negocio:$("cfgNombre").value.trim()||"Sobre Ruedas",
-   ciudad:$("cfgCiudad").value.trim()||"Esmeraldas",
-   tarifa_delivery:Number($("cfgDelivery").value)||0,
-   whatsapp_negocio:$("cfgWhatsapp").value.trim(),
-   moneda:$("cfgMoneda").value.trim()||"USD",
+   nombre_negocio:cfgNombre.value.trim(),
+   ciudad:cfgCiudad.value.trim(),
+   tarifa_delivery:Number(cfgDelivery.value)||0,
+   whatsapp_negocio:cfgWhatsapp.value.trim(),
+   moneda:cfgMoneda.value.trim()||"USD",
    actualizado_en:new Date().toISOString()
   };
 
-  const {data,error}=await supabaseClient
+  const {data:exist}=await supabaseClient
    .from("configuracion_negocio")
    .select("id")
    .order("id",{ascending:true})
    .limit(1)
    .maybeSingle();
 
-  if(error)throw error;
+  let error;
 
-  if(data){
-   const r=await supabaseClient
+  if(exist?.id){
+   ({error}=await supabaseClient
     .from("configuracion_negocio")
     .update(payload)
-    .eq("id",data.id);
-   if(r.error)throw r.error;
+    .eq("id",exist.id));
   }else{
-   const r=await supabaseClient
+   ({error}=await supabaseClient
     .from("configuracion_negocio")
-    .insert(payload);
-   if(r.error)throw r.error;
+    .insert(payload));
   }
 
-  alert("Configuración guardada.");
- }catch(e){mostrarError(e)}
+  if(error)throw error;
+  mensaje("Configuración guardada correctamente.");
+ }catch(e){err(e)}
 }
-
-
-/* =========================
-   CATEGORÍAS
-========================= */
 
 async function cargarCategorias(){
  const {data,error}=await supabaseClient
@@ -275,57 +445,65 @@ async function cargarCategorias(){
  if(error)throw error;
 
  categorias=data||[];
- renderCategorias();
- llenarSelectCategorias();
+ pintarCategorias();
+ cargarSelectCategorias();
 }
 
-function renderCategorias(){
- const el=$("listaCategorias");
+function cargarSelectCategorias(){
+ const html='<option value="">Sin categoría</option>'+
+  categorias.map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`).join("");
+
+ locCategoria.innerHTML=html;
+ editCategoria.innerHTML=html;
+}
+
+function pintarCategorias(){
+ listaCategorias.innerHTML="";
 
  if(!categorias.length){
-  el.innerHTML='<div class="mini">No existen categorías.</div>';
+  listaCategorias.innerHTML='<p class="muted">No hay categorías.</p>';
   return;
  }
 
- el.innerHTML=categorias.map(c=>`
-  <div class="card">
-   <div class="row">
-    <strong>${esc(c.nombre)}</strong>
-    <span class="badge ${c.activo?"on":"off"}">
-     ${c.activo?"ACTIVA":"INACTIVA"}
-    </span>
+ categorias.forEach(c=>{
+  const row=document.createElement("div");
+  row.className="category-row";
+
+  row.innerHTML=`
+   <div>
+    <strong>${escapeHtml(c.nombre)}</strong>
+    <span class="badge ${c.activo?"on":"off"}">${c.activo?"Activa":"Inactiva"}</span>
    </div>
 
    <div class="actions">
-    <button class="btn-blue" onclick="editarCategoria(${c.id})">Editar</button>
-    <button class="${c.activo?"btn-yellow":"btn-green"}"
+    <button class="btn secondary" onclick="editarCategoria(${c.id})">Editar</button>
+    <button class="btn ${c.activo?"warning":"success"}"
       onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
-      ${c.activo?"Desactivar":"Activar"}
+      ${c.activo?"Inactivar":"Activar"}
     </button>
-    <button class="btn-danger" onclick="eliminarCategoria(${c.id})">
-      Eliminar
-    </button>
+    <button class="btn danger" onclick="eliminarCategoria(${c.id})">Eliminar</button>
    </div>
-  </div>
- `).join("");
-}
+  `;
 
-function llenarSelectCategorias(){
- const select=$("localCategoria");
- const activas=categorias.filter(c=>c.activo);
-
- select.innerHTML=
-  '<option value="">Seleccione categoría</option>'+
-  activas.map(c=>`<option value="${esc(c.nombre)}">${esc(c.nombre)}</option>`).join("");
+  listaCategorias.appendChild(row);
+ });
 }
 
 async function crearCategoria(){
  try{
-  const nombre=$("nuevaCategoria").value.trim();
-  if(!nombre)return alert("Ingrese el nombre de la categoría.");
+  const nombre=catNombre.value.trim();
 
-  if(categorias.some(c=>norm(c.nombre)===norm(nombre)))
-   return alert("Ya existe una categoría con ese nombre.");
+  if(!nombre){
+   mensaje("Escribe el nombre de la categoría.","err");
+   return;
+  }
+
+  const existe=categorias.some(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase());
+
+  if(existe){
+   mensaje("Ya existe una categoría con ese nombre.","err");
+   return;
+  }
 
   const {error}=await supabaseClient
    .from("categorias")
@@ -333,45 +511,48 @@ async function crearCategoria(){
 
   if(error)throw error;
 
-  $("nuevaCategoria").value="";
+  catNombre.value="";
   await cargarCategorias();
-
- }catch(e){mostrarError(e)}
+  mensaje("Categoría creada.");
+ }catch(e){err(e)}
 }
 
 async function editarCategoria(id){
+ const cat=categorias.find(x=>x.id===id);
+ if(!cat)return;
+
+ const nombre=prompt("Nuevo nombre de categoría:",cat.nombre);
+ if(nombre===null)return;
+
+ const nuevo=nombre.trim();
+ if(!nuevo)return;
+
+ const existe=categorias.some(c=>c.id!==id&&c.nombre.trim().toLowerCase()===nuevo.toLowerCase());
+
+ if(existe){
+  mensaje("Ya existe una categoría con ese nombre.","err");
+  return;
+ }
+
  try{
-  const categoria=categorias.find(c=>c.id===id);
-  if(!categoria)return;
-
-  const nuevo=prompt("Nuevo nombre:",categoria.nombre);
-  if(nuevo===null)return;
-
-  const nombre=nuevo.trim();
-  if(!nombre)return alert("El nombre no puede estar vacío.");
-
-  if(categorias.some(c=>c.id!==id&&norm(c.nombre)===norm(nombre)))
-   return alert("Ya existe otra categoría con ese nombre.");
-
-  const anterior=categoria.nombre.trim();
-
-  const r1=await supabaseClient
+  const {error:e1}=await supabaseClient
    .from("categorias")
-   .update({nombre})
+   .update({nombre:nuevo})
    .eq("id",id);
 
-  if(r1.error)throw r1.error;
+  if(e1)throw e1;
 
-  const r2=await supabaseClient
+  const {error:e2}=await supabaseClient
    .from("restaurantes")
-   .update({categoria:nombre})
-   .eq("categoria",anterior);
+   .update({categoria:nuevo})
+   .eq("categoria",cat.nombre);
 
-  if(r2.error)throw r2.error;
+  if(e2)throw e2;
 
-  await Promise.all([cargarCategorias(),cargarLocales()]);
-
- }catch(e){mostrarError(e)}
+  await cargarCategorias();
+  await cargarLocales();
+  mensaje("Categoría actualizada.");
+ }catch(e){err(e)}
 }
 
 async function cambiarEstadoCategoria(id,activo){
@@ -382,33 +563,34 @@ async function cambiarEstadoCategoria(id,activo){
    .eq("id",id);
 
   if(error)throw error;
+
   await cargarCategorias();
- }catch(e){mostrarError(e)}
+  mensaje(activo?"Categoría activada.":"Categoría inactivada.");
+ }catch(e){err(e)}
 }
 
 async function eliminarCategoria(id){
+ const cat=categorias.find(x=>x.id===id);
+ if(!cat)return;
+
+ const asociados=locales.filter(x=>x.categoria===cat.nombre);
+
+ let texto=`¿Eliminar la categoría "${cat.nombre}"?`;
+
+ if(asociados.length){
+  texto+=`\n\nTiene ${asociados.length} local(es) asociado(s). Su categoría quedará vacía.`;
+ }
+
+ if(!confirm(texto))return;
+
  try{
-  const categoria=categorias.find(c=>c.id===id);
-  if(!categoria)return;
-
-  const relacionados=locales.filter(l=>norm(l.categoria)===norm(categoria.nombre));
-
-  let mensaje=`¿Eliminar la categoría "${categoria.nombre}"?`;
-
-  if(relacionados.length){
-   mensaje+=`\n\nTiene ${relacionados.length} local(es) asociado(s).`;
-   mensaje+="\nLos locales quedarán sin categoría.";
-  }
-
-  if(!confirm(mensaje))return;
-
-  if(relacionados.length){
-   const r=await supabaseClient
+  if(asociados.length){
+   const {error:e1}=await supabaseClient
     .from("restaurantes")
     .update({categoria:null})
-    .eq("categoria",categoria.nombre);
+    .eq("categoria",cat.nombre);
 
-   if(r.error)throw r.error;
+   if(e1)throw e1;
   }
 
   const {error}=await supabaseClient
@@ -418,15 +600,11 @@ async function eliminarCategoria(id){
 
   if(error)throw error;
 
-  await Promise.all([cargarCategorias(),cargarLocales()]);
-
- }catch(e){mostrarError(e)}
+  await cargarCategorias();
+  await cargarLocales();
+  mensaje("Categoría eliminada.");
+ }catch(e){err(e)}
 }
-
-
-/* =========================
-   LOCALES
-========================= */
 
 async function cargarLocales(){
  const {data,error}=await supabaseClient
@@ -437,158 +615,182 @@ async function cargarLocales(){
  if(error)throw error;
 
  locales=data||[];
- renderLocales();
+ pintarLocales();
 }
 
-function renderLocales(){
- const el=$("listaLocales");
+function pintarLocales(){
+ listaLocales.innerHTML="";
 
  if(!locales.length){
-  el.innerHTML='<div class="mini">No existen locales.</div>';
+  listaLocales.innerHTML='<p class="muted">No hay locales registrados.</p>';
   return;
  }
 
- el.innerHTML=locales.map(l=>`
-  <div class="card">
-   <div class="row">
-    <div>
-     <strong>${esc(l.nombre)}</strong>
-     <div class="mini">${esc(l.categoria||"Sin categoría")}</div>
-    </div>
+ locales.forEach(l=>{
+  const div=document.createElement("div");
+  div.className="local-card";
+
+  const img=l.banner_url
+   ? `${l.banner_url}${l.banner_url.includes("?")?"&":"?"}v=${Date.now()}`
+   : "";
+
+  div.innerHTML=`
+   ${img
+    ? `<img class="local-banner" src="${escapeAttr(img)}" alt="">`
+    : `<div class="local-banner"></div>`}
+
+   <div class="local-body">
+    <div class="local-title">${escapeHtml(l.nombre)}</div>
+
+    <div class="muted">${escapeHtml(l.categoria||"Sin categoría")}</div>
+
+    <p>${escapeHtml(l.descripcion||"")}</p>
 
     <span class="badge ${l.activo?"on":"off"}">
-     ${l.activo?"ACTIVO":"INACTIVO"}
+      ${l.activo?"Activo":"Inactivo"}
     </span>
-   </div>
 
-   ${l.banner_url?`
-    <img class="img-preview"
-     src="${esc(l.banner_url)}?v=${Date.now()}"
-     onerror="this.style.display='none'">
-   `:""}
+    <div class="actions">
+     <button class="btn info" onclick="editarLocal(${l.id})">Editar</button>
 
-   <p>${esc(l.descripcion||"")}</p>
+     <button class="btn ${l.activo?"warning":"success"}"
+       onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
+       ${l.activo?"Inactivar":"Activar"}
+     </button>
 
-   <div class="actions">
-    <button class="btn-blue" onclick="editarLocal(${l.id})">Editar</button>
-    <button class="${l.activo?"btn-yellow":"btn-green"}"
-      onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
-      ${l.activo?"Desactivar":"Activar"}
-    </button>
-    <button class="btn-danger" onclick="eliminarLocal(${l.id})">
-      Eliminar
-    </button>
-   </div>
-  </div>
- `).join("");
-}
-
-function crearHorarios(horarios=[]){
- const mapa=new Map((horarios||[]).map(h=>[Number(h.dia_semana),h]));
-
- $("horariosNuevos").innerHTML=DIAS.map((dia,i)=>{
-  const h=mapa.get(i)||{};
-  return `
-   <div class="card">
-    <div class="row"><strong>${dia}</strong></div>
-    <div class="grid">
-     <div class="field">
-      <label>Desde</label>
-      <input id="ha_${i}" type="time" value="${h.hora_apertura||"10:00"}">
-     </div>
-     <div class="field">
-      <label>Hasta</label>
-      <input id="hc_${i}" type="time" value="${h.hora_cierre||"22:00"}">
-     </div>
-     <div class="field">
-      <label>Cerrado</label>
-      <select id="hd_${i}">
-       <option value="false" ${!h.cerrado?"selected":""}>Abierto</option>
-       <option value="true" ${h.cerrado?"selected":""}>Cerrado</option>
-      </select>
-     </div>
+     <button class="btn danger" onclick="eliminarLocal(${l.id})">
+       Eliminar
+     </button>
     </div>
    </div>
   `;
- }).join("");
-}
 
-function obtenerHorarios(){
- return DIAS.map((_,i)=>({
-  dia_semana:i,
-  hora_apertura:$(`ha_${i}`).value||null,
-  hora_cierre:$(`hc_${i}`).value||null,
-  cerrado:$(`hd_${i}`).value==="true"
- }));
-}
-
-function previewBanner(input){
- const file=input.files?.[0];
- const img=$("bannerPreview");
-
- if(!file){
-  img.style.display="none";
-  img.src="";
-  return;
- }
-
- img.src=URL.createObjectURL(file);
- img.style.display="block";
-}
-
-function agregarProductoNuevo(){
- productosNuevos.push({
-  nombre:"",
-  precio:"",
-  activo:true,
-  imagen:null,
-  preview:""
+  listaLocales.appendChild(div);
  });
- renderProductosNuevos();
 }
 
-function renderProductosNuevos(){
- const el=$("productosNuevos");
+function cambiarModoHorario(){
+ construirHorario("horarioEditor","nuevo");
+}
 
- if(!productosNuevos.length){
-  el.innerHTML='<div class="mini">No hay productos agregados.</div>';
+function cambiarModoHorarioEdit(){
+ construirHorario("editHorarioEditor","edit");
+}
+
+function modoSeleccionado(tipo){
+ const name=tipo==="edit"?"editModoHorario":"modoHorario";
+ return document.querySelector(`input[name="${name}"]:checked`)?.value||"personalizado";
+}
+
+function construirHorario(id,tipo){
+ const box=document.getElementById(id);
+ if(!box)return;
+
+ const modo=modoSeleccionado(tipo);
+
+ if(modo==="siempre"){
+  box.innerHTML='<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
   return;
  }
 
- el.innerHTML=productosNuevos.map((p,i)=>`
-  <div class="card product-row">
-   <div>
-    <label>Producto</label>
-    <input value="${esc(p.nombre)}"
-     onchange="productosNuevos[${i}].nombre=this.value">
-   </div>
+ if(modo==="cerrado"){
+  box.innerHTML='<p class="muted">El local estará cerrado todos los días.</p>';
+  return;
+ }
 
-   <div>
-    <label>Precio</label>
-    <input type="number" min="0" step="0.01"
-     value="${p.precio}"
-     onchange="productosNuevos[${i}].precio=this.value">
-   </div>
+ box.innerHTML=`
+  <div class="horario-box">
+   ${DIAS.map(d=>`
+    <div class="horario-row">
+     <div class="day">${d.n}</div>
 
-   <div>
-    <label>Imagen</label>
-    <input type="file" accept="image/*"
-     onchange="seleccionarImagenNuevo(${i},this)">
-    ${p.preview?`<img src="${p.preview}">`:""}
-   </div>
+     <label class="toggle">
+      <input
+       type="checkbox"
+       id="${tipo}Dia${d.d}"
+       checked
+       onchange="actualizarFilaHorario('${tipo}',${d.d})">
+      <span class="eye">👁</span>
+      <span class="estado-text">Abierto</span>
+     </label>
 
-   <button class="btn-danger" onclick="productosNuevos.splice(${i},1);renderProductosNuevos()">
-    Eliminar
-   </button>
+     <div class="time-wrap">
+      <label>Desde</label>
+      <input id="${tipo}Apertura${d.d}" type="time" value="10:00">
+     </div>
+
+     <div class="time-wrap">
+      <label>Hasta</label>
+      <input id="${tipo}Cierre${d.d}" type="time" value="22:00">
+     </div>
+    </div>
+   `).join("")}
   </div>
- `).join("");
+ `;
 }
 
-function seleccionarImagenNuevo(i,input){
- const file=input.files?.[0]||null;
- productosNuevos[i].imagen=file;
- productosNuevos[i].preview=file?URL.createObjectURL(file):"";
- renderProductosNuevos();
+function actualizarFilaHorario(tipo,dia){
+ const chk=document.getElementById(`${tipo}Dia${dia}`);
+ const ap=document.getElementById(`${tipo}Apertura${dia}`);
+ const ci=document.getElementById(`${tipo}Cierre${dia}`);
+ const text=chk?.parentElement?.querySelector(".estado-text");
+
+ const abierto=!!chk?.checked;
+
+ if(ap)ap.disabled=!abierto;
+ if(ci)ci.disabled=!abierto;
+ if(text)text.textContent=abierto?"Abierto":"Cerrado";
+}
+
+function obtenerHorario(tipo){
+ const modo=modoSeleccionado(tipo);
+
+ if(modo==="siempre")return DIAS.map(d=>({
+  dia_semana:d.d,
+  hora_apertura:"00:00",
+  hora_cierre:"23:59",
+  cerrado:false
+ }));
+
+ if(modo==="cerrado")return DIAS.map(d=>({
+  dia_semana:d.d,
+  hora_apertura:null,
+  hora_cierre:null,
+  cerrado:true
+ }));
+
+ return DIAS.map(d=>{
+  const abierto=document.getElementById(`${tipo}Dia${d.d}`)?.checked;
+
+  return {
+   dia_semana:d.d,
+   hora_apertura:abierto?document.getElementById(`${tipo}Apertura${d.d}`)?.value||"10:00":null,
+   hora_cierre:abierto?document.getElementById(`${tipo}Cierre${d.d}`)?.value||"22:00":null,
+   cerrado:!abierto
+  };
+ });
+}
+
+async function guardarHorario(restauranteId,tipo){
+ const horario=obtenerHorario(tipo);
+
+ const {error:eDelete}=await supabaseClient
+  .from("horarios_restaurantes")
+  .delete()
+  .eq("restaurante_id",restauranteId);
+
+ if(eDelete)throw eDelete;
+
+ const rows=horario.map(h=>({
+  restaurante_id:restauranteId,
+  ...h
+ }));
+
+ const {error:eInsert}=await supabaseClient
+  .from("horarios_restaurantes")
+  .insert(rows);
+
+ if(eInsert)throw eInsert;
 }
 
 async function subirImagen(archivo,carpeta,id,subId=""){
@@ -597,7 +799,11 @@ async function subirImagen(archivo,carpeta,id,subId=""){
  if(!archivo.type?.startsWith("image/"))
   throw new Error("El archivo seleccionado no es una imagen válida.");
 
- const ruta=`${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${uid()}.${ext(archivo.name)}`;
+ const extension=(archivo.name.split(".").pop()||"jpg")
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g,"");
+
+ const ruta=`${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
 
  const {error}=await supabaseClient
   .storage
@@ -624,97 +830,193 @@ async function subirImagen(archivo,carpeta,id,subId=""){
  return data.publicUrl;
 }
 
-async function guardarLocal(){
+async function guardarNuevoLocal(){
+
  try{
-  const nombre=$("localNombre").value.trim();
-  if(!nombre)return alert("Ingrese el nombre del local.");
 
-  const categoria=$("localCategoria").value||null;
-  const descripcion=$("localDescripcion").value.trim();
-  const archivo=$("localBanner").files?.[0]||null;
+  const nombre=locNombre.value.trim();
 
-  if(!localEditando){
-   const {data,error}=await supabaseClient
-    .from("restaurantes")
-    .insert({
-     nombre,
-     categoria,
-     descripcion,
-     activo:true
-    })
-    .select()
-    .single();
-
-   if(error)throw error;
-
-   const local=data;
-
-   if(archivo){
-    const url=await subirImagen(archivo,"banners",local.id);
-    const r=await supabaseClient
-     .from("restaurantes")
-     .update({banner_url:url})
-     .eq("id",local.id);
-    if(r.error)throw r.error;
-   }
-
-   await guardarHorarios(local.id);
-   await guardarProductosNuevos(local.id);
-
-  }else{
-   let bannerUrl=localEditando.banner_url||null;
-
-   if(archivo){
-    bannerUrl=await subirImagen(archivo,"banners",localEditando.id);
-   }
-
-   const {error}=await supabaseClient
-    .from("restaurantes")
-    .update({
-     nombre,
-     categoria,
-     descripcion,
-     banner_url:bannerUrl
-    })
-    .eq("id",localEditando.id);
-
-   if(error)throw error;
-
-   await guardarHorarios(localEditando.id);
-   await guardarProductosEditados(localEditando.id);
+  if(!nombre){
+   mensaje("El nombre del local es obligatorio.","err");
+   return;
   }
 
-  alert("Local guardado correctamente.");
-  limpiarFormulario();
+  const existe=locales.some(l=>l.nombre.trim().toLowerCase()===nombre.toLowerCase());
+
+  if(existe){
+   mensaje("Ya existe un local con ese nombre.","err");
+   return;
+  }
+
+  const {data,error}=await supabaseClient
+   .from("restaurantes")
+   .insert({
+    nombre,
+    categoria:locCategoria.value||null,
+    descripcion:locDescripcion.value.trim()||null,
+    activo:true
+   })
+   .select()
+   .single();
+
+  if(error)throw error;
+
+  let bannerUrl=null;
+
+  try{
+   if(locBanner.files[0]){
+    bannerUrl=await subirImagen(
+     locBanner.files[0],
+     "banners",
+     data.id
+    );
+
+    const {error:eBanner}=await supabaseClient
+     .from("restaurantes")
+     .update({banner_url:bannerUrl})
+     .eq("id",data.id);
+
+    if(eBanner)throw eBanner;
+   }
+
+   await guardarHorario(data.id,"nuevo");
+
+   await guardarProductosNuevos(data.id);
+
+  }catch(e){
+
+   await supabaseClient
+    .from("restaurantes")
+    .delete()
+    .eq("id",data.id);
+
+   throw e;
+  }
+
+  limpiarFormularioLocal();
   await cargarLocales();
 
- }catch(e){mostrarError(e)}
+  mensaje("Local creado correctamente.");
+
+ }catch(e){err(e)}
 }
 
-async function guardarHorarios(localId){
- const horarios=obtenerHorarios();
+function agregarProductoNuevo(){
+ productosNuevos.push({
+  tempId:Date.now()+Math.random(),
+  nombre:"",
+  descripcion:"",
+  precio:"",
+  activo:true,
+  imagen:null,
+  imagenPreview:""
+ });
 
- const {error}=await supabaseClient
-  .from("horarios_restaurantes")
-  .upsert(
-   horarios.map(h=>({...h,restaurante_id:localId})),
-   {onConflict:"restaurante_id,dia_semana"}
-  );
+ pintarProductosNuevos();
+}
 
- if(error)throw error;
+function pintarProductosNuevos(){
+ productosNuevos.sort((a,b)=>0);
+
+ productosNuevos.forEach((p,i)=>p._index=i);
+
+ productosNuevos.length
+  ? productosNuevos.forEach((p,i)=>{
+    if(!p._rendered) p._rendered=true;
+   })
+  : null;
+
+ productosNuevosContainer();
+}
+
+function productosNuevosContainer(){
+ const box=document.getElementById("productosNuevos");
+
+ if(!productosNuevos.length){
+  box.innerHTML='<p class="muted">Todavía no hay productos.</p>';
+  return;
+ }
+
+ box.innerHTML=productosNuevos.map((p,i)=>`
+  <div class="card product-row" data-product-new="${p.tempId}">
+
+   <div>
+    ${p.imagenPreview
+     ? `<img class="product-img" src="${escapeAttr(p.imagenPreview)}">`
+     : `<div class="product-img"></div>`}
+   </div>
+
+   <div class="product-info">
+
+    <input
+     placeholder="Nombre del producto"
+     value="${escapeAttr(p.nombre)}"
+     oninput="productosNuevos[${i}].nombre=this.value">
+
+    <input
+     style="margin-top:5px"
+     placeholder="Descripción"
+     value="${escapeAttr(p.descripcion)}"
+     oninput="productosNuevos[${i}].descripcion=this.value">
+
+    <input
+     style="margin-top:5px"
+     type="number"
+     min="0"
+     step="0.01"
+     placeholder="Precio"
+     value="${escapeAttr(p.precio)}"
+     oninput="productosNuevos[${i}].precio=this.value">
+
+    <input
+     style="margin-top:5px"
+     type="file"
+     accept="image/*"
+     onchange="seleccionarImagenNuevo(${i},this)">
+
+   </div>
+
+   <div class="product-actions">
+    <button class="btn danger" onclick="eliminarProductoNuevo(${i})">
+     Eliminar
+    </button>
+   </div>
+
+  </div>
+ `).join("");
+}
+
+function seleccionarImagenNuevo(index,input){
+ const file=input.files[0];
+ if(!file)return;
+
+ productosNuevos[index].imagen=file;
+
+ const reader=new FileReader();
+ reader.onload=e=>{
+  productosNuevos[index].imagenPreview=e.target.result;
+  productosNuevosContainer();
+ };
+ reader.readAsDataURL(file);
+}
+
+function eliminarProductoNuevo(index){
+ productosNuevos.splice(index,1);
+ productosNuevosContainer();
 }
 
 async function guardarProductosNuevos(localId){
- for(const p of productosNuevos){
-  const nombre=p.nombre.trim();
 
-  if(!nombre)continue;
+ for(const p of productosNuevos){
+
+  if(!p.nombre.trim())continue;
 
   const {data,error}=await supabaseClient
    .from("productos")
    .insert({
     restaurante_id:localId,
-    nombre,
+    nombre:p.nombre.trim(),
+    descripcion:p.descripcion.trim()||null,
     precio:Number(p.precio)||0,
     activo:true
    })
@@ -724,97 +1026,60 @@ async function guardarProductosNuevos(localId){
   if(error)throw error;
 
   if(p.imagen){
-   const url=await subirImagen(p.imagen,"productos",localId,data.id);
 
-   const r=await supabaseClient
+   const url=await subirImagen(
+    p.imagen,
+    "productos",
+    localId,
+    data.id
+   );
+
+   const {error:e}=await supabaseClient
     .from("productos")
     .update({imagen_url:url})
     .eq("id",data.id);
 
-   if(r.error)throw r.error;
+   if(e)throw e;
   }
 }
 
 }
 
-async function guardarProductosEditados(localId){
- for(const p of productosEditando){
-  if(p.nuevo){
-   const nombre=p.nombre.trim();
-   if(!nombre)continue;
+function limpiarFormularioLocal(){
+ locNombre.value="";
+ locCategoria.value="";
+ locDescripcion.value="";
+ locBanner.value="";
+ previewBanner.src="";
+ previewBanner.classList.add("hidden");
 
-   const {data,error}=await supabaseClient
-    .from("productos")
-    .insert({
-     restaurante_id:localId,
-     nombre,
-     precio:Number(p.precio)||0,
-     activo:true
-    })
-    .select()
-    .single();
+ productosNuevos=[];
 
-   if(error)throw error;
+ document.querySelector('input[name="modoHorario"][value="personalizado"]').checked=true;
 
-   if(p.imagen){
-    const url=await subirImagen(p.imagen,"productos",localId,data.id);
-
-    const r=await supabaseClient
-     .from("productos")
-     .update({imagen_url:url})
-     .eq("id",data.id);
-
-    if(r.error)throw r.error;
-   }
-
-   continue;
-  }
-
-  const payload={
-   nombre:p.nombre.trim(),
-   precio:Number(p.precio)||0,
-   activo:!!p.activo
-  };
-
-  const r=await supabaseClient
-   .from("productos")
-   .update(payload)
-   .eq("id",p.id);
-
-  if(r.error)throw r.error;
-
-  if(p.imagen){
-   const url=await subirImagen(p.imagen,"productos",localId,p.id);
-
-   const r2=await supabaseClient
-    .from("productos")
-    .update({imagen_url:url})
-    .eq("id",p.id);
-
-   if(r2.error)throw r2.error;
-  }
- }
+ construirHorario("horarioEditor","nuevo");
+ productosNuevosContainer();
 }
 
 async function editarLocal(id){
+
  try{
-  const local=locales.find(l=>l.id===id);
+
+  const local=locales.find(x=>x.id===id);
   if(!local)return;
 
-  localEditando=local;
-
-  $("localNombre").value=local.nombre||"";
-  $("localCategoria").value=local.categoria||"";
-  $("localDescripcion").value=local.descripcion||"";
-
-  const img=$("bannerPreview");
+  editId.value=id;
+  editNombre.value=local.nombre||"";
+  editCategoria.value=local.categoria||"";
+  editDescripcion.value=local.descripcion||"";
+  editBanner.value="";
 
   if(local.banner_url){
-   img.src=local.banner_url+"?v="+Date.now();
-   img.style.display="block";
+   editBannerPreview.src=local.banner_url+"?v="+Date.now();
+   editBannerPreview.classList.remove("hidden");
   }else{
-   img.style.display="none";
-   img.src="";
+   editBannerPreview.src="";
+   editBannerPreview.classList.add("hidden");
   }
 
   const {data:horarios,error:e1}=await supabaseClient
@@ -825,7 +1090,7 @@ async function editarLocal(id){
 
   if(e1)throw e1;
 
-  crearHorarios(horarios||[]);
+  prepararHorarioEdicion(horarios||[]);
 
   const {data:productos,error:e2}=await supabaseClient
    .from("productos")
@@ -835,100 +1100,331 @@ async function editarLocal(id){
 
   if(e2)throw e2;
 
-  productosEditando=(productos||[]).map(p=>({
+  productosEdit=(productos||[]).map(p=>({
    ...p,
-   imagen:null,
-   nuevo:false
+   nuevaImagen:null,
+   preview:p.imagen_url||""
   }));
 
-  renderProductosEditados();
+  pintarProductosEditados();
 
-  window.scrollTo({top:0,behavior:"smooth"});
+  editorLocal.classList.remove("hidden");
 
- }catch(e){mostrarError(e)}
+  editorLocal.scrollIntoView({
+   behavior:"smooth",
+   block:"start"
+  });
+
+ }catch(e){err(e)}
 }
 
-function renderProductosEditados(){
- const el=$("productosNuevos");
+function prepararHorarioEdicion(horarios){
 
- if(!productosEditando.length){
-  el.innerHTML='<div class="mini">No hay productos.</div>';
+ const todosSiempre=horarios.length===7&&
+  horarios.every(h=>
+   !h.cerrado &&
+   h.hora_apertura==="00:00:00" &&
+   (h.hora_cierre==="23:59:00"||h.hora_cierre==="23:59:59")
+  );
+
+ const todosCerrados=horarios.length===7&&
+  horarios.every(h=>h.cerrado);
+
+ if(todosSiempre){
+  document.querySelector('input[name="editModoHorario"][value="siempre"]').checked=true;
+  construirHorario("editHorarioEditor","edit");
   return;
  }
 
- el.innerHTML=productosEditando.map((p,i)=>`
+ if(todosCerrados){
+  document.querySelector('input[name="editModoHorario"][value="cerrado"]').checked=true;
+  construirHorario("editHorarioEditor","edit");
+  return;
+ }
+
+ document.querySelector('input[name="editModoHorario"][value="personalizado"]').checked=true;
+ construirHorario("editHorarioEditor","edit");
+
+ horarios.forEach(h=>{
+
+  const chk=document.getElementById(`editDia${h.dia_semana}`);
+  const ap=document.getElementById(`editApertura${h.dia_semana}`);
+  const ci=document.getElementById(`editCierre${h.dia_semana}`);
+
+  if(!chk)return;
+
+  chk.checked=!h.cerrado;
+
+  if(h.hora_apertura)ap.value=h.hora_apertura.substring(0,5);
+  if(h.hora_cierre)ci.value=h.hora_cierre.substring(0,5);
+
+  actualizarFilaHorario("edit",h.dia_semana);
+ });
+}
+
+function pintarProductosEditados(){
+
+ const box=document.getElementById("productosEditados");
+
+ if(!productosEdit.length){
+  box.innerHTML='<p class="muted">No hay productos registrados.</p>';
+  return;
+ }
+
+ box.innerHTML=productosEdit.map((p,i)=>`
+
   <div class="card product-row">
 
    <div>
-    <label>Producto</label>
-    <input value="${esc(p.nombre)}"
-     onchange="productosEditando[${i}].nombre=this.value">
+    ${p.preview
+     ? `<img class="product-img" src="${escapeAttr(p.preview)}">`
+     : `<div class="product-img"></div>`}
    </div>
 
-   <div>
-    <label>Precio</label>
-    <input type="number" min="0" step="0.01"
-     value="${p.precio}"
-     onchange="productosEditando[${i}].precio=this.value">
+   <div class="product-info">
+
+    <input
+     value="${escapeAttr(p.nombre||"")}"
+     placeholder="Nombre"
+     oninput="productosEdit[${i}].nombre=this.value">
+
+    <input
+     style="margin-top:5px"
+     value="${escapeAttr(p.descripcion||"")}"
+     placeholder="Descripción"
+     oninput="productosEdit[${i}].descripcion=this.value">
+
+    <input
+     style="margin-top:5px"
+     type="number"
+     min="0"
+     step="0.01"
+     value="${escapeAttr(p.precio??0)}"
+     placeholder="Precio"
+     oninput="productosEdit[${i}].precio=this.value">
+
+    <input
+     style="margin-top:5px"
+     type="file"
+     accept="image/*"
+     onchange="seleccionarImagenEdit(${i},this)">
+
+    <div style="margin-top:7px">
+     <label class="toggle">
+      <input
+       type="checkbox"
+       ${p.activo!==false?"checked":""}
+       onchange="productosEdit[${i}].activo=this.checked">
+      <span class="eye">👁</span>
+      <span>${p.activo!==false?"Activo":"Inactivo"}</span>
+     </label>
+    </div>
+
    </div>
 
-   <div>
-    <label>Imagen</label>
-    <input type="file" accept="image/*"
-     onchange="seleccionarImagenEditado(${i},this)">
-
-    ${p.imagen?`
-     <img src="${p.preview||""}">
-    `:p.imagen_url?`
-     <img src="${esc(p.imagen_url)}?v=${Date.now()}">
-    `:""}
-   </div>
-
-   <div>
-    <span class="badge ${p.activo?"on":"off"}">
-     ${p.activo?"ACTIVO":"INACTIVO"}
-    </span>
-
-    <button class="${p.activo?"btn-yellow":"btn-green"}"
-     onclick="cambiarEstadoProductoEdit(${i})">
-     ${p.activo?"Desactivar":"Activar"}
+   <div class="product-actions">
+    <button class="btn danger" onclick="eliminarProductoEdit(${i})">
+     Eliminar
     </button>
    </div>
 
   </div>
+
  `).join("");
 }
 
-function seleccionarImagenEditado(i,input){
- const file=input.files?.[0]||null;
-
- productosEditando[i].imagen=file;
- productosEditando[i].preview=file?URL.createObjectURL(file):"";
-
- renderProductosEditados();
-}
-
 function agregarProductoEditado(){
- productosEditando.push({
+
+ productosEdit.push({
+  id:null,
   nombre:"",
-  precio:"",
+  descripcion:"",
+  precio:0,
   activo:true,
-  imagen:null,
-  imagen_url:"",
+  imagen_url:null,
   preview:"",
-  nuevo:true
+  nuevaImagen:null
  });
 
- renderProductosEditados();
+ pintarProductosEditados();
 }
 
-function cambiarEstadoProductoEdit(i){
- productosEditando[i].activo=!productosEditando[i].activo;
- renderProductosEditados();
+function seleccionarImagenEdit(index,input){
+
+ const file=input.files[0];
+ if(!file)return;
+
+ productosEdit[index].nuevaImagen=file;
+
+ const reader=new FileReader();
+
+ reader.onload=e=>{
+  productosEdit[index].preview=e.target.result;
+  pintarProductosEditados();
+ };
+
+ reader.readAsDataURL(file);
+}
+
+async function eliminarProductoEdit(index){
+
+ const p=productosEdit[index];
+
+ if(p.id){
+
+  if(!confirm(`¿Eliminar el producto "${p.nombre}"?`))return;
+
+  try{
+
+   const {error}=await supabaseClient
+    .from("productos")
+    .delete()
+    .eq("id",p.id);
+
+   if(error)throw error;
+
+  }catch(e){
+   err(e);
+   return;
+  }
+ }
+
+ productosEdit.splice(index,1);
+ pintarProductosEditados();
+ mensaje("Producto eliminado.");
+}
+
+async function guardarEdicionLocal(){
+
+ try{
+
+  const id=Number(editId.value);
+
+  if(!id){
+   mensaje("Local inválido.","err");
+   return;
+  }
+
+  const nombre=editNombre.value.trim();
+
+  if(!nombre){
+   mensaje("El nombre del local es obligatorio.","err");
+   return;
+  }
+
+  const duplicado=locales.some(l=>
+   l.id!==id &&
+   l.nombre.trim().toLowerCase()===nombre.toLowerCase()
+  );
+
+  if(duplicado){
+   mensaje("Ya existe otro local con ese nombre.","err");
+   return;
+  }
+
+  const payload={
+   nombre,
+   categoria:editCategoria.value||null,
+   descripcion:editDescripcion.value.trim()||null
+  };
+
+  if(editBanner.files[0]){
+
+   payload.banner_url=await subirImagen(
+    editBanner.files[0],
+    "banners",
+    id
+   );
+  }
+
+  const {error:e1}=await supabaseClient
+   .from("restaurantes")
+   .update(payload)
+   .eq("id",id);
+
+  if(e1)throw e1;
+
+  await guardarHorario(id,"edit");
+
+  for(const p of productosEdit){
+
+   if(!p.id){
+
+    if(!p.nombre.trim())continue;
+
+    const {data,error}=await supabaseClient
+     .from("productos")
+     .insert({
+      restaurante_id:id,
+      nombre:p.nombre.trim(),
+      descripcion:p.descripcion?.trim()||null,
+      precio:Number(p.precio)||0,
+      activo:p.activo!==false
+     })
+     .select()
+     .single();
+
+    if(error)throw error;
+
+    p.id=data.id;
+
+    if(p.nuevaImagen){
+
+     const url=await subirImagen(
+      p.nuevaImagen,
+      "productos",
+      id,
+      p.id
+     );
+
+     const {error:e}=await supabaseClient
+      .from("productos")
+      .update({imagen_url:url})
+      .eq("id",p.id);
+
+     if(e)throw e;
+    }
+
+   }else{
+
+    const values={
+     nombre:p.nombre.trim(),
+     descripcion:p.descripcion?.trim()||null,
+     precio:Number(p.precio)||0,
+     activo:p.activo!==false
+    };
+
+    if(p.nuevaImagen){
+
+     values.imagen_url=await subirImagen(
+      p.nuevaImagen,
+      "productos",
+      id,
+      p.id
+     );
+    }
+
+    const {error}=await supabaseClient
+     .from("productos")
+     .update(values)
+     .eq("id",p.id);
+
+    if(error)throw error;
+   }
+  }
+
+  cerrarEditor();
+  await cargarLocales();
+
+  mensaje("Local actualizado correctamente.");
+
+ }catch(e){err(e)}
 }
 
 async function cambiarEstadoLocal(id,activo){
+
  try{
+
   const {error}=await supabaseClient
    .from("restaurantes")
    .update({activo})
@@ -938,65 +1434,101 @@ async function cambiarEstadoLocal(id,activo){
 
   await cargarLocales();
 
- }catch(e){mostrarError(e)}
+  mensaje(activo?"Local activado.":"Local inactivado.");
+
+ }catch(e){err(e)}
 }
 
 async function eliminarLocal(id){
+
+ const local=locales.find(x=>x.id===id);
+ if(!local)return;
+
+ if(!confirm(
+  `¿Eliminar definitivamente el local "${local.nombre}"?\n\nTambién se eliminarán sus productos y horarios.`
+ ))return;
+
  try{
-  const local=locales.find(l=>l.id===id);
-  if(!local)return;
 
-  if(!confirm(`¿Eliminar el local "${local.nombre}" y sus productos y horarios?`))
-   return;
-
-  const p=await supabaseClient
+  const {data:productos,error:e1}=await supabaseClient
    .from("productos")
-   .delete()
+   .select("id")
    .eq("restaurante_id",id);
 
-  if(p.error)throw p.error;
+  if(e1)throw e1;
 
-  const h=await supabaseClient
+  const {error:e2}=await supabaseClient
    .from("horarios_restaurantes")
    .delete()
    .eq("restaurante_id",id);
 
-  if(h.error)throw h.error;
+  if(e2)throw e2;
 
-  const r=await supabaseClient
+  const {error:e3}=await supabaseClient
+   .from("productos")
+   .delete()
+   .eq("restaurante_id",id);
+
+  if(e3)throw e3;
+
+  const {error:e4}=await supabaseClient
    .from("restaurantes")
    .delete()
    .eq("id",id);
 
-  if(r.error)throw r.error;
+  if(e4)throw e4;
 
   await cargarLocales();
 
- }catch(e){mostrarError(e)}
+  mensaje("Local eliminado.");
+
+ }catch(e){err(e)}
 }
 
-function limpiarFormulario(){
- localEditando=null;
- productosNuevos=[];
- productosEditando=[];
-
- $("localNombre").value="";
- $("localCategoria").value="";
- $("localDescripcion").value="";
- $("localBanner").value="";
-
- $("bannerPreview").style.display="none";
- $("bannerPreview").src="";
-
- crearHorarios();
- renderProductosNuevos();
+function cerrarEditor(){
+ editorLocal.classList.add("hidden");
+ productosEdit=[];
 }
 
-$("localBanner").addEventListener("change",previewBanner);
+function previewArchivo(input,targetId){
 
-$("localCategoria").addEventListener("change",()=>{});
+ const file=input.files[0];
+ const target=document.getElementById(targetId);
 
-cargar();
+ if(!file){
+  target.src="";
+  target.classList.add("hidden");
+  return;
+ }
+
+ if(!file.type.startsWith("image/")){
+  mensaje("Selecciona una imagen válida.","err");
+  input.value="";
+  return;
+ }
+
+ const reader=new FileReader();
+
+ reader.onload=e=>{
+  target.src=e.target.result;
+  target.classList.remove("hidden");
+ };
+
+ reader.readAsDataURL(file);
+}
+
+function escapeHtml(value){
+ return String(value??"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+}
+
+function escapeAttr(value){
+ return escapeHtml(value);
+}
 </script>
 
 </body>
