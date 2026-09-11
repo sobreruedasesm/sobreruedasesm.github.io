@@ -1,995 +1,259 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Menú - Sobre Ruedas</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        :root {
-            --verde: #087f5b;
-            --verde-oscuro: #075c43;
-            --verde-claro: #e7f7f1;
-            --fondo: #f4f7f6;
-            --blanco: #ffffff;
-            --texto: #10201b;
-            --gris: #65756f;
-            --borde: #dfe8e4;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--fondo);
-            color: var(--texto);
-        }
-
-        header {
-            background: white;
-            border-bottom: 1px solid var(--borde);
-            padding: 14px 20px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-size: 21px;
-            font-weight: 800;
-            color: var(--verde);
-        }
-
-        .logo span {
-            color: var(--texto);
-        }
-
-        .carrito-btn {
-            background: var(--verde);
-            color: white;
-            border: none;
-
-            padding: 10px 15px;
-            border-radius: 10px;
-
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .carrito-btn:hover {
-            background: var(--verde-oscuro);
-        }
-
-        .cabecera-restaurante {
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--verde-oscuro),
-                    var(--verde)
-                );
-
-            color: white;
-            text-align: center;
-
-            padding: 40px 20px;
-        }
-
-        .cabecera-restaurante h1 {
-            margin: 0 0 10px;
-            font-size: 32px;
-        }
-
-        .cabecera-restaurante p {
-            margin: 5px 0;
-            opacity: .9;
-        }
-
-        .categoria {
-            display: inline-block;
-
-            background: rgba(255,255,255,.15);
-
-            padding: 6px 12px;
-
-            border-radius: 20px;
-
-            font-size: 13px;
-            font-weight: bold;
-
-            margin-bottom: 12px;
-        }
-
-        .contenedor {
-            max-width: 1050px;
-
-            margin: auto;
-
-            padding: 30px 15px 50px;
-        }
-
-        .titulo-menu {
-            margin: 0 0 20px;
-            font-size: 25px;
-        }
-
-        .productos {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(240px, 1fr));
-
-            gap: 20px;
-        }
-
-        .producto {
-            background: white;
-
-            border: 1px solid var(--borde);
-
-            border-radius: 15px;
-
-            overflow: hidden;
-
-            box-shadow:
-                0 6px 20px rgba(0,50,35,.06);
-
-            transition: .2s;
-        }
-
-        .producto:hover {
-            transform: translateY(-3px);
-
-            box-shadow:
-                0 12px 28px rgba(0,50,35,.11);
-        }
-
-        .producto-imagen {
-            height: 160px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #dcefe8,
-                    #edf6f3
-                );
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            font-size: 55px;
-
-            overflow: hidden;
-        }
-
-        .producto-imagen img {
-            width: 100%;
-            height: 100%;
-
-            object-fit: cover;
-        }
-
-        .producto-contenido {
-            padding: 17px;
-        }
-
-        .producto h3 {
-            margin: 0 0 8px;
-            font-size: 19px;
-        }
-
-        .producto-descripcion {
-            color: var(--gris);
-
-            font-size: 14px;
-
-            line-height: 1.45;
-
-            min-height: 40px;
-
-            margin: 0 0 15px;
-        }
-
-        .producto-pie {
-            display: flex;
-
-            justify-content: space-between;
-            align-items: center;
-
-            gap: 10px;
-        }
-
-        .precio {
-            font-size: 20px;
-
-            font-weight: 800;
-
-            color: var(--verde);
-        }
-
-        .btn-agregar {
-            background: var(--verde);
-
-            color: white;
-
-            border: none;
-
-            padding: 10px 14px;
-
-            border-radius: 9px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-        }
-
-        .btn-agregar:hover {
-            background: var(--verde-oscuro);
-        }
-
-        .estado {
-            background: white;
-
-            border: 1px solid var(--borde);
-
-            border-radius: 15px;
-
-            padding: 40px 20px;
-
-            text-align: center;
-
-            color: var(--gris);
-        }
-
-        .volver {
-            display: inline-block;
-
-            margin-bottom: 20px;
-
-            color: var(--verde);
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-        .notificacion {
-            position: fixed;
-
-            bottom: 20px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            background: var(--texto);
-
-            color: white;
-
-            padding: 13px 20px;
-
-            border-radius: 10px;
-
-            display: none;
-
-            z-index: 2000;
-
-            box-shadow:
-                0 8px 25px rgba(0,0,0,.2);
-        }
-
-        footer {
-            background: var(--texto);
-
-            color: white;
-
-            text-align: center;
-
-            padding: 30px 20px;
-        }
-
-        footer strong {
-            color: #62c9a5;
-        }
-
-        footer p {
-            color: #b9c7c2;
-
-            font-size: 14px;
-        }
-
-        @media (max-width: 600px) {
-
-            .logo {
-                font-size: 18px;
-            }
-
-            .carrito-btn {
-                font-size: 13px;
-                padding: 9px 12px;
-            }
-
-            .cabecera-restaurante h1 {
-                font-size: 28px;
-            }
-
-            .productos {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Menú | Sobre Ruedas</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+header{background:#111;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:20px;font-weight:bold}
+.carrito{background:#fff;color:#111;border:0;border-radius:20px;padding:8px 13px;cursor:pointer;font-weight:bold}
+.hero{background:#222;color:#fff;padding:30px 20px;text-align:center}
+.hero h1{margin:0 0 8px;font-size:30px}
+.hero p{margin:5px auto;color:#ddd;max-width:700px}
+.categoria{font-size:13px;color:#ccc}
+main{max-width:1100px;margin:auto;padding:20px}
+.volver{display:inline-block;color:#222;text-decoration:none;margin-bottom:18px}
+#productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.producto{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px #0001}
+.producto img{width:100%;height:180px;object-fit:cover;display:block}
+.sin-imagen{height:180px;background:#eee;display:flex;align-items:center;justify-content:center;color:#888}
+.producto-body{padding:14px}
+.producto h3{margin:0 0 7px}
+.descripcion{font-size:14px;color:#666;min-height:38px}
+.precio{font-weight:bold;font-size:18px;margin:10px 0}
+.producto button{width:100%;background:#111;color:#fff;border:0;padding:11px;border-radius:6px;cursor:pointer}
+.vacio,.cargando,.error{background:#fff;padding:20px;border-radius:8px;text-align:center}
+.error{color:#a00}
+.notificacion{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#198754;color:#fff;padding:11px 18px;border-radius:7px;display:none;z-index:20}
+footer{text-align:center;padding:25px;color:#777;font-size:13px}
+</style>
 </head>
-
-
 <body>
 
-
 <header>
-
-    <div class="logo">
-        🛵 Sobre <span>Ruedas</span>
-    </div>
-
-    <button
-        class="carrito-btn"
-        onclick="irAlCarrito()"
-    >
-        🛒 Carrito
-        (<span id="cantidadCarrito">0</span>)
-    </button>
-
+<div class="logo">🛵 Sobre Ruedas</div>
+<button class="carrito" onclick="irAlCarrito()">🛒 Carrito <span id="cantidadCarrito">0</span></button>
 </header>
 
-
-<section
-    id="cabeceraRestaurante"
-    class="cabecera-restaurante"
->
-
-    <div class="categoria">
-        🍽️ Restaurante
-    </div>
-
-    <h1 id="nombreRestaurante">
-        Cargando...
-    </h1>
-
-    <p id="descripcionRestaurante">
-        Cargando restaurante...
-    </p>
-
+<section class="hero">
+<div id="categoria" class="categoria">Cargando...</div>
+<h1 id="nombreRestaurante">Cargando...</h1>
+<p id="descripcionRestaurante"></p>
 </section>
 
-
-<main class="contenedor">
-
-    <a
-        href="index.html"
-        class="volver"
-    >
-        ← Volver a restaurantes
-    </a>
-
-
-    <h2 class="titulo-menu">
-        Menú
-    </h2>
-
-
-    <div
-        id="productos"
-        class="productos"
-    >
-
-        <div class="estado">
-            🔄 Cargando menú...
-        </div>
-
-    </div>
-
+<main>
+<a href="index.html" class="volver">← Ver locales</a>
+<div id="productos"><div class="cargando">Cargando productos...</div></div>
 </main>
 
+<div id="notificacion" class="notificacion"></div>
 
-<div
-    id="notificacion"
-    class="notificacion"
->
-    Producto agregado al carrito ✅
-</div>
-
-
-<footer>
-
-    <strong>
-        🛵 Sobre Ruedas
-    </strong>
-
-    <p>
-        Tu comida. Tu ciudad. Tu delivery.
-    </p>
-
-    <p>
-        Esmeraldas, Ecuador
-    </p>
-
-</footer>
-
+<footer>Sobre Ruedas · Delivery Esmeraldas</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="supabase.js"></script>
 
-
 <script>
+let restauranteActual=null;
 
-let restauranteActual = null;
+const $=id=>document.getElementById(id);
 
+document.addEventListener("DOMContentLoaded",async()=>{
+    actualizarCarrito();
+    await cargarRestaurante();
+});
 
-/* =========================================
-   OBTENER ID
-========================================= */
-
-function obtenerIdRestaurante() {
-
-    const parametros =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    return parametros.get("id");
-
+function escapeHTML(v){
+    return String(v??"").replace(/[&<>"']/g,m=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",
+        '"':"&quot;","'":"&#039;"
+    }[m]));
 }
 
+function obtenerIdRestaurante(){
+    const id=new URLSearchParams(location.search).get("id");
+    const numero=Number(id);
+    return Number.isInteger(numero)&&numero>0?numero:null;
+}
 
-/* =========================================
-   CARGAR RESTAURANTE
-========================================= */
+async function cargarRestaurante(){
+    const id=obtenerIdRestaurante();
 
-async function cargarRestaurante() {
-
-    const id =
-        obtenerIdRestaurante();
-
-    console.log(
-        "ID restaurante:",
-        id
-    );
-
-
-    if (!id) {
-
-        mostrarError(
-            "No se especificó ningún restaurante."
-        );
-
+    if(!id){
+        mostrarError("Local no válido.");
         return;
-
     }
 
-
-    const { data, error } =
-        await supabaseClient
+    try{
+        const {data,error}=await supabaseClient
             .from("restaurantes")
-            .select("*")
-            .eq("id", id)
-            .eq("activo", true)
-            .single();
+            .select("id,nombre,categoria,descripcion,banner_url,activo")
+            .eq("id",id)
+            .eq("activo",true)
+            .maybeSingle();
 
+        if(error)throw error;
+        if(!data){
+            mostrarError("El local no existe o no está disponible.");
+            return;
+        }
 
-    if (error || !data) {
+        restauranteActual=data;
+        $("categoria").textContent=data.categoria||"Sin categoría";
+        $("nombreRestaurante").textContent=data.nombre;
+        $("descripcionRestaurante").textContent=data.descripcion||"";
 
-        console.error(
-            "Error restaurante:",
-            error
-        );
-
-        mostrarError(
-            "No encontramos este restaurante."
-        );
-
-        return;
-
+        await cargarProductos(data.id);
+    }catch(e){
+        console.error(e);
+        mostrarError("No se pudo cargar el local.");
     }
-
-
-    restauranteActual = data;
-
-
-    document.title =
-        data.nombre +
-        " - Sobre Ruedas";
-
-
-    document.getElementById(
-        "nombreRestaurante"
-    ).textContent =
-        data.nombre;
-
-
-    document.getElementById(
-        "descripcionRestaurante"
-    ).textContent =
-        data.descripcion ||
-        "Deliciosos productos.";
-
-
-    document.querySelector(
-        ".categoria"
-    ).textContent =
-        "🍽️ " +
-        (
-            data.categoria ||
-            "Restaurante"
-        );
-
-
-    await cargarProductos(
-        data.id
-    );
-
 }
 
-
-/* =========================================
-   CARGAR PRODUCTOS
-========================================= */
-
-async function cargarProductos(
-    restauranteId
-) {
-
-    const contenedor =
-        document.getElementById(
-            "productos"
-        );
-
-
-    const { data, error } =
-        await supabaseClient
+async function cargarProductos(restauranteId){
+    try{
+        const {data,error}=await supabaseClient
             .from("productos")
-            .select("*")
-            .eq("restaurante_id", restauranteId)
-            .eq("activo", true)
+            .select("id,restaurante_id,nombre,descripcion,precio,imagen_url,activo")
+            .eq("restaurante_id",restauranteId)
+            .eq("activo",true)
             .order("nombre");
 
+        if(error)throw error;
 
-    if (error) {
+        renderProductos(data||[]);
+    }catch(e){
+        console.error(e);
+        mostrarError("No se pudieron cargar los productos.");
+    }
+}
 
-        console.error(
-            "Error productos:",
-            error
-        );
+function renderProductos(lista){
+    const contenedor=$("productos");
 
-        contenedor.innerHTML = `
-            <div class="estado">
-                ❌ No pudimos cargar el menú.
-            </div>
-        `;
-
+    if(!lista.length){
+        contenedor.innerHTML='<div class="vacio">Este local no tiene productos disponibles.</div>';
         return;
-
     }
 
+    contenedor.innerHTML=lista.map(p=>{
+        const imagen=p.imagen_url
+            ?`<img src="${escapeHTML(p.imagen_url)}" alt="${escapeHTML(p.nombre)}" loading="lazy" onerror="imagenError(this)">`
+            :'<div class="sin-imagen">Sin imagen</div>';
 
-    if (!data || data.length === 0) {
-
-        contenedor.innerHTML = `
-            <div class="estado">
-
-                🍽️
-
-                <h3>
-                    Este restaurante todavía no tiene productos.
-                </h3>
-
-                <p>
-                    Pronto agregaremos su menú.
-                </p>
-
+        return`
+        <article class="producto">
+            ${imagen}
+            <div class="producto-body">
+                <h3>${escapeHTML(p.nombre)}</h3>
+                <div class="descripcion">${escapeHTML(p.descripcion||"")}</div>
+                <div class="precio">$${Number(p.precio||0).toFixed(2)}</div>
+                <button onclick="agregarProducto(${Number(p.id)})">Agregar al carrito</button>
             </div>
-        `;
+        </article>`;
+    }).join("");
+}
 
-        return;
+function imagenError(img){
+    const d=document.createElement("div");
+    d.className="sin-imagen";
+    d.textContent="Imagen no disponible";
+    img.replaceWith(d);
+}
 
-    }
+function agregarProducto(id){
+    const productoEncontrado=document.querySelector(`button[onclick="agregarProducto(${id})"]`);
+    if(!productoEncontrado)return;
 
+    cargarProductoPorId(id);
+}
 
-    contenedor.innerHTML = "";
+async function cargarProductoPorId(id){
+    try{
+        const {data,error}=await supabaseClient
+            .from("productos")
+            .select("id,restaurante_id,nombre,descripcion,precio,imagen_url")
+            .eq("id",id)
+            .eq("restaurante_id",restauranteActual.id)
+            .eq("activo",true)
+            .maybeSingle();
 
+        if(error)throw error;
+        if(!data)return;
 
-    data.forEach(
-        producto => {
+        let carrito=[];
 
-            const tarjeta =
-                document.createElement(
-                    "div"
-                );
-
-
-            tarjeta.className =
-                "producto";
-
-
-            let imagen =
-                "🍽️";
-
-
-            if (producto.imagen_url) {
-
-                imagen = `
-                    <img
-                        src="${escapeHTML(
-                            producto.imagen_url
-                        )}"
-                        alt="${escapeHTML(
-                            producto.nombre
-                        )}"
-                        loading="lazy"
-                    >
-                `;
-
-            }
-
-
-            tarjeta.innerHTML = `
-
-                <div class="producto-imagen">
-                    ${imagen}
-                </div>
-
-                <div class="producto-contenido">
-
-                    <h3>
-                        ${escapeHTML(
-                            producto.nombre
-                        )}
-                    </h3>
-
-                    <p class="producto-descripcion">
-
-                        ${escapeHTML(
-                            producto.descripcion ||
-                            "Delicioso producto."
-                        )}
-
-                    </p>
-
-                    <div class="producto-pie">
-
-                        <span class="precio">
-
-                            $${Number(
-                                producto.precio
-                            ).toFixed(2)}
-
-                        </span>
-
-                        <button
-                            class="btn-agregar"
-                            data-producto-id="${producto.id}"
-                        >
-                            + Agregar
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
-
-            const boton =
-                tarjeta.querySelector(
-                    ".btn-agregar"
-                );
-
-
-            boton.addEventListener(
-                "click",
-                function() {
-
-                    agregarProducto(
-                        producto
-                    );
-
-                }
-            );
-
-
-            contenedor.appendChild(
-                tarjeta
-            );
-
+        try{
+            carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+            if(!Array.isArray(carrito))carrito=[];
+        }catch{
+            carrito=[];
         }
-    );
 
-}
-
-
-/* =========================================
-   AGREGAR PRODUCTO
-========================================= */
-
-function agregarProducto(
-    producto
-) {
-
-    if (!restauranteActual) {
-
-        alert(
-            "El restaurante todavía no está cargado."
+        const existente=carrito.find(x=>
+            Number(x.producto_id)===Number(data.id)&&
+            Number(x.restaurante_id)===Number(restauranteActual.id)
         );
 
-        return;
+        if(existente){
+            existente.cantidad=Number(existente.cantidad||0)+1;
+        }else{
+            carrito.push({
+                producto_id:data.id,
+                restaurante_id:restauranteActual.id,
+                restaurante_nombre:restauranteActual.nombre,
+                nombre:data.nombre,
+                descripcion:data.descripcion||"",
+                precio:Number(data.precio||0),
+                imagen_url:data.imagen_url||null,
+                cantidad:1
+            });
+        }
 
+        localStorage.setItem("carrito",JSON.stringify(carrito));
+        actualizarCarrito();
+        notificar(`${data.nombre} agregado al carrito`);
+    }catch(e){
+        console.error(e);
+        notificar("No se pudo agregar el producto","error");
+    }
+}
+
+function actualizarCarrito(){
+    let carrito=[];
+    try{
+        carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
+        if(!Array.isArray(carrito))carrito=[];
+    }catch{
+        carrito=[];
     }
 
-
-    let carrito =
-        JSON.parse(
-            localStorage.getItem(
-                "carrito"
-            )
-        ) || [];
-
-
-    const productoId =
-        Number(producto.id);
-
-
-    const restauranteId =
-        Number(
-            restauranteActual.id
-        );
-
-
-    const existente =
-        carrito.find(
-            item =>
-                Number(
-                    item.producto_id
-                ) === productoId
-                &&
-                Number(
-                    item.restaurante_id
-                ) === restauranteId
-        );
-
-
-    if (existente) {
-
-        existente.cantidad =
-            Number(
-                existente.cantidad || 0
-            ) + 1;
-
-    } else {
-
-        carrito.push({
-
-            producto_id:
-                productoId,
-
-            restaurante_id:
-                restauranteId,
-
-            restaurante_nombre:
-                restauranteActual.nombre,
-
-            nombre:
-                producto.nombre,
-
-            descripcion:
-                producto.descripcion ||
-                "",
-
-            precio:
-                Number(
-                    producto.precio
-                ),
-
-            imagen_url:
-                producto.imagen_url ||
-                "",
-
-            cantidad:
-                1
-
-        });
-
-    }
-
-
-    localStorage.setItem(
-        "carrito",
-        JSON.stringify(
-            carrito
-        )
+    $("cantidadCarrito").textContent=carrito.reduce(
+        (t,p)=>t+Number(p.cantidad||0),0
     );
-
-
-    actualizarCarrito();
-
-
-    mostrarNotificacion(
-        producto.nombre +
-        " agregado al carrito ✅"
-    );
-
 }
 
-
-/* =========================================
-   CONTADOR
-========================================= */
-
-function actualizarCarrito() {
-
-    const carrito =
-        JSON.parse(
-            localStorage.getItem(
-                "carrito"
-            )
-        ) || [];
-
-
-    const cantidad =
-        carrito.reduce(
-            (
-                total,
-                producto
-            ) =>
-                total +
-                Number(
-                    producto.cantidad || 0
-                ),
-            0
-        );
-
-
-    document.getElementById(
-        "cantidadCarrito"
-    ).textContent =
-        cantidad;
-
+function irAlCarrito(){
+    location.href="menu.html";
 }
 
-
-/* =========================================
-   CARRITO
-========================================= */
-
-function irAlCarrito() {
-
-    window.location.href =
-        "menu.html";
-
+function notificar(texto,tipo="ok"){
+    const n=$("notificacion");
+    n.textContent=texto;
+    n.style.background=tipo==="error"?"#c0392b":"#198754";
+    n.style.display="block";
+    clearTimeout(window.timerNotificacion);
+    window.timerNotificacion=setTimeout(()=>{
+        n.style.display="none";
+    },2200);
 }
 
-
-/* =========================================
-   NOTIFICACIÓN
-========================================= */
-
-function mostrarNotificacion(
-    texto
-) {
-
-    const elemento =
-        document.getElementById(
-            "notificacion"
-        );
-
-
-    elemento.textContent =
-        texto;
-
-
-    elemento.style.display =
-        "block";
-
-
-    setTimeout(
-        () => {
-
-            elemento.style.display =
-                "none";
-
-        },
-        2200
-    );
-
+function mostrarError(texto){
+    $("productos").innerHTML=`<div class="error">${escapeHTML(texto)}</div>`;
 }
-
-
-/* =========================================
-   ERROR
-========================================= */
-
-function mostrarError(
-    mensaje
-) {
-
-    document.getElementById(
-        "nombreRestaurante"
-    ).textContent =
-        "Ups";
-
-
-    document.getElementById(
-        "descripcionRestaurante"
-    ).textContent =
-        mensaje;
-
-
-    document.getElementById(
-        "productos"
-    ).innerHTML = `
-
-        <div class="estado">
-
-            ❌ ${escapeHTML(
-                mensaje
-            )}
-
-        </div>
-
-    `;
-
-}
-
-
-/* =========================================
-   SEGURIDAD
-========================================= */
-
-function escapeHTML(
-    texto
-) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        texto ?? "";
-
-
-    return div.innerHTML;
-
-}
-
-
-/* =========================================
-   INICIO
-========================================= */
-
-cargarRestaurante();
-
-actualizarCarrito();
-
 </script>
-
-
 </body>
-
 </html>
