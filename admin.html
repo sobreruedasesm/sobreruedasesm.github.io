@@ -4,215 +4,358 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Administración | Sobre Ruedas</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f6f8;color:#222}
-header{background:#111827;color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
-header h1{margin:0;font-size:20px}
+body{margin:0;font-family:Arial,sans-serif;background:#f8f5ee;color:#26352d}
+header{background:#2f5d45;color:#fff;padding:18px 20px}
+header h1{margin:0;font-size:24px}
+header p{margin:5px 0 0;color:#e7f0e8}
 main{max-width:1100px;margin:auto;padding:20px}
-section{background:#fff;border-radius:12px;padding:18px;margin-bottom:18px;box-shadow:0 2px 8px #0000000d}
-h2{margin:0 0 15px;font-size:18px}
-h3{margin:18px 0 10px;font-size:15px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-input,select,textarea,button{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font:inherit}
-textarea{min-height:80px;resize:vertical}
-button{border:0;background:#111827;color:#fff;cursor:pointer;font-weight:600}
-button:hover{opacity:.9}
-.btn2{background:#2563eb}
-.btn3{background:#dc2626}
-.btn4{background:#059669}
-.btn5{background:#6b7280}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.actions button{width:auto}
-.card{border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:12px}
-.card img{width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:10px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.producto{display:grid;grid-template-columns:1fr 110px 90px;gap:8px;margin-bottom:8px}
-.producto button{width:auto}
-.check{display:flex;align-items:center;gap:8px}
+.seccion{background:#fffdf9;border:1px solid #eee5d8;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 3px 10px #5b46331c}
+.seccion h2{margin:0 0 15px;color:#2f5d45;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.campo{margin-bottom:12px}
+.campo label{display:block;margin-bottom:5px;font-weight:bold;color:#53665a}
+input,textarea,select{width:100%;padding:10px;border:1px solid #d8d0c3;border-radius:8px;background:#fff;color:#26352d;font-size:14px}
+textarea{min-height:75px;resize:vertical}
+button{border:0;border-radius:8px;background:#d97941;color:#fff;padding:10px 14px;cursor:pointer;font-weight:bold}
+button:hover{background:#c86832}
+button.sec{background:#2f5d45}
+button.sec:hover{background:#244936}
+button.gray{background:#e7dfd2;color:#2f5d45}
+button.danger{background:#a9553b}
+button.danger:hover{background:#8f4430}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lista{display:grid;gap:12px}
+.card{background:#fff;border:1px solid #eee5d8;border-radius:12px;padding:14px}
+.card h3{margin:0 0 5px;color:#2f5d45}
+.card p{margin:4px 0;color:#68736b;font-size:14px}
+.estado{display:inline-block;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:bold;margin-top:5px}
+.activo{background:#dcebdc;color:#35633f}
+.inactivo{background:#eee0d9;color:#8c4937}
+.banner{width:100%;max-width:500px;height:180px;object-fit:cover;border-radius:10px;background:#e9e1d3;margin:8px 0}
+.preview{width:100%;height:150px;object-fit:cover;border-radius:9px;background:#e9e1d3;display:none;margin-top:8px}
+.producto-row{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;margin-bottom:8px}
+.horarios{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.dia{border:1px solid #eee5d8;border-radius:8px;padding:8px;background:#fff}
+.dia strong{display:block;color:#2f5d45;margin-bottom:6px}
+.check{display:flex;align-items:center;gap:6px;font-size:13px}
 .check input{width:auto}
-.estado{font-size:12px;padding:4px 8px;border-radius:20px;background:#dcfce7;color:#166534}
-.estado.off{background:#fee2e2;color:#991b1b}
-.msg{padding:10px;border-radius:8px;margin-bottom:12px;display:none}
-.ok{background:#dcfce7;color:#166534}
-.err{background:#fee2e2;color:#991b1b}
-.preview{max-width:180px;max-height:100px;object-fit:cover;border-radius:8px;margin-top:8px}
-.dia{display:grid;grid-template-columns:100px 1fr 1fr 80px;gap:8px;align-items:center;margin-bottom:7px}
-.dia input[type=checkbox]{width:auto}
+.mensaje{padding:10px;border-radius:8px;background:#f5eadf;color:#76543d;margin-bottom:12px}
+.exito{background:#e2efe3;color:#35633f}
+.oculto{display:none}
+hr{border:0;border-top:1px solid #eee5d8;margin:18px 0}
 @media(max-width:600px){
- .row,.producto,.dia{grid-template-columns:1fr}
- header{gap:10px;align-items:flex-start;flex-direction:column}
+ .producto-row{grid-template-columns:1fr 100px}
+ .producto-row button{grid-column:1/3}
 }
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>Sobre Ruedas · Administración</h1>
-<button onclick="nuevoLocal()" style="width:auto">+ Nuevo local</button>
+<h1>Sobre Ruedas</h1>
+<p>Panel de administración</p>
 </header>
 
 <main>
-<div id="mensaje" class="msg"></div>
 
-<section>
+<div id="mensaje"></div>
+
+<section class="seccion">
 <h2>Configuración del negocio</h2>
+
 <div class="grid">
-<div><label>Nombre</label><input id="cfgNombre"></div>
-<div><label>Ciudad</label><input id="cfgCiudad"></div>
-<div><label>Tarifa delivery</label><input id="cfgDelivery" type="number" step="0.01" min="0"></div>
-<div><label>WhatsApp</label><input id="cfgWhatsapp"></div>
-<div><label>Moneda</label><input id="cfgMoneda"></div>
+<div class="campo">
+<label>Nombre del negocio</label>
+<input id="nombreNegocio">
 </div>
-<br>
-<button class="btn4" onclick="guardarConfiguracion()">Guardar configuración</button>
+
+<div class="campo">
+<label>Ciudad</label>
+<input id="ciudad">
+</div>
+
+<div class="campo">
+<label>Tarifa de delivery</label>
+<input id="tarifaDelivery" type="number" step="0.01" min="0">
+</div>
+
+<div class="campo">
+<label>WhatsApp del negocio</label>
+<input id="whatsappNegocio">
+</div>
+</div>
+
+<button onclick="guardarConfiguracion()">Guardar configuración</button>
 </section>
 
-<section>
+<section class="seccion">
 <h2>Categorías</h2>
+
 <div class="grid">
-<div><input id="catNombre" placeholder="Nueva categoría"></div>
-<div><button class="btn2" onclick="crearCategoria()">Agregar categoría</button></div>
+<div class="campo">
+<label>Nueva categoría</label>
+<input id="nuevaCategoria" placeholder="Ej.: Hamburguesas">
 </div>
-<div id="categoriasLista"></div>
+</div>
+
+<button onclick="crearCategoria()">Agregar categoría</button>
+
+<hr>
+
+<div id="listaCategorias" class="lista"></div>
 </section>
 
-<section>
-<h2>Locales</h2>
-<div id="localesLista">Cargando...</div>
-</section>
-
-<section id="editor" style="display:none">
-<h2 id="editorTitulo">Nuevo local</h2>
-
-<input type="hidden" id="localId">
+<section class="seccion">
+<h2>Nuevo local</h2>
 
 <div class="grid">
-<div>
+<div class="campo">
 <label>Nombre</label>
-<input id="localNombre">
+<input id="nuevoNombre">
 </div>
-<div>
+
+<div class="campo">
 <label>Categoría</label>
-<select id="localCategoria"></select>
-</div>
+<select id="nuevoCategoria"></select>
 </div>
 
-<br>
-
+<div class="campo">
 <label>Descripción</label>
-<textarea id="localDescripcion"></textarea>
+<textarea id="nuevoDescripcion"></textarea>
+</div>
 
-<br>
-
+<div class="campo">
 <label>Banner</label>
-<input id="bannerArchivo" type="file" accept="image/*" onchange="previsualizarBanner()">
-<img id="bannerPreview" class="preview" style="display:none">
-<div class="check">
-<input id="eliminarBanner" type="checkbox">
-<label for="eliminarBanner">Eliminar banner actual</label>
+<input id="nuevoBanner" type="file" accept="image/*" onchange="previsualizarArchivo(this,'previewNuevo')">
+<img id="previewNuevo" class="preview">
+</div>
 </div>
 
-<br>
+<h3 style="color:#2f5d45">Horarios</h3>
+<div id="horariosNuevo" class="horarios"></div>
 
-<div class="check">
-<input id="localActivo" type="checkbox" checked>
-<label for="localActivo">Local activo</label>
-</div>
+<h3 style="color:#2f5d45;margin-top:18px">Productos</h3>
+<div id="productosNuevos"></div>
 
-<h3>Horarios</h3>
-<div id="horarios"></div>
-
-<h3>Productos</h3>
-<div id="productosEditor"></div>
-
-<div class="actions">
-<button class="btn4" onclick="guardarLocal()">Guardar local</button>
-<button class="btn5" onclick="cancelarEdicion()">Cancelar</button>
+<div class="acciones">
+<button class="gray" onclick="agregarProductoNuevo()">+ Producto</button>
+<button onclick="crearLocal()">Crear local</button>
 </div>
 </section>
+
+<section class="seccion">
+<h2>Locales</h2>
+<div id="listaLocales" class="lista">Cargando...</div>
+</section>
+
+<section id="edicion" class="seccion oculto">
+<h2>Editar local</h2>
+
+<input id="editId" type="hidden">
+
+<div class="grid">
+<div class="campo">
+<label>Nombre</label>
+<input id="editNombre">
+</div>
+
+<div class="campo">
+<label>Categoría</label>
+<select id="editCategoria"></select>
+</div>
+
+<div class="campo">
+<label>Descripción</label>
+<textarea id="editDescripcion"></textarea>
+</div>
+
+<div class="campo">
+<label>Estado</label>
+<select id="editActivo">
+<option value="true">Activo</option>
+<option value="false">Inactivo</option>
+</select>
+</div>
+
+<div class="campo">
+<label>Nuevo banner</label>
+<input id="editBanner" type="file" accept="image/*" onchange="previsualizarArchivo(this,'previewEdit')">
+<img id="previewEdit" class="preview">
+</div>
+</div>
+
+<div id="bannerActual"></div>
+
+<h3 style="color:#2f5d45">Horarios</h3>
+<div id="horariosEdit" class="horarios"></div>
+
+<h3 style="color:#2f5d45;margin-top:18px">Productos</h3>
+<div id="productosEdit"></div>
+
+<div class="acciones">
+<button class="gray" onclick="agregarProductoEdit()">+ Producto</button>
+<button onclick="guardarEdicion()">Guardar cambios</button>
+<button class="gray" onclick="cerrarEdicion()">Cancelar</button>
+</div>
+</section>
+
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="config.js"></script>
 
 <script>
 const BUCKET="restaurantes";
+
 let categorias=[];
 let locales=[];
-let productos=[];
+let productosEdit=[];
+let productosNuevos=[];
 let horarios=[];
-let bannerActual=null;
+let bannerEdicionActual="";
 
-const dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-
-function mostrarMensaje(texto,tipo="ok"){
- const e=document.getElementById("mensaje");
- e.textContent=texto;
- e.className="msg "+tipo;
- e.style.display="block";
- setTimeout(()=>e.style.display="none",4500);
-}
+const dias=[
+ "Domingo",
+ "Lunes",
+ "Martes",
+ "Miércoles",
+ "Jueves",
+ "Viernes",
+ "Sábado"
+];
 
 function escapeHtml(v=""){
- return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+ return String(v).replace(/[&<>"']/g,m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[m]);
+}
+
+function mostrarMensaje(texto,exito=false){
+ mensaje.innerHTML=
+  `<div class="mensaje ${exito?"exito":""}">
+   ${escapeHtml(texto)}
+  </div>`;
+
+ setTimeout(()=>{
+  mensaje.innerHTML="";
+ },4000);
+}
+
+function cacheUrl(url){
+ if(!url)return "";
+ return url+(url.includes("?")?"&":"?")+"v="+Date.now();
+}
+
+function extensionArchivo(nombre=""){
+ const partes=nombre.toLowerCase().split(".");
+ return partes.length>1?partes.pop():"jpg";
+}
+
+async function subirImagen(archivo,idLocal){
+ if(!archivo)return null;
+
+ const extension=extensionArchivo(archivo.name);
+ const ruta=
+  `banners/${idLocal}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+ const {error}=await supabaseClient.storage
+  .from(BUCKET)
+  .upload(ruta,archivo,{
+   cacheControl:"3600",
+   upsert:false,
+   contentType:archivo.type||"image/jpeg"
+  });
+
+ if(error)throw error;
+
+ const {data}=supabaseClient.storage
+  .from(BUCKET)
+  .getPublicUrl(ruta);
+
+ if(!data?.publicUrl){
+  throw new Error("No se pudo obtener la URL pública de la imagen.");
+ }
+
+ return data.publicUrl;
+}
+
+function previsualizarArchivo(input,id){
+ const archivo=input.files?.[0];
+ const img=document.getElementById(id);
+
+ if(!archivo){
+  img.style.display="none";
+  img.removeAttribute("src");
+  return;
+ }
+
+ img.src=URL.createObjectURL(archivo);
+ img.style.display="block";
 }
 
 async function cargarConfiguracion(){
  const {data,error}=await supabaseClient
- .from("configuracion_negocio")
- .select("*")
- .order("id",{ascending:true})
- .limit(1)
- .maybeSingle();
+  .from("configuracion_negocio")
+  .select("*")
+  .order("id")
+  .limit(1)
+  .maybeSingle();
 
- if(error) throw error;
+ if(error)throw error;
 
  if(data){
-  cfgNombre.value=data.nombre_negocio||"";
-  cfgCiudad.value=data.ciudad||"";
-  cfgDelivery.value=data.tarifa_delivery??1.5;
-  cfgWhatsapp.value=data.whatsapp_negocio||"";
-  cfgMoneda.value=data.moneda||"USD";
+  nombreNegocio.value=data.nombre_negocio||"";
+  ciudad.value=data.ciudad||"";
+  tarifaDelivery.value=data.tarifa_delivery??1.5;
+  whatsappNegocio.value=data.whatsapp_negocio||"";
  }
 }
 
 async function guardarConfiguracion(){
  try{
-  const payload={
-   nombre_negocio:cfgNombre.value.trim(),
-   ciudad:cfgCiudad.value.trim(),
-   tarifa_delivery:Number(cfgDelivery.value)||0,
-   whatsapp_negocio:cfgWhatsapp.value.trim(),
-   moneda:cfgMoneda.value.trim()||"USD",
+  const registro={
+   nombre_negocio:nombreNegocio.value.trim()||"Sobre Ruedas",
+   ciudad:ciudad.value.trim()||"Esmeraldas",
+   tarifa_delivery:Number(tarifaDelivery.value)||0,
+   whatsapp_negocio:whatsappNegocio.value.trim(),
+   moneda:"USD",
    actualizado_en:new Date().toISOString()
   };
 
-  const {data:existente,error:e1}=await supabaseClient
+  const {data:existente}=await supabaseClient
    .from("configuracion_negocio")
    .select("id")
-   .order("id",{ascending:true})
+   .order("id")
    .limit(1)
    .maybeSingle();
 
-  if(e1)throw e1;
+  let error;
 
-  let r;
-
-  if(existente){
-   r=await supabaseClient
+  if(existente?.id){
+   ({error}=await supabaseClient
     .from("configuracion_negocio")
-    .update(payload)
-    .eq("id",existente.id);
+    .update(registro)
+    .eq("id",existente.id));
   }else{
-   r=await supabaseClient
+   ({error}=await supabaseClient
     .from("configuracion_negocio")
-    .insert(payload);
+    .insert(registro));
   }
 
-  if(r.error)throw r.error;
-  mostrarMensaje("Configuración guardada");
+  if(error)throw error;
+
+  mostrarMensaje("Configuración guardada.",true);
  }catch(e){
-  mostrarMensaje("No se pudo guardar la configuración: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo guardar la configuración: "+e.message);
  }
 }
 
@@ -223,36 +366,54 @@ async function cargarCategorias(){
   .order("nombre");
 
  if(error)throw error;
+
  categorias=data||[];
  renderCategorias();
- actualizarSelectCategorias();
+ cargarSelectCategorias();
 }
 
 function renderCategorias(){
- categoriasLista.innerHTML=categorias.map(c=>`
+ listaCategorias.innerHTML=categorias.map(c=>`
   <div class="card">
-   <div class="grid">
-    <input id="cat_${c.id}" value="${escapeHtml(c.nombre)}">
-    <div class="actions">
-     <button class="btn2" onclick="editarCategoria(${c.id})">Guardar</button>
-     <button class="btn3" onclick="eliminarCategoria(${c.id})">Eliminar</button>
-    </div>
+   <strong>${escapeHtml(c.nombre)}</strong>
+   <span class="estado ${c.activo?"activo":"inactivo"}">
+    ${c.activo?"Activa":"Inactiva"}
+   </span>
+   <div class="acciones">
+    <button class="gray" onclick="editarCategoria(${c.id})">
+     Editar
+    </button>
+    <button class="${c.activo?"danger":"sec"}"
+     onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
+     ${c.activo?"Desactivar":"Activar"}
+    </button>
    </div>
   </div>
  `).join("");
 }
 
-function actualizarSelectCategorias(){
- localCategoria.innerHTML=
-  `<option value="">Seleccionar categoría</option>`+
-  categorias.filter(c=>c.activo!==false)
-   .map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`)
-   .join("");
+function cargarSelectCategorias(){
+ const opciones=
+  '<option value="">Seleccionar categoría</option>'+
+  categorias
+   .filter(c=>c.activo)
+   .map(c=>`
+    <option value="${escapeHtml(c.nombre)}">
+     ${escapeHtml(c.nombre)}
+    </option>
+   `).join("");
+
+ nuevoCategoria.innerHTML=opciones;
+ editCategoria.innerHTML=opciones;
 }
 
 async function crearCategoria(){
- const nombre=catNombre.value.trim();
- if(!nombre)return mostrarMensaje("Ingrese una categoría","err");
+ const nombre=nuevaCategoria.value.trim();
+
+ if(!nombre){
+  mostrarMensaje("Ingresa el nombre de la categoría.");
+  return;
+ }
 
  try{
   const {error}=await supabaseClient
@@ -261,16 +422,25 @@ async function crearCategoria(){
 
   if(error)throw error;
 
-  catNombre.value="";
+  nuevaCategoria.value="";
   await cargarCategorias();
-  mostrarMensaje("Categoría creada");
+  mostrarMensaje("Categoría creada.",true);
  }catch(e){
-  mostrarMensaje("No se pudo crear la categoría: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo crear la categoría: "+e.message);
  }
 }
 
 async function editarCategoria(id){
- const nombre=document.getElementById("cat_"+id).value.trim();
+ const categoria=categorias.find(c=>Number(c.id)===Number(id));
+ if(!categoria)return;
+
+ const nuevo=prompt("Nombre de la categoría:",categoria.nombre);
+
+ if(nuevo===null)return;
+
+ const nombre=nuevo.trim();
+
  if(!nombre)return;
 
  try{
@@ -282,407 +452,604 @@ async function editarCategoria(id){
   if(error)throw error;
 
   await cargarCategorias();
-  mostrarMensaje("Categoría actualizada");
+  await cargarLocales();
+  mostrarMensaje("Categoría actualizada.",true);
  }catch(e){
-  mostrarMensaje("No se pudo actualizar: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo actualizar la categoría: "+e.message);
  }
 }
 
-async function eliminarCategoria(id){
- if(!confirm("¿Eliminar esta categoría?"))return;
-
+async function cambiarEstadoCategoria(id,activo){
  try{
   const {error}=await supabaseClient
    .from("categorias")
-   .delete()
+   .update({activo})
    .eq("id",id);
 
   if(error)throw error;
 
   await cargarCategorias();
-  mostrarMensaje("Categoría eliminada");
+  mostrarMensaje("Estado actualizado.",true);
  }catch(e){
-  mostrarMensaje("No se pudo eliminar: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo actualizar: "+e.message);
+ }
+}
+
+function renderHorarios(contenedorId,datos=[]){
+ const cont=document.getElementById(contenedorId);
+
+ const mapa={};
+
+ datos.forEach(h=>{
+  mapa[h.dia_semana]=h;
+ });
+
+ cont.innerHTML=dias.map((dia,i)=>{
+  const h=mapa[i]||{cerrado:false,hora_apertura:"10:00",hora_cierre:"22:00"};
+
+  return `
+   <div class="dia">
+    <strong>${dia}</strong>
+
+    <label class="check">
+     <input
+      type="checkbox"
+      id="${contenedorId}_cerrado_${i}"
+      ${h.cerrado?"checked":""}>
+     Cerrado
+    </label>
+
+    <input
+     type="time"
+     id="${contenedorId}_apertura_${i}"
+     value="${h.hora_apertura||"10:00"}"
+     style="margin-top:6px">
+
+    <input
+     type="time"
+     id="${contenedorId}_cierre_${i}"
+     value="${h.hora_cierre||"22:00"}"
+     style="margin-top:6px">
+   </div>
+  `;
+ }).join("");
+}
+
+function leerHorarios(contenedorId){
+ return dias.map((_,i)=>({
+  dia_semana:i,
+  hora_apertura:
+   document.getElementById(`${contenedorId}_apertura_${i}`).value||null,
+  hora_cierre:
+   document.getElementById(`${contenedorId}_cierre_${i}`).value||null,
+  cerrado:
+   document.getElementById(`${contenedorId}_cerrado_${i}`).checked
+ }));
+}
+
+function renderProductosNuevos(){
+ productosNuevosEl.innerHTML=productosNuevos.map((p,i)=>`
+  <div class="producto-row">
+   <input
+    placeholder="Nombre del producto"
+    value="${escapeHtml(p.nombre||"")}"
+    oninput="productosNuevos[${i}].nombre=this.value">
+
+   <input
+    type="number"
+    step="0.01"
+    min="0"
+    placeholder="Precio"
+    value="${p.precio??""}"
+    oninput="productosNuevos[${i}].precio=this.value">
+
+   <button class="danger" onclick="eliminarProductoNuevo(${i})">
+    Eliminar
+   </button>
+  </div>
+ `).join("");
+}
+
+function agregarProductoNuevo(){
+ productosNuevos.push({
+  nombre:"",
+  precio:""
+ });
+
+ renderProductosNuevos();
+}
+
+function eliminarProductoNuevo(i){
+ productosNuevos.splice(i,1);
+ renderProductosNuevos();
+}
+
+function renderProductosEdit(){
+ productosEditEl.innerHTML=productosEdit.map((p,i)=>`
+  <div class="card" style="margin-bottom:8px">
+   <div class="producto-row">
+    <input
+     placeholder="Nombre"
+     value="${escapeHtml(p.nombre||"")}"
+     oninput="productosEdit[${i}].nombre=this.value">
+
+    <input
+     type="number"
+     step="0.01"
+     min="0"
+     placeholder="Precio"
+     value="${p.precio??""}"
+     oninput="productosEdit[${i}].precio=this.value">
+
+    <button class="${p._nuevo?"danger":"gray"}"
+     onclick="eliminarProductoEdit(${i})">
+     ${p._nuevo?"Eliminar":"Desactivar"}
+    </button>
+   </div>
+
+   <label class="check">
+    <input
+     type="checkbox"
+     ${p.activo!==false?"checked":""}
+     onchange="productosEdit[${i}].activo=this.checked">
+    Producto activo
+   </label>
+  </div>
+ `).join("");
+}
+
+function agregarProductoEdit(){
+ productosEdit.push({
+  nombre:"",
+  precio:"",
+  activo:true,
+  _nuevo:true
+ });
+
+ renderProductosEdit();
+}
+
+function eliminarProductoEdit(i){
+ if(productosEdit[i]._nuevo){
+  productosEdit.splice(i,1);
+ }else{
+  productosEdit[i].activo=false;
+ }
+
+ renderProductosEdit();
+}
+
+async function crearLocal(){
+ try{
+  const nombre=nuevoNombre.value.trim();
+
+  if(!nombre){
+   mostrarMensaje("Ingresa el nombre del local.");
+   return;
+  }
+
+  if(!nuevoCategoria.value){
+   mostrarMensaje("Selecciona una categoría.");
+   return;
+  }
+
+  const {data,error}=await supabaseClient
+   .from("restaurantes")
+   .insert({
+    nombre,
+    categoria:nuevoCategoria.value,
+    descripcion:nuevoDescripcion.value.trim(),
+    activo:true
+   })
+   .select()
+   .single();
+
+  if(error)throw error;
+
+  let bannerUrl=null;
+
+  try{
+   const archivo=nuevoBanner.files?.[0];
+
+   if(archivo){
+    bannerUrl=await subirImagen(archivo,data.id);
+
+    const {error:errorBanner}=await supabaseClient
+     .from("restaurantes")
+     .update({banner_url:bannerUrl})
+     .eq("id",data.id);
+
+    if(errorBanner)throw errorBanner;
+   }
+  }catch(e){
+   await supabaseClient
+    .from("restaurantes")
+    .delete()
+    .eq("id",data.id);
+
+   throw new Error("No se pudo subir el banner: "+e.message);
+  }
+
+  const horariosData=leerHorarios("horariosNuevo");
+
+  const {error:errorHorarios}=await supabaseClient
+   .from("horarios_restaurantes")
+   .upsert(
+    horariosData.map(h=>({
+     restaurante_id:data.id,
+     ...h
+    })),
+    {onConflict:"restaurante_id,dia_semana"}
+   );
+
+  if(errorHorarios)throw errorHorarios;
+
+  const productosValidos=productosNuevos
+   .filter(p=>p.nombre.trim()&&Number(p.precio)>=0)
+   .map(p=>({
+    restaurante_id:data.id,
+    nombre:p.nombre.trim(),
+    precio:Number(p.precio)||0,
+    activo:true
+   }));
+
+  if(productosValidos.length){
+   const {error:errorProductos}=await supabaseClient
+    .from("productos")
+    .insert(productosValidos);
+
+   if(errorProductos)throw errorProductos;
+  }
+
+  nuevoNombre.value="";
+  nuevoCategoria.value="";
+  nuevoDescripcion.value="";
+  nuevoBanner.value="";
+  previewNuevo.style.display="none";
+  productosNuevos=[];
+  renderProductosNuevos();
+  renderHorarios("horariosNuevo");
+
+  await cargarLocales();
+
+  mostrarMensaje("Local creado correctamente.",true);
+
+ }catch(e){
+  console.error(e);
+  mostrarMensaje("No se pudo crear el local: "+e.message);
  }
 }
 
 async function cargarLocales(){
- locales=[];
- productos=[];
- horarios=[];
-
- const r=await supabaseClient
-  .from("restaurantes")
-  .select("*")
-  .order("nombre");
-
- if(r.error)throw r.error;
- locales=r.data||[];
-
- const p=await supabaseClient
-  .from("productos")
-  .select("*")
-  .order("nombre");
-
- if(p.error)throw p.error;
- productos=p.data||[];
-
- const h=await supabaseClient
-  .from("horarios_restaurantes")
-  .select("*")
-  .order("restaurante_id")
-  .order("dia_semana");
-
- if(h.error)throw h.error;
- horarios=h.data||[];
-
- renderLocales();
-}
-
-function renderLocales(){
- if(!locales.length){
-  localesLista.innerHTML="<p>No existen locales.</p>";
-  return;
- }
-
- localesLista.innerHTML=locales.map(l=>{
-  const ps=productos.filter(p=>p.restaurante_id===l.id);
-  const hs=horarios.filter(h=>h.restaurante_id===l.id);
-
-  return `
-  <div class="card">
-   ${l.banner_url?`<img src="${escapeHtml(l.banner_url)}" onerror="this.style.display='none'">`:""}
-   <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
-    <strong>${escapeHtml(l.nombre)}</strong>
-    <span class="estado ${l.activo===false?"off":""}">
-     ${l.activo===false?"Inactivo":"Activo"}
-    </span>
-   </div>
-   <p>${escapeHtml(l.categoria||"")} · ${escapeHtml(l.descripcion||"")}</p>
-   <small>${ps.length} producto(s) · ${hs.length} horario(s)</small>
-   <br><br>
-   <div class="actions">
-    <button class="btn2" onclick="editarLocal(${l.id})">Editar</button>
-    <button class="btn5" onclick="cambiarEstadoLocal(${l.id},${l.activo!==false})">
-     ${l.activo===false?"Activar":"Desactivar"}
-    </button>
-    <button class="btn3" onclick="eliminarLocal(${l.id})">Eliminar</button>
-   </div>
-  </div>`;
- }).join("");
-}
-
-function nuevoLocal(){
- editor.style.display="block";
- editorTitulo.textContent="Nuevo local";
- localId.value="";
- localNombre.value="";
- localDescripcion.value="";
- localCategoria.value="";
- localActivo.checked=true;
- bannerArchivo.value="";
- eliminarBanner.checked=false;
- bannerActual=null;
- bannerPreview.style.display="none";
- renderHorarios([]);
- renderProductosEditor([]);
- editor.scrollIntoView({behavior:"smooth"});
-}
-
-function cancelarEdicion(){
- editor.style.display="none";
- bannerActual=null;
-}
-
-function previsualizarBanner(){
- const archivo=bannerArchivo.files[0];
- if(!archivo){
-  bannerPreview.style.display="none";
-  return;
- }
-
- bannerPreview.src=URL.createObjectURL(archivo);
- bannerPreview.style.display="block";
-}
-
-function renderHorarios(lista){
- horarios.innerHTML=dias.map((dia,i)=>{
-  const h=lista.find(x=>Number(x.dia_semana)===i)||{};
-  return `
-   <div class="dia">
-    <strong>${dia}</strong>
-    <input type="time" id="ap_${i}" value="${h.hora_apertura||""}">
-    <input type="time" id="ci_${i}" value="${h.hora_cierre||""}">
-    <label class="check">
-     <input type="checkbox" id="ce_${i}" ${h.cerrado?"checked":""}>
-     Cerrado
-    </label>
-   </div>`;
- }).join("");
-}
-
-function obtenerHorarios(){
- return dias.map((_,i)=>({
-  dia_semana:i,
-  hora_apertura:document.getElementById("ap_"+i).value||null,
-  hora_cierre:document.getElementById("ci_"+i).value||null,
-  cerrado:document.getElementById("ce_"+i).checked
- }));
-}
-
-function renderProductosEditor(lista){
- productosEditor.innerHTML=lista.map((p,i)=>`
-  <div class="producto" data-id="${p.id||""}">
-   <input class="pn" value="${escapeHtml(p.nombre||"")}" placeholder="Producto">
-   <input class="pp" type="number" step="0.01" min="0" value="${p.precio??0}" placeholder="Precio">
-   <button class="btn3" onclick="this.parentElement.remove()">Eliminar</button>
-  </div>
- `).join("")+
- `<button type="button" class="btn2" onclick="agregarProductoEditor()">+ Agregar producto</button>`;
-}
-
-function agregarProductoEditor(){
- const div=document.createElement("div");
- div.className="producto";
- div.innerHTML=`
-  <input class="pn" placeholder="Producto">
-  <input class="pp" type="number" step="0.01" min="0" value="0">
-  <button type="button" class="btn3" onclick="this.parentElement.remove()">Eliminar</button>`;
- const boton=productosEditor.querySelector("button:last-child");
- productosEditor.insertBefore(div,boton);
-}
-
-function obtenerProductosEditor(){
- return [...productosEditor.querySelectorAll(".producto")].map(e=>({
-  id:e.dataset.id?Number(e.dataset.id):null,
-  nombre:e.querySelector(".pn").value.trim(),
-  precio:Number(e.querySelector(".pp").value)||0
- })).filter(p=>p.nombre);
-}
-
-async function editarLocal(id){
- const local=locales.find(x=>x.id===id);
- if(!local)return;
-
- editor.style.display="block";
- editorTitulo.textContent="Editar local";
- localId.value=id;
- localNombre.value=local.nombre||"";
- localDescripcion.value=local.descripcion||"";
- localActivo.checked=local.activo!==false;
- localCategoria.value=local.categoria||"";
- bannerActual=local.banner_url||null;
- bannerArchivo.value="";
- eliminarBanner.checked=false;
-
- if(bannerActual){
-  bannerPreview.src=bannerActual;
-  bannerPreview.style.display="block";
- }else{
-  bannerPreview.style.display="none";
- }
-
- renderHorarios(horarios.filter(h=>h.restaurante_id===id));
- renderProductosEditor(productos.filter(p=>p.restaurante_id===id));
- editor.scrollIntoView({behavior:"smooth"});
-}
-
-async function subirImagen(archivo,idLocal){
- if(!archivo)return null;
-
- const extension=(archivo.name.split(".").pop()||"jpg").toLowerCase();
- const ruta=`locales/${idLocal}_${Date.now()}.${extension}`;
-
- const {error}=await supabaseClient.storage
-  .from(BUCKET)
-  .upload(ruta,archivo,{
-   cacheControl:"3600",
-   upsert:false,
-   contentType:archivo.type||"image/jpeg"
-  });
-
- if(error)throw new Error("No se pudo subir la imagen: "+error.message);
-
- const {data}=supabaseClient.storage
-  .from(BUCKET)
-  .getPublicUrl(ruta);
-
- if(!data?.publicUrl)throw new Error("No se pudo obtener la URL pública de la imagen");
-
- return data.publicUrl;
-}
-
-async function guardarLocal(){
- const id=localId.value?Number(localId.value):null;
- const nombre=localNombre.value.trim();
-
- if(!nombre)return mostrarMensaje("Ingrese el nombre del local","err");
- if(!localCategoria.value)return mostrarMensaje("Seleccione una categoría","err");
-
  try{
-  const archivo=bannerArchivo.files[0]||null;
-  let banner_url=bannerActual;
+  const {data,error}=await supabaseClient
+   .from("restaurantes")
+   .select("*")
+   .order("nombre");
 
-  if(eliminarBanner.checked)banner_url=null;
+  if(error)throw error;
 
-  if(archivo){
-   banner_url=await subirImagen(archivo,id||Date.now());
-  }
+  locales=data||[];
 
-  const payload={
-   nombre,
-   categoria:localCategoria.value,
-   descripcion:localDescripcion.value.trim()||null,
-   banner_url,
-   activo:localActivo.checked
-  };
+  listaLocales.innerHTML=locales.length
+   ? locales.map(l=>`
+    <div class="card">
+     ${
+      l.banner_url
+      ? `<img
+          class="banner"
+          src="${escapeHtml(cacheUrl(l.banner_url))}"
+          alt="${escapeHtml(l.nombre)}"
+          onerror="this.style.display='none'">`
+      : ""
+     }
 
-  let localIdGuardado=id;
+     <h3>${escapeHtml(l.nombre)}</h3>
 
-  if(id){
-   const {error}=await supabaseClient
-    .from("restaurantes")
-    .update(payload)
-    .eq("id",id);
+     <p>
+      <strong>Categoría:</strong>
+      ${escapeHtml(l.categoria||"")}
+     </p>
 
-   if(error)throw error;
-  }else{
-   const {data,error}=await supabaseClient
-    .from("restaurantes")
-    .insert(payload)
-    .select("id")
-    .single();
+     <p>${escapeHtml(l.descripcion||"")}</p>
 
-   if(error)throw error;
-   localIdGuardado=data.id;
-  }
+     <span class="estado ${l.activo?"activo":"inactivo"}">
+      ${l.activo?"Activo":"Inactivo"}
+     </span>
 
-  const nuevosHorarios=obtenerHorarios().map(h=>({
-   ...h,
-   restaurante_id:localIdGuardado
+     <div class="acciones">
+      <button onclick="abrirEdicion(${l.id})">
+       Editar
+      </button>
+
+      <button class="${l.activo?"danger":"sec"}"
+       onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
+       ${l.activo?"Desactivar":"Activar"}
+      </button>
+
+      <button class="danger"
+       onclick="eliminarLocal(${l.id})">
+       Eliminar
+      </button>
+     </div>
+    </div>
+   `).join("")
+   : `<div class="card">No hay locales registrados.</div>`;
+
+ }catch(e){
+  console.error(e);
+  listaLocales.innerHTML=
+   `<div class="mensaje">No se pudieron cargar los locales.</div>`;
+ }
+}
+
+async function abrirEdicion(id){
+ try{
+  const local=locales.find(l=>Number(l.id)===Number(id));
+  if(!local)return;
+
+  editId.value=local.id;
+  editNombre.value=local.nombre||"";
+  editCategoria.value=local.categoria||"";
+  editDescripcion.value=local.descripcion||"";
+  editActivo.value=String(local.activo!==false);
+
+  bannerEdicionActual=local.banner_url||"";
+  editBanner.value="";
+  previewEdit.style.display="none";
+  previewEdit.removeAttribute("src");
+
+  bannerActual.innerHTML=local.banner_url
+   ? `
+    <p style="color:#53665a;font-weight:bold">Banner actual</p>
+    <img
+     class="banner"
+     src="${escapeHtml(cacheUrl(local.banner_url))}"
+     onerror="this.style.display='none'">
+   `
+   : `<p style="color:#68736b">Este local no tiene banner.</p>`;
+
+  const {data:horariosData,error:errorHorarios}=await supabaseClient
+   .from("horarios_restaurantes")
+   .select("*")
+   .eq("restaurante_id",id)
+   .order("dia_semana");
+
+  if(errorHorarios)throw errorHorarios;
+
+  renderHorarios("horariosEdit",horariosData||[]);
+
+  const {data:productos,error:errorProductos}=await supabaseClient
+   .from("productos")
+   .select("*")
+   .eq("restaurante_id",id)
+   .order("nombre");
+
+  if(errorProductos)throw errorProductos;
+
+  productosEdit=(productos||[]).map(p=>({
+   ...p,
+   _nuevo:false
   }));
 
-  const {error:eh}=await supabaseClient
-   .from("horarios_restaurantes")
-   .upsert(nuevosHorarios,{
-    onConflict:"restaurante_id,dia_semana"
-   });
+  renderProductosEdit();
 
-  if(eh)throw eh;
+  edicion.classList.remove("oculto");
+  edicion.scrollIntoView({behavior:"smooth",block:"start"});
 
-  const nuevosProductos=obtenerProductosEditor();
-  const existentes=productos.filter(p=>p.restaurante_id===localIdGuardado);
+ }catch(e){
+  console.error(e);
+  mostrarMensaje("No se pudo cargar el local: "+e.message);
+ }
+}
 
-  for(const p of nuevosProductos){
-   if(p.id){
-    const {error}=await supabaseClient
-     .from("productos")
-     .update({
-      nombre:p.nombre,
-      precio:p.precio,
-      activo:true
-     })
-     .eq("id",p.id)
-     .eq("restaurante_id",localIdGuardado);
+async function guardarEdicion(){
+ try{
+  const id=Number(editId.value);
 
-    if(error)throw error;
-   }else{
-    const {error}=await supabaseClient
-     .from("productos")
-     .insert({
-      restaurante_id:localIdGuardado,
-      nombre:p.nombre,
-      descripcion:null,
-      precio:p.precio,
-      activo:true
-     });
+  if(!id)return;
 
-    if(error)throw error;
-   }
+  if(!editNombre.value.trim()){
+   mostrarMensaje("Ingresa el nombre del local.");
+   return;
   }
 
-  const idsActuales=new Set(nuevosProductos.filter(p=>p.id).map(p=>p.id));
+  let bannerUrl=bannerEdicionActual;
+
+  const archivo=editBanner.files?.[0];
+
+  if(archivo){
+   bannerUrl=await subirImagen(archivo,id);
+  }
+
+  const {error}=await supabaseClient
+   .from("restaurantes")
+   .update({
+    nombre:editNombre.value.trim(),
+    categoria:editCategoria.value||null,
+    descripcion:editDescripcion.value.trim(),
+    activo:editActivo.value==="true",
+    banner_url:bannerUrl||null
+   })
+   .eq("id",id);
+
+  if(error)throw error;
+
+  const horariosData=leerHorarios("horariosEdit");
+
+  const {error:errorHorarios}=await supabaseClient
+   .from("horarios_restaurantes")
+   .upsert(
+    horariosData.map(h=>({
+     restaurante_id:id,
+     ...h
+    })),
+    {onConflict:"restaurante_id,dia_semana"}
+   );
+
+  if(errorHorarios)throw errorHorarios;
+
+  const existentes=productosEdit.filter(p=>!p._nuevo);
 
   for(const p of existentes){
-   if(!idsActuales.has(p.id)){
-    const {error}=await supabaseClient
-     .from("productos")
-     .update({activo:false})
-     .eq("id",p.id)
-     .eq("restaurante_id",localIdGuardado);
+   const {error:errorProducto}=await supabaseClient
+    .from("productos")
+    .update({
+     nombre:p.nombre.trim(),
+     precio:Number(p.precio)||0,
+     activo:p.activo!==false
+    })
+    .eq("id",p.id);
 
-    if(error)throw error;
-   }
+   if(errorProducto)throw errorProducto;
+  }
+
+  const nuevos=productosEdit
+   .filter(p=>p._nuevo&&p.nombre.trim())
+   .map(p=>({
+    restaurante_id:id,
+    nombre:p.nombre.trim(),
+    precio:Number(p.precio)||0,
+    activo:p.activo!==false
+   }));
+
+  if(nuevos.length){
+   const {error:errorNuevos}=await supabaseClient
+    .from("productos")
+    .insert(nuevos);
+
+   if(errorNuevos)throw errorNuevos;
   }
 
   await cargarLocales();
-  cancelarEdicion();
-  mostrarMensaje("Local guardado correctamente");
+  cerrarEdicion();
+
+  mostrarMensaje("Local actualizado correctamente.",true);
+
  }catch(e){
-  mostrarMensaje("No se pudo guardar el local: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo actualizar el local: "+e.message);
  }
 }
 
-async function cambiarEstadoLocal(id,actual){
+function cerrarEdicion(){
+ edicion.classList.add("oculto");
+ bannerEdicionActual="";
+ productosEdit=[];
+ editBanner.value="";
+ previewEdit.style.display="none";
+ bannerActual.innerHTML="";
+}
+
+async function cambiarEstadoLocal(id,activo){
  try{
   const {error}=await supabaseClient
    .from("restaurantes")
-   .update({activo:!actual})
+   .update({activo})
    .eq("id",id);
 
   if(error)throw error;
 
   await cargarLocales();
-  mostrarMensaje("Estado actualizado");
+
+  mostrarMensaje(
+   activo?"Local activado.":"Local desactivado.",
+   true
+  );
  }catch(e){
-  mostrarMensaje("No se pudo cambiar el estado: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo cambiar el estado: "+e.message);
  }
 }
 
 async function eliminarLocal(id){
- if(!confirm("¿Eliminar este local y sus productos?"))return;
+ const local=locales.find(l=>Number(l.id)===Number(id));
+
+ if(!local)return;
+
+ if(!confirm(
+  `¿Eliminar definitivamente el local "${local.nombre}"?\n\n`+
+  "También se eliminarán sus productos y horarios."
+ ))return;
 
  try{
-  const {error:ep}=await supabaseClient
+  const {error:errorProductos}=await supabaseClient
    .from("productos")
    .delete()
    .eq("restaurante_id",id);
 
-  if(ep)throw ep;
+  if(errorProductos)throw errorProductos;
 
-  const {error:eh}=await supabaseClient
+  const {error:errorHorarios}=await supabaseClient
    .from("horarios_restaurantes")
    .delete()
    .eq("restaurante_id",id);
 
-  if(eh)throw eh;
+  if(errorHorarios)throw errorHorarios;
 
-  const {error:er}=await supabaseClient
+  const {error}=await supabaseClient
    .from("restaurantes")
    .delete()
    .eq("id",id);
 
-  if(er)throw er;
+  if(error)throw error;
 
   await cargarLocales();
-  mostrarMensaje("Local eliminado");
+
+  mostrarMensaje("Local eliminado.",true);
+
  }catch(e){
-  mostrarMensaje("No se pudo eliminar el local: "+e.message,"err");
+  console.error(e);
+  mostrarMensaje("No se pudo eliminar el local: "+e.message);
  }
 }
 
+const mensaje=document.getElementById("mensaje");
+const nombreNegocio=document.getElementById("nombreNegocio");
+const ciudad=document.getElementById("ciudad");
+const tarifaDelivery=document.getElementById("tarifaDelivery");
+const whatsappNegocio=document.getElementById("whatsappNegocio");
+const nuevaCategoria=document.getElementById("nuevaCategoria");
+const listaCategorias=document.getElementById("listaCategorias");
+const nuevoNombre=document.getElementById("nuevoNombre");
+const nuevoCategoria=document.getElementById("nuevoCategoria");
+const nuevoDescripcion=document.getElementById("nuevoDescripcion");
+const nuevoBanner=document.getElementById("nuevoBanner");
+const previewNuevo=document.getElementById("previewNuevo");
+const horariosNuevo=document.getElementById("horariosNuevo");
+const productosNuevosEl=document.getElementById("productosNuevos");
+const listaLocales=document.getElementById("listaLocales");
+const edicion=document.getElementById("edicion");
+const editId=document.getElementById("editId");
+const editNombre=document.getElementById("editNombre");
+const editCategoria=document.getElementById("editCategoria");
+const editDescripcion=document.getElementById("editDescripcion");
+const editActivo=document.getElementById("editActivo");
+const editBanner=document.getElementById("editBanner");
+const previewEdit=document.getElementById("previewEdit");
+const bannerActual=document.getElementById("bannerActual");
+const horariosEdit=document.getElementById("horariosEdit");
+const productosEditEl=document.getElementById("productosEdit");
+
 async function iniciar(){
  try{
+  renderHorarios("horariosNuevo");
+  renderProductosNuevos();
+
   await cargarConfiguracion();
   await cargarCategorias();
   await cargarLocales();
+
  }catch(e){
-  mostrarMensaje("Error al cargar administración: "+e.message,"err");
-  localesLista.innerHTML="<p>No fue posible cargar los datos.</p>";
+  console.error(e);
+  mostrarMensaje("Error al cargar administración: "+e.message);
  }
 }
 
 iniciar();
 </script>
+
 </body>
 </html>
