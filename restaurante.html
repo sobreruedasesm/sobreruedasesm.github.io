@@ -4,227 +4,1494 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Local | Sobre Ruedas</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f8f5ee;color:#26352d}
-header{background:#2f5d45;color:#fff;padding:18px 20px}
-header h1{margin:0;font-size:24px}
-header p{margin:6px 0 0;color:#e7f0e8}
-main{max-width:1100px;margin:auto;padding:20px}
-.volver{display:inline-block;margin-bottom:15px;color:#2f5d45;text-decoration:none;font-weight:bold}
-.local{background:#fffdf9;border-radius:14px;overflow:hidden;border:1px solid #eee5d8;box-shadow:0 3px 12px #5b463322;margin-bottom:20px}
-.banner{width:100%;height:240px;object-fit:cover;display:block;background:#e9e1d3}
-.sin-imagen{height:180px;display:flex;align-items:center;justify-content:center;background:#ebe3d5;color:#7a8178}
-.info{padding:18px}
-.info h2{margin:0 0 6px;color:#2f5d45}
-.info p{margin:6px 0;color:#68736b}
-.badge{color:#d06f39;font-size:13px;font-weight:bold}
-.productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
-.producto{background:#fffdf9;border:1px solid #eee5d8;border-radius:14px;overflow:hidden;box-shadow:0 3px 10px #5b46331c}
-.producto img{width:100%;height:170px;object-fit:cover;display:block;background:#e9e1d3}
-.producto-info{padding:14px}
-.producto h3{margin:0 0 6px;color:#2f5d45}
-.producto p{margin:5px 0;color:#68736b;font-size:14px}
-.precio{font-size:18px;font-weight:bold;color:#d06f39;margin:10px 0}
-button{width:100%;border:0;border-radius:9px;background:#d97941;color:#fff;padding:11px;cursor:pointer;font-weight:bold}
-button:hover{background:#c86832}
-.carrito{position:fixed;right:20px;bottom:20px;background:#d97941;color:#fff;border-radius:50px;padding:14px 18px;cursor:pointer;box-shadow:0 4px 12px #5b463344;font-weight:bold}
-.carrito:hover{background:#c86832}
-.mensaje{padding:25px;background:#fffdf9;border-radius:12px;border:1px solid #eee5d8;color:#68736b}
+
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f8f5ee;
+ color:#26352d;
+}
+
+header{
+ background:#2f5d45;
+ color:#fff;
+ padding:18px 20px;
+}
+
+header h1{
+ margin:0;
+ font-size:24px;
+}
+
+header p{
+ margin:6px 0 0;
+ color:#e7f0e8;
+ font-size:14px;
+}
+
+main{
+ max-width:1100px;
+ margin:auto;
+ padding:20px;
+ padding-bottom:100px;
+}
+
+.volver{
+ display:inline-block;
+ margin-bottom:15px;
+ color:#2f5d45;
+ text-decoration:none;
+ font-weight:bold;
+}
+
+.volver:hover{
+ color:#d06f39;
+}
+
+.local{
+ background:#fffdf9;
+ border-radius:14px;
+ overflow:hidden;
+ border:1px solid #eee5d8;
+ box-shadow:0 3px 12px #5b463322;
+ margin-bottom:20px;
+}
+
+.banner{
+ width:100%;
+ height:260px;
+ object-fit:cover;
+ display:block;
+ background:#e9e1d3;
+}
+
+.sin-imagen{
+ height:180px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#ebe3d5;
+ color:#7a8178;
+ font-size:15px;
+}
+
+.info{
+ padding:20px;
+}
+
+.info h2{
+ margin:0 0 7px;
+ color:#2f5d45;
+ font-size:24px;
+}
+
+.info p{
+ margin:8px 0 0;
+ color:#68736b;
+ line-height:1.5;
+}
+
+.badge{
+ display:inline-block;
+ color:#d06f39;
+ font-size:13px;
+ font-weight:bold;
+}
+
+.estado{
+ margin-top:15px;
+ padding:11px 14px;
+ border-radius:10px;
+ font-size:14px;
+ font-weight:bold;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ flex-wrap:wrap;
+}
+
+.estado-abierto{
+ background:#e7f3e9;
+ color:#28613c;
+ border:1px solid #c9e2ce;
+}
+
+.estado-cerrado{
+ background:#fbe8e3;
+ color:#a7442f;
+ border:1px solid #edc8bf;
+}
+
+.horario{
+ font-weight:normal;
+ font-size:13px;
+}
+
+.mensaje-cerrado{
+ margin-bottom:18px;
+ padding:18px;
+ background:#fffdf9;
+ border:1px solid #edc8bf;
+ border-radius:12px;
+ color:#8c493b;
+ text-align:center;
+}
+
+.mensaje-cerrado strong{
+ display:block;
+ color:#a7442f;
+ margin-bottom:5px;
+ font-size:17px;
+}
+
+.titulo-productos{
+ margin:0 0 14px;
+ color:#2f5d45;
+ font-size:21px;
+}
+
+.productos{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+ gap:16px;
+}
+
+.producto{
+ background:#fffdf9;
+ border:1px solid #eee5d8;
+ border-radius:14px;
+ overflow:hidden;
+ box-shadow:0 3px 10px #5b46331c;
+ transition:transform .15s,box-shadow .15s;
+}
+
+.producto:hover{
+ transform:translateY(-2px);
+ box-shadow:0 6px 16px #5b46332a;
+}
+
+.producto.cerrado{
+ opacity:.68;
+}
+
+.producto-imagen{
+ width:100%;
+ height:175px;
+ object-fit:cover;
+ display:block;
+ background:#e9e1d3;
+}
+
+.sin-imagen-producto{
+ width:100%;
+ height:120px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#ebe3d5;
+ color:#7a8178;
+ font-size:13px;
+}
+
+.producto-info{
+ padding:15px;
+}
+
+.producto h3{
+ margin:0 0 7px;
+ color:#2f5d45;
+ font-size:18px;
+}
+
+.producto p{
+ margin:5px 0;
+ color:#68736b;
+ font-size:14px;
+ line-height:1.4;
+}
+
+.precio{
+ font-size:19px;
+ font-weight:bold;
+ color:#d06f39;
+ margin:12px 0;
+}
+
+button{
+ width:100%;
+ border:0;
+ border-radius:9px;
+ background:#d97941;
+ color:#fff;
+ padding:11px;
+ cursor:pointer;
+ font-weight:bold;
+ font-size:14px;
+ transition:background .15s,transform .1s;
+}
+
+button:hover{
+ background:#c86832;
+}
+
+button:active{
+ transform:scale(.98);
+}
+
+button:disabled{
+ background:#b8b4ac;
+ color:#f7f5f0;
+ cursor:not-allowed;
+ transform:none;
+}
+
+.mensaje{
+ padding:25px;
+ background:#fffdf9;
+ border-radius:12px;
+ border:1px solid #eee5d8;
+ color:#68736b;
+ text-align:center;
+}
+
+.carrito{
+ position:fixed;
+ right:20px;
+ bottom:20px;
+ background:#d97941;
+ color:#fff;
+ border-radius:50px;
+ padding:14px 18px;
+ cursor:pointer;
+ box-shadow:0 4px 12px #5b463344;
+ font-weight:bold;
+ z-index:20;
+ transition:background .15s,transform .15s;
+}
+
+.carrito:hover{
+ background:#c86832;
+ transform:translateY(-2px);
+}
+
+.carrito span{
+ background:#fff;
+ color:#d06f39;
+ border-radius:50px;
+ padding:2px 7px;
+ margin-left:4px;
+ font-size:12px;
+}
+
+@media(max-width:600px){
+
+ header{
+  padding:16px;
+ }
+
+ header h1{
+  font-size:21px;
+ }
+
+ main{
+  padding:16px;
+  padding-bottom:90px;
+ }
+
+ .banner{
+  height:200px;
+ }
+
+ .info{
+  padding:16px;
+ }
+
+ .info h2{
+  font-size:21px;
+ }
+
+ .productos{
+  grid-template-columns:1fr;
+ }
+
+ .producto-imagen{
+  height:190px;
+ }
+
+ .carrito{
+  right:14px;
+  bottom:14px;
+  padding:13px 16px;
+ }
+
+ .estado{
+  align-items:flex-start;
+  flex-direction:column;
+ }
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1 id="nombreHeader">Sobre Ruedas</h1>
-<p>Delivery en Esmeraldas</p>
+ <h1 id="nombreHeader">Sobre Ruedas</h1>
+ <p>Delivery en Esmeraldas</p>
 </header>
 
 <main>
-<a class="volver" href="index.html">← Volver a locales</a>
+
+<a class="volver" href="index.html">
+ ← Volver a locales
+</a>
 
 <div id="local"></div>
+
+<div id="mensajeCerrado"></div>
+
+<h2 class="titulo-productos">
+ Productos
+</h2>
+
 <div id="productos" class="productos"></div>
+
 </main>
 
-<div class="carrito" onclick="location.href='menu.html'">
-🛒 Carrito <span id="contador">0</span>
+<div
+ class="carrito"
+ onclick="location.href='menu.html'"
+>
+ 🛒 Carrito <span id="contador">0</span>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
 <script>
-const params=new URLSearchParams(location.search);
-const restauranteId=params.get("id");
+
+const params=
+ new URLSearchParams(location.search);
+
+const restauranteId=
+ params.get("id");
+
+const ZONA_ECUADOR=
+ "America/Guayaquil";
 
 let restaurante=null;
 let productos=[];
+let horarios=[];
+let localAbierto=false;
 
-function escapeHtml(v=""){
- return String(v).replace(/[&<>"']/g,m=>({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#039;"
- }[m]));
-}
+const localEl=
+ document.getElementById("local");
 
-function imagenUrl(url){
- if(!url)return "";
- const separador=url.includes("?")?"&":"?";
- return url+separador+"v="+Date.now();
-}
+const productosEl=
+ document.getElementById("productos");
 
-async function cargar(){
- if(!restauranteId){
-  localEl.innerHTML='<div class="mensaje">No se especificó el local.</div>';
-  return;
- }
+const contador=
+ document.getElementById("contador");
 
- try{
-  const {data,error}=await supabaseClient
-   .from("restaurantes")
-   .select("*")
-   .eq("id",restauranteId)
-   .eq("activo",true)
-   .single();
+const nombreHeader=
+ document.getElementById("nombreHeader");
 
-  if(error)throw error;
+const mensajeCerradoEl=
+ document.getElementById("mensajeCerrado");
 
-  restaurante=data;
-  nombreHeader.textContent=restaurante.nombre;
 
-  const respuesta=await supabaseClient
-   .from("productos")
-   .select("*")
-   .eq("restaurante_id",restaurante.id)
-   .eq("activo",true)
-   .order("nombre");
+/* =========================================
+   UTILIDADES
+========================================= */
 
-  if(respuesta.error)throw respuesta.error;
+function escapeHtml(valor=""){
 
-  productos=respuesta.data||[];
-
-  renderLocal();
-  renderProductos();
- }catch(e){
-  console.error(e);
-  localEl.innerHTML='<div class="mensaje">No se pudo cargar el local.</div>';
- }
-}
-
-function renderLocal(){
- const imagen=imagenUrl(restaurante.banner_url);
-
- localEl.innerHTML=`
-  <div class="local">
-   ${
-    imagen
-    ? `<img class="banner"
-        src="${escapeHtml(imagen)}"
-        alt="${escapeHtml(restaurante.nombre)}"
-        onerror="this.outerHTML='<div class=\\'sin-imagen\\'>Sin imagen</div>'">`
-    : `<div class="sin-imagen">Sin imagen</div>`
-   }
-   <div class="info">
-    <h2>${escapeHtml(restaurante.nombre)}</h2>
-    <div class="badge">${escapeHtml(restaurante.categoria||"")}</div>
-    <p>${escapeHtml(restaurante.descripcion||"")}</p>
-   </div>
-  </div>
- `;
-}
-
-function renderProductos(){
- if(!productos.length){
-  productosEl.innerHTML='<div class="mensaje">Este local no tiene productos disponibles.</div>';
-  return;
- }
-
- productosEl.innerHTML=productos.map(p=>{
-  const imagen=imagenUrl(p.imagen_url);
-
-  return `
-   <article class="producto">
-    ${
-     imagen
-     ? `<img
-          src="${escapeHtml(imagen)}"
-          alt="${escapeHtml(p.nombre)}"
-          onerror="this.style.display='none'">`
-     : ""
-    }
-    <div class="producto-info">
-     <h3>${escapeHtml(p.nombre)}</h3>
-     <p>${escapeHtml(p.descripcion||"")}</p>
-     <div class="precio">$${Number(p.precio||0).toFixed(2)}</div>
-     <button onclick="agregarProducto(${p.id})">
-      Agregar al carrito
-     </button>
-    </div>
-   </article>
-  `;
- }).join("");
-}
-
-function agregarProducto(id){
- const producto=productos.find(p=>Number(p.id)===Number(id));
- if(!producto)return;
-
- let carrito=[];
-
- try{
-  carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
-  if(!Array.isArray(carrito))carrito=[];
- }catch{
-  carrito=[];
- }
-
- const existente=carrito.find(p=>
-  Number(p.producto_id)===Number(producto.id)
+ return String(valor).replace(
+  /[&<>"']/g,
+  m=>({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#039;"
+  }[m])
  );
 
- if(existente){
-  existente.cantidad=(Number(existente.cantidad)||0)+1;
- }else{
-  carrito.push({
-   producto_id:producto.id,
-   restaurante_id:restaurante.id,
-   restaurante_nombre:restaurante.nombre,
-   producto_nombre:producto.nombre,
-   precio:Number(producto.precio)||0,
-   cantidad:1,
-   imagen_url:producto.imagen_url||""
-  });
+}
+
+
+function imagenUrl(url){
+
+ if(!url)
+  return "";
+
+ const separador=
+  url.includes("?")?"&":"?";
+
+ return url+
+  separador+
+  "v="+Date.now();
+
+}
+
+
+function obtenerCarrito(){
+
+ try{
+
+  const carrito=
+   JSON.parse(
+    localStorage.getItem("carrito")||"[]"
+   );
+
+  return Array.isArray(carrito)
+   ? carrito
+   : [];
+
+ }catch{
+
+  return [];
+
  }
 
- localStorage.setItem("carrito",JSON.stringify(carrito));
- actualizarCarrito();
 }
+
+
+function guardarCarrito(carrito){
+
+ localStorage.setItem(
+  "carrito",
+  JSON.stringify(carrito)
+ );
+
+}
+
 
 function actualizarCarrito(){
- try{
-  const carrito=JSON.parse(localStorage.getItem("carrito")||"[]");
-  contador.textContent=carrito.reduce(
-   (total,p)=>total+(Number(p.cantidad)||0),0
+
+ const carrito=
+  obtenerCarrito();
+
+ const cantidad=
+  carrito.reduce(
+   (total,item)=>
+    total+(Number(item.cantidad)||0),
+   0
   );
- }catch{
-  contador.textContent="0";
- }
+
+ contador.textContent=
+  cantidad;
+
 }
 
-const localEl=document.getElementById("local");
-const productosEl=document.getElementById("productos");
-const contador=document.getElementById("contador");
-const nombreHeader=document.getElementById("nombreHeader");
+
+/* =========================================
+   HORA ACTUAL DE ECUADOR
+========================================= */
+
+function obtenerFechaEcuador(){
+
+ /*
+  Obtiene la fecha/hora actual expresada
+  específicamente en America/Guayaquil.
+
+  Esto evita depender de la zona horaria
+  configurada en el dispositivo.
+ */
+
+ const partes=
+  new Intl.DateTimeFormat(
+   "en-US",
+   {
+    timeZone:ZONA_ECUADOR,
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit",
+    weekday:"short",
+    hour:"2-digit",
+    minute:"2-digit",
+    second:"2-digit",
+    hourCycle:"h23"
+   }
+  ).formatToParts(new Date());
+
+ const valores={};
+
+ partes.forEach(parte=>{
+  if(parte.type!=="literal"){
+   valores[parte.type]=parte.value;
+  }
+ });
+
+
+ const mapaDias={
+  Sun:0,
+  Mon:1,
+  Tue:2,
+  Wed:3,
+  Thu:4,
+  Fri:5,
+  Sat:6
+ };
+
+
+ return {
+  anio:Number(valores.year),
+  mes:Number(valores.month),
+  diaMes:Number(valores.day),
+  diaSemana:mapaDias[valores.weekday],
+  hora:Number(valores.hour),
+  minuto:Number(valores.minute),
+  segundo:Number(valores.second)
+ };
+
+}
+
+
+function minutosActualesEcuador(){
+
+ const ahora=
+  obtenerFechaEcuador();
+
+ return (
+  ahora.hora*60+
+  ahora.minuto
+ );
+
+}
+
+
+/* =========================================
+   CONVERSIÓN DE HORA
+========================================= */
+
+function minutosDesdeMedianoche(hora){
+
+ if(!hora)
+  return null;
+
+ const partes=
+  String(hora)
+   .substring(0,5)
+   .split(":");
+
+ const horas=
+  Number(partes[0]);
+
+ const minutos=
+  Number(partes[1]);
+
+ if(
+  !Number.isFinite(horas)||
+  !Number.isFinite(minutos)
+ )
+  return null;
+
+ return horas*60+minutos;
+
+}
+
+
+/* =========================================
+   ESTADO DEL LOCAL
+========================================= */
+
+function obtenerEstadoLocal(){
+
+ if(!horarios.length){
+
+  return {
+   abierto:false,
+   horario:null,
+   motivo:"Sin horario disponible"
+  };
+
+ }
+
+
+ const ahora=
+  obtenerFechaEcuador();
+
+ const dia=
+  ahora.diaSemana;
+
+ const minutosActuales=
+  ahora.hora*60+
+  ahora.minuto;
+
+
+ /*
+  Horario correspondiente al día actual.
+ */
+ const horarioHoy=
+  horarios.find(
+   h=>Number(h.dia_semana)===dia
+  );
+
+
+ /*
+  Revisamos también el día anterior
+  por si existe un horario que cruza
+  medianoche.
+
+  Ejemplo:
+
+  viernes 18:00 - 02:00
+
+  El sábado a la 01:00 sigue abierto.
+ */
+ const diaAnterior=
+  dia===0
+   ? 6
+   : dia-1;
+
+ const horarioAnterior=
+  horarios.find(
+   h=>Number(h.dia_semana)===diaAnterior
+  );
+
+
+ /* =====================================
+    HORARIO DEL DÍA ANTERIOR
+    QUE CONTINÚA DESPUÉS DE MEDIANOCHE
+ ===================================== */
+
+ if(
+  horarioAnterior &&
+  !horarioAnterior.cerrado &&
+  horarioAnterior.hora_apertura &&
+  horarioAnterior.hora_cierre
+ ){
+
+  const aperturaAnterior=
+   minutosDesdeMedianoche(
+    horarioAnterior.hora_apertura
+   );
+
+  const cierreAnterior=
+   minutosDesdeMedianoche(
+    horarioAnterior.hora_cierre
+   );
+
+
+  if(
+   aperturaAnterior!==null &&
+   cierreAnterior!==null &&
+   cierreAnterior<aperturaAnterior &&
+   minutosActuales<cierreAnterior
+  ){
+
+   return {
+    abierto:true,
+    horario:horarioAnterior
+   };
+
+  }
+
+ }
+
+
+ /* =====================================
+    HORARIO DEL DÍA ACTUAL
+ ===================================== */
+
+ if(
+  !horarioHoy||
+  horarioHoy.cerrado||
+  !horarioHoy.hora_apertura||
+  !horarioHoy.hora_cierre
+ ){
+
+  return {
+   abierto:false,
+   horario:horarioHoy||null
+  };
+
+ }
+
+
+ const apertura=
+  minutosDesdeMedianoche(
+   horarioHoy.hora_apertura
+  );
+
+ const cierre=
+  minutosDesdeMedianoche(
+   horarioHoy.hora_cierre
+  );
+
+
+ if(
+  apertura===null||
+  cierre===null
+ ){
+
+  return {
+   abierto:false,
+   horario:horarioHoy
+  };
+
+ }
+
+
+ /* =====================================
+    HORARIO NORMAL
+    Ejemplo 10:00 - 22:00
+ ===================================== */
+
+ if(cierre>apertura){
+
+  if(
+   minutosActuales>=apertura &&
+   minutosActuales<cierre
+  ){
+
+   return {
+    abierto:true,
+    horario:horarioHoy
+   };
+
+  }
+
+ }
+
+
+ /* =====================================
+    HORARIO QUE CRUZA MEDIANOCHE
+    Ejemplo 18:00 - 02:00
+ ===================================== */
+
+ else if(cierre<apertura){
+
+  if(
+   minutosActuales>=apertura||
+   minutosActuales<cierre
+  ){
+
+   return {
+    abierto:true,
+    horario:horarioHoy
+   };
+
+  }
+
+ }
+
+
+ return {
+  abierto:false,
+  horario:horarioHoy
+ };
+
+}
+
+
+/* =========================================
+   FORMATO DE HORARIO
+========================================= */
+
+function formatearHora(hora){
+
+ if(!hora)
+  return "";
+
+ return String(hora).substring(0,5);
+
+}
+
+
+function formatearHorario(horario){
+
+ if(!horario)
+  return "";
+
+ if(horario.cerrado)
+  return "Cerrado";
+
+ if(
+  !horario.hora_apertura||
+  !horario.hora_cierre
+ )
+  return "Horario no definido";
+
+ return (
+  formatearHora(
+   horario.hora_apertura
+  )+
+  " - "+
+  formatearHora(
+   horario.hora_cierre
+  )
+ );
+
+}
+
+
+/* =========================================
+   PRÓXIMA APERTURA
+========================================= */
+
+function obtenerProximoHorario(){
+
+ if(!horarios.length)
+  return null;
+
+ const ahora=
+  obtenerFechaEcuador();
+
+ const diaActual=
+  ahora.diaSemana;
+
+ const minutosActuales=
+  ahora.hora*60+
+  ahora.minuto;
+
+
+ for(let i=0;i<7;i++){
+
+  const dia=
+   (diaActual+i)%7;
+
+  const horario=
+   horarios.find(
+    h=>Number(h.dia_semana)===dia
+   );
+
+  if(
+   !horario||
+   horario.cerrado||
+   !horario.hora_apertura
+  )
+   continue;
+
+
+  const apertura=
+   minutosDesdeMedianoche(
+    horario.hora_apertura
+   );
+
+
+  if(
+   i>0||
+   (
+    apertura!==null&&
+    apertura>minutosActuales
+   )
+  ){
+
+   return {
+    dia,
+    horario
+   };
+
+  }
+
+ }
+
+
+ return null;
+
+}
+
+
+function nombreDia(dia){
+
+ const dias=[
+  "domingo",
+  "lunes",
+  "martes",
+  "miércoles",
+  "jueves",
+  "viernes",
+  "sábado"
+ ];
+
+ return dias[dia]||"";
+
+}
+
+
+/* =========================================
+   ACTUALIZAR ESTADO VISUAL
+========================================= */
+
+function actualizarEstado(){
+
+ if(!restaurante)
+  return;
+
+ const estado=
+  obtenerEstadoLocal();
+
+ localAbierto=
+  estado.abierto;
+
+
+ const estadoEl=
+  document.getElementById(
+   "estadoLocal"
+  );
+
+ if(!estadoEl)
+  return;
+
+
+ if(localAbierto){
+
+  const horarioTexto=
+   formatearHorario(
+    estado.horario
+   );
+
+
+  estadoEl.innerHTML=`
+
+   <div class="estado estado-abierto">
+
+    <span>
+     🟢 Local abierto
+    </span>
+
+    ${
+     horarioTexto
+     ?
+     `<span class="horario">
+       Horario: ${escapeHtml(horarioTexto)}
+      </span>`
+     :
+     ""
+    }
+
+   </div>
+
+  `;
+
+
+  mensajeCerradoEl.innerHTML="";
+
+
+ }else{
+
+  const proximo=
+   obtenerProximoHorario();
+
+  let textoProximo="";
+
+
+  if(proximo){
+
+   textoProximo=
+    `Próxima apertura: ${
+     nombreDia(proximo.dia)
+    } a las ${
+     formatearHora(
+      proximo.horario.hora_apertura
+     )
+    }`;
+
+  }
+
+
+  estadoEl.innerHTML=`
+
+   <div class="estado estado-cerrado">
+
+    <span>
+     🔴 Local cerrado
+    </span>
+
+    <span class="horario">
+     ${
+      textoProximo||
+      "No disponible en este momento"
+     }
+    </span>
+
+   </div>
+
+  `;
+
+
+  mensajeCerradoEl.innerHTML=`
+
+   <div class="mensaje-cerrado">
+
+    <strong>
+     🔴 El local está cerrado
+    </strong>
+
+    ${
+     textoProximo
+     ?
+     escapeHtml(textoProximo)
+     :
+     "No puedes realizar compras en este momento."
+    }
+
+   </div>
+
+  `;
+
+ }
+
+
+ /*
+  Vuelve a pintar los productos para
+  activar/desactivar los botones.
+ */
+ renderProductos();
+
+}
+
+
+/* =========================================
+   CARGAR INFORMACIÓN
+========================================= */
+
+async function cargar(){
+
+ if(!restauranteId){
+
+  localEl.innerHTML=
+   '<div class="mensaje">No se especificó el local.</div>';
+
+  productosEl.innerHTML="";
+
+  return;
+
+ }
+
+
+ try{
+
+  /* =====================================
+     LOCAL
+  ===================================== */
+
+  const {
+   data,
+   error
+  }=
+   await supabaseClient
+    .from("restaurantes")
+    .select("*")
+    .eq("id",restauranteId)
+    .eq("activo",true)
+    .single();
+
+
+  if(error)
+   throw error;
+
+
+  if(!data){
+
+   localEl.innerHTML=
+    '<div class="mensaje">El local no está disponible.</div>';
+
+   return;
+
+  }
+
+
+  restaurante=data;
+
+  nombreHeader.textContent=
+   restaurante.nombre||
+   "Sobre Ruedas";
+
+
+  /* =====================================
+     PRODUCTOS
+  ===================================== */
+
+  const respuestaProductos=
+   await supabaseClient
+    .from("productos")
+    .select("*")
+    .eq("restaurante_id",restaurante.id)
+    .eq("activo",true)
+    .order("nombre",{ascending:true});
+
+
+  if(respuestaProductos.error)
+   throw respuestaProductos.error;
+
+
+  productos=
+   respuestaProductos.data||[];
+
+
+  /* =====================================
+     HORARIOS
+  ===================================== */
+
+  const respuestaHorarios=
+   await supabaseClient
+    .from("horarios_restaurantes")
+    .select("*")
+    .eq("restaurante_id",restaurante.id)
+    .order("dia_semana",{ascending:true});
+
+
+  if(respuestaHorarios.error)
+   throw respuestaHorarios.error;
+
+
+  horarios=
+   respuestaHorarios.data||[];
+
+
+  renderLocal();
+
+  actualizarEstado();
+
+ }catch(error){
+
+  console.error(
+   "Error cargando local:",
+   error
+  );
+
+  localEl.innerHTML=
+   '<div class="mensaje">No se pudo cargar el local.</div>';
+
+  productosEl.innerHTML="";
+
+ }
+
+}
+
+
+/* =========================================
+   RENDER LOCAL
+========================================= */
+
+function renderLocal(){
+
+ const imagen=
+  imagenUrl(
+   restaurante.banner_url
+  );
+
+ const nombre=
+  escapeHtml(
+   restaurante.nombre||""
+  );
+
+ const categoria=
+  escapeHtml(
+   restaurante.categoria||""
+  );
+
+ const descripcion=
+  escapeHtml(
+   restaurante.descripcion||""
+  );
+
+
+ localEl.innerHTML=`
+
+  <div class="local">
+
+   ${
+    imagen
+
+    ?
+
+    `<img
+      class="banner"
+      src="${escapeHtml(imagen)}"
+      alt="${nombre}"
+      onerror="this.outerHTML='<div class=\\'sin-imagen\\'>Sin imagen</div>'"
+    >`
+
+    :
+
+    `<div class="sin-imagen">
+      Sin imagen
+    </div>`
+   }
+
+   <div class="info">
+
+    <h2>${nombre}</h2>
+
+    ${
+     categoria
+     ?
+     `<div class="badge">
+       ${categoria}
+      </div>`
+     :
+     ""
+    }
+
+    ${
+     descripcion
+     ?
+     `<p>${descripcion}</p>`
+     :
+     ""
+    }
+
+    <div id="estadoLocal"></div>
+
+   </div>
+
+  </div>
+
+ `;
+
+}
+
+
+/* =========================================
+   RENDER PRODUCTOS
+========================================= */
+
+function renderProductos(){
+
+ if(!productos.length){
+
+  productosEl.innerHTML=
+   '<div class="mensaje">Este local no tiene productos disponibles.</div>';
+
+  return;
+
+ }
+
+
+ productosEl.innerHTML=
+  productos.map(producto=>{
+
+   const imagen=
+    imagenUrl(
+     producto.imagen_url
+    );
+
+   const nombre=
+    escapeHtml(
+     producto.nombre||""
+    );
+
+   const descripcion=
+    escapeHtml(
+     producto.descripcion||""
+    );
+
+   const precio=
+    Number(
+     producto.precio||0
+    ).toFixed(2);
+
+
+   return `
+
+    <article
+     class="producto ${
+      !localAbierto
+      ?"cerrado"
+      :""
+     }"
+    >
+
+     ${
+      imagen
+
+      ?
+
+      `<img
+        class="producto-imagen"
+        src="${escapeHtml(imagen)}"
+        alt="${nombre}"
+        onerror="this.outerHTML='<div class=\\'sin-imagen-producto\\'>Sin imagen</div>'"
+      >`
+
+      :
+
+      `<div class="sin-imagen-producto">
+        Sin imagen
+      </div>`
+     }
+
+
+     <div class="producto-info">
+
+      <h3>${nombre}</h3>
+
+      ${
+       descripcion
+       ?
+       `<p>${descripcion}</p>`
+       :
+       ""
+      }
+
+      <div class="precio">
+       $${precio}
+      </div>
+
+
+      <button
+       type="button"
+       onclick="agregarProducto(${Number(producto.id)})"
+       ${!localAbierto?"disabled":""}
+      >
+
+       ${
+        localAbierto
+        ?
+        "Agregar al carrito"
+        :
+        "Local cerrado"
+       }
+
+      </button>
+
+     </div>
+
+    </article>
+
+   `;
+
+  }).join("");
+
+}
+
+
+/* =========================================
+   AGREGAR AL CARRITO
+========================================= */
+
+function agregarProducto(id){
+
+ /*
+  Segunda validación del horario.
+
+  Esto evita que alguien pueda ejecutar
+  manualmente la función aunque el botón
+  esté deshabilitado.
+ */
+
+ const estado=
+  obtenerEstadoLocal();
+
+ if(!estado.abierto){
+
+  localAbierto=false;
+
+  renderProductos();
+
+  alert(
+   "Este local está cerrado. No puedes agregar productos en este momento."
+  );
+
+  return;
+
+ }
+
+
+ localAbierto=true;
+
+
+ const producto=
+  productos.find(
+   p=>Number(p.id)===Number(id)
+  );
+
+
+ if(
+  !producto||
+  !restaurante
+ )
+  return;
+
+
+ const carrito=
+  obtenerCarrito();
+
+
+ const existente=
+  carrito.find(
+   item=>
+    Number(item.producto_id)===
+    Number(producto.id)
+  );
+
+
+ if(existente){
+
+  existente.cantidad=
+   (Number(existente.cantidad)||0)+1;
+
+ }else{
+
+  carrito.push({
+
+   producto_id:
+    producto.id,
+
+   restaurante_id:
+    restaurante.id,
+
+   restaurante_nombre:
+    restaurante.nombre,
+
+   producto_nombre:
+    producto.nombre,
+
+   precio:
+    Number(producto.precio)||0,
+
+   cantidad:1,
+
+   imagen_url:
+    producto.imagen_url||""
+
+  });
+
+ }
+
+
+ guardarCarrito(carrito);
+
+ actualizarCarrito();
+
+}
+
+
+/* =========================================
+   INICIO
+========================================= */
 
 actualizarCarrito();
+
 cargar();
 
-window.addEventListener("storage",actualizarCarrito);
+
+/*
+  Actualiza el estado cada minuto.
+
+  Ejemplo:
+  si el local abre a las 10:00 y el usuario
+  tiene la página abierta desde las 09:59,
+  a las 10:00 los botones se habilitarán.
+ */
+setInterval(
+ actualizarEstado,
+ 60000
+);
+
+
+window.addEventListener(
+ "storage",
+ actualizarCarrito
+);
+
 </script>
 
 </body>
