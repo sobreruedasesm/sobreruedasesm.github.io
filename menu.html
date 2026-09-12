@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,7 +26,7 @@ h2{font-size:19px;margin-bottom:13px}
 .localHead{background:#111;color:#fff;padding:11px 13px;font-weight:bold}
 .item{display:flex;gap:10px;align-items:center;padding:11px;border-bottom:1px solid #eee}
 .item:last-child{border-bottom:0}
-.thumb{width:55px;height:55px;border-radius:8px;background:#eee;overflow:hidden}
+.thumb{width:55px;height:55px;border-radius:8px;background:#eee;overflow:hidden;flex:none}
 .thumb img{width:100%;height:100%;object-fit:cover}
 .itemInfo{flex:1;min-width:0}.itemInfo b{display:block}.itemInfo small{color:#777}
 .controls{display:flex;align-items:center;gap:7px}
@@ -71,6 +70,7 @@ textarea{min-height:75px;resize:vertical}
 .alert.show{display:block}
 .whatsapp{width:100%;font-size:16px;margin-top:8px}
 .note{font-size:12px;color:#777;margin-top:8px}
+
 @media(max-width:600px){
  main{padding:10px}
  .row,.locationButtons{grid-template-columns:1fr}
@@ -202,19 +202,33 @@ const CONFIG_DEFAULT={
 let carrito=[];
 let configuracion={...CONFIG_DEFAULT};
 let map=null,marker=null;
-let ubicacion={lat:null,lng:null,direccion:""};
-let ubicacionTemporal={lat:null,lng:null,direccion:""};
+
+let ubicacion={
+ lat:null,
+ lng:null,
+ direccion:""
+};
+
+let ubicacionTemporal={
+ lat:null,
+ lng:null,
+ direccion:""
+};
 
 let clienteActual=null;
-let verificandoCliente=false;
 
 const $=id=>document.getElementById(id);
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ "&":"&amp;",
+ "<":"&lt;",
+ ">":"&gt;",
+ '"':"&quot;",
+ "'":"&#039;"
 }[m]));
 
-const money=n=>`${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
+const money=n=>
+ `${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
 
 function normalizarTelefono(t){
  return String(t||"").replace(/\D/g,"");
@@ -222,32 +236,54 @@ function normalizarTelefono(t){
 
 function mostrarError(t){
  const a=$("alerta");
+
  a.textContent=t;
  a.classList.add("show");
- window.scrollTo({top:0,behavior:"smooth"});
- setTimeout(()=>a.classList.remove("show"),5000);
+
+ window.scrollTo({
+  top:0,
+  behavior:"smooth"
+ });
+
+ setTimeout(()=>{
+  a.classList.remove("show");
+ },5000);
 }
 
 function mostrarEstadoCliente(texto,tipo=""){
- const e=$("clienteEstado");
- e.textContent=texto||"";
- e.className="clienteEstado"+(tipo?" "+tipo:"");
+ const el=$("clienteEstado");
+
+ el.textContent=texto;
+ el.className="clienteEstado";
+
+ if(tipo){
+  el.classList.add(tipo);
+ }
 }
 
 function cargarCarrito(){
  try{
-  carrito=JSON.parse(sessionStorage.getItem("carrito")||"[]");
+  carrito=JSON.parse(
+   sessionStorage.getItem("carrito")||"[]"
+  );
  }catch{
   carrito=[];
  }
- if(!Array.isArray(carrito))carrito=[];
+
+ if(!Array.isArray(carrito)){
+  carrito=[];
+ }
 }
 
 function guardarCarrito(){
- sessionStorage.setItem("carrito",JSON.stringify(carrito));
+ sessionStorage.setItem(
+  "carrito",
+  JSON.stringify(carrito)
+ );
 }
 
 function guardarFormulario(){
+
  const data={
   nombre:$("clienteNombre").value,
   telefono:$("clienteTelefono").value,
@@ -260,24 +296,43 @@ function guardarFormulario(){
   ubicacion
  };
 
- sessionStorage.setItem("datosPedido",JSON.stringify(data));
+ sessionStorage.setItem(
+  "datosPedido",
+  JSON.stringify(data)
+ );
 }
 
 function cargarFormulario(){
+
  try{
-  const d=JSON.parse(sessionStorage.getItem("datosPedido")||"null");
+
+  const d=JSON.parse(
+   sessionStorage.getItem("datosPedido")||"null"
+  );
 
   if(d){
+
    $("clienteNombre").value=d.nombre||"";
    $("clienteTelefono").value=d.telefono||"";
    $("telefonoReferente").value=d.telefonoReferente||"";
    $("referencia").value=d.referencia||"";
+
    $("requiereFactura").checked=!!d.requiere;
-   $("tipoDocumento").value=d.tipo||"cedula";
-   $("numeroDocumento").value=d.documento||"";
-   $("correoFactura").value=d.correo||"";
-   if(d.ubicacion)ubicacion=d.ubicacion;
+
+   $("tipoDocumento").value=
+    d.tipo||"cedula";
+
+   $("numeroDocumento").value=
+    d.documento||"";
+
+   $("correoFactura").value=
+    d.correo||"";
+
+   if(d.ubicacion){
+    ubicacion=d.ubicacion;
+   }
   }
+
  }catch{}
 
  $("datosFactura").classList.toggle(
@@ -286,16 +341,12 @@ function cargarFormulario(){
  );
 
  renderUbicacion();
-
- const telefono=normalizarTelefono($("clienteTelefono").value);
-
- if(telefono.length>=7){
-  verificarCliente(telefono);
- }
 }
 
 async function cargarConfiguracion(){
+
  try{
+
   const r=await supabaseClient
    .from("configuracion_negocio")
    .select("*")
@@ -304,17 +355,32 @@ async function cargarConfiguracion(){
    .maybeSingle();
 
   if(!r.error&&r.data){
+
    configuracion={
-    nombreNegocio:r.data.nombre_negocio||CONFIG_DEFAULT.nombreNegocio,
-    ciudad:r.data.ciudad||CONFIG_DEFAULT.ciudad,
-    tarifaDelivery:Number(
-     r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery
-    ),
+    nombreNegocio:
+     r.data.nombre_negocio||
+     CONFIG_DEFAULT.nombreNegocio,
+
+    ciudad:
+     r.data.ciudad||
+     CONFIG_DEFAULT.ciudad,
+
+    tarifaDelivery:
+     Number(
+      r.data.tarifa_delivery??
+      CONFIG_DEFAULT.tarifaDelivery
+     ),
+
     whatsappNegocio:
-     r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
-    moneda:r.data.moneda||CONFIG_DEFAULT.moneda
+     r.data.whatsapp_negocio||
+     CONFIG_DEFAULT.whatsappNegocio,
+
+    moneda:
+     r.data.moneda||
+     CONFIG_DEFAULT.moneda
    };
   }
+
  }catch(e){
   console.warn(e);
  }
@@ -323,10 +389,13 @@ async function cargarConfiguracion(){
 }
 
 function agrupar(){
+
  const grupos={};
 
  carrito.forEach(x=>{
+
   if(!grupos[x.restaurante_id]){
+
    grupos[x.restaurante_id]={
     id:x.restaurante_id,
     nombre:x.restaurante_nombre,
@@ -341,107 +410,205 @@ function agrupar(){
 }
 
 function subtotalGrupo(g){
+
  return g.items.reduce(
-  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
+  (a,x)=>
+   a+
+   (Number(x.precio)||0)*
+   (Number(x.cantidad)||0),
   0
  );
 }
 
 function render(){
+
  cargarCarrito();
 
  const cont=$("carrito");
 
  if(!carrito.length){
+
   cont.innerHTML=
    '<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar restaurantes y productos</a></div>';
 
   $("resumen").innerHTML="";
+
   return;
  }
 
  const grupos=agrupar();
- const deliveryUnitario=Number(
-  configuracion.tarifaDelivery||0
- );
+
+ const deliveryUnitario=
+  Number(configuracion.tarifaDelivery||0);
 
  cont.innerHTML=grupos.map(g=>{
+
   const subtotal=subtotalGrupo(g);
-  const totalLocal=subtotal+deliveryUnitario;
+
+  const totalLocal=
+   subtotal+deliveryUnitario;
 
   return `
   <div class="local">
-   <div class="localHead">${esc(g.nombre)}</div>
+
+   <div class="localHead">
+    ${esc(g.nombre)}
+   </div>
 
    ${g.items.map(x=>`
+
     <div class="item">
+
      <div class="thumb">
-      ${x.imagen_url?
-       `<img src="${esc(x.imagen_url)}"
-             alt=""
-             loading="lazy"
-             decoding="async">`
-       :""
+      ${
+       x.imagen_url
+       ?
+       `<img
+        src="${esc(x.imagen_url)}"
+        alt=""
+        loading="lazy"
+        decoding="async"
+       >`
+       :
+       ""
       }
      </div>
 
      <div class="itemInfo">
-      <b>${esc(x.producto_nombre)}</b>
-      <small>${money(x.precio)} c/u</small>
+
+      <b>
+       ${esc(x.producto_nombre)}
+      </b>
+
+      <small>
+       ${money(x.precio)} c/u
+      </small>
+
      </div>
 
      <div class="controls">
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},-1)">−</button>
+
+      <button
+       onclick="cambiarCantidad(
+        ${x.producto_id},
+        ${x.restaurante_id},
+        -1
+       )"
+      >−</button>
+
       <b>${x.cantidad}</b>
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},1)">+</button>
-      <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id})">×</button>
+
+      <button
+       onclick="cambiarCantidad(
+        ${x.producto_id},
+        ${x.restaurante_id},
+        1
+       )"
+      >+</button>
+
+      <button
+       class="del"
+       onclick="eliminar(
+        ${x.producto_id},
+        ${x.restaurante_id}
+       )"
+      >×</button>
+
      </div>
+
     </div>
+
    `).join("")}
 
    <div class="localTotals">
-    <div>Subtotal productos: <b>${money(subtotal)}</b></div>
-    <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
-    <div class="localTotal">
-     Total restaurante: ${money(totalLocal)}
+
+    <div>
+     Subtotal productos:
+     <b>${money(subtotal)}</b>
     </div>
+
+    <div>
+     Delivery:
+     <b>${money(deliveryUnitario)}</b>
+    </div>
+
+    <div class="localTotal">
+     Total restaurante:
+     ${money(totalLocal)}
+    </div>
+
    </div>
-  </div>`;
+
+  </div>
+  `;
+
  }).join("");
 
  const subtotalTotal=carrito.reduce(
-  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
+  (a,x)=>
+   a+
+   (Number(x.precio)||0)*
+   (Number(x.cantidad)||0),
   0
  );
 
- const deliveryTotal=grupos.length*deliveryUnitario;
- const total=subtotalTotal+deliveryTotal;
+ const deliveryTotal=
+  grupos.length*deliveryUnitario;
+
+ const total=
+  subtotalTotal+deliveryTotal;
 
  $("resumen").innerHTML=`
+
   <div class="money">
+
    ${grupos.map(g=>`
+
     <div class="summaryLocal">
-     <span>${esc(g.nombre)}</span>
-     <b>${money(subtotalGrupo(g))}</b>
+
+     <span>
+      ${esc(g.nombre)}
+     </span>
+
+     <b>
+      ${money(subtotalGrupo(g))}
+     </b>
+
     </div>
+
    `).join("")}
 
    <div class="summaryDelivery">
+
     <span>
      Delivery (${grupos.length}
      ${grupos.length===1?"restaurante":"restaurantes"})
     </span>
-    <b>${money(deliveryTotal)}</b>
+
+    <b>
+     ${money(deliveryTotal)}
+    </b>
+
    </div>
 
-   <div class="total">Total: ${money(total)}</div>
-  </div>`;
+   <div class="total">
+    Total: ${money(total)}
+   </div>
+
+  </div>
+ `;
 }
 
-function cambiarCantidad(productoId,restauranteId,cambio){
+function cambiarCantidad(
+ productoId,
+ restauranteId,
+ cambio
+){
+
  const i=carrito.findIndex(
-  x=>x.producto_id===productoId&&
-     x.restaurante_id===restauranteId
+  x=>
+   x.producto_id===productoId&&
+   x.restaurante_id===restauranteId
  );
 
  if(i<0)return;
@@ -457,10 +624,17 @@ function cambiarCantidad(productoId,restauranteId,cambio){
  guardarFormulario();
 }
 
-function eliminar(productoId,restauranteId){
+function eliminar(
+ productoId,
+ restauranteId
+){
+
  carrito=carrito.filter(
-  x=>!(x.producto_id===productoId&&
-       x.restaurante_id===restauranteId)
+  x=>
+   !(
+    x.producto_id===productoId&&
+    x.restaurante_id===restauranteId
+   )
  );
 
  guardarCarrito();
@@ -469,29 +643,49 @@ function eliminar(productoId,restauranteId){
 }
 
 function vaciarCarrito(){
+
  if(!carrito.length)return;
 
  if(!confirm("¿Vaciar todo el carrito?"))return;
 
  carrito=[];
+
  guardarCarrito();
  render();
  guardarFormulario();
 }
 
 function renderUbicacion(){
+
  const box=$("direccionGuardada");
 
- if(ubicacion.lat!==null&&ubicacion.lng!==null){
+ if(
+  ubicacion.lat!==null&&
+  ubicacion.lng!==null
+ ){
+
   box.innerHTML=`
-   <div class="locationTitle">Dirección</div>
+
+   <div class="locationTitle">
+    Dirección
+   </div>
+
    <div class="address">
-    ${esc(ubicacion.direccion||"Ubicación seleccionada")}
+    ${esc(
+     ubicacion.direccion||
+     "Ubicación seleccionada"
+    )}
    </div>
   `;
+
  }else{
+
   box.innerHTML=`
-   <div class="locationTitle">Dirección</div>
+
+   <div class="locationTitle">
+    Dirección
+   </div>
+
    <div class="address">
     Todavía no has seleccionado una ubicación.
    </div>
@@ -500,10 +694,16 @@ function renderUbicacion(){
 }
 
 async function obtenerDireccion(lat,lng){
+
  try{
+
   const r=await fetch(
    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
-   {headers:{Accept:"application/json"}}
+   {
+    headers:{
+     Accept:"application/json"
+    }
+   }
   );
 
   if(!r.ok)throw Error();
@@ -514,42 +714,60 @@ async function obtenerDireccion(lat,lng){
    `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
 
  }catch{
+
   return `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
  }
 }
 
 async function usarMiUbicacion(boton){
+
  if(!navigator.geolocation){
+
   mostrarError(
    "Tu navegador no permite obtener la ubicación."
   );
+
   return;
  }
 
  if(boton)boton.disabled=true;
 
  navigator.geolocation.getCurrentPosition(
+
   async pos=>{
+
    try{
+
     const lat=pos.coords.latitude;
     const lng=pos.coords.longitude;
-    const direccion=await obtenerDireccion(lat,lng);
 
-    ubicacion={lat,lng,direccion};
+    const direccion=
+     await obtenerDireccion(lat,lng);
+
+    ubicacion={
+     lat,
+     lng,
+     direccion
+    };
 
     guardarFormulario();
     renderUbicacion();
+
    }finally{
+
     if(boton)boton.disabled=false;
    }
   },
+
   ()=>{
+
    mostrarError(
     "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
    );
 
    if(boton)boton.disabled=false;
   },
+
   {
    enableHighAccuracy:true,
    timeout:15000,
@@ -559,12 +777,20 @@ async function usarMiUbicacion(boton){
 }
 
 function moverMarcador(lat,lng){
+
  if(!map)return;
 
  if(!marker){
-  marker=L.marker([lat,lng]).addTo(map);
+
+  marker=L.marker(
+   [lat,lng]
+  ).addTo(map);
+
  }else{
-  marker.setLatLng([lat,lng]);
+
+  marker.setLatLng(
+   [lat,lng]
+  );
  }
 
  ubicacionTemporal={
@@ -575,37 +801,64 @@ function moverMarcador(lat,lng){
 
  renderDireccionTemporal();
 
- obtenerDireccion(lat,lng).then(direccion=>{
-  ubicacionTemporal.direccion=direccion;
-  renderDireccionTemporal();
- });
+ obtenerDireccion(lat,lng)
+  .then(direccion=>{
+
+   ubicacionTemporal.direccion=
+    direccion;
+
+   renderDireccionTemporal();
+  });
 }
 
 function renderDireccionTemporal(){
+
  const box=$("direccionGuardada");
+
  const u=ubicacionTemporal;
 
- if(u.lat!==null&&u.lng!==null){
+ if(
+  u.lat!==null&&
+  u.lng!==null
+ ){
+
   box.innerHTML=`
-   <div class="locationTitle">Dirección</div>
+
+   <div class="locationTitle">
+    Dirección
+   </div>
+
    <div class="address">
-    ${esc(u.direccion||"Consultando dirección...")}
+    ${esc(
+     u.direccion||
+     "Consultando dirección..."
+    )}
    </div>
   `;
  }
 }
 
 function abrirMapa(){
+
  $("mapWrap").style.display="block";
 
  setTimeout(()=>{
+
   if(!map){
 
    map=L.map("map").setView(
+
     ubicacion.lat!==null
-     ?[ubicacion.lat,ubicacion.lng]
-     :[-0.9538,-79.6528],
-    ubicacion.lat!==null?16:13
+     ?
+     [ubicacion.lat,ubicacion.lng]
+     :
+     [-0.9538,-79.6528],
+
+    ubicacion.lat!==null
+     ?
+     16
+     :
+     13
    );
 
    L.tileLayer(
@@ -617,6 +870,7 @@ function abrirMapa(){
    ).addTo(map);
 
    map.on("click",e=>{
+
     moverMarcador(
      e.latlng.lat,
      e.latlng.lng
@@ -624,9 +878,11 @@ function abrirMapa(){
    });
 
   }else{
+
    map.invalidateSize();
 
    if(ubicacion.lat!==null){
+
     map.setView(
      [ubicacion.lat,ubicacion.lng],
      16
@@ -635,7 +891,10 @@ function abrirMapa(){
   }
 
   if(ubicacion.lat!==null){
-   ubicacionTemporal={...ubicacion};
+
+   ubicacionTemporal={
+    ...ubicacion
+   };
 
    moverMarcador(
     ubicacion.lat,
@@ -643,7 +902,9 @@ function abrirMapa(){
    );
 
   }else{
-   const centro=map.getCenter();
+
+   const centro=
+    map.getCenter();
 
    moverMarcador(
     centro.lat,
@@ -655,17 +916,22 @@ function abrirMapa(){
 }
 
 function aceptarMapa(){
+
  if(
   ubicacionTemporal.lat===null||
   ubicacionTemporal.lng===null
  ){
+
   mostrarError(
    "Selecciona una ubicación en el mapa."
   );
+
   return;
  }
 
- ubicacion={...ubicacionTemporal};
+ ubicacion={
+  ...ubicacionTemporal
+ };
 
  guardarFormulario();
  renderUbicacion();
@@ -673,12 +939,15 @@ function aceptarMapa(){
 }
 
 function cerrarMapa(){
- $("mapWrap").style.display="none";
+
+ $("mapWrap").style.display=
+  "none";
 }
 
 $("requiereFactura").addEventListener(
  "change",
  ()=>{
+
   $("datosFactura").classList.toggle(
    "show",
    $("requiereFactura").checked
@@ -697,6 +966,7 @@ $("requiereFactura").addEventListener(
  "numeroDocumento",
  "correoFactura"
 ].forEach(id=>{
+
  $(id).addEventListener(
   "input",
   guardarFormulario
@@ -708,296 +978,8 @@ $("requiereFactura").addEventListener(
  );
 });
 
-
-/* ============================================================
-   CLIENTES Y REFERIDOS
-   ============================================================ */
-
-let temporizadorCliente=null;
-
-function programarVerificacionCliente(){
- clearTimeout(temporizadorCliente);
-
- const telefono=normalizarTelefono(
-  $("clienteTelefono").value
- );
-
- clienteActual=null;
-
- if(telefono.length<7){
-  $("campoReferido").classList.remove("show");
-  mostrarEstadoCliente("");
-  return;
- }
-
- mostrarEstadoCliente("Verificando teléfono...");
-
- temporizadorCliente=setTimeout(
-  ()=>verificarCliente(telefono),
-  500
- );
-}
-
-async function verificarCliente(telefono){
- if(verificandoCliente)return;
-
- telefono=normalizarTelefono(telefono);
-
- if(telefono.length<7){
-  clienteActual=null;
-  $("campoReferido").classList.remove("show");
-  mostrarEstadoCliente("");
-  return;
- }
-
- verificandoCliente=true;
-
- try{
-  const r=await supabaseClient.rpc(
-   "buscar_cliente_por_telefono",
-   {
-    p_telefono:telefono
-   }
-  );
-
-  if(r.error)throw r.error;
-
-  const cliente=
-   Array.isArray(r.data)?r.data[0]:r.data;
-
-  if(cliente){
-
-   clienteActual=cliente;
-
-   if(!cliente.activo){
-    $("campoReferido").classList.remove("show");
-
-    mostrarEstadoCliente(
-     "Este cliente está inactivo.",
-     "error"
-    );
-
-   }else{
-
-    $("campoReferido").classList.remove("show");
-
-    mostrarEstadoCliente(
-     "Cliente registrado. Puedes continuar.",
-     "ok"
-    );
-
-    /*
-     * Si el teléfono corresponde a un cliente existente,
-     * no solicitamos nuevamente un referente.
-     */
-   }
-
-  }else{
-
-   clienteActual=null;
-
-   $("campoReferido").classList.add("show");
-
-   mostrarEstadoCliente(
-    "Teléfono nuevo. Se requiere un referente."
-   );
-  }
-
- }catch(e){
-
-  console.error(e);
-
-  clienteActual=null;
-
-  mostrarEstadoCliente(
-   "No se pudo verificar el teléfono."
-  );
-
- }finally{
-  verificandoCliente=false;
- }
-}
-
-$("clienteTelefono").addEventListener(
- "input",
- programarVerificacionCliente
-);
-
-$("clienteTelefono").addEventListener(
- "blur",
- ()=>{
-  const telefono=normalizarTelefono(
-   $("clienteTelefono").value
-  );
-
-  if(telefono.length>=7){
-   verificarCliente(telefono);
-  }
-);
-
-
-async function validarCliente(){
- const nombre=$("clienteNombre").value.trim();
- const telefono=normalizarTelefono(
-  $("clienteTelefono").value
- );
-
- if(!nombre){
-  mostrarError("Ingresa tu nombre.");
-  $("clienteNombre").focus();
-  return false;
- }
-
- if(!telefono){
-  mostrarError("Ingresa tu teléfono.");
-  $("clienteTelefono").focus();
-  return false;
- }
-
- if(telefono.length<7){
-  mostrarError(
-   "Ingresa un número de teléfono válido."
-  );
-  $("clienteTelefono").focus();
-  return false;
- }
-
- /*
-  * Siempre volvemos a consultar antes del pedido.
-  * Esto evita depender únicamente de la verificación visual.
-  */
- const r=await supabaseClient.rpc(
-  "buscar_cliente_por_telefono",
-  {
-   p_telefono:telefono
-  }
- );
-
- if(r.error)throw r.error;
-
- const cliente=
-  Array.isArray(r.data)?r.data[0]:r.data;
-
- /*
-  * CLIENTE EXISTENTE
-  */
- if(cliente){
-
-  clienteActual=cliente;
-
-  if(!cliente.activo){
-   mostrarError(
-    "Este cliente está inactivo y no puede realizar pedidos."
-   );
-   return false;
-  }
-
-  return true;
- }
-
- /*
-  * CLIENTE NUEVO
-  */
- const telefonoReferente=normalizarTelefono(
-  $("telefonoReferente").value
- );
-
- if(!telefonoReferente){
-  mostrarError(
-   "Como es tu primer pedido, debes ingresar el teléfono de quien te refirió."
-  );
-
-  $("telefonoReferente").focus();
-  return false;
- }
-
- if(telefonoReferente===telefono){
-  mostrarError(
-   "No puedes registrarte como tu propio referente."
-  );
-
-  $("telefonoReferente").focus();
-  return false;
- }
-
- const rr=await supabaseClient.rpc(
-  "buscar_cliente_por_telefono",
-  {
-   p_telefono:telefonoReferente
-  }
- );
-
- if(rr.error)throw rr.error;
-
- const referente=
-  Array.isArray(rr.data)?rr.data[0]:rr.data;
-
- if(!referente){
-  mostrarError(
-   "El teléfono del referente no está registrado en Sobre Ruedas."
-  );
-
-  $("telefonoReferente").focus();
-  return false;
- }
-
- if(!referente.activo){
-  mostrarError(
-   "El cliente que te refirió está inactivo."
-  );
-
-  $("telefonoReferente").focus();
-  return false;
- }
-
- /*
-  * Generar un código propio para el nuevo cliente.
-  */
- const codigoNuevo=
-  "SR"+
-  Date.now().toString(36).toUpperCase()+
-  Math.floor(100+Math.random()*900);
-
- const cr=await supabaseClient.rpc(
-  "crear_cliente",
-  {
-   p_nombre:nombre,
-   p_telefono:telefono,
-   p_codigo_referido:codigoNuevo,
-   p_codigo_referente:referente.codigo_referido
-  }
- );
-
- if(cr.error)throw cr.error;
-
- /*
-  * El cliente acaba de entrar a la base.
-  */
- clienteActual={
-  id:cr.data,
-  nombre,
-  telefono,
-  codigo_referido:codigoNuevo,
-  referido_por:referente.id,
-  activo:true
- };
-
- mostrarEstadoCliente(
-  "Cliente registrado correctamente.",
-  "ok"
- );
-
- $("campoReferido").classList.remove("show");
-
- return true;
-}
-
-
-/* ============================================================
-   PEDIDO
-   ============================================================ */
-
 function generarNumeroPedido(){
+
  const d=new Date();
 
  const parte=d.toISOString()
@@ -1010,28 +992,305 @@ function generarNumeroPedido(){
  return `SR-${parte}-${aleatorio}`;
 }
 
-function validar(){
- if(!carrito.length){
-  mostrarError("El carrito está vacío.");
-  return false;
+
+/* =====================================================
+   VALIDACIÓN DE CLIENTES Y REFERIDOS
+   ===================================================== */
+
+async function consultarCliente(telefono){
+
+ const telefonoNormalizado=
+  normalizarTelefono(telefono);
+
+ if(!telefonoNormalizado){
+  return null;
  }
 
- if(!$("clienteNombre").value.trim()){
-  mostrarError("Ingresa tu nombre.");
-  $("clienteNombre").focus();
-  return false;
+ const r=await supabaseClient.rpc(
+  "buscar_cliente_por_telefono",
+  {
+   p_telefono:telefonoNormalizado
+  }
+ );
+
+ if(r.error){
+  throw r.error;
  }
 
- if(!normalizarTelefono(
-  $("clienteTelefono").value
- )){
-  mostrarError("Ingresa tu teléfono.");
+ if(Array.isArray(r.data)){
+  return r.data[0]||null;
+ }
+
+ return r.data||null;
+}
+
+async function validarCliente(){
+
+ const nombre=
+  $("clienteNombre").value.trim();
+
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
+
+ if(!telefono){
+
+  mostrarError(
+   "Ingresa tu teléfono."
+  );
+
   $("clienteTelefono").focus();
+
   return false;
  }
 
- if(ubicacion.lat===null||
-    ubicacion.lng===null){
+ if(telefono.length<7){
+
+  mostrarError(
+   "Ingresa un número de teléfono válido."
+  );
+
+  $("clienteTelefono").focus();
+
+  return false;
+ }
+
+ try{
+
+  const cliente=
+   await consultarCliente(telefono);
+
+  /* -----------------------------------------
+     CLIENTE EXISTENTE
+     ----------------------------------------- */
+
+  if(cliente){
+
+   if(cliente.activo===false){
+
+    mostrarError(
+     "Este cliente está inactivo y no puede realizar pedidos."
+    );
+
+    return false;
+   }
+
+   clienteActual=cliente;
+
+   mostrarEstadoCliente(
+    "Cliente registrado. Puedes continuar.",
+    "ok"
+   );
+
+   return true;
+  }
+
+  /* -----------------------------------------
+     CLIENTE NUEVO
+     ----------------------------------------- */
+
+  const telefonoReferente=
+   normalizarTelefono(
+    $("telefonoReferente").value
+   );
+
+  if(!telefonoReferente){
+
+   $("campoReferido").classList.add("show");
+
+   mostrarError(
+    "Este teléfono no está registrado. Debes ingresar el teléfono de quien te refirió."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+  }
+
+  if(
+   telefonoReferente===
+   telefono
+  ){
+
+   mostrarError(
+    "No puedes referirte a ti mismo."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+  }
+
+  const referente=
+   await consultarCliente(
+    telefonoReferente
+   );
+
+  if(!referente){
+
+   mostrarError(
+    "El teléfono del referente no corresponde a un cliente registrado."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+  }
+
+  if(referente.activo===false){
+
+   mostrarError(
+    "El cliente que te refirió está inactivo."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+  }
+
+  if(!referente.codigo_referido){
+
+   mostrarError(
+    "El referente no tiene un código de referido válido."
+   );
+
+   return false;
+  }
+
+  /* -----------------------------------------
+     GENERAR CÓDIGO DEL NUEVO CLIENTE
+     ----------------------------------------- */
+
+  const codigoNuevo=
+   "SR"+
+   Date.now()
+    .toString(36)
+    .toUpperCase()+
+   Math.floor(
+    100+
+    Math.random()*900
+   );
+
+  const cr=
+   await supabaseClient.rpc(
+    "crear_cliente",
+    {
+     p_nombre:nombre,
+     p_telefono:telefono,
+     p_codigo_referido:codigoNuevo,
+     p_codigo_referente:
+      referente.codigo_referido
+    }
+   );
+
+  if(cr.error){
+   throw cr.error;
+  }
+
+  let nuevoCliente=null;
+
+  if(Array.isArray(cr.data)){
+   nuevoCliente=
+    cr.data[0]||null;
+  }else{
+   nuevoCliente=cr.data||null;
+  }
+
+  /*
+   * Si la función RPC no devuelve el registro,
+   * lo consultamos nuevamente.
+   */
+
+  if(!nuevoCliente){
+
+   nuevoCliente=
+    await consultarCliente(
+     telefono
+    );
+  }
+
+  if(!nuevoCliente){
+
+   throw Error(
+    "El cliente fue registrado, pero no se pudo recuperar su información."
+   );
+  }
+
+  clienteActual=nuevoCliente;
+
+  $("campoReferido")
+   .classList.remove("show");
+
+  mostrarEstadoCliente(
+   "Cliente registrado correctamente. Puedes continuar.",
+   "ok"
+  );
+
+  return true;
+
+ }catch(e){
+
+  console.error(
+   "Error validando cliente:",
+   e
+  );
+
+  mostrarError(
+   "No se pudo validar el cliente: "+
+   (e.message||"Error desconocido")
+  );
+
+  return false;
+ }
+}
+
+
+/* =====================================================
+   VALIDACIÓN GENERAL
+   ===================================================== */
+
+function validar(){
+
+ if(!carrito.length){
+
+  mostrarError(
+   "El carrito está vacío."
+  );
+
+  return false;
+ }
+
+ if(
+  !$("clienteNombre").value.trim()
+ ){
+
+  mostrarError(
+   "Ingresa tu nombre."
+  );
+
+  $("clienteNombre").focus();
+
+  return false;
+ }
+
+ if(
+  !$("clienteTelefono").value.trim()
+ ){
+
+  mostrarError(
+   "Ingresa tu teléfono."
+  );
+
+  $("clienteTelefono").focus();
+
+  return false;
+ }
+
+ if(
+  ubicacion.lat===null||
+  ubicacion.lng===null
+ ){
 
   mostrarError(
    "Selecciona tu ubicación de entrega."
@@ -1040,19 +1299,29 @@ function validar(){
   return false;
  }
 
- if($("requiereFactura").checked){
+ if(
+  $("requiereFactura").checked
+ ){
 
-  if(!$("numeroDocumento").value.trim()){
+  if(
+   !$("numeroDocumento").value.trim()
+  ){
+
    mostrarError(
     "Ingresa tu cédula o RUC."
    );
+
    return false;
   }
 
-  if(!$("correoFactura").value.trim()){
+  if(
+   !$("correoFactura").value.trim()
+  ){
+
    mostrarError(
     "Ingresa el correo para la factura."
    );
+
    return false;
   }
  }
@@ -1060,67 +1329,93 @@ function validar(){
  return true;
 }
 
+
+/* =====================================================
+   REALIZAR PEDIDO
+   ===================================================== */
+
 async function realizarPedido(){
 
  if(!validar())return;
 
- const boton=document.querySelector(".whatsapp");
+ const boton=
+  document.querySelector(".whatsapp");
 
- if(boton)boton.disabled=true;
+ if(boton){
+  boton.disabled=true;
+ }
 
  try{
 
   /*
-   * PRIMERO VALIDAMOS / REGISTRAMOS EL CLIENTE.
-   * El pedido no se crea hasta superar esta validación.
+   * PRIMERO validamos el cliente.
+   * Un cliente existente puede continuar.
+   * Un cliente nuevo debe tener referente.
    */
-  const clienteValido=await validarCliente();
+
+  const clienteValido=
+   await validarCliente();
 
   if(!clienteValido){
-   if(boton)boton.disabled=false;
+
+   if(boton){
+    boton.disabled=false;
+   }
+
    return;
   }
 
-  const numero=generarNumeroPedido();
-  const grupos=agrupar();
+  const numero=
+   generarNumeroPedido();
 
-  const subtotalTotal=carrito.reduce(
-   (a,x)=>
-    a+
-    (Number(x.precio)||0)*
-    (Number(x.cantidad)||0),
-   0
-  );
+  const grupos=
+   agrupar();
 
-  const deliveryUnitario=
-   Number(configuracion.tarifaDelivery||0);
-
-  const deliveryTotal=
-   grupos.length*deliveryUnitario;
-
-  const total=
-   subtotalTotal+deliveryTotal;
-
-  const telefonoCliente=
-   normalizarTelefono(
-    $("clienteTelefono").value
+  const subtotalTotal=
+   carrito.reduce(
+    (a,x)=>
+     a+
+     (Number(x.precio)||0)*
+     (Number(x.cantidad)||0),
+    0
    );
 
+  const deliveryUnitario=
+   Number(
+    configuracion.tarifaDelivery||0
+   );
+
+  const deliveryTotal=
+   grupos.length*
+   deliveryUnitario;
+
+  const total=
+   subtotalTotal+
+   deliveryTotal;
+
   const pedido={
+
    numero,
 
    cliente_nombre:
-    $("clienteNombre").value.trim(),
+    $("clienteNombre")
+     .value
+     .trim(),
 
    cliente_telefono:
-    telefonoCliente,
+    normalizarTelefono(
+     $("clienteTelefono").value
+    ),
 
    direccion:
     ubicacion.direccion||
     `${ubicacion.lat}, ${ubicacion.lng}`,
 
    referencia:
-    $("referencia").value.trim()||null,
+    $("referencia")
+     .value
+     .trim()||
+    null,
 
    total_productos:
     subtotalTotal,
@@ -1134,63 +1429,109 @@ async function realizarPedido(){
     "Pedido recibido"
   };
 
-  const pr=await supabaseClient
-   .from("pedidos")
-   .insert(pedido)
-   .select("id")
-   .single();
-
-  if(pr.error)throw pr.error;
-
-  const pedidoId=pr.data.id;
-  const carreras=[];
-
-  for(let i=0;i<grupos.length;i++){
-
-   const g=grupos[i];
-   const subtotal=subtotalGrupo(g);
-
-   const carrera={
-    pedido_id:pedidoId,
-    restaurante_id:g.id,
-    numero:`${numero}-${i+1}`,
-    subtotal,
-    delivery:deliveryUnitario,
-    total:subtotal+deliveryUnitario,
-    estado:"Pendiente de asignación"
-   };
-
-   const cr=await supabaseClient
-    .from("carreras")
-    .insert(carrera)
+  const pr=
+   await supabaseClient
+    .from("pedidos")
+    .insert(pedido)
     .select("id")
     .single();
 
-   if(cr.error)throw cr.error;
+  if(pr.error){
+   throw pr.error;
+  }
+
+  const pedidoId=
+   pr.data.id;
+
+  const carreras=[];
+
+  for(
+   let i=0;
+   i<grupos.length;
+   i++
+  ){
+
+   const g=grupos[i];
+
+   const subtotal=
+    subtotalGrupo(g);
+
+   const carrera={
+
+    pedido_id:
+     pedidoId,
+
+    restaurante_id:
+     g.id,
+
+    numero:
+     `${numero}-${i+1}`,
+
+    subtotal,
+
+    delivery:
+     deliveryUnitario,
+
+    total:
+     subtotal+
+     deliveryUnitario,
+
+    estado:
+     "Pendiente de asignación"
+   };
+
+   const cr=
+    await supabaseClient
+     .from("carreras")
+     .insert(carrera)
+     .select("id")
+     .single();
+
+   if(cr.error){
+    throw cr.error;
+   }
 
    carreras.push({
     ...g,
-    carrera_id:cr.data.id,
+    carrera_id:
+     cr.data.id,
     subtotal
    });
   }
 
   for(const g of carreras){
 
-   const detalles=g.items.map(x=>({
-    carrera_id:g.carrera_id,
-    producto_id:x.producto_id,
-    producto_nombre:x.producto_nombre,
-    precio_unitario:+x.precio,
-    cantidad:+x.cantidad,
-    subtotal:(+x.precio)*(+x.cantidad)
-   }));
+   const detalles=
+    g.items.map(x=>({
 
-   const dr=await supabaseClient
-    .from("detalle_carreras")
-    .insert(detalles);
+     carrera_id:
+      g.carrera_id,
 
-   if(dr.error)throw dr.error;
+     producto_id:
+      x.producto_id,
+
+     producto_nombre:
+      x.producto_nombre,
+
+     precio_unitario:
+      +x.precio,
+
+     cantidad:
+      +x.cantidad,
+
+     subtotal:
+      (+x.precio)*
+      (+x.cantidad)
+    }));
+
+   const dr=
+    await supabaseClient
+     .from("detalle_carreras")
+     .insert(detalles);
+
+   if(dr.error){
+    throw dr.error;
+   }
   }
 
   let msg=
@@ -1206,13 +1547,19 @@ async function realizarPedido(){
   msg+=
    `👤 *Cliente:* ${
     encodeURIComponent(
-     $("clienteNombre").value.trim()
+     $("clienteNombre")
+      .value
+      .trim()
     )
    }%0A`;
 
   msg+=
    `📞 *Teléfono:* ${
-    encodeURIComponent(telefonoCliente)
+    encodeURIComponent(
+     normalizarTelefono(
+      $("clienteTelefono").value
+     )
+    )
    }%0A`;
 
   msg+=
@@ -1223,21 +1570,28 @@ async function realizarPedido(){
     )
    }%0A`;
 
-  if($("referencia").value.trim()){
+  if(
+   $("referencia")
+    .value
+    .trim()
+  ){
+
    msg+=
     `📝 *Referencia:* ${
      encodeURIComponent(
-      $("referencia").value.trim()
+      $("referencia")
+       .value
+       .trim()
      )
     }%0A`;
   }
 
   msg+=
-   `📌 *Ubicación:* https://www.google.com/maps?q=${
-    ubicacion.lat
-   },${ubicacion.lng}%0A`;
+   `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
 
-  if($("requiereFactura").checked){
+  if(
+   $("requiereFactura").checked
+  ){
 
    msg+=
     `🧾 *Factura:* Sí%0A`;
@@ -1245,18 +1599,24 @@ async function realizarPedido(){
    msg+=
     `Documento: ${
      encodeURIComponent(
-      $("tipoDocumento").value.toUpperCase()
+      $("tipoDocumento")
+       .value
+       .toUpperCase()
      )
     } ${
      encodeURIComponent(
-      $("numeroDocumento").value.trim()
+      $("numeroDocumento")
+       .value
+       .trim()
      )
     }%0A`;
 
    msg+=
     `Correo: ${
      encodeURIComponent(
-      $("correoFactura").value.trim()
+      $("correoFactura")
+       .value
+       .trim()
      )
     }%0A`;
 
@@ -1279,7 +1639,8 @@ async function realizarPedido(){
    g.items.forEach(x=>{
 
     const sub=
-     (+x.precio)*(+x.cantidad);
+     (+x.precio)*
+     (+x.cantidad);
 
     msg+=
      `${x.cantidad} x ${
@@ -1325,7 +1686,13 @@ async function realizarPedido(){
     )
    }*`;
 
+  /*
+   * Solo vaciamos el carrito cuando
+   * el pedido fue registrado correctamente.
+   */
+
   carrito=[];
+
   guardarCarrito();
   render();
 
@@ -1335,6 +1702,7 @@ async function realizarPedido(){
    ).replace(/\D/g,"");
 
   if(!wa){
+
    throw Error(
     "El número de WhatsApp del negocio no está configurado."
    );
@@ -1349,24 +1717,30 @@ async function realizarPedido(){
 
   mostrarError(
    "No se pudo registrar el pedido: "+
-   (e.message||"Error desconocido")
+   (e.message||
+    "Error desconocido")
   );
 
-  if(boton)boton.disabled=false;
+  if(boton){
+   boton.disabled=false;
+  }
  }
 }
 
 
-/* ============================================================
+/* =====================================================
    INICIO
-   ============================================================ */
+   ===================================================== */
 
 cargarCarrito();
+
 cargarFormulario();
+
 render();
+
 cargarConfiguracion();
+
 </script>
 
 </body>
 </html>
-```
