@@ -170,7 +170,29 @@ let accesoPedido=false,referenteValido=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const money=n=>`${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
-const normalizarTelefono=t=>String(t||"").replace(/\D/g,"");
+
+/* NORMALIZACIÓN DE TELÉFONOS ECUATORIANOS
+   0989351622  -> 593989351622
+   593989351622 -> 593989351622
+   +593989351622 -> 593989351622
+*/
+function normalizarTelefono(t){
+ let n=String(t||"").replace(/\D/g,"");
+
+ if(n.startsWith("00"))
+  n=n.slice(2);
+
+ if(n.startsWith("593")){
+  n=n.slice(3);
+ }else if(n.startsWith("0")){
+  n=n.slice(1);
+ }
+
+ if(n.length===9)
+  return "593"+n;
+
+ return n;
+}
 
 function mostrarError(t){
  const a=$("alerta");
@@ -202,10 +224,7 @@ function mostrarEstadoUbicacion(t,tipo=""){
  if(tipo)e.classList.add(tipo);
 }
 
-/* =========================================================
-   CONTROL CENTRAL DEL ACCESO
-   ========================================================= */
-
+/* CONTROL DE ACCESO */
 function actualizarAcceso(){
  const habilitado=!configuracion.validacionClientes||accesoPedido===true;
 
@@ -229,9 +248,8 @@ function actualizarAcceso(){
   $("telefonoReferente").disabled=true;
  }
 
- if(!habilitado){
+ if(!habilitado)
   $("mapWrap").style.display="none";
- }
 }
 
 function bloquearPedido(){
@@ -250,23 +268,20 @@ function habilitarPedido(){
  actualizarAcceso();
 }
 
-/* =========================================================
-   CARRITO
-   ========================================================= */
-
+/* CARRITO */
 function cargarCarrito(){
  let datos=null;
 
  try{
   const s=sessionStorage.getItem("carrito");
   if(s)datos=JSON.parse(s);
- }catch(e){console.warn("Error leyendo sessionStorage:",e)}
+ }catch(e){console.warn(e)}
 
  if(!Array.isArray(datos)||!datos.length){
   try{
    const l=localStorage.getItem("carrito");
    if(l)datos=JSON.parse(l);
-  }catch(e){console.warn("Error leyendo localStorage:",e)}
+  }catch(e){console.warn(e)}
  }
 
  carrito=Array.isArray(datos)?datos:[];
@@ -274,7 +289,6 @@ function cargarCarrito(){
 
 function guardarCarrito(){
  const datos=JSON.stringify(carrito);
-
  try{sessionStorage.setItem("carrito",datos)}catch(e){}
  try{localStorage.setItem("carrito",datos)}catch(e){}
 }
@@ -292,7 +306,9 @@ function guardarFormulario(){
   ubicacion
  };
 
- sessionStorage.setItem("datosPedido",JSON.stringify(data));
+ try{
+  sessionStorage.setItem("datosPedido",JSON.stringify(data));
+ }catch(e){}
 }
 
 function cargarFormulario(){
@@ -328,6 +344,7 @@ function cargarFormulario(){
   bloquearPedido();
 }
 
+/* CONFIGURACIÓN */
 async function cargarConfiguracion(){
  try{
   const r=await supabaseClient
@@ -361,10 +378,7 @@ async function cargarConfiguracion(){
  render();
 }
 
-/* =========================================================
-   AGRUPAR Y RENDERIZAR CARRITO
-   ========================================================= */
-
+/* CARRITO AGRUPADO */
 function agrupar(){
  const grupos={};
 
@@ -385,8 +399,7 @@ function agrupar(){
 
 function subtotalGrupo(g){
  return g.items.reduce(
-  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
-  0
+  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
  );
 }
 
@@ -409,18 +422,15 @@ function render(){
 
   return `<div class="local">
    <div class="localHead">${esc(g.nombre)}</div>
-
    ${g.items.map(x=>`
     <div class="item">
      <div class="thumb">
       ${x.imagen_url?`<img src="${esc(x.imagen_url)}" alt="" loading="lazy">`:""}
      </div>
-
      <div class="itemInfo">
       <b>${esc(x.producto_nombre)}</b>
       <small>${money(x.precio)} c/u</small>
      </div>
-
      <div class="controls">
       <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},-1)">−</button>
       <b>${x.cantidad}</b>
@@ -429,7 +439,6 @@ function render(){
      </div>
     </div>
    `).join("")}
-
    <div class="localTotals">
     <div>Subtotal productos: <b>${money(subtotal)}</b></div>
     <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
@@ -439,8 +448,7 @@ function render(){
  }).join("");
 
  const subtotalTotal=carrito.reduce(
-  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
-  0
+  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
  );
 
  const deliveryTotal=grupos.length*deliveryUnitario;
@@ -454,12 +462,10 @@ function render(){
     <b>${money(subtotalGrupo(g))}</b>
    </div>
   `).join("")}
-
   <div class="summaryDelivery">
    <span>Delivery (${grupos.length} ${grupos.length===1?"restaurante":"restaurantes"})</span>
    <b>${money(deliveryTotal)}</b>
   </div>
-
   <div class="total">Total: ${money(total)}</div>
  </div>`;
 
@@ -495,7 +501,6 @@ function eliminar(productoId,restauranteId){
 
 function vaciarCarrito(){
  if(!carrito.length)return;
-
  if(!confirm("¿Vaciar todo el carrito?"))return;
 
  carrito=[];
@@ -504,10 +509,7 @@ function vaciarCarrito(){
  guardarFormulario();
 }
 
-/* =========================================================
-   UBICACIÓN
-   ========================================================= */
-
+/* UBICACIÓN */
 function renderUbicacion(){
  const box=$("direccionGuardada");
 
@@ -541,7 +543,6 @@ async function obtenerDireccion(lat,lng){
 
   return d.display_name||
    `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
-
  }catch{
   return `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
  }
@@ -563,8 +564,7 @@ async function usarMiUbicacion(boton){
  try{
   const pos=await new Promise((resolve,reject)=>
    navigator.geolocation.getCurrentPosition(
-    resolve,
-    reject,
+    resolve,reject,
     {enableHighAccuracy:true,timeout:15000,maximumAge:0}
    )
   );
@@ -584,25 +584,20 @@ async function usarMiUbicacion(boton){
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "✅ Ubicación seleccionada correctamente.",
-   "ok"
+   "✅ Ubicación seleccionada correctamente.","ok"
   );
-
  }catch(e){
   console.error(e);
-
   ubicacionCargando=false;
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "❌ No se pudo obtener la ubicación.",
-   "error"
+   "❌ No se pudo obtener la ubicación.","error"
   );
 
   mostrarError(
    "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
   );
-
  }finally{
   if(boton)
    boton.disabled=!(!configuracion.validacionClientes||accesoPedido);
@@ -652,8 +647,7 @@ function abrirMapa(){
   $("mapWrap").style.display="block";
 
   mostrarEstadoUbicacion(
-   "🗺️ Selecciona en el mapa el punto exacto de entrega.",
-   "loading"
+   "🗺️ Selecciona en el mapa el punto exacto de entrega.","loading"
   );
 
   setTimeout(()=>{
@@ -676,7 +670,6 @@ function abrirMapa(){
     map.on("click",e=>
      moverMarcador(e.latlng.lat,e.latlng.lng)
     );
-
    }else{
     map.invalidateSize();
 
@@ -684,9 +677,9 @@ function abrirMapa(){
      map.setView([ubicacion.lat,ubicacion.lng],16);
    }
 
-   if(ubicacion.lat!==null){
+   if(ubicacion.lat!==null)
     moverMarcador(ubicacion.lat,ubicacion.lng);
-   }else{
+   else{
     const c=map.getCenter();
     moverMarcador(c.lat,c.lng);
    }
@@ -706,9 +699,7 @@ function aceptarMapa(){
  }
 
  if(!ubicacionTemporal.direccion){
-  mostrarError(
-   "Espera un momento mientras se obtiene la dirección."
-  );
+  mostrarError("Espera un momento mientras se obtiene la dirección.");
   return;
  }
 
@@ -719,8 +710,7 @@ function aceptarMapa(){
  renderUbicacion();
 
  mostrarEstadoUbicacion(
-  "✅ Ubicación guardada correctamente.",
-  "ok"
+  "✅ Ubicación guardada correctamente.","ok"
  );
 
  cerrarMapa();
@@ -730,16 +720,11 @@ function cerrarMapa(){
  $("mapWrap").style.display="none";
 }
 
-/* =========================================================
-   FACTURA Y FORMULARIO
-   ========================================================= */
-
+/* FACTURA */
 $("requiereFactura").addEventListener("change",()=>{
  $("datosFactura").classList.toggle(
-  "show",
-  $("requiereFactura").checked
+  "show",$("requiereFactura").checked
  );
-
  guardarFormulario();
 });
 
@@ -756,10 +741,7 @@ $("requiereFactura").addEventListener("change",()=>{
  $(id).addEventListener("change",guardarFormulario);
 });
 
-/* =========================================================
-   CLIENTE EN TIEMPO REAL
-   ========================================================= */
-
+/* VALIDACIÓN CLIENTE */
 function programarValidacionCliente(){
  clearTimeout(timerCliente);
 
@@ -772,9 +754,7 @@ function programarValidacionCliente(){
   return;
  }
 
- const telefono=normalizarTelefono(
-  $("clienteTelefono").value
- );
+ const telefono=normalizarTelefono($("clienteTelefono").value);
 
  clienteActual=null;
  referenteValido=false;
@@ -790,22 +770,19 @@ function programarValidacionCliente(){
 
  if(telefono.length<7){
   mostrarEstadoCliente(
-   "Ingresa un número de teléfono válido.",
-   "error"
+   "Ingresa un número de teléfono válido.","error"
   );
   return;
  }
 
  mostrarEstadoCliente(
-  "🔄 Verificando cliente...",
-  "loading"
+  "🔄 Verificando cliente...","loading"
  );
 
  const id=++validacionClienteId;
 
  timerCliente=setTimeout(
-  ()=>validarClienteEnTiempoReal(id),
-  500
+  ()=>validarClienteEnTiempoReal(id),500
  );
 }
 
@@ -816,10 +793,7 @@ async function validarClienteEnTiempoReal(id){
   $("clienteTelefono").value
  );
 
- if(
-  telefono.length<7||
-  id!==validacionClienteId
- )return;
+ if(telefono.length<7||id!==validacionClienteId)return;
 
  try{
   const cliente=await consultarCliente(telefono);
@@ -840,8 +814,7 @@ async function validarClienteEnTiempoReal(id){
     bloquearPedido();
 
     mostrarEstadoCliente(
-     "❌ Este cliente está inactivo.",
-     "error"
+     "❌ Este cliente está inactivo.","error"
     );
 
     $("campoReferido").classList.remove("show");
@@ -854,8 +827,7 @@ async function validarClienteEnTiempoReal(id){
    $("campoReferido").classList.remove("show");
 
    mostrarEstadoCliente(
-    "✅ Cliente registrado. Puedes continuar.",
-    "ok"
+    "✅ Cliente registrado. Puedes continuar.","ok"
    );
 
    habilitarPedido();
@@ -869,8 +841,7 @@ async function validarClienteEnTiempoReal(id){
   $("campoReferido").classList.add("show");
 
   mostrarEstadoCliente(
-   "⚠️ Este número no está registrado. Necesitas un referente.",
-   "error"
+   "⚠️ Este número no está registrado. Necesitas un referente.","error"
   );
 
  }catch(e){
@@ -880,19 +851,14 @@ async function validarClienteEnTiempoReal(id){
   referenteValido=false;
   bloquearPedido();
 
-  if(id===validacionClienteId){
+  if(id===validacionClienteId)
    mostrarEstadoCliente(
-    "No se pudo verificar el cliente.",
-    "error"
+    "No se pudo verificar el cliente.","error"
    );
-  }
  }
 }
 
-/* =========================================================
-   REFERENTE EN TIEMPO REAL
-   ========================================================= */
-
+/* VALIDACIÓN REFERENTE */
 function programarValidacionReferente(){
  clearTimeout(timerReferente);
 
@@ -903,8 +869,7 @@ function programarValidacionReferente(){
 
  referenteValido=false;
 
- if(!clienteActual)
-  bloquearPedido();
+ if(!clienteActual)bloquearPedido();
 
  const telefono=normalizarTelefono(
   $("telefonoReferente").value
@@ -917,22 +882,19 @@ function programarValidacionReferente(){
 
  if(telefono.length<7){
   mostrarEstadoReferente(
-   "Ingresa un número válido.",
-   "error"
+   "Ingresa un número válido.","error"
   );
   return;
  }
 
  mostrarEstadoReferente(
-  "🔄 Verificando referente...",
-  "loading"
+  "🔄 Verificando referente...","loading"
  );
 
  const id=++validacionReferenteId;
 
  timerReferente=setTimeout(
-  ()=>validarReferenteEnTiempoReal(id),
-  500
+  ()=>validarReferenteEnTiempoReal(id),500
  );
 }
 
@@ -947,20 +909,15 @@ async function validarReferenteEnTiempoReal(id){
   $("clienteTelefono").value
  );
 
- if(
-  telefono.length<7||
-  id!==validacionReferenteId
- )return;
+ if(telefono.length<7||id!==validacionReferenteId)return;
 
  if(telefono===telefonoCliente){
   referenteValido=false;
   bloquearPedido();
 
   mostrarEstadoReferente(
-   "❌ No puedes referirte a ti mismo.",
-   "error"
+   "❌ No puedes referirte a ti mismo.","error"
   );
-
   return;
  }
 
@@ -980,10 +937,8 @@ async function validarReferenteEnTiempoReal(id){
    bloquearPedido();
 
    mostrarEstadoReferente(
-    "❌ Este teléfono no corresponde a un cliente registrado.",
-    "error"
+    "❌ Este teléfono no corresponde a un cliente registrado.","error"
    );
-
    return;
   }
 
@@ -992,10 +947,8 @@ async function validarReferenteEnTiempoReal(id){
    bloquearPedido();
 
    mostrarEstadoReferente(
-    "❌ Este cliente está inactivo.",
-    "error"
+    "❌ Este cliente está inactivo.","error"
    );
-
    return;
   }
 
@@ -1004,18 +957,15 @@ async function validarReferenteEnTiempoReal(id){
    bloquearPedido();
 
    mostrarEstadoReferente(
-    "❌ Este cliente no tiene un código de referido válido.",
-    "error"
+    "❌ Este cliente no tiene un código de referido válido.","error"
    );
-
    return;
   }
 
   referenteValido=true;
 
   mostrarEstadoReferente(
-   "✅ Referente encontrado. Puedes continuar.",
-   "ok"
+   "✅ Referente encontrado. Puedes continuar.","ok"
   );
 
   habilitarPedido();
@@ -1026,27 +976,14 @@ async function validarReferenteEnTiempoReal(id){
   referenteValido=false;
   bloquearPedido();
 
-  if(id===validacionReferenteId){
+  if(id===validacionReferenteId)
    mostrarEstadoReferente(
-    "No se pudo verificar el referente.",
-    "error"
+    "No se pudo verificar el referente.","error"
    );
-  }
  }
 }
 
-/* =========================================================
-   EVENTOS DE TELÉFONO
-   ========================================================= */
-
-/*
-   IMPORTANTE:
-   NO usamos blur en clienteTelefono.
-   Esto evita que al entrar al campo del referente
-   se vuelva a consultar el teléfono principal y
-   desaparezca/reaparezca la sección.
-*/
-
+/* EVENTOS TELÉFONO */
 $("clienteTelefono").addEventListener("input",()=>{
  guardarFormulario();
  programarValidacionCliente();
@@ -1057,10 +994,7 @@ $("telefonoReferente").addEventListener("input",()=>{
  programarValidacionReferente();
 });
 
-/* =========================================================
-   CONSULTA CLIENTE
-   ========================================================= */
-
+/* CONSULTA CLIENTE */
 async function consultarCliente(telefono){
  const telefonoNormalizado=normalizarTelefono(telefono);
 
@@ -1079,10 +1013,7 @@ async function consultarCliente(telefono){
  return r.data||null;
 }
 
-/* =========================================================
-   VALIDACIÓN FINAL CLIENTE
-   ========================================================= */
-
+/* VALIDACIÓN FINAL */
 async function validarCliente(){
  if(!configuracion.validacionClientes){
   habilitarPedido();
@@ -1119,12 +1050,10 @@ async function validarCliente(){
    }
 
    clienteActual=cliente;
-
    habilitarPedido();
 
    mostrarEstadoCliente(
-    "✅ Cliente registrado. Puedes continuar.",
-    "ok"
+    "✅ Cliente registrado. Puedes continuar.","ok"
    );
 
    return true;
@@ -1138,8 +1067,7 @@ async function validarCliente(){
    $("campoReferido").classList.add("show");
 
    mostrarEstadoCliente(
-    "⚠️ Este número no está registrado. Necesitas un referente.",
-    "error"
+    "⚠️ Este número no está registrado. Necesitas un referente.","error"
    );
 
    mostrarError(
@@ -1152,24 +1080,19 @@ async function validarCliente(){
 
   if(telefonoReferente===telefono){
    mostrarEstadoReferente(
-    "❌ No puedes referirte a ti mismo.",
-    "error"
+    "❌ No puedes referirte a ti mismo.","error"
    );
 
    mostrarError("No puedes referirte a ti mismo.");
-
    $("telefonoReferente").focus();
    return false;
   }
 
-  const referente=await consultarCliente(
-   telefonoReferente
-  );
+  const referente=await consultarCliente(telefonoReferente);
 
   if(!referente){
    mostrarEstadoReferente(
-    "❌ Referente no encontrado.",
-    "error"
+    "❌ Referente no encontrado.","error"
    );
 
    mostrarError(
@@ -1182,8 +1105,7 @@ async function validarCliente(){
 
   if(referente.activo===false){
    mostrarEstadoReferente(
-    "❌ El referente está inactivo.",
-    "error"
+    "❌ El referente está inactivo.","error"
    );
 
    mostrarError(
@@ -1235,12 +1157,10 @@ async function validarCliente(){
   referenteValido=false;
 
   habilitarPedido();
-
   $("campoReferido").classList.remove("show");
 
   mostrarEstadoCliente(
-   "✅ Cliente registrado correctamente. Puedes continuar.",
-   "ok"
+   "✅ Cliente registrado correctamente. Puedes continuar.","ok"
   );
 
   return true;
@@ -1257,10 +1177,7 @@ async function validarCliente(){
  }
 }
 
-/* =========================================================
-   VALIDACIÓN GENERAL
-   ========================================================= */
-
+/* VALIDACIÓN GENERAL */
 function validar(){
  if(!carrito.length){
   mostrarError("El carrito está vacío.");
@@ -1314,15 +1231,11 @@ function validar(){
  return true;
 }
 
-/* =========================================================
-   PEDIDO
-   ========================================================= */
-
+/* PEDIDO */
 async function realizarPedido(){
  if(!validar())return;
 
  const boton=document.querySelector(".whatsapp");
-
  if(boton)boton.disabled=true;
 
  try{
@@ -1339,18 +1252,12 @@ async function realizarPedido(){
   const grupos=agrupar();
 
   const subtotalTotal=carrito.reduce(
-   (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
-   0
+   (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
   );
 
-  const deliveryUnitario=
-   Number(configuracion.tarifaDelivery||0);
-
-  const deliveryTotal=
-   grupos.length*deliveryUnitario;
-
-  const total=
-   subtotalTotal+deliveryTotal;
+  const deliveryUnitario=Number(configuracion.tarifaDelivery||0);
+  const deliveryTotal=grupos.length*deliveryUnitario;
+  const total=subtotalTotal+deliveryTotal;
 
   const pedido={
    numero,
@@ -1361,8 +1268,7 @@ async function realizarPedido(){
    direccion:
     ubicacion.direccion||
     `${ubicacion.lat}, ${ubicacion.lng}`,
-   referencia:
-    $("referencia").value.trim()||null,
+   referencia:$("referencia").value.trim()||null,
    total_productos:subtotalTotal,
    total_delivery:deliveryTotal,
    total,
@@ -1381,7 +1287,6 @@ async function realizarPedido(){
   const carreras=[];
 
   for(let i=0;i<grupos.length;i++){
-
    const g=grupos[i];
    const subtotal=subtotalGrupo(g);
 
@@ -1411,7 +1316,6 @@ async function realizarPedido(){
   }
 
   for(const g of carreras){
-
    const detalles=g.items.map(x=>({
     carrera_id:g.carrera_id,
     producto_id:x.producto_id,
@@ -1431,8 +1335,7 @@ async function realizarPedido(){
   let msg=
    `*${encodeURIComponent(configuracion.nombreNegocio)}*%0A`;
 
-  msg+=
-   `🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
+  msg+=`🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
 
   msg+=
    `👤 *Cliente:* ${encodeURIComponent($("clienteNombre").value.trim())}%0A`;
@@ -1526,16 +1429,12 @@ function generarNumeroPedido(){
  return `SR-${f.getFullYear()}${String(f.getMonth()+1).padStart(2,"0")}${String(f.getDate()).padStart(2,"0")}-${String(f.getHours()).padStart(2,"0")}${String(f.getMinutes()).padStart(2,"0")}${String(f.getSeconds()).padStart(2,"0")}`;
 }
 
-/* =========================================================
-   INICIO
-   ========================================================= */
-
+/* INICIO */
 cargarCarrito();
 bloquearPedido();
 cargarFormulario();
 render();
 cargarConfiguracion();
-
 </script>
 </body>
 </html>
