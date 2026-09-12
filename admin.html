@@ -97,7 +97,6 @@ textarea{min-height:90px;resize:vertical}
 </head>
 <body>
 
-<!-- LOGIN ADM -->
 <div id="loginScreen" class="login-screen">
 <form class="login-card" onsubmit="iniciarSesionAdmin(event)">
 <h1>Sobre Ruedas</h1>
@@ -121,7 +120,6 @@ Ingresar
 </form>
 </div>
 
-<!-- ADMIN -->
 <div id="adminApp" class="admin-app">
 
 <header class="header">
@@ -261,7 +259,6 @@ Ingresar
 <p class="muted">Cuando está activa, los clientes nuevos deben estar registrados o ingresar un número de referente válido antes de realizar su primer pedido.</p>
 </div>
 
-<!-- REGISTRO MANUAL -->
 <div class="card">
 <h2>Registrar cliente</h2>
 <p class="muted">
@@ -343,50 +340,44 @@ let categorias=[],locales=[],clientes=[],productosEdit=[],productosNuevos=[];
 let clientesCargados=false;
 let adminActual=null;
 
-/* LOGIN */
+/* LOGIN + SESIÓN ADMIN */
 document.addEventListener("DOMContentLoaded",async()=>{
- const sesion=sessionStorage.getItem("sobreRuedasAdmin");
- if(sesion){
-  try{
-   adminActual=JSON.parse(sesion);
-   mostrarAdmin();
-  }catch(_){
-   sessionStorage.removeItem("sobreRuedasAdmin");
-  }
- }
-});
 
-async function iniciarSesionAdmin(e){
- e.preventDefault();
+ const sesion=sessionStorage.getItem(
+  "sobreRuedasAdmin"
+ );
 
- const usuario=document.getElementById("loginUsuario").value.trim();
- const password=document.getElementById("loginPassword").value;
- const boton=document.getElementById("btnLogin");
- const errorBox=document.getElementById("loginError");
-
- if(!usuario||!password)return;
+ if(!sesion)return;
 
  try{
-  boton.disabled=true;
-  boton.textContent="Ingresando...";
-  errorBox.textContent="";
 
-  const {data,error}=await supabaseClient.rpc("verificar_usuario_admin",{
-   p_usuario:usuario,
-   p_password:password
-  });
+  const guardada=JSON.parse(sesion);
+
+  if(!guardada?.token){
+   throw new Error("Sesión inválida");
+  }
+
+  const {data,error}=
+   await supabaseClient.rpc(
+    "verificar_sesion_admin",
+    {
+     p_token:guardada.token
+    }
+   );
 
   if(error)throw error;
 
-  const resultado=Array.isArray(data)?data[0]:data;
+  const resultado=
+   Array.isArray(data)?data[0]:data;
 
   if(!resultado?.id){
-   throw new Error("Usuario o contraseña incorrectos.");
+   throw new Error("Sesión expirada");
   }
 
   adminActual={
    id:resultado.id,
-   usuario:resultado.usuario
+   usuario:resultado.usuario,
+   token:guardada.token
   };
 
   sessionStorage.setItem(
@@ -394,171 +385,462 @@ async function iniciarSesionAdmin(e){
    JSON.stringify(adminActual)
   );
 
-  document.getElementById("loginPassword").value="";
+  mostrarAdmin();
+
+ }catch(_){
+
+  sessionStorage.removeItem(
+   "sobreRuedasAdmin"
+  );
+
+  adminActual=null;
+ }
+});
+
+async function iniciarSesionAdmin(e){
+
+ e.preventDefault();
+
+ const usuario=
+  document.getElementById("loginUsuario")
+   .value.trim();
+
+ const password=
+  document.getElementById("loginPassword")
+   .value;
+
+ const boton=
+  document.getElementById("btnLogin");
+
+ const errorBox=
+  document.getElementById("loginError");
+
+ if(!usuario||!password)return;
+
+ try{
+
+  boton.disabled=true;
+  boton.textContent="Ingresando...";
+  errorBox.textContent="";
+
+  const {data,error}=
+   await supabaseClient.rpc(
+    "iniciar_sesion_admin",
+    {
+     p_usuario:usuario,
+     p_password:password
+    }
+   );
+
+  if(error)throw error;
+
+  const resultado=
+   Array.isArray(data)?data[0]:data;
+
+  if(!resultado?.id||!resultado?.token){
+
+   throw new Error(
+    "Usuario o contraseña incorrectos."
+   );
+
+  }
+
+  adminActual={
+   id:resultado.id,
+   usuario:resultado.usuario,
+   token:resultado.token
+  };
+
+  sessionStorage.setItem(
+   "sobreRuedasAdmin",
+   JSON.stringify(adminActual)
+  );
+
+  document.getElementById(
+   "loginPassword"
+  ).value="";
+
   mostrarAdmin();
 
  }catch(e){
+
   console.error(e);
-  errorBox.textContent=e?.message||"No se pudo iniciar sesión.";
+
+  errorBox.textContent=
+   e?.message||
+   "No se pudo iniciar sesión.";
+
  }finally{
+
   boton.disabled=false;
   boton.textContent="Ingresar";
+
  }
 }
 
 function mostrarAdmin(){
- document.getElementById("loginScreen").classList.add("hidden");
- document.getElementById("adminApp").style.display="block";
- document.getElementById("usuarioAdminActual").textContent=
-  adminActual?.usuario?`ADM: ${adminActual.usuario}`:"";
+
+ document.getElementById(
+  "loginScreen"
+ ).classList.add("hidden");
+
+ document.getElementById(
+  "adminApp"
+ ).style.display="block";
+
+ document.getElementById(
+  "usuarioAdminActual"
+ ).textContent=
+  adminActual?.usuario?
+  `ADM: ${adminActual.usuario}`:
+  "";
 
  iniciarPanel();
 }
 
 async function iniciarPanel(){
+
  try{
+
   await cargarTodo();
-  construirHorario("horarioEditor","nuevo");
-  construirHorario("editHorarioEditor","edit");
+
+  construirHorario(
+   "horarioEditor",
+   "nuevo"
+  );
+
+  construirHorario(
+   "editHorarioEditor",
+   "edit"
+  );
+
  }catch(e){
+
   err(e);
+
  }
 }
 
-function cerrarSesionAdmin(){
- if(!confirm("¿Cerrar sesión administrativa?"))return;
+async function cerrarSesionAdmin(){
 
- sessionStorage.removeItem("sobreRuedasAdmin");
+ if(!confirm(
+  "¿Cerrar sesión administrativa?"
+ ))return;
+
+ try{
+
+  if(adminActual?.token){
+
+   await supabaseClient.rpc(
+    "cerrar_sesion_admin",
+    {
+     p_token:adminActual.token
+    }
+   );
+
+  }
+
+ }catch(e){
+
+  console.warn(
+   "No se pudo cerrar la sesión:",
+   e
+  );
+
+ }
+
+ sessionStorage.removeItem(
+  "sobreRuedasAdmin"
+ );
+
  adminActual=null;
 
- document.getElementById("adminApp").style.display="none";
- document.getElementById("loginScreen").classList.remove("hidden");
- document.getElementById("loginUsuario").value="";
- document.getElementById("loginPassword").value="";
- document.getElementById("loginError").textContent="";
+ document.getElementById(
+  "adminApp"
+ ).style.display="none";
+
+ document.getElementById(
+  "loginScreen"
+ ).classList.remove("hidden");
+
+ document.getElementById(
+  "loginUsuario"
+ ).value="";
+
+ document.getElementById(
+  "loginPassword"
+ ).value="";
+
+ document.getElementById(
+  "loginError"
+ ).textContent="";
 }
 
 /* NAVEGACIÓN */
 function mostrarSeccion(id,btn){
- document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
- document.getElementById(id).classList.add("active");
- document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+
+ document.querySelectorAll(
+  ".section"
+ ).forEach(
+  x=>x.classList.remove("active")
+ );
+
+ document.getElementById(
+  id
+ ).classList.add("active");
+
+ document.querySelectorAll(
+  ".nav button"
+ ).forEach(
+  x=>x.classList.remove("active")
+ );
+
  btn.classList.add("active");
 
- if(id==="clientes"&&!clientesCargados)cargarClientes();
+ if(
+  id==="clientes"&&
+  !clientesCargados
+ ){
+
+  cargarClientes();
+
+ }
 }
 
 function mensaje(texto,tipo="ok"){
- const el=document.getElementById("mensaje");
+
+ const el=document.getElementById(
+  "mensaje"
+ );
+
  el.textContent=texto;
- el.className="msg "+(tipo==="ok"?"ok":"err");
- clearTimeout(window.msgTimer);
- window.msgTimer=setTimeout(()=>el.className="msg",4000);
+
+ el.className=
+  "msg "+
+  (tipo==="ok"?"ok":"err");
+
+ clearTimeout(
+  window.msgTimer
+ );
+
+ window.msgTimer=
+  setTimeout(
+   ()=>el.className="msg",
+   4000
+  );
 }
 
 function err(e){
+
  console.error(e);
- mensaje(e?.message||"Ocurrió un error.","err");
+
+ mensaje(
+  e?.message||
+  "Ocurrió un error.",
+  "err"
+ );
 }
 
 async function cargarTodo(){
+
  try{
+
   await Promise.all([
    cargarConfiguracion(),
    cargarCategorias(),
    cargarLocales()
   ]);
- }catch(e){err(e)}
+
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 /* CONFIGURACIÓN */
 async function cargarConfiguracion(){
- const {data,error}=await supabaseClient.from("configuracion_negocio")
- .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes")
- .order("id",{ascending:true}).limit(1).maybeSingle();
+
+ const {
+  data,
+  error
+ }=
+  await supabaseClient
+   .from("configuracion_negocio")
+   .select(
+    "id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes"
+   )
+   .order(
+    "id",
+    {ascending:true}
+   )
+   .limit(1)
+   .maybeSingle();
 
  if(error)throw error;
+
  if(!data)return;
 
- cfgNombre.value=data.nombre_negocio||"";
- cfgCiudad.value=data.ciudad||"";
- cfgDelivery.value=data.tarifa_delivery??1.5;
- cfgWhatsapp.value=data.whatsapp_negocio||"";
- cfgMoneda.value=data.moneda||"USD";
- validacionClientes.checked=data.validacion_clientes!==false;
+ cfgNombre.value=
+  data.nombre_negocio||"";
+
+ cfgCiudad.value=
+  data.ciudad||"";
+
+ cfgDelivery.value=
+  data.tarifa_delivery??1.5;
+
+ cfgWhatsapp.value=
+  data.whatsapp_negocio||"";
+
+ cfgMoneda.value=
+  data.moneda||"USD";
+
+ validacionClientes.checked=
+  data.validacion_clientes!==false;
+
  actualizarTextoValidacion();
 }
 
 async function guardarConfiguracion(){
+
  try{
+
   const payload={
-   nombre_negocio:cfgNombre.value.trim(),
-   ciudad:cfgCiudad.value.trim(),
-   tarifa_delivery:Number(cfgDelivery.value)||0,
-   whatsapp_negocio:cfgWhatsapp.value.trim(),
-   moneda:cfgMoneda.value.trim()||"USD",
-   actualizado_en:new Date().toISOString()
+   nombre_negocio:
+    cfgNombre.value.trim(),
+
+   ciudad:
+    cfgCiudad.value.trim(),
+
+   tarifa_delivery:
+    Number(cfgDelivery.value)||0,
+
+   whatsapp_negocio:
+    cfgWhatsapp.value.trim(),
+
+   moneda:
+    cfgMoneda.value.trim()||"USD",
+
+   actualizado_en:
+    new Date().toISOString()
   };
 
-  const {data:exist,error:e0}=await supabaseClient
-   .from("configuracion_negocio")
-   .select("id")
-   .order("id",{ascending:true})
-   .limit(1)
-   .maybeSingle();
+  const {
+   data:exist,
+   error:e0
+  }=
+   await supabaseClient
+    .from("configuracion_negocio")
+    .select("id")
+    .order(
+     "id",
+     {ascending:true}
+    )
+    .limit(1)
+    .maybeSingle();
 
   if(e0)throw e0;
 
   let error;
 
   if(exist?.id){
-   ({error}=await supabaseClient
-    .from("configuracion_negocio")
-    .update(payload)
-    .eq("id",exist.id));
+
+   ({
+    error
+   }=
+    await supabaseClient
+     .from("configuracion_negocio")
+     .update(payload)
+     .eq("id",exist.id));
+
   }else{
-   ({error}=await supabaseClient
-    .from("configuracion_negocio")
-    .insert(payload));
+
+   ({
+    error
+   }=
+    await supabaseClient
+     .from("configuracion_negocio")
+     .insert(payload));
+
   }
 
   if(error)throw error;
-  mensaje("Configuración guardada correctamente.");
- }catch(e){err(e)}
+
+  mensaje(
+   "Configuración guardada correctamente."
+  );
+
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 /* CLIENTES */
 function actualizarTextoValidacion(){
- const activo=document.getElementById("validacionClientes").checked;
- document.getElementById("textoValidacionClientes").textContent=
-  activo?"Validación activa":"Validación inactiva";
+
+ const activo=
+  document.getElementById(
+   "validacionClientes"
+  ).checked;
+
+ document.getElementById(
+  "textoValidacionClientes"
+ ).textContent=
+  activo?
+  "Validación activa":
+  "Validación inactiva";
 }
 
 async function cambiarValidacionClientes(){
- try{
-  const activo=validacionClientes.checked;
 
-  const {data,error}=await supabaseClient
-   .from("configuracion_negocio")
-   .select("id")
-   .order("id",{ascending:true})
-   .limit(1)
-   .maybeSingle();
+ try{
+
+  const activo=
+   validacionClientes.checked;
+
+  const {
+   data,
+   error
+  }=
+   await supabaseClient
+    .from("configuracion_negocio")
+    .select("id")
+    .order(
+     "id",
+     {ascending:true}
+    )
+    .limit(1)
+    .maybeSingle();
 
   if(error)throw error;
-  if(!data?.id)throw new Error("No existe la configuración del negocio.");
 
-  const {error:e}=await supabaseClient
-   .from("configuracion_negocio")
-   .update({
-    validacion_clientes:activo,
-    actualizado_en:new Date().toISOString()
-   })
-   .eq("id",data.id);
+  if(!data?.id){
+
+   throw new Error(
+    "No existe la configuración del negocio."
+   );
+
+  }
+
+  const {
+   error:e
+  }=
+   await supabaseClient
+    .from("configuracion_negocio")
+    .update({
+     validacion_clientes:activo,
+     actualizado_en:
+      new Date().toISOString()
+    })
+    .eq("id",data.id);
 
   if(e)throw e;
 
   actualizarTextoValidacion();
+
   mensaje(
    activo?
    "Validación de clientes activada.":
@@ -566,117 +848,207 @@ async function cambiarValidacionClientes(){
   );
 
  }catch(e){
-  validacionClientes.checked=!validacionClientes.checked;
+
+  validacionClientes.checked=
+   !validacionClientes.checked;
+
   actualizarTextoValidacion();
+
   err(e);
+
  }
 }
 
 /* REGISTRO MANUAL DE CLIENTES */
 function generarCodigoManual(){
- const caracteres="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+ const caracteres=
+  "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
  let codigo="SR";
 
  for(let i=0;i<8;i++){
+
   codigo+=caracteres[
-   Math.floor(Math.random()*caracteres.length)
+   Math.floor(
+    Math.random()*
+    caracteres.length
+   )
   ];
+
  }
 
- nuevoClienteCodigo.value=codigo;
+ nuevoClienteCodigo.value=
+  codigo;
 }
 
 function limpiarClienteManual(){
+
  nuevoClienteNombre.value="";
  nuevoClienteTelefono.value="";
  nuevoClienteCodigo.value="";
  nuevoClienteReferente.value="";
 
- const resultado=document.getElementById("resultadoClienteManual");
+ const resultado=
+  document.getElementById(
+   "resultadoClienteManual"
+  );
+
  resultado.innerHTML="";
- resultado.classList.add("hidden");
+ resultado.classList.add(
+  "hidden"
+ );
 }
 
 async function crearClienteManual(){
- const boton=document.getElementById("btnCrearCliente");
 
- const nombre=nuevoClienteNombre.value.trim();
- const telefono=normalizarTelefono(nuevoClienteTelefono.value);
- const codigo=nuevoClienteCodigo.value.trim().toUpperCase();
- const referente=nuevoClienteReferente.value.trim().toUpperCase();
+ const boton=
+  document.getElementById(
+   "btnCrearCliente"
+  );
+
+ const nombre=
+  nuevoClienteNombre.value.trim();
+
+ const telefono=
+  normalizarTelefono(
+   nuevoClienteTelefono.value
+  );
+
+ const codigo=
+  nuevoClienteCodigo.value
+   .trim()
+   .toUpperCase();
+
+ const referente=
+  nuevoClienteReferente.value
+   .trim()
+   .toUpperCase();
 
  if(!nombre){
-  mensaje("Ingresa el nombre del cliente.","err");
+
+  mensaje(
+   "Ingresa el nombre del cliente.",
+   "err"
+  );
+
   return;
  }
 
  if(!telefono){
-  mensaje("Ingresa un teléfono celular válido de Ecuador.","err");
+
+  mensaje(
+   "Ingresa un teléfono celular válido de Ecuador.",
+   "err"
+  );
+
   return;
  }
 
  if(!codigo){
-  mensaje("Ingresa o genera el código del nuevo cliente.","err");
+
+  mensaje(
+   "Ingresa o genera el código del nuevo cliente.",
+   "err"
+  );
+
   return;
  }
 
  if(codigo.length<4){
-  mensaje("El código del cliente debe tener al menos 4 caracteres.","err");
+
+  mensaje(
+   "El código del cliente debe tener al menos 4 caracteres.",
+   "err"
+  );
+
   return;
  }
 
  try{
+
   boton.disabled=true;
   boton.textContent="Registrando...";
 
-  /* Verificar teléfono */
-  const {data:existente,error:e1}=await supabaseClient.rpc(
-   "buscar_cliente_por_telefono",
-   {p_telefono:telefono}
-  );
+  const {
+   data:existente,
+   error:e1
+  }=
+   await supabaseClient.rpc(
+    "buscar_cliente_por_telefono",
+    {
+     p_telefono:telefono
+    }
+   );
 
   if(e1)throw e1;
 
-  if(Array.isArray(existente)&&existente.length){
+  if(
+   Array.isArray(existente)&&
+   existente.length
+  ){
+
    throw new Error(
     `El teléfono ya está registrado a nombre de "${existente[0].nombre||"otro cliente"}".`
    );
+
   }
 
-  /* Verificar código */
-  const {data:existeCodigo,error:e2}=await supabaseClient.rpc(
-   "buscar_cliente_por_codigo",
-   {p_codigo:codigo}
-  );
+  const {
+   data:existeCodigo,
+   error:e2
+  }=
+   await supabaseClient.rpc(
+    "buscar_cliente_por_codigo",
+    {
+     p_codigo:codigo
+    }
+   );
 
   if(e2)throw e2;
 
-  if(Array.isArray(existeCodigo)&&existeCodigo.length){
-   throw new Error("El código del cliente ya está registrado.");
+  if(
+   Array.isArray(existeCodigo)&&
+   existeCodigo.length
+  ){
+
+   throw new Error(
+    "El código del cliente ya está registrado."
+   );
+
   }
 
-  /* Crear cliente */
-  const {data,error}=await supabaseClient.rpc(
-   "crear_cliente",
-   {
-    p_nombre:nombre,
-    p_telefono:telefono,
-    p_codigo_referido:codigo,
-    p_codigo_referente:referente||null
-   }
-  );
+  const {
+   data,
+   error
+  }=
+   await supabaseClient.rpc(
+    "crear_cliente",
+    {
+     p_nombre:nombre,
+     p_telefono:telefono,
+     p_codigo_referido:codigo,
+     p_codigo_referente:
+      referente||null
+    }
+   );
 
   if(error)throw error;
 
-  const resultado=document.getElementById("resultadoClienteManual");
+  const resultado=
+   document.getElementById(
+    "resultadoClienteManual"
+   );
 
   resultado.innerHTML=`
    <strong>Cliente registrado correctamente.</strong>
    <div style="margin-top:8px">
-    Cliente: <strong>${escapeHtml(nombre)}</strong>
+    Cliente:
+    <strong>${escapeHtml(nombre)}</strong>
    </div>
    <div style="margin-top:5px">
-    Teléfono: <strong>${escapeHtml(telefono)}</strong>
+    Teléfono:
+    <strong>${escapeHtml(telefono)}</strong>
    </div>
    <div style="margin-top:5px">
     Código de referido:
@@ -684,7 +1056,9 @@ async function crearClienteManual(){
    </div>
   `;
 
-  resultado.classList.remove("hidden");
+  resultado.classList.remove(
+   "hidden"
+  );
 
   nuevoClienteNombre.value="";
   nuevoClienteTelefono.value="";
@@ -692,133 +1066,304 @@ async function crearClienteManual(){
   nuevoClienteReferente.value="";
 
   clientesCargados=false;
+
   await cargarClientes();
 
-  mensaje("Cliente registrado correctamente.");
+  mensaje(
+   "Cliente registrado correctamente."
+  );
 
  }catch(e){
+
   err(e);
+
  }finally{
+
   boton.disabled=false;
   boton.textContent="Registrar cliente";
+
  }
 }
 
+/* LISTADO DE CLIENTES MEDIANTE RPC SEGURA */
 async function cargarClientes(){
- const box=document.getElementById("listaClientes");
 
- if(box)box.innerHTML='<p class="muted">Cargando clientes...</p>';
+ const box=
+  document.getElementById(
+   "listaClientes"
+  );
+
+ if(box){
+
+  box.innerHTML=
+   '<p class="muted">Cargando clientes...</p>';
+
+ }
 
  try{
-  const {data,error}=await supabaseClient
-   .from("clientes")
-   .select("id,nombre,telefono,codigo_referido,referido_por,activo,creado_en")
-   .order("creado_en",{ascending:false});
+
+  if(!adminActual?.token){
+
+   throw new Error(
+    "La sesión administrativa no es válida."
+   );
+
+  }
+
+  const {
+   data,
+   error
+  }=
+   await supabaseClient.rpc(
+    "listar_clientes_admin",
+    {
+     p_token:adminActual.token
+    }
+   );
 
   if(error)throw error;
 
-  clientes=data||[];
+  clientes=
+   data||[];
+
   clientesCargados=true;
+
   pintarClientes();
 
  }catch(e){
+
   clientesCargados=false;
 
   if(box){
+
    box.innerHTML=
     '<p class="muted">No se pudieron cargar los clientes.</p>';
+
+  }
+
+  const mensajeError=
+   String(e?.message||"");
+
+  if(
+   /sesión administrativa/i.test(
+    mensajeError
+   )||
+   /sesión inválida/i.test(
+    mensajeError
+   )
+  ){
+
+   sessionStorage.removeItem(
+    "sobreRuedasAdmin"
+   );
+
+   adminActual=null;
+
+   document.getElementById(
+    "adminApp"
+   ).style.display="none";
+
+   document.getElementById(
+    "loginScreen"
+   ).classList.remove("hidden");
+
+   document.getElementById(
+    "loginError"
+   ).textContent=
+    "La sesión administrativa expiró. Ingresa nuevamente.";
+
   }
 
   err(e);
  }
 }
 
-function filtrarClientes(){pintarClientes()}
+function filtrarClientes(){
+ pintarClientes();
+}
 
 function pintarClientes(){
- const box=document.getElementById("listaClientes");
- const resumen=document.getElementById("resumenClientes");
+
+ const box=
+  document.getElementById(
+   "listaClientes"
+  );
+
+ const resumen=
+  document.getElementById(
+   "resumenClientes"
+  );
 
  if(!box)return;
 
- const activos=clientes.filter(c=>c.activo).length;
- const inactivos=clientes.length-activos;
+ const activos=
+  clientes.filter(
+   c=>c.activo
+  ).length;
+
+ const inactivos=
+  clientes.length-activos;
 
  if(resumen){
+
   resumen.innerHTML=`
-   <div class="client-count"><strong>${clientes.length}</strong> Total</div>
-   <div class="client-count"><strong>${activos}</strong> Activos</div>
-   <div class="client-count"><strong>${inactivos}</strong> Inactivos</div>`;
+   <div class="client-count">
+    <strong>${clientes.length}</strong> Total
+   </div>
+   <div class="client-count">
+    <strong>${activos}</strong> Activos
+   </div>
+   <div class="client-count">
+    <strong>${inactivos}</strong> Inactivos
+   </div>`;
+
  }
 
  const texto=(
-  document.getElementById("buscarCliente")?.value||""
- ).trim().toLowerCase();
+  document.getElementById(
+   "buscarCliente"
+  )?.value||""
+ )
+ .trim()
+ .toLowerCase();
 
- const lista=clientes.filter(c=>{
-  if(!texto)return true;
+ const lista=
+  clientes.filter(c=>{
 
-  return[
-   c.nombre,
-   c.telefono,
-   c.codigo_referido
-  ].some(v=>
-   String(v||"").toLowerCase().includes(texto)
-  );
- });
+   if(!texto)return true;
+
+   return[
+    c.nombre,
+    c.telefono,
+    c.codigo_referido
+   ].some(
+    v=>
+     String(v||"")
+      .toLowerCase()
+      .includes(texto)
+   );
+
+  });
 
  if(!lista.length){
-  box.innerHTML='<p class="muted">No se encontraron clientes.</p>';
+
+  box.innerHTML=
+   '<p class="muted">No se encontraron clientes.</p>';
+
   return;
  }
 
- box.innerHTML=lista.map(c=>`
-  <div class="client-row">
-   <div class="client-info">
-    <strong>${escapeHtml(c.nombre||"Cliente")}</strong>
-    <small>Teléfono: ${escapeHtml(c.telefono||"")}</small>
-    <small>Código: ${escapeHtml(c.codigo_referido||"")}</small>
+ box.innerHTML=
+  lista.map(c=>`
+
+   <div class="client-row">
+
+    <div class="client-info">
+
+     <strong>
+      ${escapeHtml(
+       c.nombre||"Cliente"
+      )}
+     </strong>
+
+     <small>
+      Teléfono:
+      ${escapeHtml(
+       c.telefono||""
+      )}
+     </small>
+
+     <small>
+      Código:
+      ${escapeHtml(
+       c.codigo_referido||""
+      )}
+     </small>
+
+    </div>
+
+    <div class="client-info">
+
+     <span class="badge ${c.activo?"on":"off"}">
+      ${c.activo?"Activo":"Inactivo"}
+     </span>
+
+     <small>
+      ${
+       c.referido_por?
+       `Referido por cliente #${c.referido_por}`:
+       "Cliente principal"
+      }
+     </small>
+
+    </div>
+
+    <div class="client-actions">
+
+     <button
+      class="btn ${c.activo?"warning":"success"}"
+      onclick="cambiarEstadoCliente(${c.id},${!c.activo})">
+      ${c.activo?"Inactivar":"Activar"}
+     </button>
+
+     <button
+      class="btn danger"
+      onclick="eliminarCliente(${c.id})">
+      Eliminar
+     </button>
+
+    </div>
+
    </div>
 
-   <div class="client-info">
-    <span class="badge ${c.activo?"on":"off"}">
-     ${c.activo?"Activo":"Inactivo"}
-    </span>
-    <small>
-     ${c.referido_por?
-      `Referido por cliente #${c.referido_por}`:
-      "Cliente principal"}
-    </small>
-   </div>
-
-   <div class="client-actions">
-    <button
-     class="btn ${c.activo?"warning":"success"}"
-     onclick="cambiarEstadoCliente(${c.id},${!c.activo})">
-     ${c.activo?"Inactivar":"Activar"}
-    </button>
-
-    <button
-     class="btn danger"
-     onclick="eliminarCliente(${c.id})">
-     Eliminar
-    </button>
-   </div>
-  </div>
- `).join("");
+  `).join("");
 }
 
-async function cambiarEstadoCliente(id,activo){
+async function cambiarEstadoCliente(
+ id,
+ activo
+){
+
  try{
-  const {error}=await supabaseClient
-   .from("clientes")
-   .update({activo})
-   .eq("id",id);
+
+  if(!adminActual?.token){
+
+   throw new Error(
+    "La sesión administrativa no es válida."
+   );
+
+  }
+
+  const {
+   data,
+   error
+  }=
+   await supabaseClient.rpc(
+    "cambiar_estado_cliente_admin",
+    {
+     p_token:adminActual.token,
+     p_cliente_id:id,
+     p_activo:activo
+    }
+   );
 
   if(error)throw error;
 
-  const c=clientes.find(x=>x.id===id);
-  if(c)c.activo=activo;
+  if(!data){
+
+   throw new Error(
+    "No se encontró el cliente."
+   );
+
+  }
+
+  const c=
+   clientes.find(
+    x=>x.id===id
+   );
+
+  if(c)c.activo=
+   activo;
 
   pintarClientes();
 
@@ -828,31 +1373,57 @@ async function cambiarEstadoCliente(id,activo){
    "Cliente inactivado."
   );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 async function eliminarCliente(id){
+
  try{
-  const cliente=clientes.find(c=>c.id===id);
+
+  const cliente=
+   clientes.find(
+    c=>c.id===id
+   );
+
   if(!cliente)return;
 
   if(!confirm(
    `¿Eliminar definitivamente al cliente "${cliente.nombre}"?\n\nSus referidos permanecerán registrados.`
   ))return;
 
-  const {error:e1}=await supabaseClient
-   .from("clientes")
-   .update({referido_por:null})
-   .eq("referido_por",id);
+  if(!adminActual?.token){
 
-  if(e1)throw e1;
+   throw new Error(
+    "La sesión administrativa no es válida."
+   );
 
-  const {error:e2}=await supabaseClient
-   .from("clientes")
-   .delete()
-   .eq("id",id);
+  }
 
-  if(e2)throw e2;
+  const {
+   data,
+   error
+  }=
+   await supabaseClient.rpc(
+    "eliminar_cliente_admin",
+    {
+     p_token:adminActual.token,
+     p_cliente_id:id
+    }
+   );
+
+  if(error)throw error;
+
+  if(!data){
+
+   throw new Error(
+    "No se encontró el cliente."
+   );
+
+  }
 
   await cargarClientes();
 
@@ -860,86 +1431,171 @@ async function eliminarCliente(id){
    "Cliente eliminado. Sus referidos permanecen registrados."
   );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 /* IMPORTACIÓN VCF */
 async function importarContactos(){
- const archivo=archivoContactos.files[0];
- const boton=document.getElementById("btnImportarContactos");
+
+ const archivo=
+  archivoContactos.files[0];
+
+ const boton=
+  document.getElementById(
+   "btnImportarContactos"
+  );
 
  if(!archivo){
-  mensaje("Selecciona un archivo de contactos .vcf.","err");
+
+  mensaje(
+   "Selecciona un archivo de contactos .vcf.",
+   "err"
+  );
+
   return;
  }
 
- if(!/\.vcf$/i.test(archivo.name)){
-  mensaje("El archivo debe estar en formato .vcf.","err");
+ if(!/\.vcf$/i.test(
+  archivo.name
+ )){
+
+  mensaje(
+   "El archivo debe estar en formato .vcf.",
+   "err"
+  );
+
   return;
  }
 
  try{
+
   boton.disabled=true;
   boton.textContent="Importando...";
 
-  const texto=await archivo.text();
-  const contactos=parsearVCF(texto);
+  const texto=
+   await archivo.text();
+
+  const contactos=
+   parsearVCF(texto);
 
   if(!contactos.length){
-   mensaje("No se encontraron contactos válidos en el archivo.","err");
+
+   mensaje(
+    "No se encontraron contactos válidos en el archivo.",
+    "err"
+   );
+
    return;
   }
 
-  const unicos=new Map();
+  const unicos=
+   new Map();
 
   contactos.forEach(c=>{
-   const telefono=normalizarTelefono(c.telefono);
+
+   const telefono=
+    normalizarTelefono(
+     c.telefono
+    );
 
    if(!telefono)return;
 
    if(!unicos.has(telefono)){
+
     unicos.set(
      telefono,
      {
-      nombre:c.nombre||"Cliente",
+      nombre:
+       c.nombre||"Cliente",
       telefono
      }
     );
+
    }
+
   });
 
-  const lista=[...unicos.values()];
+  const lista=
+   [...unicos.values()];
 
   if(!lista.length){
-   mensaje("No se encontraron números de teléfono válidos.","err");
+
+   mensaje(
+    "No se encontraron números de teléfono válidos.",
+    "err"
+   );
+
    return;
   }
 
-  let procesados=0,importados=0,existentes=0,errores=0;
+  let procesados=0,
+      importados=0,
+      existentes=0,
+      errores=0;
+
   const TAM_BLOQUE=500;
 
-  for(let i=0;i<lista.length;i+=TAM_BLOQUE){
+  for(
+   let i=0;
+   i<lista.length;
+   i+=TAM_BLOQUE
+  ){
 
-   const bloque=lista.slice(i,i+TAM_BLOQUE);
+   const bloque=
+    lista.slice(
+     i,
+     i+TAM_BLOQUE
+    );
 
-   const {data,error}=await supabaseClient.rpc(
-    "importar_clientes_masivo",
-    {p_clientes:bloque}
-   );
+   const {
+    data,
+    error
+   }=
+    await supabaseClient.rpc(
+     "importar_clientes_masivo",
+     {
+      p_clientes:bloque
+     }
+    );
 
    if(error)throw error;
 
-   const r=Array.isArray(data)?data[0]:data;
+   const r=
+    Array.isArray(data)?
+    data[0]:
+    data;
 
-   procesados+=Number(r?.procesados||0);
-   importados+=Number(r?.importados||0);
-   existentes+=Number(r?.existentes||0);
-   errores+=Number(r?.errores||0);
+   procesados+=
+    Number(
+     r?.procesados||0
+    );
+
+   importados+=
+    Number(
+     r?.importados||0
+    );
+
+   existentes+=
+    Number(
+     r?.existentes||0
+    );
+
+   errores+=
+    Number(
+     r?.errores||0
+    );
+
   }
 
   mostrarResultadoImportacion({
-   contactosArchivo:contactos.length,
-   unicos:lista.length,
+   contactosArchivo:
+    contactos.length,
+   unicos:
+    lista.length,
    procesados,
    importados,
    existentes,
@@ -947,6 +1603,7 @@ async function importarContactos(){
   });
 
   archivoContactos.value="";
+
   clientesCargados=false;
 
   await cargarClientes();
@@ -956,20 +1613,29 @@ async function importarContactos(){
   );
 
  }catch(e){
+
   console.error(e);
+
   mensaje(
    e?.message||
    "No se pudo importar el archivo de contactos.",
    "err"
   );
+
  }finally{
+
   boton.disabled=false;
   boton.textContent="Importar contactos";
+
  }
 }
 
 function mostrarResultadoImportacion(r){
- const box=document.getElementById("resultadoImportacion");
+
+ const box=
+  document.getElementById(
+   "resultadoImportacion"
+  );
 
  box.innerHTML=`
   <strong>Contactos encontrados: ${r.contactosArchivo}</strong>
@@ -979,68 +1645,112 @@ function mostrarResultadoImportacion(r){
   <strong>Ya existentes: ${r.existentes}</strong>
   <strong>Errores: ${r.errores}</strong>`;
 
- box.classList.remove("hidden");
+ box.classList.remove(
+  "hidden"
+ );
 }
 
 function parsearVCF(texto){
+
  const resultado=[];
 
- const normalizado=texto
-  .replace(/\r\n/g,"\n")
-  .replace(/\r/g,"\n")
-  .replace(/\n[ \t]/g,"");
+ const normalizado=
+  texto
+   .replace(/\r\n/g,"\n")
+   .replace(/\r/g,"\n")
+   .replace(/\n[ \t]/g,"");
 
- const bloques=normalizado.split(/BEGIN:VCARD/i);
+ const bloques=
+  normalizado.split(
+   /BEGIN:VCARD/i
+  );
 
- for(const bloqueRaw of bloques){
+ for(
+  const bloqueRaw of bloques
+ ){
 
-  if(!/TEL/i.test(bloqueRaw))continue;
+  if(!/TEL/i.test(
+   bloqueRaw
+  ))continue;
 
-  const bloque=bloqueRaw.split(/END:VCARD/i)[0];
+  const bloque=
+   bloqueRaw.split(
+    /END:VCARD/i
+   )[0];
 
   let nombre="";
 
-  const fn=bloque.match(
-   /^FN(?:;[^:]*)?:(.*)$/im
-  );
-
-  if(fn){
-   nombre=decodificarVCF(fn[1].trim());
-  }else{
-   const n=bloque.match(
-    /^N(?:;[^:]*)?:(.*)$/im
+  const fn=
+   bloque.match(
+    /^FN(?:;[^:]*)?:(.*)$/im
    );
 
-   if(n){
-    const partes=n[1].split(";");
+  if(fn){
 
-    nombre=decodificarVCF(
-     [
-      partes[1],
-      partes[0],
-      partes[2]
-     ].filter(Boolean).join(" ").trim()
+   nombre=
+    decodificarVCF(
+     fn[1].trim()
     );
+
+  }else{
+
+   const n=
+    bloque.match(
+     /^N(?:;[^:]*)?:(.*)$/im
+    );
+
+   if(n){
+
+    const partes=
+     n[1].split(";");
+
+    nombre=
+     decodificarVCF(
+      [
+       partes[1],
+       partes[0],
+       partes[2]
+      ]
+      .filter(Boolean)
+      .join(" ")
+      .trim()
+     );
+
    }
+
   }
 
-  const lineas=bloque.split("\n");
+  const lineas=
+   bloque.split("\n");
 
-  for(const linea of lineas){
+  for(
+   const linea of lineas
+  ){
 
-   if(!/^TEL(?:;[^:]*)?:/i.test(linea))continue;
+   if(!/^TEL(?:;[^:]*)?:/i.test(
+    linea
+   ))continue;
 
-   const pos=linea.indexOf(":");
+   const pos=
+    linea.indexOf(":");
+
    if(pos<0)continue;
 
-   const telefono=linea.substring(pos+1).trim();
+   const telefono=
+    linea.substring(
+     pos+1
+    ).trim();
 
    if(telefono){
+
     resultado.push({
-     nombre:nombre||"Cliente",
+     nombre:
+      nombre||"Cliente",
      telefono
     });
+
    }
+
   }
  }
 
@@ -1048,77 +1758,131 @@ function parsearVCF(texto){
 }
 
 function decodificarVCF(valor){
+
  return String(valor||"")
-  .replace(/\\n/gi," ")
-  .replace(/\\,/g,",")
-  .replace(/\\;/g,";")
-  .replace(/\\\\/g,"\\")
+  .replace(
+   /\\n/gi,
+   " "
+  )
+  .replace(
+   /\\,/g,
+   ","
+  )
+  .replace(
+   /\\;/g,
+   ";"
+  )
+  .replace(
+   /\\\\/g,
+   "\\"
+  )
   .trim();
 }
 
 function normalizarTelefono(valor){
- let t=String(valor||"")
-  .trim()
-  .replace(/^tel:/i,"")
-  .replace(/[^\d+]/g,"");
 
- if(t.startsWith("+"))t=t.substring(1);
+ let t=
+  String(valor||"")
+   .trim()
+   .replace(
+    /^tel:/i,
+    ""
+   )
+   .replace(
+    /[^\d+]/g,
+    ""
+   );
 
- if(/^5939\d{8}$/.test(t))return t;
- if(/^09\d{8}$/.test(t))return "593"+t.substring(1);
- if(/^9\d{8}$/.test(t))return "593"+t;
+ if(t.startsWith("+"))
+  t=t.substring(1);
+
+ if(/^5939\d{8}$/.test(t))
+  return t;
+
+ if(/^09\d{8}$/.test(t))
+  return "593"+t.substring(1);
+
+ if(/^9\d{8}$/.test(t))
+  return "593"+t;
 
  return "";
 }
 
 /* CATEGORÍAS */
 async function cargarCategorias(){
- const {data,error}=await supabaseClient
-  .from("categorias")
-  .select("id,nombre,activo")
-  .order("nombre");
+
+ const {
+  data,
+  error
+ }=
+  await supabaseClient
+   .from("categorias")
+   .select(
+    "id,nombre,activo"
+   )
+   .order("nombre");
 
  if(error)throw error;
 
- categorias=data||[];
+ categorias=
+  data||[];
+
  pintarCategorias();
  cargarSelectCategorias();
 }
 
 function cargarSelectCategorias(){
+
  const html=
   '<option value="">Sin categoría</option>'+
   categorias.map(c=>
    `<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`
   ).join("");
 
- locCategoria.innerHTML=html;
- editCategoria.innerHTML=html;
+ locCategoria.innerHTML=
+  html;
+
+ editCategoria.innerHTML=
+  html;
 }
 
 function pintarCategorias(){
+
  listaCategorias.innerHTML="";
 
  if(!categorias.length){
+
   listaCategorias.innerHTML=
    '<p class="muted">No hay categorías.</p>';
+
   return;
  }
 
  categorias.forEach(c=>{
-  const row=document.createElement("div");
-  row.className="category-row";
+
+  const row=
+   document.createElement(
+    "div"
+   );
+
+  row.className=
+   "category-row";
 
   row.innerHTML=`
    <div>
-    <strong>${escapeHtml(c.nombre)}</strong>
+    <strong>
+     ${escapeHtml(c.nombre)}
+    </strong>
+
     <span class="badge ${c.activo?"on":"off"}">
      ${c.activo?"Activa":"Inactiva"}
     </span>
    </div>
 
    <div class="actions">
-    <button class="btn secondary"
+
+    <button
+     class="btn secondary"
      onclick="editarCategoria(${c.id})">
      Editar
     </button>
@@ -1129,101 +1893,186 @@ function pintarCategorias(){
      ${c.activo?"Inactivar":"Activar"}
     </button>
 
-    <button class="btn danger"
+    <button
+     class="btn danger"
      onclick="eliminarCategoria(${c.id})">
      Eliminar
     </button>
+
    </div>`;
 
-  listaCategorias.appendChild(row);
+  listaCategorias.appendChild(
+   row
+  );
+
  });
 }
 
 async function crearCategoria(){
+
  try{
-  const nombre=catNombre.value.trim();
+
+  const nombre=
+   catNombre.value.trim();
 
   if(!nombre){
-   mensaje("Escribe el nombre de la categoría.","err");
+
+   mensaje(
+    "Escribe el nombre de la categoría.",
+    "err"
+   );
+
    return;
   }
 
-  const existe=categorias.some(
-   c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase()
-  );
+  const existe=
+   categorias.some(
+    c=>
+     c.nombre
+      .trim()
+      .toLowerCase()===
+     nombre.toLowerCase()
+   );
 
   if(existe){
-   mensaje("Ya existe una categoría con ese nombre.","err");
+
+   mensaje(
+    "Ya existe una categoría con ese nombre.",
+    "err"
+   );
+
    return;
   }
 
-  const {error}=await supabaseClient
-   .from("categorias")
-   .insert({nombre,activo:true});
+  const {
+   error
+  }=
+   await supabaseClient
+    .from("categorias")
+    .insert({
+     nombre,
+     activo:true
+    });
 
   if(error)throw error;
 
   catNombre.value="";
+
   await cargarCategorias();
 
-  mensaje("Categoría creada.");
+  mensaje(
+   "Categoría creada."
+  );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 async function editarCategoria(id){
- const cat=categorias.find(x=>x.id===id);
+
+ const cat=
+  categorias.find(
+   x=>x.id===id
+  );
+
  if(!cat)return;
 
- const nombre=prompt(
-  "Nuevo nombre de categoría:",
-  cat.nombre
- );
+ const nombre=
+  prompt(
+   "Nuevo nombre de categoría:",
+   cat.nombre
+  );
 
  if(nombre===null)return;
 
- const nuevo=nombre.trim();
+ const nuevo=
+  nombre.trim();
+
  if(!nuevo)return;
 
- const existe=categorias.some(
-  c=>c.id!==id&&
-  c.nombre.trim().toLowerCase()===nuevo.toLowerCase()
- );
+ const existe=
+  categorias.some(
+   c=>
+    c.id!==id&&
+    c.nombre.trim().toLowerCase()===
+    nuevo.toLowerCase()
+  );
 
  if(existe){
-  mensaje("Ya existe una categoría con ese nombre.","err");
+
+  mensaje(
+   "Ya existe una categoría con ese nombre.",
+   "err"
+  );
+
   return;
  }
 
  try{
-  const {error:e1}=await supabaseClient
-   .from("categorias")
-   .update({nombre:nuevo})
-   .eq("id",id);
+
+  const {
+   error:e1
+  }=
+   await supabaseClient
+    .from("categorias")
+    .update({
+     nombre:nuevo
+    })
+    .eq("id",id);
 
   if(e1)throw e1;
 
-  const {error:e2}=await supabaseClient
-   .from("restaurantes")
-   .update({categoria:nuevo})
-   .eq("categoria",cat.nombre);
+  const {
+   error:e2
+  }=
+   await supabaseClient
+    .from("restaurantes")
+    .update({
+     categoria:nuevo
+    })
+    .eq(
+     "categoria",
+     cat.nombre
+    );
 
   if(e2)throw e2;
 
   await cargarCategorias();
   await cargarLocales();
 
-  mensaje("Categoría actualizada.");
+  mensaje(
+   "Categoría actualizada."
+  );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
-async function cambiarEstadoCategoria(id,activo){
+async function cambiarEstadoCategoria(
+ id,
+ activo
+){
+
  try{
-  const {error}=await supabaseClient
-   .from("categorias")
-   .update({activo})
-   .eq("id",id);
+
+  const {
+   error
+  }=
+   await supabaseClient
+    .from("categorias")
+    .update({
+     activo
+    })
+    .eq(
+     "id",
+     id
+    );
 
   if(error)throw error;
 
@@ -1235,22 +2084,35 @@ async function cambiarEstadoCategoria(id,activo){
    "Categoría inactivada."
   );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 async function eliminarCategoria(id){
- const cat=categorias.find(x=>x.id===id);
+
+ const cat=
+  categorias.find(
+   x=>x.id===id
+  );
+
  if(!cat)return;
 
- const asociados=locales.filter(
-  x=>x.categoria===cat.nombre
- );
+ const asociados=
+  locales.filter(
+   x=>x.categoria===cat.nombre
+  );
 
- let texto=`¿Eliminar la categoría "${cat.nombre}"?`;
+ let texto=
+  `¿Eliminar la categoría "${cat.nombre}"?`;
 
  if(asociados.length){
+
   texto+=
    `\n\nTiene ${asociados.length} local(es) asociado(s). Su categoría quedará vacía.`;
+
  }
 
  if(!confirm(texto))return;
@@ -1258,61 +2120,103 @@ async function eliminarCategoria(id){
  try{
 
   if(asociados.length){
-   const {error:e1}=await supabaseClient
-    .from("restaurantes")
-    .update({categoria:null})
-    .eq("categoria",cat.nombre);
+
+   const {
+    error:e1
+   }=
+    await supabaseClient
+     .from("restaurantes")
+     .update({
+      categoria:null
+     })
+     .eq(
+      "categoria",
+      cat.nombre
+     );
 
    if(e1)throw e1;
+
   }
 
-  const {error}=await supabaseClient
-   .from("categorias")
-   .delete()
-   .eq("id",id);
+  const {
+   error
+  }=
+   await supabaseClient
+    .from("categorias")
+    .delete()
+    .eq(
+     "id",
+     id
+    );
 
   if(error)throw error;
 
   await cargarCategorias();
   await cargarLocales();
 
-  mensaje("Categoría eliminada.");
+  mensaje(
+   "Categoría eliminada."
+  );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 /* LOCALES */
 async function cargarLocales(){
- const {data,error}=await supabaseClient
-  .from("restaurantes")
-  .select("id,nombre,categoria,descripcion,banner_url,activo")
-  .order("nombre");
+
+ const {
+  data,
+  error
+ }=
+  await supabaseClient
+   .from("restaurantes")
+   .select(
+    "id,nombre,categoria,descripcion,banner_url,activo"
+   )
+   .order("nombre");
 
  if(error)throw error;
 
- locales=data||[];
+ locales=
+  data||[];
+
  pintarLocales();
 }
 
 function pintarLocales(){
+
  listaLocales.innerHTML="";
 
  if(!locales.length){
+
   listaLocales.innerHTML=
    '<p class="muted">No hay locales registrados.</p>';
+
   return;
  }
 
  locales.forEach(l=>{
-  const div=document.createElement("div");
-  div.className="local-card";
 
-  const img=l.banner_url||"";
+  const div=
+   document.createElement(
+    "div"
+   );
+
+  div.className=
+   "local-card";
+
+  const img=
+   l.banner_url||"";
 
   div.innerHTML=`
    ${
     img?
-    `<img class="local-banner"
+    `<img
+      class="local-banner"
       src="${escapeAttr(img)}"
       alt=""
       loading="lazy"
@@ -1327,10 +2231,17 @@ function pintarLocales(){
     </div>
 
     <div class="muted">
-     ${escapeHtml(l.categoria||"Sin categoría")}
+     ${escapeHtml(
+      l.categoria||
+      "Sin categoría"
+     )}
     </div>
 
-    <p>${escapeHtml(l.descripcion||"")}</p>
+    <p>
+     ${escapeHtml(
+      l.descripcion||""
+     )}
+    </p>
 
     <span class="badge ${l.activo?"on":"off"}">
      ${l.activo?"Activo":"Inactivo"}
@@ -1338,7 +2249,8 @@ function pintarLocales(){
 
     <div class="actions">
 
-     <button class="btn info"
+     <button
+      class="btn info"
       onclick="editarLocal(${l.id})">
       Editar
      </button>
@@ -1349,7 +2261,8 @@ function pintarLocales(){
       ${l.activo?"Inactivar":"Activar"}
      </button>
 
-     <button class="btn danger"
+     <button
+      class="btn danger"
       onclick="eliminarLocal(${l.id})">
       Eliminar
      </button>
@@ -1357,20 +2270,34 @@ function pintarLocales(){
     </div>
    </div>`;
 
-  listaLocales.appendChild(div);
+  listaLocales.appendChild(
+   div
+  );
+
  });
 }
 
 /* HORARIOS */
 function cambiarModoHorario(){
- construirHorario("horarioEditor","nuevo");
+
+ construirHorario(
+  "horarioEditor",
+  "nuevo"
+ );
+
 }
 
 function cambiarModoHorarioEdit(){
- construirHorario("editHorarioEditor","edit");
+
+ construirHorario(
+  "editHorarioEditor",
+  "edit"
+ );
+
 }
 
 function modoSeleccionado(tipo){
+
  const name=
   tipo==="edit"?
   "editModoHorario":
@@ -1378,24 +2305,36 @@ function modoSeleccionado(tipo){
 
  return document.querySelector(
   `input[name="${name}"]:checked`
- )?.value||"personalizado";
+ )?.value||
+ "personalizado";
 }
 
-function construirHorario(id,tipo){
- const box=document.getElementById(id);
+function construirHorario(
+ id,
+ tipo
+){
+
+ const box=
+  document.getElementById(id);
+
  if(!box)return;
 
- const modo=modoSeleccionado(tipo);
+ const modo=
+  modoSeleccionado(tipo);
 
  if(modo==="siempre"){
+
   box.innerHTML=
    '<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
+
   return;
  }
 
  if(modo==="cerrado"){
+
   box.innerHTML=
    '<p class="muted">El local estará cerrado todos los días.</p>';
+
   return;
  }
 
@@ -1404,9 +2343,12 @@ function construirHorario(id,tipo){
    ${DIAS.map(d=>`
     <div class="horario-row">
 
-     <div class="day">${d.n}</div>
+     <div class="day">
+      ${d.n}
+     </div>
 
      <label class="toggle">
+
       <input
        type="checkbox"
        id="${tipo}Dia${d.d}"
@@ -1414,23 +2356,33 @@ function construirHorario(id,tipo){
        onchange="actualizarFilaHorario('${tipo}',${d.d})">
 
       <span class="eye">👁</span>
-      <span class="estado-text">Abierto</span>
+
+      <span class="estado-text">
+       Abierto
+      </span>
+
      </label>
 
      <div class="time-wrap">
+
       <label>Desde</label>
+
       <input
        id="${tipo}Apertura${d.d}"
        type="time"
        value="10:00">
+
      </div>
 
      <div class="time-wrap">
+
       <label>Hasta</label>
+
       <input
        id="${tipo}Cierre${d.d}"
        type="time"
        value="22:00">
+
      </div>
 
     </div>
@@ -1438,181 +2390,285 @@ function construirHorario(id,tipo){
   </div>`;
 }
 
-function actualizarFilaHorario(tipo,dia){
- const chk=document.getElementById(
-  `${tipo}Dia${dia}`
- );
+function actualizarFilaHorario(
+ tipo,
+ dia
+){
 
- const ap=document.getElementById(
-  `${tipo}Apertura${dia}`
- );
+ const chk=
+  document.getElementById(
+   `${tipo}Dia${dia}`
+  );
 
- const ci=document.getElementById(
-  `${tipo}Cierre${dia}`
- );
+ const ap=
+  document.getElementById(
+   `${tipo}Apertura${dia}`
+  );
 
- const text=chk?.parentElement?.querySelector(
-  ".estado-text"
- );
+ const ci=
+  document.getElementById(
+   `${tipo}Cierre${dia}`
+  );
 
- const abierto=!!chk?.checked;
+ const text=
+  chk?.parentElement?.querySelector(
+   ".estado-text"
+  );
 
- if(ap)ap.disabled=!abierto;
- if(ci)ci.disabled=!abierto;
+ const abierto=
+  !!chk?.checked;
 
- if(text)text.textContent=
-  abierto?"Abierto":"Cerrado";
+ if(ap)
+  ap.disabled=
+   !abierto;
+
+ if(ci)
+  ci.disabled=
+   !abierto;
+
+ if(text)
+  text.textContent=
+   abierto?
+   "Abierto":
+   "Cerrado";
 }
 
 function obtenerHorario(tipo){
- const modo=modoSeleccionado(tipo);
+
+ const modo=
+  modoSeleccionado(tipo);
 
  if(modo==="siempre"){
+
   return DIAS.map(d=>({
    dia_semana:d.d,
    hora_apertura:"00:00",
    hora_cierre:"23:59",
    cerrado:false
   }));
+
  }
 
  if(modo==="cerrado"){
+
   return DIAS.map(d=>({
    dia_semana:d.d,
    hora_apertura:null,
    hora_cierre:null,
    cerrado:true
   }));
+
  }
 
  return DIAS.map(d=>{
-  const abierto=document.getElementById(
-   `${tipo}Dia${d.d}`
-  )?.checked;
+
+  const abierto=
+   document.getElementById(
+    `${tipo}Dia${d.d}`
+   )?.checked;
 
   return{
-   dia_semana:d.d,
+
+   dia_semana:
+    d.d,
+
    hora_apertura:
     abierto?
     document.getElementById(
      `${tipo}Apertura${d.d}`
-    )?.value||"10:00":
+    )?.value||
+    "10:00":
     null,
 
    hora_cierre:
     abierto?
     document.getElementById(
      `${tipo}Cierre${d.d}`
-    )?.value||"22:00":
+    )?.value||
+    "22:00":
     null,
 
-   cerrado:!abierto
+   cerrado:
+    !abierto
+
   };
+
  });
 }
 
-async function guardarHorario(restauranteId,tipo){
- const horario=obtenerHorario(tipo);
+async function guardarHorario(
+ restauranteId,
+ tipo
+){
 
- const {error:eDelete}=await supabaseClient
-  .from("horarios_restaurantes")
-  .delete()
-  .eq("restaurante_id",restauranteId);
+ const horario=
+  obtenerHorario(tipo);
+
+ const {
+  error:eDelete
+ }=
+  await supabaseClient
+   .from("horarios_restaurantes")
+   .delete()
+   .eq(
+    "restaurante_id",
+    restauranteId
+   );
 
  if(eDelete)throw eDelete;
 
- const rows=horario.map(h=>({
-  restaurante_id:restauranteId,
-  ...h
- }));
+ const rows=
+  horario.map(h=>({
+   restaurante_id:
+    restauranteId,
+   ...h
+  }));
 
- const {error:eInsert}=await supabaseClient
-  .from("horarios_restaurantes")
-  .insert(rows);
+ const {
+  error:eInsert
+ }=
+  await supabaseClient
+   .from("horarios_restaurantes")
+   .insert(rows);
 
  if(eInsert)throw eInsert;
 }
 
 /* IMÁGENES */
-function cargarImagen(file,maxWidth=1200,quality=.78){
- return new Promise((resolve,reject)=>{
+function cargarImagen(
+ file,
+ maxWidth=1200,
+ quality=.78
+){
 
-  if(!file||!file.type?.startsWith("image/")){
-   reject(
-    new Error(
-     "El archivo seleccionado no es una imagen válida."
+ return new Promise(
+  (resolve,reject)=>{
+
+   if(
+    !file||
+    !file.type?.startsWith(
+     "image/"
     )
-   );
-   return;
-  }
+   ){
 
-  const img=new Image();
-  const url=URL.createObjectURL(file);
-
-  img.onload=()=>{
-   URL.revokeObjectURL(url);
-
-   let width=img.naturalWidth;
-   let height=img.naturalHeight;
-
-   if(width>maxWidth){
-    height=Math.round(
-     height*(maxWidth/width)
-    );
-    width=maxWidth;
-   }
-
-   const canvas=document.createElement("canvas");
-
-   canvas.width=width;
-   canvas.height=height;
-
-   const ctx=canvas.getContext(
-    "2d",
-    {alpha:false}
-   );
-
-   if(!ctx){
     reject(
      new Error(
-      "No se pudo procesar la imagen."
+      "El archivo seleccionado no es una imagen válida."
      )
     );
+
     return;
    }
 
-   ctx.drawImage(
-    img,
-    0,
-    0,
-    width,
-    height
-   );
+   const img=
+    new Image();
 
-   canvas.toBlob(blob=>{
-    if(!blob){
+   const url=
+    URL.createObjectURL(
+     file
+    );
+
+   img.onload=()=>{
+
+    URL.revokeObjectURL(
+     url
+    );
+
+    let width=
+     img.naturalWidth;
+
+    let height=
+     img.naturalHeight;
+
+    if(width>maxWidth){
+
+     height=
+      Math.round(
+       height*
+       (maxWidth/width)
+      );
+
+     width=
+      maxWidth;
+    }
+
+    const canvas=
+     document.createElement(
+      "canvas"
+     );
+
+    canvas.width=
+     width;
+
+    canvas.height=
+     height;
+
+    const ctx=
+     canvas.getContext(
+      "2d",
+      {alpha:false}
+     );
+
+    if(!ctx){
+
      reject(
       new Error(
-       "No se pudo comprimir la imagen."
+       "No se pudo procesar la imagen."
       )
      );
+
      return;
     }
 
-    resolve(blob);
+    ctx.drawImage(
+     img,
+     0,
+     0,
+     width,
+     height
+    );
 
-   },"image/webp",quality);
-  };
+    canvas.toBlob(
+     blob=>{
 
-  img.onerror=()=>{
-   URL.revokeObjectURL(url);
-   reject(
-    new Error("No se pudo leer la imagen.")
-   );
-  };
+      if(!blob){
 
-  img.src=url;
- });
+       reject(
+        new Error(
+         "No se pudo comprimir la imagen."
+        )
+       );
+
+       return;
+      }
+
+      resolve(blob);
+
+     },
+     "image/webp",
+     quality
+    );
+
+   };
+
+   img.onerror=()=>{
+
+    URL.revokeObjectURL(
+     url
+    );
+
+    reject(
+     new Error(
+      "No se pudo leer la imagen."
+     )
+    );
+
+   };
+
+   img.src=url;
+
+  }
+ );
 }
 
 async function subirImagen(
@@ -1621,6 +2677,7 @@ async function subirImagen(
  id,
  subId=""
 ){
+
  if(!archivo)return null;
 
  const maxWidth=
@@ -1628,53 +2685,73 @@ async function subirImagen(
   900:
   1400;
 
- const blob=await cargarImagen(
-  archivo,
-  maxWidth,
-  .78
- );
+ const blob=
+  await cargarImagen(
+   archivo,
+   maxWidth,
+   .78
+  );
 
  const ruta=
   `${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${crypto.randomUUID()}.webp`;
 
- const {error}=await supabaseClient
-  .storage
-  .from(BUCKET)
-  .upload(
-   ruta,
-   blob,
-   {
-    cacheControl:"31536000",
-    upsert:false,
-    contentType:"image/webp"
-   }
-  );
+ const {
+  error
+ }=
+  await supabaseClient
+   .storage
+   .from(BUCKET)
+   .upload(
+    ruta,
+    blob,
+    {
+     cacheControl:"31536000",
+     upsert:false,
+     contentType:"image/webp"
+    }
+   );
 
  if(error){
-  console.error("Storage:",error);
+
+  console.error(
+   "Storage:",
+   error
+  );
+
   throw new Error(
    error.message||
    "No se pudo subir la imagen."
   );
+
  }
 
- const {data}=supabaseClient
-  .storage
-  .from(BUCKET)
-  .getPublicUrl(ruta);
+ const {
+  data
+ }=
+  supabaseClient
+   .storage
+   .from(BUCKET)
+   .getPublicUrl(
+    ruta
+   );
 
  if(!data?.publicUrl){
 
   try{
+
    await supabaseClient
     .storage
     .from(BUCKET)
-    .remove([ruta]);
+    .remove([
+     ruta
+    ]);
+
   }catch(_){}
 
   throw new Error(
    "No se pudo obtener la URL pública de la imagen."
   );
+
  }
 
  return{
@@ -1684,87 +2761,129 @@ async function subirImagen(
 }
 
 function obtenerPathStorage(url){
+
  if(!url)return null;
 
  try{
+
   const marker=
    `/storage/v1/object/public/${BUCKET}/`;
 
-  const pos=url.indexOf(marker);
+  const pos=
+   url.indexOf(
+    marker
+   );
 
   if(pos===-1)return null;
 
   return decodeURIComponent(
    url.substring(
-    pos+marker.length
-   ).split("?")[0]
+    pos+
+    marker.length
+   )
+   .split("?")[0]
   );
 
  }catch(_){
+
   return null;
+
  }
 }
 
 async function eliminarImagenStorage(url){
- const path=obtenerPathStorage(url);
+
+ const path=
+  obtenerPathStorage(
+   url
+  );
 
  if(!path)return;
 
  try{
-  const {error}=await supabaseClient
-   .storage
-   .from(BUCKET)
-   .remove([path]);
 
-  if(error)console.warn(
-   "Storage remove:",
+  const {
    error
-  );
+  }=
+   await supabaseClient
+    .storage
+    .from(BUCKET)
+    .remove([
+     path
+    ]);
+
+  if(error)
+   console.warn(
+    "Storage remove:",
+    error
+   );
 
  }catch(e){
+
   console.warn(
    "No se pudo eliminar imagen:",
    e
   );
+
  }
 }
 
 /* NUEVO LOCAL */
 async function guardarNuevoLocal(){
+
  try{
-  const nombre=locNombre.value.trim();
+
+  const nombre=
+   locNombre.value.trim();
 
   if(!nombre){
+
    mensaje(
     "El nombre del local es obligatorio.",
     "err"
    );
+
    return;
   }
 
-  const existe=locales.some(
-   l=>l.nombre.trim().toLowerCase()===
-      nombre.toLowerCase()
-  );
+  const existe=
+   locales.some(
+    l=>
+     l.nombre
+      .trim()
+      .toLowerCase()===
+     nombre.toLowerCase()
+   );
 
   if(existe){
+
    mensaje(
     "Ya existe un local con ese nombre.",
     "err"
    );
+
    return;
   }
 
-  const {data,error}=await supabaseClient
-   .from("restaurantes")
-   .insert({
-    nombre,
-    categoria:locCategoria.value||null,
-    descripcion:locDescripcion.value.trim()||null,
-    activo:true
-   })
-   .select("id")
-   .single();
+  const {
+   data,
+   error
+  }=
+   await supabaseClient
+    .from("restaurantes")
+    .insert({
+     nombre,
+     categoria:
+      locCategoria.value||
+      null,
+     descripcion:
+      locDescripcion.value
+       .trim()||
+      null,
+     activo:true
+    })
+    .select("id")
+    .single();
 
   if(error)throw error;
 
@@ -1773,22 +2892,34 @@ async function guardarNuevoLocal(){
   try{
 
    if(locBanner.files[0]){
-    const imagen=await subirImagen(
-     locBanner.files[0],
-     "banners",
-     data.id
+
+    const imagen=
+     await subirImagen(
+      locBanner.files[0],
+      "banners",
+      data.id
+     );
+
+    archivosSubidos.push(
+     imagen.path
     );
 
-    archivosSubidos.push(imagen.path);
-
-    const {error:eBanner}=await supabaseClient
-     .from("restaurantes")
-     .update({
-      banner_url:imagen.url
-     })
-     .eq("id",data.id);
+    const {
+     error:eBanner
+    }=
+     await supabaseClient
+      .from("restaurantes")
+      .update({
+       banner_url:
+        imagen.url
+      })
+      .eq(
+       "id",
+       data.id
+      );
 
     if(eBanner)throw eBanner;
+
    }
 
    await guardarHorario(
@@ -1803,44 +2934,67 @@ async function guardarNuevoLocal(){
 
   }catch(e){
 
-   if(archivosSubidos.length){
+   if(
+    archivosSubidos.length
+   ){
+
     await supabaseClient
      .storage
      .from(BUCKET)
-     .remove(archivosSubidos);
+     .remove(
+      archivosSubidos
+     );
+
    }
 
    await supabaseClient
     .from("productos")
     .delete()
-    .eq("restaurante_id",data.id);
+    .eq(
+     "restaurante_id",
+     data.id
+    );
 
    await supabaseClient
     .from("horarios_restaurantes")
     .delete()
-    .eq("restaurante_id",data.id);
+    .eq(
+     "restaurante_id",
+     data.id
+    );
 
    await supabaseClient
     .from("restaurantes")
     .delete()
-    .eq("id",data.id);
+    .eq(
+     "id",
+     data.id
+    );
 
    throw e;
   }
 
   limpiarFormularioLocal();
+
   await cargarLocales();
 
   mensaje(
    "Local creado correctamente."
   );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 function agregarProductoNuevo(){
+
  productosNuevos.push({
-  tempId:Date.now()+Math.random(),
+  tempId:
+   Date.now()+
+   Math.random(),
   nombre:"",
   descripcion:"",
   precio:"",
@@ -1853,127 +3007,174 @@ function agregarProductoNuevo(){
 }
 
 function pintarProductosNuevos(){
+
  productosNuevos.forEach(
-  (p,i)=>p._index=i
+  (p,i)=>
+   p._index=i
  );
 
  productosNuevosContainer();
 }
 
 function productosNuevosContainer(){
- const box=document.getElementById(
-  "productosNuevos"
- );
+
+ const box=
+  document.getElementById(
+   "productosNuevos"
+  );
 
  if(!productosNuevos.length){
+
   box.innerHTML=
    '<p class="muted">Todavía no hay productos.</p>';
+
   return;
  }
 
  box.innerHTML=
   productosNuevos.map((p,i)=>`
 
-  <div class="card product-row"
-   data-product-new="${p.tempId}">
+   <div
+    class="card product-row"
+    data-product-new="${p.tempId}">
 
-   <div>
-    ${
-     p.imagenPreview?
-     `<img
-       class="product-img"
-       src="${escapeAttr(p.imagenPreview)}"
-       loading="lazy"
-       decoding="async">`:
-     `<div class="product-img"></div>`
-    }
+    <div>
+
+     ${
+      p.imagenPreview?
+      `<img
+        class="product-img"
+        src="${escapeAttr(p.imagenPreview)}"
+        loading="lazy"
+        decoding="async">`:
+      `<div class="product-img"></div>`
+     }
+
+    </div>
+
+    <div class="product-info">
+
+     <input
+      placeholder="Nombre del producto"
+      value="${escapeAttr(p.nombre)}"
+      oninput="productosNuevos[${i}].nombre=this.value">
+
+     <input
+      style="margin-top:5px"
+      placeholder="Descripción"
+      value="${escapeAttr(p.descripcion)}"
+      oninput="productosNuevos[${i}].descripcion=this.value">
+
+     <input
+      style="margin-top:5px"
+      type="number"
+      min="0"
+      step="0.01"
+      placeholder="Precio"
+      value="${escapeAttr(p.precio)}"
+      oninput="productosNuevos[${i}].precio=this.value">
+
+     <input
+      style="margin-top:5px"
+      type="file"
+      accept="image/*"
+      onchange="seleccionarImagenNuevo(${i},this)">
+
+    </div>
+
+    <div class="product-actions">
+
+     <button
+      class="btn danger"
+      onclick="eliminarProductoNuevo(${i})">
+      Eliminar
+     </button>
+
+    </div>
+
    </div>
 
-   <div class="product-info">
-
-    <input
-     placeholder="Nombre del producto"
-     value="${escapeAttr(p.nombre)}"
-     oninput="productosNuevos[${i}].nombre=this.value">
-
-    <input
-     style="margin-top:5px"
-     placeholder="Descripción"
-     value="${escapeAttr(p.descripcion)}"
-     oninput="productosNuevos[${i}].descripcion=this.value">
-
-    <input
-     style="margin-top:5px"
-     type="number"
-     min="0"
-     step="0.01"
-     placeholder="Precio"
-     value="${escapeAttr(p.precio)}"
-     oninput="productosNuevos[${i}].precio=this.value">
-
-    <input
-     style="margin-top:5px"
-     type="file"
-     accept="image/*"
-     onchange="seleccionarImagenNuevo(${i},this)">
-
-   </div>
-
-   <div class="product-actions">
-    <button
-     class="btn danger"
-     onclick="eliminarProductoNuevo(${i})">
-     Eliminar
-    </button>
-   </div>
-
-  </div>
- `).join("");
+  `).join("");
 }
 
-function seleccionarImagenNuevo(index,input){
- const file=input.files[0];
+function seleccionarImagenNuevo(
+ index,
+ input
+){
+
+ const file=
+  input.files[0];
 
  if(!file)return;
 
- if(!file.type.startsWith("image/")){
+ if(
+  !file.type.startsWith(
+   "image/"
+  )
+ ){
+
   mensaje(
    "Selecciona una imagen válida.",
    "err"
   );
+
   input.value="";
+
   return;
  }
 
- productosNuevos[index].imagen=file;
+ productosNuevos[index].imagen=
+  file;
 
- const url=URL.createObjectURL(file);
+ const url=
+  URL.createObjectURL(
+   file
+  );
 
- if(productosNuevos[index].imagenPreview){
+ if(
+  productosNuevos[index].imagenPreview
+ ){
+
   try{
+
    URL.revokeObjectURL(
     productosNuevos[index].imagenPreview
    );
+
   }catch(_){}
+
  }
 
- productosNuevos[index].imagenPreview=url;
+ productosNuevos[index]
+  .imagenPreview=url;
 
  productosNuevosContainer();
 }
 
-function eliminarProductoNuevo(index){
- const p=productosNuevos[index];
+function eliminarProductoNuevo(
+ index
+){
+
+ const p=
+  productosNuevos[index];
 
  if(p?.imagenPreview){
+
   try{
+
    URL.revokeObjectURL(
     p.imagenPreview
    );
+
   }catch(_){}
+
  }
 
- productosNuevos.splice(index,1);
+ productosNuevos.splice(
+  index,
+  1
+ );
+
  productosNuevosContainer();
 }
 
@@ -1981,60 +3182,95 @@ async function guardarProductosNuevos(
  localId,
  archivosSubidos=[]
 ){
- for(const p of productosNuevos){
 
-  if(!p.nombre.trim())continue;
+ for(
+  const p of productosNuevos
+ ){
 
-  const {data,error}=await supabaseClient
-   .from("productos")
-   .insert({
-    restaurante_id:localId,
-    nombre:p.nombre.trim(),
-    descripcion:p.descripcion.trim()||null,
-    precio:Number(p.precio)||0,
-    activo:true
-   })
-   .select("id")
-   .single();
+  if(
+   !p.nombre.trim()
+  )continue;
+
+  const {
+   data,
+   error
+  }=
+   await supabaseClient
+    .from("productos")
+    .insert({
+     restaurante_id:
+      localId,
+     nombre:
+      p.nombre.trim(),
+     descripcion:
+      p.descripcion.trim()||
+      null,
+     precio:
+      Number(p.precio)||
+      0,
+     activo:true
+    })
+    .select("id")
+    .single();
 
   if(error)throw error;
 
   if(p.imagen){
 
-   const imagen=await subirImagen(
-    p.imagen,
-    "productos",
-    localId,
-    data.id
-   );
+   const imagen=
+    await subirImagen(
+     p.imagen,
+     "productos",
+     localId,
+     data.id
+    );
 
    archivosSubidos.push(
     imagen.path
    );
 
-   const {error:e}=await supabaseClient
-    .from("productos")
-    .update({
-     imagen_url:imagen.url
-    })
-    .eq("id",data.id);
+   const {
+    error:e
+   }=
+    await supabaseClient
+     .from("productos")
+     .update({
+      imagen_url:
+       imagen.url
+     })
+     .eq(
+      "id",
+      data.id
+     );
 
    if(e)throw e;
+
   }
+
  }
 }
 
 function limpiarFormularioLocal(){
 
- productosNuevos.forEach(p=>{
-  if(p.imagenPreview){
-   try{
-    URL.revokeObjectURL(
-     p.imagenPreview
-    );
-   }catch(_){}
+ productosNuevos.forEach(
+  p=>{
+
+   if(
+    p.imagenPreview
+   ){
+
+    try{
+
+     URL.revokeObjectURL(
+      p.imagenPreview
+     );
+
+    }catch(_){}
+
+   }
+
   }
- });
+ );
 
  locNombre.value="";
  locCategoria.value="";
@@ -2042,7 +3278,9 @@ function limpiarFormularioLocal(){
  locBanner.value="";
 
  previewBanner.src="";
- previewBanner.classList.add("hidden");
+ previewBanner.classList.add(
+  "hidden"
+ );
 
  productosNuevos=[];
 
@@ -2060,44 +3298,65 @@ function limpiarFormularioLocal(){
 
 /* EDICIÓN */
 async function editarLocal(id){
+
  try{
 
-  const local=locales.find(
-   x=>x.id===id
-  );
+  const local=
+   locales.find(
+    x=>x.id===id
+   );
 
   if(!local)return;
 
-  editId.value=id;
-  editNombre.value=local.nombre||"";
-  editCategoria.value=local.categoria||"";
-  editDescripcion.value=local.descripcion||"";
+  editId.value=
+   id;
+
+  editNombre.value=
+   local.nombre||"";
+
+  editCategoria.value=
+   local.categoria||"";
+
+  editDescripcion.value=
+   local.descripcion||"";
+
   editBanner.value="";
 
   if(local.banner_url){
+
    editBannerPreview.src=
     local.banner_url;
 
    editBannerPreview.classList.remove(
     "hidden"
    );
+
   }else{
+
    editBannerPreview.src="";
+
    editBannerPreview.classList.add(
     "hidden"
    );
+
   }
 
   const {
    data:horarios,
    error:e1
-  }=await supabaseClient
-   .from("horarios_restaurantes")
-   .select(
-    "dia_semana,hora_apertura,hora_cierre,cerrado"
-   )
-   .eq("restaurante_id",id)
-   .order("dia_semana");
+  }=
+   await supabaseClient
+    .from("horarios_restaurantes")
+    .select(
+     "dia_semana,hora_apertura,hora_cierre,cerrado"
+    )
+    .eq(
+     "restaurante_id",
+     id
+    )
+    .order(
+     "dia_semana"
+    );
 
   if(e1)throw e1;
 
@@ -2108,23 +3367,29 @@ async function editarLocal(id){
   const {
    data:productos,
    error:e2
-  }=await supabaseClient
-   .from("productos")
-   .select(
-    "id,nombre,descripcion,precio,imagen_url,activo"
-   )
-   .eq("restaurante_id",id)
-   .order("id");
+  }=
+   await supabaseClient
+    .from("productos")
+    .select(
+     "id,nombre,descripcion,precio,imagen_url,activo"
+    )
+    .eq(
+     "restaurante_id",
+     id
+    )
+    .order("id");
 
   if(e2)throw e2;
 
-  productosEdit=(productos||[]).map(
-   p=>({
-    ...p,
-    nuevaImagen:null,
-    preview:p.imagen_url||""
-   })
-  );
+  productosEdit=
+   (productos||[]).map(
+    p=>({
+     ...p,
+     nuevaImagen:null,
+     preview:
+      p.imagen_url||""
+    })
+   );
 
   pintarProductosEditados();
 
@@ -2137,26 +3402,37 @@ async function editarLocal(id){
    block:"start"
   });
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
-function prepararHorarioEdicion(horarios){
+function prepararHorarioEdicion(
+ horarios
+){
 
  const todosSiempre=
   horarios.length===7&&
   horarios.every(
    h=>
     !h.cerrado&&
-    h.hora_apertura==="00:00:00"&&
+    h.hora_apertura===
+     "00:00:00"&&
     (
-     h.hora_cierre==="23:59:00"||
-     h.hora_cierre==="23:59:59"
+     h.hora_cierre===
+      "23:59:00"||
+     h.hora_cierre===
+      "23:59:59"
     )
   );
 
  const todosCerrados=
   horarios.length===7&&
-  horarios.every(h=>h.cerrado);
+  horarios.every(
+   h=>h.cerrado
+  );
 
  if(todosSiempre){
 
@@ -2195,129 +3471,152 @@ function prepararHorarioEdicion(horarios){
   "edit"
  );
 
- horarios.forEach(h=>{
+ horarios.forEach(
+  h=>{
 
-  const chk=document.getElementById(
-   `editDia${h.dia_semana}`
-  );
+   const chk=
+    document.getElementById(
+     `editDia${h.dia_semana}`
+    );
 
-  const ap=document.getElementById(
-   `editApertura${h.dia_semana}`
-  );
+   const ap=
+    document.getElementById(
+     `editApertura${h.dia_semana}`
+    );
 
-  const ci=document.getElementById(
-   `editCierre${h.dia_semana}`
-  );
+   const ci=
+    document.getElementById(
+     `editCierre${h.dia_semana}`
+    );
 
-  if(!chk)return;
+   if(!chk)return;
 
-  chk.checked=!h.cerrado;
+   chk.checked=
+    !h.cerrado;
 
-  if(h.hora_apertura)
-   ap.value=h.hora_apertura.substring(0,5);
+   if(h.hora_apertura)
+    ap.value=
+     h.hora_apertura.substring(
+      0,
+      5
+     );
 
-  if(h.hora_cierre)
-   ci.value=h.hora_cierre.substring(0,5);
+   if(h.hora_cierre)
+    ci.value=
+     h.hora_cierre.substring(
+      0,
+      5
+     );
 
-  actualizarFilaHorario(
-   "edit",
-   h.dia_semana
-  );
- });
+   actualizarFilaHorario(
+    "edit",
+    h.dia_semana
+   );
+
+  }
+ );
 }
 
 function pintarProductosEditados(){
- const box=document.getElementById(
-  "productosEditados"
- );
+
+ const box=
+  document.getElementById(
+   "productosEditados"
+  );
 
  if(!productosEdit.length){
+
   box.innerHTML=
    '<p class="muted">No hay productos registrados.</p>';
+
   return;
  }
 
  box.innerHTML=
   productosEdit.map((p,i)=>`
 
-  <div class="card product-row">
+   <div class="card product-row">
 
-   <div>
-    ${
-     p.preview?
-     `<img
-       class="product-img"
-       src="${escapeAttr(p.preview)}"
-       loading="lazy"
-       decoding="async">`:
-     `<div class="product-img"></div>`
-    }
-   </div>
+    <div>
 
-   <div class="product-info">
+     ${
+      p.preview?
+      `<img
+        class="product-img"
+        src="${escapeAttr(p.preview)}"
+        loading="lazy"
+        decoding="async">`:
+      `<div class="product-img"></div>`
+     }
 
-    <input
-     value="${escapeAttr(p.nombre||"")}"
-     placeholder="Nombre"
-     oninput="productosEdit[${i}].nombre=this.value">
+    </div>
 
-    <input
-     style="margin-top:5px"
-     value="${escapeAttr(p.descripcion||"")}"
-     placeholder="Descripción"
-     oninput="productosEdit[${i}].descripcion=this.value">
+    <div class="product-info">
 
-    <input
-     style="margin-top:5px"
-     type="number"
-     min="0"
-     step="0.01"
-     value="${escapeAttr(p.precio??0)}"
-     placeholder="Precio"
-     oninput="productosEdit[${i}].precio=this.value">
+     <input
+      value="${escapeAttr(p.nombre||"")}"
+      placeholder="Nombre"
+      oninput="productosEdit[${i}].nombre=this.value">
 
-    <input
-     style="margin-top:5px"
-     type="file"
-     accept="image/*"
-     onchange="seleccionarImagenEdit(${i},this)">
+     <input
+      style="margin-top:5px"
+      value="${escapeAttr(p.descripcion||"")}"
+      placeholder="Descripción"
+      oninput="productosEdit[${i}].descripcion=this.value">
 
-    <div style="margin-top:7px">
+     <input
+      style="margin-top:5px"
+      type="number"
+      min="0"
+      step="0.01"
+      value="${escapeAttr(p.precio??0)}"
+      placeholder="Precio"
+      oninput="productosEdit[${i}].precio=this.value">
 
-     <label class="toggle">
+     <input
+      style="margin-top:5px"
+      type="file"
+      accept="image/*"
+      onchange="seleccionarImagenEdit(${i},this)">
 
-      <input
-       type="checkbox"
-       ${p.activo!==false?"checked":""}
-       onchange="productosEdit[${i}].activo=this.checked">
+     <div style="margin-top:7px">
 
-      <span class="eye">👁</span>
+      <label class="toggle">
 
-      <span>
-       ${p.activo!==false?"Activo":"Inactivo"}
-      </span>
+       <input
+        type="checkbox"
+        ${p.activo!==false?"checked":""}
+        onchange="productosEdit[${i}].activo=this.checked">
 
-     </label>
+       <span class="eye">👁</span>
+
+       <span>
+        ${p.activo!==false?"Activo":"Inactivo"}
+       </span>
+
+      </label>
+
+     </div>
+
+    </div>
+
+    <div class="product-actions">
+
+     <button
+      class="btn danger"
+      onclick="eliminarProductoEdit(${i})">
+      Eliminar
+     </button>
 
     </div>
 
    </div>
 
-   <div class="product-actions">
-
-    <button
-     class="btn danger"
-     onclick="eliminarProductoEdit(${i})">
-     Eliminar
-    </button>
-
-   </div>
-
-  </div>
- `).join("");
+  `).join("");
 }
 
 function agregarProductoEditado(){
+
  productosEdit.push({
   id:null,
   nombre:"",
@@ -2332,41 +3631,66 @@ function agregarProductoEditado(){
  pintarProductosEditados();
 }
 
-function seleccionarImagenEdit(index,input){
- const file=input.files[0];
+function seleccionarImagenEdit(
+ index,
+ input
+){
+
+ const file=
+  input.files[0];
 
  if(!file)return;
 
- if(!file.type.startsWith("image/")){
+ if(
+  !file.type.startsWith(
+   "image/"
+  )
+ ){
+
   mensaje(
    "Selecciona una imagen válida.",
    "err"
   );
+
   input.value="";
+
   return;
  }
 
- productosEdit[index].nuevaImagen=file;
+ productosEdit[index]
+  .nuevaImagen=file;
 
  if(
   productosEdit[index].preview&&
-  productosEdit[index].preview.startsWith("blob:")
+  productosEdit[index].preview.startsWith(
+   "blob:"
+  )
  ){
+
   try{
+
    URL.revokeObjectURL(
     productosEdit[index].preview
    );
+
   }catch(_){}
+
  }
 
  productosEdit[index].preview=
-  URL.createObjectURL(file);
+  URL.createObjectURL(
+   file
+  );
 
  pintarProductosEditados();
 }
 
-async function eliminarProductoEdit(index){
- const p=productosEdit[index];
+async function eliminarProductoEdit(
+ index
+){
+
+ const p=
+  productosEdit[index];
 
  if(p.id){
 
@@ -2376,10 +3700,16 @@ async function eliminarProductoEdit(index){
 
   try{
 
-   const {error}=await supabaseClient
-    .from("productos")
-    .delete()
-    .eq("id",p.id);
+   const {
+    error
+   }=
+    await supabaseClient
+     .from("productos")
+     .delete()
+     .eq(
+      "id",
+      p.id
+     );
 
    if(error)throw error;
 
@@ -2389,86 +3719,134 @@ async function eliminarProductoEdit(index){
     );
 
   }catch(e){
+
    err(e);
+
    return;
   }
+
  }
 
- if(p.preview?.startsWith("blob:")){
+ if(
+  p.preview?.startsWith(
+   "blob:"
+  )
+ ){
+
   try{
+
    URL.revokeObjectURL(
     p.preview
    );
+
   }catch(_){}
+
  }
 
- productosEdit.splice(index,1);
+ productosEdit.splice(
+  index,
+  1
+ );
+
  pintarProductosEditados();
 
- mensaje("Producto eliminado.");
+ mensaje(
+  "Producto eliminado."
+ );
 }
 
 async function guardarEdicionLocal(){
+
  try{
 
-  const id=Number(editId.value);
+  const id=
+   Number(
+    editId.value
+   );
 
   if(!id){
-   mensaje("Local inválido.","err");
+
+   mensaje(
+    "Local inválido.",
+    "err"
+   );
+
    return;
   }
 
-  const nombre=editNombre.value.trim();
+  const nombre=
+   editNombre.value.trim();
 
   if(!nombre){
+
    mensaje(
     "El nombre del local es obligatorio.",
     "err"
    );
+
    return;
   }
 
-  const duplicado=locales.some(
-   l=>
-    l.id!==id&&
-    l.nombre.trim().toLowerCase()===
-    nombre.toLowerCase()
-  );
+  const duplicado=
+   locales.some(
+    l=>
+     l.id!==id&&
+     l.nombre.trim().toLowerCase()===
+     nombre.toLowerCase()
+   );
 
   if(duplicado){
+
    mensaje(
     "Ya existe otro local con ese nombre.",
     "err"
    );
+
    return;
   }
 
   const localActual=
-   locales.find(x=>x.id===id);
+   locales.find(
+    x=>x.id===id
+   );
 
   const payload={
    nombre,
-   categoria:editCategoria.value||null,
-   descripcion:editDescripcion.value.trim()||null
+   categoria:
+    editCategoria.value||
+    null,
+   descripcion:
+    editDescripcion.value
+     .trim()||
+    null
   };
 
   let nuevaImagen=null;
 
   if(editBanner.files[0]){
-   nuevaImagen=await subirImagen(
-    editBanner.files[0],
-    "banners",
-    id
-   );
+
+   nuevaImagen=
+    await subirImagen(
+     editBanner.files[0],
+     "banners",
+     id
+    );
 
    payload.banner_url=
     nuevaImagen.url;
+
   }
 
-  const {error:e1}=await supabaseClient
-   .from("restaurantes")
-   .update(payload)
-   .eq("id",id);
+  const {
+   error:e1
+  }=
+   await supabaseClient
+    .from("restaurantes")
+    .update(payload)
+    .eq(
+     "id",
+     id
+    );
 
   if(e1){
 
@@ -2484,9 +3862,11 @@ async function guardarEdicionLocal(){
    nuevaImagen&&
    localActual?.banner_url
   ){
+
    await eliminarImagenStorage(
     localActual.banner_url
    );
+
   }
 
   await guardarHorario(
@@ -2494,30 +3874,42 @@ async function guardarEdicionLocal(){
    "edit"
   );
 
-  for(const p of productosEdit){
+  for(
+   const p of productosEdit
+  ){
 
    if(!p.id){
 
-    if(!p.nombre.trim())continue;
+    if(!p.nombre.trim())
+     continue;
 
     const {
      data,
      error
-    }=await supabaseClient
-     .from("productos")
-     .insert({
-      restaurante_id:id,
-      nombre:p.nombre.trim(),
-      descripcion:p.descripcion?.trim()||null,
-      precio:Number(p.precio)||0,
-      activo:p.activo!==false
-     })
-     .select("id")
-     .single();
+    }=
+     await supabaseClient
+      .from("productos")
+      .insert({
+       restaurante_id:
+        id,
+       nombre:
+        p.nombre.trim(),
+       descripcion:
+        p.descripcion?.trim()||
+        null,
+       precio:
+        Number(p.precio)||
+        0,
+       activo:
+        p.activo!==false
+      })
+      .select("id")
+      .single();
 
     if(error)throw error;
 
-    p.id=data.id;
+    p.id=
+     data.id;
 
     if(p.nuevaImagen){
 
@@ -2529,13 +3921,19 @@ async function guardarEdicionLocal(){
        p.id
       );
 
-     const {error:e}=
+     const {
+      error:e
+     }=
       await supabaseClient
        .from("productos")
        .update({
-        imagen_url:imagen.url
+        imagen_url:
+         imagen.url
        })
-       .eq("id",p.id);
+       .eq(
+        "id",
+        p.id
+       );
 
      if(e){
 
@@ -2548,6 +3946,7 @@ async function guardarEdicionLocal(){
 
      p.imagen_url=
       imagen.url;
+
     }
 
    }else{
@@ -2558,10 +3957,16 @@ async function guardarEdicionLocal(){
      );
 
     const values={
-     nombre:p.nombre.trim(),
-     descripcion:p.descripcion?.trim()||null,
-     precio:Number(p.precio)||0,
-     activo:p.activo!==false
+     nombre:
+      p.nombre.trim(),
+     descripcion:
+      p.descripcion?.trim()||
+      null,
+     precio:
+      Number(p.precio)||
+      0,
+     activo:
+      p.activo!==false
     };
 
     let nuevaImagen=null;
@@ -2580,10 +3985,16 @@ async function guardarEdicionLocal(){
       nuevaImagen.url;
     }
 
-    const {error}=await supabaseClient
-     .from("productos")
-     .update(values)
-     .eq("id",p.id);
+    const {
+     error
+    }=
+     await supabaseClient
+      .from("productos")
+      .update(values)
+      .eq(
+       "id",
+       p.id
+      );
 
     if(error){
 
@@ -2599,33 +4010,54 @@ async function guardarEdicionLocal(){
      nuevaImagen&&
      original?.imagen_url
     ){
+
      await eliminarImagenStorage(
       original.imagen_url
      );
+
     }
 
     if(nuevaImagen)
      p.imagen_url=
       nuevaImagen.url;
+
    }
+
   }
 
   cerrarEditor();
+
   await cargarLocales();
 
   mensaje(
    "Local actualizado correctamente."
   );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
-async function obtenerProductoOriginal(id){
- const {data,error}=await supabaseClient
-  .from("productos")
-  .select("id,imagen_url")
-  .eq("id",id)
-  .maybeSingle();
+async function obtenerProductoOriginal(
+ id
+){
+
+ const {
+  data,
+  error
+ }=
+  await supabaseClient
+   .from("productos")
+   .select(
+    "id,imagen_url"
+   )
+   .eq(
+    "id",
+    id
+   )
+   .maybeSingle();
 
  if(error)throw error;
 
@@ -2633,13 +4065,25 @@ async function obtenerProductoOriginal(id){
 }
 
 /* ESTADOS / ELIMINACIÓN LOCALES */
-async function cambiarEstadoLocal(id,activo){
+async function cambiarEstadoLocal(
+ id,
+ activo
+){
+
  try{
 
-  const {error}=await supabaseClient
-   .from("restaurantes")
-   .update({activo})
-   .eq("id",id);
+  const {
+   error
+  }=
+   await supabaseClient
+    .from("restaurantes")
+    .update({
+     activo
+    })
+    .eq(
+     "id",
+     id
+    );
 
   if(error)throw error;
 
@@ -2651,13 +4095,21 @@ async function cambiarEstadoLocal(id,activo){
    "Local inactivado."
   );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
-async function eliminarLocal(id){
- const local=locales.find(
-  x=>x.id===id
- );
+async function eliminarLocal(
+ id
+){
+
+ const local=
+  locales.find(
+   x=>x.id===id
+  );
 
  if(!local)return;
 
@@ -2670,83 +4122,133 @@ async function eliminarLocal(id){
   const {
    data:productos,
    error:e1
-  }=await supabaseClient
-   .from("productos")
-   .select("id,imagen_url")
-   .eq("restaurante_id",id);
+  }=
+   await supabaseClient
+    .from("productos")
+    .select(
+     "id,imagen_url"
+    )
+    .eq(
+     "restaurante_id",
+     id
+    );
 
   if(e1)throw e1;
 
   const rutas=
    (productos||[])
-   .map(p=>p.imagen_url)
-   .filter(Boolean);
+    .map(
+     p=>p.imagen_url
+    )
+    .filter(Boolean);
 
   if(local.banner_url)
-   rutas.push(local.banner_url);
+   rutas.push(
+    local.banner_url
+   );
 
-  const {error:e2}=await supabaseClient
-   .from("horarios_restaurantes")
-   .delete()
-   .eq("restaurante_id",id);
+  const {
+   error:e2
+  }=
+   await supabaseClient
+    .from("horarios_restaurantes")
+    .delete()
+    .eq(
+     "restaurante_id",
+     id
+    );
 
   if(e2)throw e2;
 
-  const {error:e3}=await supabaseClient
-   .from("productos")
-   .delete()
-   .eq("restaurante_id",id);
+  const {
+   error:e3
+  }=
+   await supabaseClient
+    .from("productos")
+    .delete()
+    .eq(
+     "restaurante_id",
+     id
+    );
 
   if(e3)throw e3;
 
-  const {error:e4}=await supabaseClient
-   .from("restaurantes")
-   .delete()
-   .eq("id",id);
+  const {
+   error:e4
+  }=
+   await supabaseClient
+    .from("restaurantes")
+    .delete()
+    .eq(
+     "id",
+     id
+    );
 
   if(e4)throw e4;
 
   const paths=
    rutas
-   .map(obtenerPathStorage)
-   .filter(Boolean);
+    .map(
+     obtenerPathStorage
+    )
+    .filter(Boolean);
 
   if(paths.length){
 
    const {
     error:eStorage
-   }=await supabaseClient
-    .storage
-    .from(BUCKET)
-    .remove([
-     ...new Set(paths)
-    ]);
+   }=
+    await supabaseClient
+     .storage
+     .from(BUCKET)
+     .remove([
+      ...new Set(paths)
+     ]);
 
    if(eStorage)
     console.warn(
      "Storage:",
      eStorage
     );
+
   }
 
   await cargarLocales();
 
-  mensaje("Local eliminado.");
+  mensaje(
+   "Local eliminado."
+  );
 
- }catch(e){err(e)}
+ }catch(e){
+
+  err(e);
+
+ }
 }
 
 function cerrarEditor(){
 
- productosEdit.forEach(p=>{
-  if(p.preview?.startsWith("blob:")){
-   try{
-    URL.revokeObjectURL(
-     p.preview
-    );
-   }catch(_){}
+ productosEdit.forEach(
+  p=>{
+
+   if(
+    p.preview?.startsWith(
+     "blob:"
+    )
+   ){
+
+    try{
+
+     URL.revokeObjectURL(
+      p.preview
+     );
+
+    }catch(_){}
+
+   }
+
   }
- });
+ );
 
  editorLocal.classList.add(
   "hidden"
@@ -2756,54 +4258,111 @@ function cerrarEditor(){
 }
 
 /* PREVISUALIZACIÓN */
-function previewArchivo(input,targetId){
- const file=input.files[0];
- const target=document.getElementById(
-  targetId
- );
+function previewArchivo(
+ input,
+ targetId
+){
+
+ const file=
+  input.files[0];
+
+ const target=
+  document.getElementById(
+   targetId
+  );
 
  if(!file){
+
   target.src="";
-  target.classList.add("hidden");
+
+  target.classList.add(
+   "hidden"
+  );
+
   return;
  }
 
- if(!file.type.startsWith("image/")){
+ if(
+  !file.type.startsWith(
+   "image/"
+  )
+ ){
+
   mensaje(
    "Selecciona una imagen válida.",
    "err"
   );
+
   input.value="";
+
   return;
  }
 
  if(target.dataset.blobUrl){
+
   try{
+
    URL.revokeObjectURL(
     target.dataset.blobUrl
    );
+
   }catch(_){}
+
  }
 
- const url=URL.createObjectURL(file);
+ const url=
+  URL.createObjectURL(
+   file
+  );
 
- target.dataset.blobUrl=url;
- target.src=url;
- target.classList.remove("hidden");
+ target.dataset.blobUrl=
+  url;
+
+ target.src=
+  url;
+
+ target.classList.remove(
+  "hidden"
+ );
 }
 
 /* UTILIDADES */
-function escapeHtml(value){
- return String(value??"")
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
+function escapeHtml(
+ value
+){
+
+ return String(
+  value??""
+ )
+ .replace(
+  /&/g,
+  "&amp;"
+ )
+ .replace(
+  /</g,
+  "&lt;"
+ )
+ .replace(
+  />/g,
+  "&gt;"
+ )
+ .replace(
+  /"/g,
+  "&quot;"
+ )
+ .replace(
+  /'/g,
+  "&#039;"
+ );
 }
 
-function escapeAttr(value){
- return escapeHtml(value);
+function escapeAttr(
+ value
+){
+
+ return escapeHtml(
+  value
+ );
 }
 </script>
 
