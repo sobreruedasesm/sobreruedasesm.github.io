@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -48,9 +49,10 @@ textarea{min-height:75px;resize:vertical}
 .referido{display:none;margin-top:8px}
 .referido.show{display:block}
 .referido small{display:block;color:#777;margin-top:5px;line-height:1.35}
-.clienteEstado{font-size:13px;margin-top:7px;color:#555}
+.clienteEstado{font-size:13px;margin-top:7px;color:#555;min-height:16px}
 .clienteEstado.ok{color:#16823b}
 .clienteEstado.error{color:#b00000}
+.clienteEstado.loading{color:#777}
 .locationButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .btn{border:0;border-radius:9px;padding:12px 14px;font-weight:bold;cursor:pointer}
 .btn:disabled{opacity:.6;cursor:not-allowed}
@@ -60,6 +62,9 @@ textarea{min-height:75px;resize:vertical}
 .locationBox{border:1px solid #ddd;border-radius:10px;padding:12px;margin-top:12px;background:#fafafa}
 .locationTitle{font-weight:bold;margin-bottom:5px}
 .address{font-size:14px;color:#444;line-height:1.4}
+.locationStatus{font-size:13px;color:#777;margin-top:7px;line-height:1.4}
+.locationStatus.ok{color:#16823b}
+.locationStatus.error{color:#b00000}
 #mapWrap{display:none;margin-top:12px}
 .map{height:300px;border-radius:10px;overflow:hidden}
 .mapActions{display:flex;gap:8px;margin-top:9px}
@@ -115,6 +120,7 @@ textarea{min-height:75px;resize:vertical}
 <div id="campoReferido" class="referido">
 <label for="telefonoReferente">Teléfono de quien te refirió</label>
 <input id="telefonoReferente" type="tel" placeholder="Teléfono de tu referente">
+<div id="referenteEstado" class="clienteEstado"></div>
 <small>
 Para realizar tu primer pedido debes haber sido referido por un cliente registrado.
 </small>
@@ -157,6 +163,7 @@ Para realizar tu primer pedido debes haber sido referido por un cliente registra
 <div id="direccionGuardada" class="locationBox">
 <div class="locationTitle">Dirección</div>
 <div class="address">Todavía no has seleccionado una ubicación.</div>
+<div id="locationStatus" class="locationStatus"></div>
 </div>
 
 <div id="mapWrap">
@@ -216,6 +223,10 @@ let ubicacionTemporal={
 };
 
 let clienteActual=null;
+let validandoCliente=false;
+let timerCliente=null;
+let timerReferente=null;
+let ubicacionCargando=false;
 
 const $=id=>document.getElementById(id);
 
@@ -255,6 +266,32 @@ function mostrarEstadoCliente(texto,tipo=""){
 
  el.textContent=texto;
  el.className="clienteEstado";
+
+ if(tipo){
+  el.classList.add(tipo);
+ }
+}
+
+function mostrarEstadoReferente(texto,tipo=""){
+ const el=$("referenteEstado");
+
+ if(!el)return;
+
+ el.textContent=texto;
+ el.className="clienteEstado";
+
+ if(tipo){
+  el.classList.add(tipo);
+ }
+}
+
+function mostrarEstadoUbicacion(texto,tipo=""){
+ const el=$("locationStatus");
+
+ if(!el)return;
+
+ el.textContent=texto;
+ el.className="locationStatus";
 
  if(tipo){
   el.classList.add(tipo);
@@ -341,6 +378,18 @@ function cargarFormulario(){
  );
 
  renderUbicacion();
+
+ /*
+  * Si había un teléfono guardado,
+  * lo validamos automáticamente.
+  */
+ const telefono=normalizarTelefono(
+  $("clienteTelefono").value
+ );
+
+ if(telefono.length>=7){
+  programarValidacionCliente();
+ }
 }
 
 async function cargarConfiguracion(){
@@ -676,6 +725,13 @@ function renderUbicacion(){
      "Ubicación seleccionada"
     )}
    </div>
+
+   <div id="locationStatus" class="locationStatus">
+    ${ubicacionCargando
+     ? "🔄 Buscando dirección..."
+     : "✅ Ubicación seleccionada"
+    }
+   </div>
   `;
 
  }else{
@@ -688,6 +744,13 @@ function renderUbicacion(){
 
    <div class="address">
     Todavía no has seleccionado una ubicación.
+   </div>
+
+   <div id="locationStatus" class="locationStatus">
+    ${ubicacionCargando
+     ? "📍 Obteniendo ubicación..."
+     : ""
+    }
    </div>
   `;
  }
@@ -732,48 +795,86 @@ async function usarMiUbicacion(boton){
 
  if(boton)boton.disabled=true;
 
- navigator.geolocation.getCurrentPosition(
+ ubicacionCargando=true;
 
-  async pos=>{
-
-   try{
-
-    const lat=pos.coords.latitude;
-    const lng=pos.coords.longitude;
-
-    const direccion=
-     await obtenerDireccion(lat,lng);
-
-    ubicacion={
-     lat,
-     lng,
-     direccion
-    };
-
-    guardarFormulario();
-    renderUbicacion();
-
-   }finally{
-
-    if(boton)boton.disabled=false;
-   }
-  },
-
-  ()=>{
-
-   mostrarError(
-    "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
-   );
-
-   if(boton)boton.disabled=false;
-  },
-
-  {
-   enableHighAccuracy:true,
-   timeout:15000,
-   maximumAge:0
-  }
+ mostrarEstadoUbicacion(
+  "📍 Obteniendo tu ubicación...",
+  "loading"
  );
+
+ try{
+
+  const pos=await new Promise(
+   (resolve,reject)=>{
+
+    navigator.geolocation.getCurrentPosition(
+     resolve,
+     reject,
+     {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:0
+     }
+    );
+   }
+  );
+
+  const lat=pos.coords.latitude;
+  const lng=pos.coords.longitude;
+
+  ubicacion={
+   lat,
+   lng,
+   direccion:""
+  };
+
+  renderUbicacion();
+
+  mostrarEstadoUbicacion(
+   "🔄 Ubicación encontrada. Buscando dirección...",
+   "loading"
+  );
+
+  const direccion=
+   await obtenerDireccion(lat,lng);
+
+  ubicacion={
+   lat,
+   lng,
+   direccion
+  };
+
+  ubicacionCargando=false;
+
+  guardarFormulario();
+  renderUbicacion();
+
+  mostrarEstadoUbicacion(
+   "✅ Ubicación seleccionada correctamente.",
+   "ok"
+  );
+
+ }catch(e){
+
+  console.error(e);
+
+  ubicacionCargando=false;
+
+  renderUbicacion();
+
+  mostrarEstadoUbicacion(
+   "❌ No se pudo obtener la ubicación.",
+   "error"
+  );
+
+  mostrarError(
+   "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
+  );
+
+ }finally{
+
+  if(boton)boton.disabled=false;
+ }
 }
 
 function moverMarcador(lat,lng){
@@ -796,10 +897,15 @@ function moverMarcador(lat,lng){
  ubicacionTemporal={
   lat,
   lng,
-  direccion:"Consultando dirección..."
+  direccion:""
  };
 
  renderDireccionTemporal();
+
+ mostrarEstadoUbicacion(
+  "🔄 Ubicación seleccionada. Buscando dirección...",
+  "loading"
+ );
 
  obtenerDireccion(lat,lng)
   .then(direccion=>{
@@ -808,6 +914,11 @@ function moverMarcador(lat,lng){
     direccion;
 
    renderDireccionTemporal();
+
+   mostrarEstadoUbicacion(
+    "✅ Dirección encontrada. Puedes aceptar esta ubicación.",
+    "ok"
+   );
   });
 }
 
@@ -831,8 +942,18 @@ function renderDireccionTemporal(){
    <div class="address">
     ${esc(
      u.direccion||
-     "Consultando dirección..."
+     "🔄 Buscando dirección..."
     )}
+   </div>
+
+   <div id="locationStatus" class="locationStatus loading">
+    ${
+     u.direccion
+      ?
+      "✅ Dirección encontrada. Puedes aceptar esta ubicación."
+      :
+      "🔄 Buscando dirección..."
+    }
    </div>
   `;
  }
@@ -841,6 +962,11 @@ function renderDireccionTemporal(){
 function abrirMapa(){
 
  $("mapWrap").style.display="block";
+
+ mostrarEstadoUbicacion(
+  "🗺️ Selecciona en el mapa el punto exacto de entrega.",
+  "loading"
+ );
 
  setTimeout(()=>{
 
@@ -929,12 +1055,29 @@ function aceptarMapa(){
   return;
  }
 
+ if(!ubicacionTemporal.direccion){
+
+  mostrarError(
+   "Espera un momento mientras se obtiene la dirección."
+  );
+
+  return;
+ }
+
  ubicacion={
   ...ubicacionTemporal
  };
 
+ ubicacionCargando=false;
+
  guardarFormulario();
  renderUbicacion();
+
+ mostrarEstadoUbicacion(
+  "✅ Ubicación guardada correctamente.",
+  "ok"
+ );
+
  cerrarMapa();
 }
 
@@ -978,23 +1121,311 @@ $("requiereFactura").addEventListener(
  );
 });
 
-function generarNumeroPedido(){
 
- const d=new Date();
+/* =====================================================
+   VALIDACIÓN INMEDIATA DEL CLIENTE
+   ===================================================== */
 
- const parte=d.toISOString()
-  .replace(/\D/g,"")
-  .slice(2,14);
+function programarValidacionCliente(){
 
- const aleatorio=
-  Math.floor(100+Math.random()*900);
+ clearTimeout(timerCliente);
 
- return `SR-${parte}-${aleatorio}`;
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
+
+ clienteActual=null;
+
+ $("campoReferido")
+  .classList.remove("show");
+
+ mostrarEstadoReferente("");
+
+ if(!telefono){
+
+  mostrarEstadoCliente("");
+
+  return;
+ }
+
+ if(telefono.length<7){
+
+  mostrarEstadoCliente(
+   "Ingresa un número de teléfono válido.",
+   "error"
+  );
+
+  return;
+ }
+
+ mostrarEstadoCliente(
+  "🔄 Verificando cliente...",
+  "loading"
+ );
+
+ timerCliente=setTimeout(
+  validarClienteEnTiempoReal,
+  500
+ );
+}
+
+async function validarClienteEnTiempoReal(){
+
+ if(validandoCliente)return;
+
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
+
+ if(telefono.length<7)return;
+
+ validandoCliente=true;
+
+ try{
+
+  const cliente=
+   await consultarCliente(telefono);
+
+  /*
+   * Verificamos que el usuario no haya
+   * cambiado el teléfono mientras
+   * se hacía la consulta.
+   */
+
+  const telefonoActual=
+   normalizarTelefono(
+    $("clienteTelefono").value
+   );
+
+  if(telefono!==telefonoActual)return;
+
+  if(cliente){
+
+   if(cliente.activo===false){
+
+    clienteActual=null;
+
+    mostrarEstadoCliente(
+     "❌ Este cliente está inactivo.",
+     "error"
+    );
+
+    $("campoReferido")
+     .classList.remove("show");
+
+    return;
+   }
+
+   clienteActual=cliente;
+
+   $("campoReferido")
+    .classList.remove("show");
+
+   mostrarEstadoCliente(
+    "✅ Cliente registrado. Puedes continuar.",
+    "ok"
+   );
+
+   return;
+  }
+
+  /*
+   * Cliente nuevo.
+   * Todavía NO lo registramos.
+   * Solo mostramos el campo de referente.
+   */
+
+  clienteActual=null;
+
+  $("campoReferido")
+   .classList.add("show");
+
+  mostrarEstadoCliente(
+   "⚠️ Este número no está registrado. Necesitas un referente.",
+   "error"
+  );
+
+ }catch(e){
+
+  console.error(
+   "Error verificando cliente:",
+   e
+  );
+
+  mostrarEstadoCliente(
+   "No se pudo verificar el cliente.",
+   "error"
+  );
+
+ }finally{
+
+  validandoCliente=false;
+ }
 }
 
 
 /* =====================================================
-   VALIDACIÓN DE CLIENTES Y REFERIDOS
+   VALIDACIÓN DEL REFERENTE EN TIEMPO REAL
+   ===================================================== */
+
+function programarValidacionReferente(){
+
+ clearTimeout(timerReferente);
+
+ const telefono=
+  normalizarTelefono(
+   $("telefonoReferente").value
+  );
+
+ if(!telefono){
+
+  mostrarEstadoReferente("");
+
+  return;
+ }
+
+ if(telefono.length<7){
+
+  mostrarEstadoReferente(
+   "Ingresa un número válido.",
+   "error"
+  );
+
+  return;
+ }
+
+ mostrarEstadoReferente(
+  "🔄 Verificando referente...",
+  "loading"
+ );
+
+ timerReferente=setTimeout(
+  validarReferenteEnTiempoReal,
+  500
+ );
+}
+
+async function validarReferenteEnTiempoReal(){
+
+ const telefono=
+  normalizarTelefono(
+   $("telefonoReferente").value
+  );
+
+ const telefonoCliente=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
+
+ if(telefono.length<7)return;
+
+ if(telefono===telefonoCliente){
+
+  mostrarEstadoReferente(
+   "❌ No puedes referirte a ti mismo.",
+   "error"
+  );
+
+  return;
+ }
+
+ try{
+
+  const referente=
+   await consultarCliente(telefono);
+
+  const telefonoActual=
+   normalizarTelefono(
+    $("telefonoReferente").value
+   );
+
+  if(telefono!==telefonoActual)return;
+
+  if(!referente){
+
+   mostrarEstadoReferente(
+    "❌ Este teléfono no corresponde a un cliente registrado.",
+    "error"
+   );
+
+   return;
+  }
+
+  if(referente.activo===false){
+
+   mostrarEstadoReferente(
+    "❌ Este cliente está inactivo.",
+    "error"
+   );
+
+   return;
+  }
+
+  if(!referente.codigo_referido){
+
+   mostrarEstadoReferente(
+    "❌ Este cliente no tiene un código de referido válido.",
+    "error"
+   );
+
+   return;
+  }
+
+  mostrarEstadoReferente(
+   "✅ Referente encontrado.",
+   "ok"
+  );
+
+ }catch(e){
+
+  console.error(e);
+
+  mostrarEstadoReferente(
+   "No se pudo verificar el referente.",
+   "error"
+  );
+}
+
+
+/* =====================================================
+   EVENTOS DE TELÉFONO
+   ===================================================== */
+
+$("clienteTelefono").addEventListener(
+ "input",
+ ()=>{
+  guardarFormulario();
+  programarValidacionCliente();
+ }
+);
+
+$("clienteTelefono").addEventListener(
+ "blur",
+ ()=>{
+  programarValidacionCliente();
+ }
+);
+
+$("telefonoReferente").addEventListener(
+ "input",
+ ()=>{
+  guardarFormulario();
+  programarValidacionReferente();
+ }
+);
+
+$("telefonoReferente").addEventListener(
+ "blur",
+ ()=>{
+  programarValidacionReferente();
+ }
+);
+
+
+/* =====================================================
+   VALIDACIÓN FINAL DE CLIENTES
    ===================================================== */
 
 async function consultarCliente(telefono){
@@ -1061,9 +1492,9 @@ async function validarCliente(){
   const cliente=
    await consultarCliente(telefono);
 
-  /* -----------------------------------------
-     CLIENTE EXISTENTE
-     ----------------------------------------- */
+  /*
+   * CLIENTE EXISTENTE
+   */
 
   if(cliente){
 
@@ -1079,16 +1510,16 @@ async function validarCliente(){
    clienteActual=cliente;
 
    mostrarEstadoCliente(
-    "Cliente registrado. Puedes continuar.",
+    "✅ Cliente registrado. Puedes continuar.",
     "ok"
    );
 
    return true;
   }
 
-  /* -----------------------------------------
-     CLIENTE NUEVO
-     ----------------------------------------- */
+  /*
+   * CLIENTE NUEVO
+   */
 
   const telefonoReferente=
    normalizarTelefono(
@@ -1097,7 +1528,13 @@ async function validarCliente(){
 
   if(!telefonoReferente){
 
-   $("campoReferido").classList.add("show");
+   $("campoReferido")
+    .classList.add("show");
+
+   mostrarEstadoCliente(
+    "⚠️ Este número no está registrado. Necesitas un referente.",
+    "error"
+   );
 
    mostrarError(
     "Este teléfono no está registrado. Debes ingresar el teléfono de quien te refirió."
@@ -1112,6 +1549,11 @@ async function validarCliente(){
    telefonoReferente===
    telefono
   ){
+
+   mostrarEstadoReferente(
+    "❌ No puedes referirte a ti mismo.",
+    "error"
+   );
 
    mostrarError(
     "No puedes referirte a ti mismo."
@@ -1129,6 +1571,11 @@ async function validarCliente(){
 
   if(!referente){
 
+   mostrarEstadoReferente(
+    "❌ Referente no encontrado.",
+    "error"
+   );
+
    mostrarError(
     "El teléfono del referente no corresponde a un cliente registrado."
    );
@@ -1139,6 +1586,11 @@ async function validarCliente(){
   }
 
   if(referente.activo===false){
+
+   mostrarEstadoReferente(
+    "❌ El referente está inactivo.",
+    "error"
+   );
 
    mostrarError(
     "El cliente que te refirió está inactivo."
@@ -1158,9 +1610,9 @@ async function validarCliente(){
    return false;
   }
 
-  /* -----------------------------------------
-     GENERAR CÓDIGO DEL NUEVO CLIENTE
-     ----------------------------------------- */
+  /*
+   * GENERAR CÓDIGO DEL NUEVO CLIENTE
+   */
 
   const codigoNuevo=
    "SR"+
@@ -1194,13 +1646,9 @@ async function validarCliente(){
    nuevoCliente=
     cr.data[0]||null;
   }else{
-   nuevoCliente=cr.data||null;
+   nuevoCliente=
+    cr.data||null;
   }
-
-  /*
-   * Si la función RPC no devuelve el registro,
-   * lo consultamos nuevamente.
-   */
 
   if(!nuevoCliente){
 
@@ -1223,7 +1671,7 @@ async function validarCliente(){
    .classList.remove("show");
 
   mostrarEstadoCliente(
-   "Cliente registrado correctamente. Puedes continuar.",
+   "✅ Cliente registrado correctamente. Puedes continuar.",
    "ok"
   );
 
@@ -1346,12 +1794,6 @@ async function realizarPedido(){
  }
 
  try{
-
-  /*
-   * PRIMERO validamos el cliente.
-   * Un cliente existente puede continuar.
-   * Un cliente nuevo debe tener referente.
-   */
 
   const clienteValido=
    await validarCliente();
@@ -1686,11 +2128,6 @@ async function realizarPedido(){
     )
    }*`;
 
-  /*
-   * Solo vaciamos el carrito cuando
-   * el pedido fue registrado correctamente.
-   */
-
   carrito=[];
 
   guardarCarrito();
@@ -1744,3 +2181,4 @@ cargarConfiguracion();
 
 </body>
 </html>
+```
