@@ -74,6 +74,13 @@ textarea{min-height:90px;resize:vertical}
 .mode-option input{width:auto}
 .products-editor{margin-top:10px}
 .hidden{display:none!important}
+.client-status{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.client-switch{display:flex;align-items:center;gap:10px}
+.client-switch input{display:none}
+.client-switch .eye{width:44px;height:26px}
+.client-import{border:2px dashed #d1d5db;border-radius:10px;padding:18px;background:#fafafa}
+.import-result{margin-top:15px;padding:12px;border-radius:8px;background:#f4f5f7}
+.import-result strong{display:inline-block;margin-right:14px}
 @media(max-width:800px){
 .grid,.local-list{grid-template-columns:1fr}
 .horario-row{grid-template-columns:1fr 80px 1fr 1fr}
@@ -101,6 +108,7 @@ textarea{min-height:90px;resize:vertical}
 <button class="active" onclick="mostrarSeccion('config',this)">Configuración</button>
 <button onclick="mostrarSeccion('categorias',this)">Categorías</button>
 <button onclick="mostrarSeccion('locales',this)">Locales</button>
+<button onclick="mostrarSeccion('clientes',this)">Clientes</button>
 </nav>
 
 <div id="mensaje" class="msg"></div>
@@ -112,6 +120,7 @@ textarea{min-height:90px;resize:vertical}
 <h2>Configuración del negocio</h2>
 
 <div class="grid">
+
 <div class="field">
 <label>Nombre del negocio</label>
 <input id="cfgNombre">
@@ -136,6 +145,7 @@ textarea{min-height:90px;resize:vertical}
 <label>Moneda</label>
 <input id="cfgMoneda">
 </div>
+
 </div>
 
 <div class="actions">
@@ -243,13 +253,11 @@ Cerrado
 
 </div>
 
-<!-- LISTA -->
 <div class="card">
 <h2>Lista de locales</h2>
 <div id="listaLocales" class="local-list"></div>
 </div>
 
-<!-- EDICIÓN -->
 <div id="editorLocal" class="card hidden">
 <h2>Editar local</h2>
 
@@ -327,6 +335,65 @@ Cerrado
 
 </section>
 
+<!-- CLIENTES -->
+<section id="clientes" class="section">
+
+<div class="card">
+<h2>Validación de clientes</h2>
+
+<div class="client-status">
+
+<label class="client-switch">
+<input id="validacionClientes" type="checkbox" onchange="cambiarValidacionClientes()">
+<span class="eye">✓</span>
+<span id="textoValidacionClientes">Validación activa</span>
+</label>
+
+</div>
+
+<p class="muted">
+Cuando está activa, los clientes nuevos deben estar registrados o ingresar
+un número de referente válido antes de realizar su primer pedido.
+</p>
+
+</div>
+
+<div class="card">
+<h2>Cargar clientes</h2>
+
+<p class="muted">
+Importa los contactos directamente desde el archivo exportado por tu teléfono.
+Se admite formato <strong>.vcf / vCard</strong>.
+</p>
+
+<div class="client-import">
+
+<div class="field">
+<label>Archivo de contactos</label>
+<input
+ id="archivoContactos"
+ type="file"
+ accept=".vcf,text/vcard,text/x-vcard"
+>
+</div>
+
+<div class="actions">
+<button class="btn primary" onclick="importarContactos()">Importar contactos</button>
+</div>
+
+<p class="muted">
+El archivo se procesa en el navegador. No se almacena el archivo original.
+Solamente se envían a Supabase los contactos válidos.
+</p>
+
+</div>
+
+<div id="resultadoImportacion" class="import-result hidden"></div>
+
+</div>
+
+</section>
+
 </div>
 
 <script>
@@ -382,10 +449,14 @@ async function cargarTodo(){
  }catch(e){err(e)}
 }
 
+/* =========================
+   CONFIGURACIÓN
+========================= */
+
 async function cargarConfiguracion(){
  const {data,error}=await supabaseClient
   .from("configuracion_negocio")
-  .select("*")
+  .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes")
   .order("id",{ascending:true})
   .limit(1)
   .maybeSingle();
@@ -398,6 +469,9 @@ async function cargarConfiguracion(){
  cfgDelivery.value=data.tarifa_delivery??1.5;
  cfgWhatsapp.value=data.whatsapp_negocio||"";
  cfgMoneda.value=data.moneda||"USD";
+
+ validacionClientes.checked=data.validacion_clientes!==false;
+ actualizarTextoValidacion();
 }
 
 async function guardarConfiguracion(){
@@ -411,12 +485,14 @@ async function guardarConfiguracion(){
    actualizado_en:new Date().toISOString()
   };
 
-  const {data:exist}=await supabaseClient
+  const {data:exist,error:e0}=await supabaseClient
    .from("configuracion_negocio")
    .select("id")
    .order("id",{ascending:true})
    .limit(1)
    .maybeSingle();
+
+  if(e0)throw e0;
 
   let error;
 
@@ -432,14 +508,295 @@ async function guardarConfiguracion(){
   }
 
   if(error)throw error;
+
   mensaje("Configuración guardada correctamente.");
  }catch(e){err(e)}
 }
 
+/* =========================
+   CLIENTES
+========================= */
+
+function actualizarTextoValidacion(){
+ const activo=document.getElementById("validacionClientes").checked;
+ document.getElementById("textoValidacionClientes").textContent=
+  activo?"Validación activa":"Validación inactiva";
+}
+
+async function cambiarValidacionClientes(){
+ try{
+  const activo=validacionClientes.checked;
+
+  const {data,error}=await supabaseClient
+   .from("configuracion_negocio")
+   .select("id")
+   .order("id",{ascending:true})
+   .limit(1)
+   .maybeSingle();
+
+  if(error)throw error;
+
+  if(!data?.id){
+   throw new Error("No existe la configuración del negocio.");
+  }
+
+  const {error:e}=await supabaseClient
+   .from("configuracion_negocio")
+   .update({
+    validacion_clientes:activo,
+    actualizado_en:new Date().toISOString()
+   })
+   .eq("id",data.id);
+
+  if(e)throw e;
+
+  actualizarTextoValidacion();
+
+  mensaje(
+   activo
+    ?"Validación de clientes activada."
+    :"Validación de clientes inactivada."
+  );
+
+ }catch(e){
+  validacionClientes.checked=!validacionClientes.checked;
+  actualizarTextoValidacion();
+  err(e);
+ }
+}
+
+async function importarContactos(){
+
+ const archivo=archivoContactos.files[0];
+
+ if(!archivo){
+  mensaje("Selecciona un archivo de contactos .vcf.","err");
+  return;
+ }
+
+ if(!/\.vcf$/i.test(archivo.name)){
+  mensaje("El archivo debe estar en formato .vcf.","err");
+  return;
+ }
+
+ try{
+
+  const texto=await archivo.text();
+  const contactos=parsearVCF(texto);
+
+  if(!contactos.length){
+   mensaje("No se encontraron contactos válidos en el archivo.","err");
+   return;
+  }
+
+  const unicos=new Map();
+
+  contactos.forEach(c=>{
+   const telefono=normalizarTelefono(c.telefono);
+   if(!telefono)return;
+
+   if(!unicos.has(telefono)){
+    unicos.set(telefono,{
+     nombre:c.nombre||"Cliente",
+     telefono
+    });
+   }
+  });
+
+  const clientes=[...unicos.values()];
+
+  if(!clientes.length){
+   mensaje("No se encontraron números de teléfono válidos.","err");
+   return;
+  }
+
+  /*
+   * Se envían por bloques para evitar payloads excesivamente grandes.
+   * Cada bloque genera una sola llamada RPC.
+   */
+  let procesados=0;
+  let importados=0;
+  let existentes=0;
+  let errores=0;
+
+  const TAM_BLOQUE=500;
+
+  for(let i=0;i<clientes.length;i+=TAM_BLOQUE){
+
+   const bloque=clientes.slice(i,i+TAM_BLOQUE);
+
+   const {data,error}=await supabaseClient.rpc(
+    "importar_clientes_masivo",
+    {p_clientes:bloque}
+   );
+
+   if(error)throw error;
+
+   const r=Array.isArray(data)?data[0]:data;
+
+   procesados+=Number(r?.procesados||0);
+   importados+=Number(r?.importados||0);
+   existentes+=Number(r?.existentes||0);
+   errores+=Number(r?.errores||0);
+  }
+
+  mostrarResultadoImportacion({
+   contactosArchivo:contactos.length,
+   unicos:clientes.length,
+   procesados,
+   importados,
+   existentes,
+   errores
+  });
+
+  archivoContactos.value="";
+
+  mensaje(
+   `Importación terminada: ${importados} cliente(s) nuevo(s).`
+  );
+
+ }catch(e){
+  console.error(e);
+  mensaje(
+   e?.message||"No se pudo importar el archivo de contactos.",
+   "err"
+  );
+ }
+}
+
+function mostrarResultadoImportacion(r){
+ const box=document.getElementById("resultadoImportacion");
+
+ box.innerHTML=`
+  <strong>Contactos encontrados: ${r.contactosArchivo}</strong>
+  <strong>Teléfonos únicos: ${r.unicos}</strong>
+  <strong>Procesados: ${r.procesados}</strong>
+  <strong>Importados: ${r.importados}</strong>
+  <strong>Ya existentes: ${r.existentes}</strong>
+  <strong>Errores: ${r.errores}</strong>
+ `;
+
+ box.classList.remove("hidden");
+}
+
+function parsearVCF(texto){
+
+ const resultado=[];
+
+ /*
+  * Un vCard puede contener líneas dobladas.
+  * Se unen las líneas que comienzan con espacio o tabulación.
+  */
+ const normalizado=texto
+  .replace(/\r\n/g,"\n")
+  .replace(/\r/g,"\n")
+  .replace(/\n[ \t]/g,"");
+
+ const bloques=normalizado.split(/BEGIN:VCARD/i);
+
+ for(const bloqueRaw of bloques){
+
+  if(!/TEL/i.test(bloqueRaw))continue;
+
+  const bloque=bloqueRaw.split(/END:VCARD/i)[0];
+
+  let nombre="";
+
+  const fn=bloque.match(/^FN(?:;[^:]*)?:(.*)$/im);
+
+  if(fn){
+   nombre=decodificarVCF(fn[1].trim());
+  }else{
+
+   const n=bloque.match(/^N(?:;[^:]*)?:(.*)$/im);
+
+   if(n){
+    const partes=n[1].split(";");
+    nombre=decodificarVCF(
+     [partes[1],partes[0],partes[2]]
+      .filter(Boolean)
+      .join(" ")
+      .trim()
+    );
+   }
+  }
+
+  const lineas=bloque.split("\n");
+
+  for(const linea of lineas){
+
+   if(!/^TEL(?:;[^:]*)?:/i.test(linea))continue;
+
+   const pos=linea.indexOf(":");
+   if(pos<0)continue;
+
+   const telefono=linea.substring(pos+1).trim();
+
+   if(telefono){
+    resultado.push({
+     nombre:nombre||"Cliente",
+     telefono
+    });
+   }
+  }
+ }
+
+ return resultado;
+}
+
+function decodificarVCF(valor){
+
+ return String(valor||"")
+  .replace(/\\n/gi," ")
+  .replace(/\\,/g,",")
+  .replace(/\\;/g,";")
+  .replace(/\\\\/g,"\\")
+  .trim();
+}
+
+function normalizarTelefono(valor){
+
+ let t=String(valor||"").trim();
+
+ t=t.replace(/^tel:/i,"");
+ t=t.replace(/[^\d+]/g,"");
+
+ if(t.startsWith("+")){
+  t=t.substring(1);
+ }
+
+ /*
+  * Ecuador:
+  * +593987654321 -> 593987654321
+  * 593987654321  -> 593987654321
+  * 0987654321    -> 593987654321
+  * 987654321     -> 593987654321
+  */
+
+ if(/^5939\d{8}$/.test(t)){
+  return t;
+ }
+
+ if(/^09\d{8}$/.test(t)){
+  return "593"+t.substring(1);
+ }
+
+ if(/^9\d{8}$/.test(t)){
+  return "593"+t;
+ }
+
+ return "";
+}
+
+/* =========================
+   CATEGORÍAS
+========================= */
+
 async function cargarCategorias(){
+
  const {data,error}=await supabaseClient
   .from("categorias")
-  .select("*")
+  .select("id,nombre,activo")
   .order("nombre");
 
  if(error)throw error;
@@ -450,14 +807,18 @@ async function cargarCategorias(){
 }
 
 function cargarSelectCategorias(){
+
  const html='<option value="">Sin categoría</option>'+
-  categorias.map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`).join("");
+  categorias
+   .map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`)
+   .join("");
 
  locCategoria.innerHTML=html;
  editCategoria.innerHTML=html;
 }
 
 function pintarCategorias(){
+
  listaCategorias.innerHTML="";
 
  if(!categorias.length){
@@ -466,22 +827,31 @@ function pintarCategorias(){
  }
 
  categorias.forEach(c=>{
+
   const row=document.createElement("div");
   row.className="category-row";
 
   row.innerHTML=`
    <div>
     <strong>${escapeHtml(c.nombre)}</strong>
-    <span class="badge ${c.activo?"on":"off"}">${c.activo?"Activa":"Inactiva"}</span>
+    <span class="badge ${c.activo?"on":"off"}">
+     ${c.activo?"Activa":"Inactiva"}
+    </span>
    </div>
 
    <div class="actions">
-    <button class="btn secondary" onclick="editarCategoria(${c.id})">Editar</button>
-    <button class="btn ${c.activo?"warning":"success"}"
-      onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
-      ${c.activo?"Inactivar":"Activar"}
+    <button class="btn secondary" onclick="editarCategoria(${c.id})">
+     Editar
     </button>
-    <button class="btn danger" onclick="eliminarCategoria(${c.id})">Eliminar</button>
+
+    <button class="btn ${c.activo?"warning":"success"}"
+     onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
+     ${c.activo?"Inactivar":"Activar"}
+    </button>
+
+    <button class="btn danger" onclick="eliminarCategoria(${c.id})">
+     Eliminar
+    </button>
    </div>
   `;
 
@@ -490,7 +860,9 @@ function pintarCategorias(){
 }
 
 async function crearCategoria(){
+
  try{
+
   const nombre=catNombre.value.trim();
 
   if(!nombre){
@@ -498,7 +870,9 @@ async function crearCategoria(){
    return;
   }
 
-  const existe=categorias.some(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase());
+  const existe=categorias.some(
+   c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase()
+  );
 
   if(existe){
    mensaje("Ya existe una categoría con ese nombre.","err");
@@ -513,21 +887,31 @@ async function crearCategoria(){
 
   catNombre.value="";
   await cargarCategorias();
+
   mensaje("Categoría creada.");
+
  }catch(e){err(e)}
 }
 
 async function editarCategoria(id){
+
  const cat=categorias.find(x=>x.id===id);
  if(!cat)return;
 
- const nombre=prompt("Nuevo nombre de categoría:",cat.nombre);
+ const nombre=prompt(
+  "Nuevo nombre de categoría:",
+  cat.nombre
+ );
+
  if(nombre===null)return;
 
  const nuevo=nombre.trim();
  if(!nuevo)return;
 
- const existe=categorias.some(c=>c.id!==id&&c.nombre.trim().toLowerCase()===nuevo.toLowerCase());
+ const existe=categorias.some(
+  c=>c.id!==id&&
+  c.nombre.trim().toLowerCase()===nuevo.toLowerCase()
+ );
 
  if(existe){
   mensaje("Ya existe una categoría con ese nombre.","err");
@@ -535,6 +919,7 @@ async function editarCategoria(id){
  }
 
  try{
+
   const {error:e1}=await supabaseClient
    .from("categorias")
    .update({nombre:nuevo})
@@ -551,12 +936,16 @@ async function editarCategoria(id){
 
   await cargarCategorias();
   await cargarLocales();
+
   mensaje("Categoría actualizada.");
+
  }catch(e){err(e)}
 }
 
 async function cambiarEstadoCategoria(id,activo){
+
  try{
+
   const {error}=await supabaseClient
    .from("categorias")
    .update({activo})
@@ -565,15 +954,24 @@ async function cambiarEstadoCategoria(id,activo){
   if(error)throw error;
 
   await cargarCategorias();
-  mensaje(activo?"Categoría activada.":"Categoría inactivada.");
+
+  mensaje(
+   activo
+    ?"Categoría activada."
+    :"Categoría inactivada."
+  );
+
  }catch(e){err(e)}
 }
 
 async function eliminarCategoria(id){
+
  const cat=categorias.find(x=>x.id===id);
  if(!cat)return;
 
- const asociados=locales.filter(x=>x.categoria===cat.nombre);
+ const asociados=locales.filter(
+  x=>x.categoria===cat.nombre
+ );
 
  let texto=`¿Eliminar la categoría "${cat.nombre}"?`;
 
@@ -584,7 +982,9 @@ async function eliminarCategoria(id){
  if(!confirm(texto))return;
 
  try{
+
   if(asociados.length){
+
    const {error:e1}=await supabaseClient
     .from("restaurantes")
     .update({categoria:null})
@@ -602,14 +1002,21 @@ async function eliminarCategoria(id){
 
   await cargarCategorias();
   await cargarLocales();
+
   mensaje("Categoría eliminada.");
+
  }catch(e){err(e)}
 }
 
+/* =========================
+   LOCALES
+========================= */
+
 async function cargarLocales(){
+
  const {data,error}=await supabaseClient
   .from("restaurantes")
-  .select("*")
+  .select("id,nombre,categoria,descripcion,banner_url,activo")
   .order("nombre");
 
  if(error)throw error;
@@ -619,6 +1026,7 @@ async function cargarLocales(){
 }
 
 function pintarLocales(){
+
  listaLocales.innerHTML="";
 
  if(!locales.length){
@@ -627,47 +1035,68 @@ function pintarLocales(){
  }
 
  locales.forEach(l=>{
+
   const div=document.createElement("div");
   div.className="local-card";
 
-  const img=l.banner_url
-   ? `${l.banner_url}${l.banner_url.includes("?")?"&":"?"}v=${Date.now()}`
-   : "";
+  const img=l.banner_url||"";
 
   div.innerHTML=`
    ${img
-    ? `<img class="local-banner" src="${escapeAttr(img)}" alt="">`
+    ? `<img
+        class="local-banner"
+        src="${escapeAttr(img)}"
+        alt=""
+        loading="lazy"
+        decoding="async">`
     : `<div class="local-banner"></div>`}
 
    <div class="local-body">
-    <div class="local-title">${escapeHtml(l.nombre)}</div>
 
-    <div class="muted">${escapeHtml(l.categoria||"Sin categoría")}</div>
+    <div class="local-title">
+     ${escapeHtml(l.nombre)}
+    </div>
+
+    <div class="muted">
+     ${escapeHtml(l.categoria||"Sin categoría")}
+    </div>
 
     <p>${escapeHtml(l.descripcion||"")}</p>
 
     <span class="badge ${l.activo?"on":"off"}">
-      ${l.activo?"Activo":"Inactivo"}
+     ${l.activo?"Activo":"Inactivo"}
     </span>
 
     <div class="actions">
-     <button class="btn info" onclick="editarLocal(${l.id})">Editar</button>
 
-     <button class="btn ${l.activo?"warning":"success"}"
-       onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
-       ${l.activo?"Inactivar":"Activar"}
+     <button class="btn info" onclick="editarLocal(${l.id})">
+      Editar
      </button>
 
-     <button class="btn danger" onclick="eliminarLocal(${l.id})">
-       Eliminar
+     <button
+      class="btn ${l.activo?"warning":"success"}"
+      onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
+      ${l.activo?"Inactivar":"Activar"}
      </button>
+
+     <button
+      class="btn danger"
+      onclick="eliminarLocal(${l.id})">
+      Eliminar
+     </button>
+
     </div>
+
    </div>
   `;
 
   listaLocales.appendChild(div);
  });
 }
+
+/* =========================
+   HORARIOS
+========================= */
 
 function cambiarModoHorario(){
  construirHorario("horarioEditor","nuevo");
@@ -678,58 +1107,84 @@ function cambiarModoHorarioEdit(){
 }
 
 function modoSeleccionado(tipo){
- const name=tipo==="edit"?"editModoHorario":"modoHorario";
- return document.querySelector(`input[name="${name}"]:checked`)?.value||"personalizado";
+
+ const name=tipo==="edit"
+  ?"editModoHorario"
+  :"modoHorario";
+
+ return document.querySelector(
+  `input[name="${name}"]:checked`
+ )?.value||"personalizado";
 }
 
 function construirHorario(id,tipo){
+
  const box=document.getElementById(id);
  if(!box)return;
 
  const modo=modoSeleccionado(tipo);
 
  if(modo==="siempre"){
-  box.innerHTML='<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
+  box.innerHTML=
+   '<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
   return;
  }
 
  if(modo==="cerrado"){
-  box.innerHTML='<p class="muted">El local estará cerrado todos los días.</p>';
+  box.innerHTML=
+   '<p class="muted">El local estará cerrado todos los días.</p>';
   return;
  }
 
  box.innerHTML=`
   <div class="horario-box">
+
    ${DIAS.map(d=>`
+
     <div class="horario-row">
+
      <div class="day">${d.n}</div>
 
      <label class="toggle">
+
       <input
        type="checkbox"
        id="${tipo}Dia${d.d}"
        checked
        onchange="actualizarFilaHorario('${tipo}',${d.d})">
+
       <span class="eye">👁</span>
+
       <span class="estado-text">Abierto</span>
+
      </label>
 
      <div class="time-wrap">
       <label>Desde</label>
-      <input id="${tipo}Apertura${d.d}" type="time" value="10:00">
+      <input
+       id="${tipo}Apertura${d.d}"
+       type="time"
+       value="10:00">
      </div>
 
      <div class="time-wrap">
       <label>Hasta</label>
-      <input id="${tipo}Cierre${d.d}" type="time" value="22:00">
+      <input
+       id="${tipo}Cierre${d.d}"
+       type="time"
+       value="22:00">
      </div>
+
     </div>
+
    `).join("")}
+
   </div>
  `;
 }
 
 function actualizarFilaHorario(tipo,dia){
+
  const chk=document.getElementById(`${tipo}Dia${dia}`);
  const ap=document.getElementById(`${tipo}Apertura${dia}`);
  const ci=document.getElementById(`${tipo}Cierre${dia}`);
@@ -743,35 +1198,48 @@ function actualizarFilaHorario(tipo,dia){
 }
 
 function obtenerHorario(tipo){
+
  const modo=modoSeleccionado(tipo);
 
- if(modo==="siempre")return DIAS.map(d=>({
-  dia_semana:d.d,
-  hora_apertura:"00:00",
-  hora_cierre:"23:59",
-  cerrado:false
- }));
+ if(modo==="siempre"){
+  return DIAS.map(d=>({
+   dia_semana:d.d,
+   hora_apertura:"00:00",
+   hora_cierre:"23:59",
+   cerrado:false
+  }));
+ }
 
- if(modo==="cerrado")return DIAS.map(d=>({
-  dia_semana:d.d,
-  hora_apertura:null,
-  hora_cierre:null,
-  cerrado:true
- }));
+ if(modo==="cerrado"){
+  return DIAS.map(d=>({
+   dia_semana:d.d,
+   hora_apertura:null,
+   hora_cierre:null,
+   cerrado:true
+  }));
+ }
 
  return DIAS.map(d=>{
-  const abierto=document.getElementById(`${tipo}Dia${d.d}`)?.checked;
+
+  const abierto=document.getElementById(
+   `${tipo}Dia${d.d}`
+  )?.checked;
 
   return {
    dia_semana:d.d,
-   hora_apertura:abierto?document.getElementById(`${tipo}Apertura${d.d}`)?.value||"10:00":null,
-   hora_cierre:abierto?document.getElementById(`${tipo}Cierre${d.d}`)?.value||"22:00":null,
+   hora_apertura:abierto
+    ?document.getElementById(`${tipo}Apertura${d.d}`)?.value||"10:00"
+    :null,
+   hora_cierre:abierto
+    ?document.getElementById(`${tipo}Cierre${d.d}`)?.value||"22:00"
+    :null,
    cerrado:!abierto
   };
  });
 }
 
 async function guardarHorario(restauranteId,tipo){
+
  const horario=obtenerHorario(tipo);
 
  const {error:eDelete}=await supabaseClient
@@ -793,30 +1261,100 @@ async function guardarHorario(restauranteId,tipo){
  if(eInsert)throw eInsert;
 }
 
+/* =========================
+   IMÁGENES / STORAGE
+========================= */
+
+function cargarImagen(file,maxWidth=1200,quality=.78){
+
+ return new Promise((resolve,reject)=>{
+
+  if(!file||!file.type?.startsWith("image/")){
+   reject(new Error("El archivo seleccionado no es una imagen válida."));
+   return;
+  }
+
+  const img=new Image();
+  const url=URL.createObjectURL(file);
+
+  img.onload=()=>{
+
+   URL.revokeObjectURL(url);
+
+   let width=img.naturalWidth;
+   let height=img.naturalHeight;
+
+   if(width>maxWidth){
+    height=Math.round(height*(maxWidth/width));
+    width=maxWidth;
+   }
+
+   const canvas=document.createElement("canvas");
+   canvas.width=width;
+   canvas.height=height;
+
+   const ctx=canvas.getContext("2d",{alpha:false});
+
+   if(!ctx){
+    reject(new Error("No se pudo procesar la imagen."));
+    return;
+   }
+
+   ctx.drawImage(img,0,0,width,height);
+
+   canvas.toBlob(
+    blob=>{
+     if(!blob){
+      reject(new Error("No se pudo comprimir la imagen."));
+      return;
+     }
+
+     resolve(blob);
+    },
+    "image/webp",
+    quality
+   );
+  };
+
+  img.onerror=()=>{
+   URL.revokeObjectURL(url);
+   reject(new Error("No se pudo leer la imagen."));
+  };
+
+  img.src=url;
+ });
+}
+
 async function subirImagen(archivo,carpeta,id,subId=""){
+
  if(!archivo)return null;
 
- if(!archivo.type?.startsWith("image/"))
-  throw new Error("El archivo seleccionado no es una imagen válida.");
+ const maxWidth=carpeta==="productos"?900:1400;
 
- const extension=(archivo.name.split(".").pop()||"jpg")
-  .toLowerCase()
-  .replace(/[^a-z0-9]/g,"");
+ const blob=await cargarImagen(
+  archivo,
+  maxWidth,
+  .78
+ );
 
- const ruta=`${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+ const ruta=
+  `${carpeta}/${id}${subId?"/"+subId:""}/`+
+  `${Date.now()}-${crypto.randomUUID()}.webp`;
 
  const {error}=await supabaseClient
   .storage
   .from(BUCKET)
-  .upload(ruta,archivo,{
-   cacheControl:"3600",
+  .upload(ruta,blob,{
+   cacheControl:"31536000",
    upsert:false,
-   contentType:archivo.type
+   contentType:"image/webp"
   });
 
  if(error){
   console.error("Storage:",error);
-  throw new Error(error.message||"No se pudo subir la imagen.");
+  throw new Error(
+   error.message||"No se pudo subir la imagen."
+  );
  }
 
  const {data}=supabaseClient
@@ -824,11 +1362,67 @@ async function subirImagen(archivo,carpeta,id,subId=""){
   .from(BUCKET)
   .getPublicUrl(ruta);
 
- if(!data?.publicUrl)
-  throw new Error("No se pudo obtener la URL pública de la imagen.");
+ if(!data?.publicUrl){
+  try{
+   await supabaseClient.storage
+    .from(BUCKET)
+    .remove([ruta]);
+  }catch(_){}
 
- return data.publicUrl;
+  throw new Error(
+   "No se pudo obtener la URL pública de la imagen."
+  );
+ }
+
+ return {
+  url:data.publicUrl,
+  path:ruta
+ };
 }
+
+function obtenerPathStorage(url){
+
+ if(!url)return null;
+
+ try{
+
+  const marker=`/storage/v1/object/public/${BUCKET}/`;
+  const pos=url.indexOf(marker);
+
+  if(pos===-1)return null;
+
+  return decodeURIComponent(
+   url.substring(pos+marker.length).split("?")[0]
+  );
+
+ }catch(_){
+  return null;
+ }
+}
+
+async function eliminarImagenStorage(url){
+
+ const path=obtenerPathStorage(url);
+
+ if(!path)return;
+
+ try{
+
+  const {error}=await supabaseClient
+   .storage
+   .from(BUCKET)
+   .remove([path]);
+
+  if(error)console.warn("Storage remove:",error);
+
+ }catch(e){
+  console.warn("No se pudo eliminar imagen:",e);
+ }
+}
+
+/* =========================
+   NUEVO LOCAL
+========================= */
 
 async function guardarNuevoLocal(){
 
@@ -841,7 +1435,9 @@ async function guardarNuevoLocal(){
    return;
   }
 
-  const existe=locales.some(l=>l.nombre.trim().toLowerCase()===nombre.toLowerCase());
+  const existe=locales.some(
+   l=>l.nombre.trim().toLowerCase()===nombre.toLowerCase()
+  );
 
   if(existe){
    mensaje("Ya existe un local con ese nombre.","err");
@@ -856,34 +1452,55 @@ async function guardarNuevoLocal(){
     descripcion:locDescripcion.value.trim()||null,
     activo:true
    })
-   .select()
+   .select("id")
    .single();
 
   if(error)throw error;
 
-  let bannerUrl=null;
+  const archivosSubidos=[];
 
   try{
+
    if(locBanner.files[0]){
-    bannerUrl=await subirImagen(
+
+    const imagen=await subirImagen(
      locBanner.files[0],
      "banners",
      data.id
     );
 
+    archivosSubidos.push(imagen.path);
+
     const {error:eBanner}=await supabaseClient
      .from("restaurantes")
-     .update({banner_url:bannerUrl})
+     .update({banner_url:imagen.url})
      .eq("id",data.id);
 
     if(eBanner)throw eBanner;
    }
 
    await guardarHorario(data.id,"nuevo");
-
-   await guardarProductosNuevos(data.id);
+   await guardarProductosNuevos(data.id,archivosSubidos);
 
   }catch(e){
+
+   if(archivosSubidos.length){
+
+    await supabaseClient
+     .storage
+     .from(BUCKET)
+     .remove(archivosSubidos);
+   }
+
+   await supabaseClient
+    .from("productos")
+    .delete()
+    .eq("restaurante_id",data.id);
+
+   await supabaseClient
+    .from("horarios_restaurantes")
+    .delete()
+    .eq("restaurante_id",data.id);
 
    await supabaseClient
     .from("restaurantes")
@@ -902,6 +1519,7 @@ async function guardarNuevoLocal(){
 }
 
 function agregarProductoNuevo(){
+
  productosNuevos.push({
   tempId:Date.now()+Math.random(),
   nombre:"",
@@ -916,20 +1534,12 @@ function agregarProductoNuevo(){
 }
 
 function pintarProductosNuevos(){
- productosNuevos.sort((a,b)=>0);
-
  productosNuevos.forEach((p,i)=>p._index=i);
-
- productosNuevos.length
-  ? productosNuevos.forEach((p,i)=>{
-    if(!p._rendered) p._rendered=true;
-   })
-  : null;
-
  productosNuevosContainer();
 }
 
 function productosNuevosContainer(){
+
  const box=document.getElementById("productosNuevos");
 
  if(!productosNuevos.length){
@@ -938,11 +1548,17 @@ function productosNuevosContainer(){
  }
 
  box.innerHTML=productosNuevos.map((p,i)=>`
-  <div class="card product-row" data-product-new="${p.tempId}">
+
+  <div class="card product-row"
+   data-product-new="${p.tempId}">
 
    <div>
     ${p.imagenPreview
-     ? `<img class="product-img" src="${escapeAttr(p.imagenPreview)}">`
+     ? `<img
+         class="product-img"
+         src="${escapeAttr(p.imagenPreview)}"
+         loading="lazy"
+         decoding="async">`
      : `<div class="product-img"></div>`}
    </div>
 
@@ -977,35 +1593,61 @@ function productosNuevosContainer(){
    </div>
 
    <div class="product-actions">
-    <button class="btn danger" onclick="eliminarProductoNuevo(${i})">
+
+    <button
+     class="btn danger"
+     onclick="eliminarProductoNuevo(${i})">
      Eliminar
     </button>
+
    </div>
 
   </div>
+
  `).join("");
 }
 
 function seleccionarImagenNuevo(index,input){
+
  const file=input.files[0];
  if(!file)return;
 
+ if(!file.type.startsWith("image/")){
+  mensaje("Selecciona una imagen válida.","err");
+  input.value="";
+  return;
+ }
+
  productosNuevos[index].imagen=file;
 
- const reader=new FileReader();
- reader.onload=e=>{
-  productosNuevos[index].imagenPreview=e.target.result;
-  productosNuevosContainer();
- };
- reader.readAsDataURL(file);
+ const url=URL.createObjectURL(file);
+
+ if(productosNuevos[index].imagenPreview){
+  try{
+   URL.revokeObjectURL(productosNuevos[index].imagenPreview);
+  }catch(_){}
+ }
+
+ productosNuevos[index].imagenPreview=url;
+
+ productosNuevosContainer();
 }
 
 function eliminarProductoNuevo(index){
+
+ const p=productosNuevos[index];
+
+ if(p?.imagenPreview){
+  try{
+   URL.revokeObjectURL(p.imagenPreview);
+  }catch(_){}
+ }
+
  productosNuevos.splice(index,1);
  productosNuevosContainer();
 }
 
-async function guardarProductosNuevos(localId){
+async function guardarProductosNuevos(localId,archivosSubidos=[]){
 
  for(const p of productosNuevos){
 
@@ -1020,32 +1662,42 @@ async function guardarProductosNuevos(localId){
     precio:Number(p.precio)||0,
     activo:true
    })
-   .select()
+   .select("id")
    .single();
 
   if(error)throw error;
 
   if(p.imagen){
 
-   const url=await subirImagen(
+   const imagen=await subirImagen(
     p.imagen,
     "productos",
     localId,
     data.id
    );
 
+   archivosSubidos.push(imagen.path);
+
    const {error:e}=await supabaseClient
     .from("productos")
-    .update({imagen_url:url})
+    .update({imagen_url:imagen.url})
     .eq("id",data.id);
 
    if(e)throw e;
   }
-}
-
+ }
 }
 
 function limpiarFormularioLocal(){
+
+ productosNuevos.forEach(p=>{
+  if(p.imagenPreview){
+   try{
+    URL.revokeObjectURL(p.imagenPreview);
+   }catch(_){}
+  }
+ });
+
  locNombre.value="";
  locCategoria.value="";
  locDescripcion.value="";
@@ -1055,11 +1707,17 @@ function limpiarFormularioLocal(){
 
  productosNuevos=[];
 
- document.querySelector('input[name="modoHorario"][value="personalizado"]').checked=true;
+ document.querySelector(
+  'input[name="modoHorario"][value="personalizado"]'
+ ).checked=true;
 
  construirHorario("horarioEditor","nuevo");
  productosNuevosContainer();
 }
+
+/* =========================
+   EDICIÓN
+========================= */
 
 async function editarLocal(id){
 
@@ -1075,7 +1733,7 @@ async function editarLocal(id){
   editBanner.value="";
 
   if(local.banner_url){
-   editBannerPreview.src=local.banner_url+"?v="+Date.now();
+   editBannerPreview.src=local.banner_url;
    editBannerPreview.classList.remove("hidden");
   }else{
    editBannerPreview.src="";
@@ -1084,7 +1742,7 @@ async function editarLocal(id){
 
   const {data:horarios,error:e1}=await supabaseClient
    .from("horarios_restaurantes")
-   .select("*")
+   .select("dia_semana,hora_apertura,hora_cierre,cerrado")
    .eq("restaurante_id",id)
    .order("dia_semana");
 
@@ -1094,7 +1752,7 @@ async function editarLocal(id){
 
   const {data:productos,error:e2}=await supabaseClient
    .from("productos")
-   .select("*")
+   .select("id,nombre,descripcion,precio,imagen_url,activo")
    .eq("restaurante_id",id)
    .order("id");
 
@@ -1124,25 +1782,37 @@ function prepararHorarioEdicion(horarios){
   horarios.every(h=>
    !h.cerrado &&
    h.hora_apertura==="00:00:00" &&
-   (h.hora_cierre==="23:59:00"||h.hora_cierre==="23:59:59")
+   (h.hora_cierre==="23:59:00"||
+    h.hora_cierre==="23:59:59")
   );
 
  const todosCerrados=horarios.length===7&&
   horarios.every(h=>h.cerrado);
 
  if(todosSiempre){
-  document.querySelector('input[name="editModoHorario"][value="siempre"]').checked=true;
+
+  document.querySelector(
+   'input[name="editModoHorario"][value="siempre"]'
+  ).checked=true;
+
   construirHorario("editHorarioEditor","edit");
   return;
  }
 
  if(todosCerrados){
-  document.querySelector('input[name="editModoHorario"][value="cerrado"]').checked=true;
+
+  document.querySelector(
+   'input[name="editModoHorario"][value="cerrado"]'
+  ).checked=true;
+
   construirHorario("editHorarioEditor","edit");
   return;
  }
 
- document.querySelector('input[name="editModoHorario"][value="personalizado"]').checked=true;
+ document.querySelector(
+  'input[name="editModoHorario"][value="personalizado"]'
+ ).checked=true;
+
  construirHorario("editHorarioEditor","edit");
 
  horarios.forEach(h=>{
@@ -1155,8 +1825,11 @@ function prepararHorarioEdicion(horarios){
 
   chk.checked=!h.cerrado;
 
-  if(h.hora_apertura)ap.value=h.hora_apertura.substring(0,5);
-  if(h.hora_cierre)ci.value=h.hora_cierre.substring(0,5);
+  if(h.hora_apertura)
+   ap.value=h.hora_apertura.substring(0,5);
+
+  if(h.hora_cierre)
+   ci.value=h.hora_cierre.substring(0,5);
 
   actualizarFilaHorario("edit",h.dia_semana);
  });
@@ -1177,7 +1850,11 @@ function pintarProductosEditados(){
 
    <div>
     ${p.preview
-     ? `<img class="product-img" src="${escapeAttr(p.preview)}">`
+     ? `<img
+         class="product-img"
+         src="${escapeAttr(p.preview)}"
+         loading="lazy"
+         decoding="async">`
      : `<div class="product-img"></div>`}
    </div>
 
@@ -1210,22 +1887,34 @@ function pintarProductosEditados(){
      onchange="seleccionarImagenEdit(${i},this)">
 
     <div style="margin-top:7px">
+
      <label class="toggle">
+
       <input
        type="checkbox"
        ${p.activo!==false?"checked":""}
        onchange="productosEdit[${i}].activo=this.checked">
+
       <span class="eye">👁</span>
-      <span>${p.activo!==false?"Activo":"Inactivo"}</span>
+
+      <span>
+       ${p.activo!==false?"Activo":"Inactivo"}
+      </span>
+
      </label>
+
     </div>
 
    </div>
 
    <div class="product-actions">
-    <button class="btn danger" onclick="eliminarProductoEdit(${i})">
+
+    <button
+     class="btn danger"
+     onclick="eliminarProductoEdit(${i})">
      Eliminar
     </button>
+
    </div>
 
   </div>
@@ -1254,16 +1943,25 @@ function seleccionarImagenEdit(index,input){
  const file=input.files[0];
  if(!file)return;
 
+ if(!file.type.startsWith("image/")){
+  mensaje("Selecciona una imagen válida.","err");
+  input.value="";
+  return;
+ }
+
  productosEdit[index].nuevaImagen=file;
 
- const reader=new FileReader();
+ if(productosEdit[index].preview&&
+    productosEdit[index].preview.startsWith("blob:")){
 
- reader.onload=e=>{
-  productosEdit[index].preview=e.target.result;
-  pintarProductosEditados();
- };
+  try{
+   URL.revokeObjectURL(productosEdit[index].preview);
+  }catch(_){}
+ }
 
- reader.readAsDataURL(file);
+ productosEdit[index].preview=URL.createObjectURL(file);
+
+ pintarProductosEditados();
 }
 
 async function eliminarProductoEdit(index){
@@ -1272,7 +1970,9 @@ async function eliminarProductoEdit(index){
 
  if(p.id){
 
-  if(!confirm(`¿Eliminar el producto "${p.nombre}"?`))return;
+  if(!confirm(
+   `¿Eliminar el producto "${p.nombre}"?`
+  ))return;
 
   try{
 
@@ -1283,14 +1983,24 @@ async function eliminarProductoEdit(index){
 
    if(error)throw error;
 
+   if(p.imagen_url)
+    await eliminarImagenStorage(p.imagen_url);
+
   }catch(e){
    err(e);
    return;
   }
  }
 
+ if(p.preview?.startsWith("blob:")){
+  try{
+   URL.revokeObjectURL(p.preview);
+  }catch(_){}
+ }
+
  productosEdit.splice(index,1);
  pintarProductosEditados();
+
  mensaje("Producto eliminado.");
 }
 
@@ -1313,7 +2023,7 @@ async function guardarEdicionLocal(){
   }
 
   const duplicado=locales.some(l=>
-   l.id!==id &&
+   l.id!==id&&
    l.nombre.trim().toLowerCase()===nombre.toLowerCase()
   );
 
@@ -1322,19 +2032,25 @@ async function guardarEdicionLocal(){
    return;
   }
 
+  const localActual=locales.find(x=>x.id===id);
+
   const payload={
    nombre,
    categoria:editCategoria.value||null,
    descripcion:editDescripcion.value.trim()||null
   };
 
+  let nuevaImagen=null;
+
   if(editBanner.files[0]){
 
-   payload.banner_url=await subirImagen(
+   nuevaImagen=await subirImagen(
     editBanner.files[0],
     "banners",
     id
    );
+
+   payload.banner_url=nuevaImagen.url;
   }
 
   const {error:e1}=await supabaseClient
@@ -1342,7 +2058,21 @@ async function guardarEdicionLocal(){
    .update(payload)
    .eq("id",id);
 
-  if(e1)throw e1;
+  if(e1){
+
+   if(nuevaImagen)
+    await eliminarImagenStorage(nuevaImagen.url);
+
+   throw e1;
+  }
+
+  /*
+   * Eliminamos el banner anterior únicamente después
+   * de haber actualizado correctamente la BD.
+   */
+  if(nuevaImagen&&localActual?.banner_url){
+   await eliminarImagenStorage(localActual.banner_url);
+  }
 
   await guardarHorario(id,"edit");
 
@@ -1361,7 +2091,7 @@ async function guardarEdicionLocal(){
       precio:Number(p.precio)||0,
       activo:p.activo!==false
      })
-     .select()
+     .select("id")
      .single();
 
     if(error)throw error;
@@ -1370,7 +2100,7 @@ async function guardarEdicionLocal(){
 
     if(p.nuevaImagen){
 
-     const url=await subirImagen(
+     const imagen=await subirImagen(
       p.nuevaImagen,
       "productos",
       id,
@@ -1379,13 +2109,25 @@ async function guardarEdicionLocal(){
 
      const {error:e}=await supabaseClient
       .from("productos")
-      .update({imagen_url:url})
+      .update({
+       imagen_url:imagen.url
+      })
       .eq("id",p.id);
 
-     if(e)throw e;
+     if(e){
+
+      await eliminarImagenStorage(imagen.url);
+      throw e;
+     }
+
+     p.imagen_url=imagen.url;
     }
 
    }else{
+
+    const original=await obtenerProductoOriginal(
+     p.id
+    );
 
     const values={
      nombre:p.nombre.trim(),
@@ -1394,14 +2136,18 @@ async function guardarEdicionLocal(){
      activo:p.activo!==false
     };
 
+    let nuevaImagen=null;
+
     if(p.nuevaImagen){
 
-     values.imagen_url=await subirImagen(
+     nuevaImagen=await subirImagen(
       p.nuevaImagen,
       "productos",
       id,
       p.id
      );
+
+     values.imagen_url=nuevaImagen.url;
     }
 
     const {error}=await supabaseClient
@@ -1409,7 +2155,22 @@ async function guardarEdicionLocal(){
      .update(values)
      .eq("id",p.id);
 
-    if(error)throw error;
+    if(error){
+
+     if(nuevaImagen)
+      await eliminarImagenStorage(nuevaImagen.url);
+
+     throw error;
+    }
+
+    if(nuevaImagen&&original?.imagen_url){
+     await eliminarImagenStorage(
+      original.imagen_url
+     );
+    }
+
+    if(nuevaImagen)
+     p.imagen_url=nuevaImagen.url;
    }
   }
 
@@ -1420,6 +2181,23 @@ async function guardarEdicionLocal(){
 
  }catch(e){err(e)}
 }
+
+async function obtenerProductoOriginal(id){
+
+ const {data,error}=await supabaseClient
+  .from("productos")
+  .select("id,imagen_url")
+  .eq("id",id)
+  .maybeSingle();
+
+ if(error)throw error;
+
+ return data;
+}
+
+/* =========================
+   ESTADOS / ELIMINACIÓN
+========================= */
 
 async function cambiarEstadoLocal(id,activo){
 
@@ -1434,7 +2212,11 @@ async function cambiarEstadoLocal(id,activo){
 
   await cargarLocales();
 
-  mensaje(activo?"Local activado.":"Local inactivado.");
+  mensaje(
+   activo
+    ?"Local activado."
+    :"Local inactivado."
+  );
 
  }catch(e){err(e)}
 }
@@ -1450,12 +2232,23 @@ async function eliminarLocal(id){
 
  try{
 
+  /*
+   * Obtenemos únicamente las URLs necesarias
+   * para poder limpiar Storage.
+   */
   const {data:productos,error:e1}=await supabaseClient
    .from("productos")
-   .select("id")
+   .select("id,imagen_url")
    .eq("restaurante_id",id);
 
   if(e1)throw e1;
+
+  const rutas=(productos||[])
+   .map(p=>p.imagen_url)
+   .filter(Boolean);
+
+  if(local.banner_url)
+   rutas.push(local.banner_url);
 
   const {error:e2}=await supabaseClient
    .from("horarios_restaurantes")
@@ -1478,6 +2271,25 @@ async function eliminarLocal(id){
 
   if(e4)throw e4;
 
+  /*
+   * Limpiar Storage después de eliminar
+   * correctamente los registros.
+   */
+  const paths=rutas
+   .map(obtenerPathStorage)
+   .filter(Boolean);
+
+  if(paths.length){
+
+   const {error:eStorage}=await supabaseClient
+    .storage
+    .from(BUCKET)
+    .remove([...new Set(paths)]);
+
+   if(eStorage)
+    console.warn("Storage:",eStorage);
+  }
+
   await cargarLocales();
 
   mensaje("Local eliminado.");
@@ -1486,9 +2298,25 @@ async function eliminarLocal(id){
 }
 
 function cerrarEditor(){
+
+ productosEdit.forEach(p=>{
+
+  if(p.preview?.startsWith("blob:")){
+
+   try{
+    URL.revokeObjectURL(p.preview);
+   }catch(_){}
+  }
+
+ });
+
  editorLocal.classList.add("hidden");
  productosEdit=[];
 }
+
+/* =========================
+   PREVISUALIZACIÓN
+========================= */
 
 function previewArchivo(input,targetId){
 
@@ -1496,28 +2324,39 @@ function previewArchivo(input,targetId){
  const target=document.getElementById(targetId);
 
  if(!file){
+
   target.src="";
   target.classList.add("hidden");
   return;
  }
 
  if(!file.type.startsWith("image/")){
+
   mensaje("Selecciona una imagen válida.","err");
   input.value="";
   return;
  }
 
- const reader=new FileReader();
+ if(target.dataset.blobUrl){
 
- reader.onload=e=>{
-  target.src=e.target.result;
-  target.classList.remove("hidden");
- };
+  try{
+   URL.revokeObjectURL(target.dataset.blobUrl);
+  }catch(_){}
+ }
 
- reader.readAsDataURL(file);
+ const url=URL.createObjectURL(file);
+
+ target.dataset.blobUrl=url;
+ target.src=url;
+ target.classList.remove("hidden");
 }
 
+/* =========================
+   UTILIDADES
+========================= */
+
 function escapeHtml(value){
+
  return String(value??"")
   .replace(/&/g,"&amp;")
   .replace(/</g,"&lt;")
