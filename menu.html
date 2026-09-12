@@ -4,12 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mi pedido | Sobre Ruedas</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f5;color:#222;font-family:Arial,sans-serif}
@@ -46,7 +44,7 @@ textarea{min-height:75px;resize:vertical}
 .clienteEstado.loading,.locationStatus.loading{color:#777}
 .locationButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .btn{border:0;border-radius:9px;padding:12px 14px;font-weight:bold;cursor:pointer}
-.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn:disabled,.controls button:disabled{opacity:.45;cursor:not-allowed}
 .btnRed{background:#e53935;color:#fff}.btnDark{background:#111;color:#fff}.btnGray{background:#eee;color:#222}
 .locationBox{border:1px solid #ddd;border-radius:10px;padding:12px;margin-top:12px;background:#fafafa}
 .locationTitle{font-weight:bold;margin-bottom:5px}.address{font-size:14px;color:#444;line-height:1.4}
@@ -59,6 +57,7 @@ textarea{min-height:75px;resize:vertical}
 .alert{display:none;padding:11px;border-radius:9px;background:#fff0f0;color:#b00000;margin-bottom:12px}
 .alert.show{display:block}.whatsapp{width:100%;font-size:16px;margin-top:8px}
 .note{font-size:12px;color:#777;margin-top:8px}
+.bloqueado{opacity:.6}
 @media(max-width:600px){main{padding:10px}.row,.locationButtons{grid-template-columns:1fr}.item{align-items:flex-start}.controls{flex:none}}
 </style>
 </head>
@@ -79,13 +78,13 @@ textarea{min-height:75px;resize:vertical}
 <div id="carrito"></div>
 </section>
 
-<section class="card">
+<section class="card" id="datosClienteCard">
 <h2>Datos del cliente</h2>
 
 <div class="row">
 <div>
 <label for="clienteNombre">Nombre</label>
-<input id="clienteNombre" placeholder="Tu nombre">
+<input id="clienteNombre" placeholder="Tu nombre" disabled>
 </div>
 
 <div>
@@ -102,8 +101,9 @@ textarea{min-height:75px;resize:vertical}
 <small>Para realizar tu primer pedido debes haber sido referido por un cliente registrado.</small>
 </div>
 
+<div id="opcionesCliente">
 <label class="check">
-<input type="checkbox" id="requiereFactura">
+<input type="checkbox" id="requiereFactura" disabled>
 ¿Requiere factura?
 </label>
 
@@ -111,28 +111,29 @@ textarea{min-height:75px;resize:vertical}
 <div class="row">
 <div>
 <label for="tipoDocumento">Tipo de documento</label>
-<select id="tipoDocumento">
+<select id="tipoDocumento" disabled>
 <option value="cedula">Cédula</option>
 <option value="ruc">RUC</option>
 </select>
 </div>
 <div>
 <label for="numeroDocumento">Cédula / RUC</label>
-<input id="numeroDocumento" placeholder="Número de documento">
+<input id="numeroDocumento" placeholder="Número de documento" disabled>
 </div>
 </div>
 
 <label for="correoFactura">Correo electrónico</label>
-<input id="correoFactura" type="email" placeholder="correo@ejemplo.com">
+<input id="correoFactura" type="email" placeholder="correo@ejemplo.com" disabled>
+</div>
 </div>
 </section>
 
-<section class="card">
+<section class="card" id="ubicacionCard">
 <h2>📍 Ubicación de entrega</h2>
 
 <div class="locationButtons">
-<button class="btn btnRed" onclick="usarMiUbicacion(this)">📍 Usar mi ubicación</button>
-<button class="btn btnDark" onclick="abrirMapa()">🗺️ Otra dirección</button>
+<button id="btnUbicacion" class="btn btnRed" onclick="usarMiUbicacion(this)" disabled>📍 Usar mi ubicación</button>
+<button id="btnMapa" class="btn btnDark" onclick="abrirMapa()" disabled>🗺️ Otra dirección</button>
 </div>
 
 <div id="direccionGuardada" class="locationBox">
@@ -143,29 +144,24 @@ textarea{min-height:75px;resize:vertical}
 
 <div id="mapWrap">
 <div id="map" class="map"></div>
-
 <div class="mapActions">
 <button class="btn btnRed" onclick="aceptarMapa()">Aceptar y guardar</button>
 <button class="btn btnGray" onclick="cerrarMapa()">Cancelar</button>
 </div>
-
 <div class="note">Toca el mapa en el lugar exacto donde deseas recibir tu pedido.</div>
 </div>
 
 <label for="referencia">Referencia</label>
-<textarea id="referencia" placeholder="Ej.: junto a..., casa de color..., edificio..."></textarea>
+<textarea id="referencia" placeholder="Ej.: junto a..., casa de color..., edificio..." disabled></textarea>
 
-<div class="note">
-La ubicación guardada se utilizará para generar el enlace de ubicación del pedido.
-</div>
+<div class="note">La ubicación guardada se utilizará para generar el enlace de ubicación del pedido.</div>
 </section>
 
 <section class="card">
 <h2>Resumen</h2>
 <div id="resumen"></div>
-
-<button class="btn btnGray" onclick="vaciarCarrito()">🗑️ Vaciar carrito</button>
-<button class="btn btnRed whatsapp" onclick="realizarPedido()">📲 Realizar pedido por WhatsApp</button>
+<button id="btnVaciar" class="btn btnGray" onclick="vaciarCarrito()" disabled>🗑️ Vaciar carrito</button>
+<button id="btnWhatsapp" class="btn btnRed whatsapp" onclick="realizarPedido()" disabled>📲 Realizar pedido por WhatsApp</button>
 </section>
 
 </main>
@@ -184,17 +180,8 @@ let carrito=[];
 let configuracion={...CONFIG_DEFAULT};
 let map=null,marker=null;
 
-let ubicacion={
- lat:null,
- lng:null,
- direccion:""
-};
-
-let ubicacionTemporal={
- lat:null,
- lng:null,
- direccion:""
-};
+let ubicacion={lat:null,lng:null,direccion:""};
+let ubicacionTemporal={lat:null,lng:null,direccion:""};
 
 let clienteActual=null;
 let timerCliente=null;
@@ -202,15 +189,12 @@ let timerReferente=null;
 let validacionClienteId=0;
 let validacionReferenteId=0;
 let ubicacionCargando=false;
+let pedidoHabilitado=false;
 
 const $=id=>document.getElementById(id);
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
- "&":"&amp;",
- "<":"&lt;",
- ">":"&gt;",
- '"':"&quot;",
- "'":"&#039;"
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
 }[m]));
 
 const money=n=>
@@ -221,70 +205,96 @@ function normalizarTelefono(t){
 }
 
 function mostrarError(t){
-
  const a=$("alerta");
-
  a.textContent=t;
  a.classList.add("show");
-
  window.scrollTo({top:0,behavior:"smooth"});
-
  setTimeout(()=>a.classList.remove("show"),5000);
 }
 
 function mostrarEstadoCliente(texto,tipo=""){
-
- const el=$("clienteEstado");
-
- el.textContent=texto;
- el.className="clienteEstado";
-
- if(tipo)el.classList.add(tipo);
+ const e=$("clienteEstado");
+ e.textContent=texto;
+ e.className="clienteEstado";
+ if(tipo)e.classList.add(tipo);
 }
 
 function mostrarEstadoReferente(texto,tipo=""){
-
- const el=$("referenteEstado");
-
- if(!el)return;
-
- el.textContent=texto;
- el.className="clienteEstado";
-
- if(tipo)el.classList.add(tipo);
+ const e=$("referenteEstado");
+ if(!e)return;
+ e.textContent=texto;
+ e.className="clienteEstado";
+ if(tipo)e.classList.add(tipo);
 }
 
 function mostrarEstadoUbicacion(texto,tipo=""){
-
- const el=$("locationStatus");
-
- if(!el)return;
-
- el.textContent=texto;
- el.className="locationStatus";
-
- if(tipo)el.classList.add(tipo);
+ const e=$("locationStatus");
+ if(!e)return;
+ e.textContent=texto;
+ e.className="locationStatus";
+ if(tipo)e.classList.add(tipo);
 }
 
-function cargarCarrito(){
+/* =====================================================
+   BLOQUEO GENERAL
+===================================================== */
 
+function cambiarAccesoPedido(habilitar){
+
+ pedidoHabilitado=habilitar;
+
+ const ids=[
+  "clienteNombre",
+  "requiereFactura",
+  "tipoDocumento",
+  "numeroDocumento",
+  "correoFactura",
+  "btnUbicacion",
+  "btnMapa",
+  "referencia",
+  "btnVaciar",
+  "btnWhatsapp"
+ ];
+
+ ids.forEach(id=>{
+  const e=$(id);
+  if(e)e.disabled=!habilitar;
+ });
+
+ document.querySelectorAll(".controls button").forEach(b=>{
+  b.disabled=!habilitar;
+ });
+
+ $("datosClienteCard").classList.toggle("bloqueado",!habilitar);
+ $("ubicacionCard").classList.toggle("bloqueado",!habilitar);
+
+ if(!habilitar){
+  $("requiereFactura").checked=false;
+  $("datosFactura").classList.remove("show");
+ }
+
+}
+
+function estadoInicialBloqueado(){
+ cambiarAccesoPedido(false);
+ $("telefonoReferente").disabled=false;
+}
+
+/* =====================================================
+   CARRITO
+===================================================== */
+
+function cargarCarrito(){
  try{
-  carrito=JSON.parse(
-   sessionStorage.getItem("carrito")||"[]"
-  );
+  carrito=JSON.parse(sessionStorage.getItem("carrito")||"[]");
  }catch{
   carrito=[];
  }
-
  if(!Array.isArray(carrito))carrito=[];
 }
 
 function guardarCarrito(){
-
- sessionStorage.setItem(
-  "carrito",
-  JSON.stringify(carrito)
- );
+ sessionStorage.setItem("carrito",JSON.stringify(carrito));
 }
 
 function guardarFormulario(){
@@ -301,10 +311,7 @@ function guardarFormulario(){
   ubicacion
  };
 
- sessionStorage.setItem(
-  "datosPedido",
-  JSON.stringify(data)
- );
+ sessionStorage.setItem("datosPedido",JSON.stringify(data));
 }
 
 function cargarFormulario(){
@@ -316,7 +323,6 @@ function cargarFormulario(){
   );
 
   if(d){
-
    $("clienteNombre").value=d.nombre||"";
    $("clienteTelefono").value=d.telefono||"";
    $("telefonoReferente").value=d.telefonoReferente||"";
@@ -325,24 +331,21 @@ function cargarFormulario(){
    $("tipoDocumento").value=d.tipo||"cedula";
    $("numeroDocumento").value=d.documento||"";
    $("correoFactura").value=d.correo||"";
-
    if(d.ubicacion)ubicacion=d.ubicacion;
   }
 
  }catch{}
+
+ renderUbicacion();
 
  $("datosFactura").classList.toggle(
   "show",
   $("requiereFactura").checked
  );
 
- renderUbicacion();
+ const t=normalizarTelefono($("clienteTelefono").value);
 
- const telefono=normalizarTelefono(
-  $("clienteTelefono").value
- );
-
- if(telefono.length>=7)programarValidacionCliente();
+ if(t.length>=7)programarValidacionCliente();
 }
 
 async function cargarConfiguracion(){
@@ -359,27 +362,11 @@ async function cargarConfiguracion(){
   if(!r.error&&r.data){
 
    configuracion={
-    nombreNegocio:
-     r.data.nombre_negocio||
-     CONFIG_DEFAULT.nombreNegocio,
-
-    ciudad:
-     r.data.ciudad||
-     CONFIG_DEFAULT.ciudad,
-
-    tarifaDelivery:
-     Number(
-      r.data.tarifa_delivery??
-      CONFIG_DEFAULT.tarifaDelivery
-     ),
-
-    whatsappNegocio:
-     r.data.whatsapp_negocio||
-     CONFIG_DEFAULT.whatsappNegocio,
-
-    moneda:
-     r.data.moneda||
-     CONFIG_DEFAULT.moneda
+    nombreNegocio:r.data.nombre_negocio||CONFIG_DEFAULT.nombreNegocio,
+    ciudad:r.data.ciudad||CONFIG_DEFAULT.ciudad,
+    tarifaDelivery:Number(r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery),
+    whatsappNegocio:r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
+    moneda:r.data.moneda||CONFIG_DEFAULT.moneda
    };
   }
 
@@ -390,6 +377,10 @@ async function cargarConfiguracion(){
  render();
 }
 
+/* =====================================================
+   RENDER CARRITO
+===================================================== */
+
 function agrupar(){
 
  const grupos={};
@@ -397,7 +388,6 @@ function agrupar(){
  carrito.forEach(x=>{
 
   if(!grupos[x.restaurante_id]){
-
    grupos[x.restaurante_id]={
     id:x.restaurante_id,
     nombre:x.restaurante_nombre,
@@ -412,12 +402,8 @@ function agrupar(){
 }
 
 function subtotalGrupo(g){
-
  return g.items.reduce(
-  (a,x)=>
-   a+
-   (Number(x.precio)||0)*
-   (Number(x.cantidad)||0),
+  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
   0
  );
 }
@@ -438,9 +424,7 @@ function render(){
  }
 
  const grupos=agrupar();
-
- const deliveryUnitario=
-  Number(configuracion.tarifaDelivery||0);
+ const deliveryUnitario=Number(configuracion.tarifaDelivery||0);
 
  cont.innerHTML=grupos.map(g=>{
 
@@ -449,21 +433,14 @@ function render(){
 
   return `
   <div class="local">
-
    <div class="localHead">${esc(g.nombre)}</div>
 
    ${g.items.map(x=>`
-
     <div class="item">
 
      <div class="thumb">
-      ${
-       x.imagen_url
-       ?
-       `<img src="${esc(x.imagen_url)}" alt="" loading="lazy" decoding="async">`
-       :
-       ""
-      }
+      ${x.imagen_url?
+       `<img src="${esc(x.imagen_url)}" alt="" loading="lazy" decoding="async">`:""}
      </div>
 
      <div class="itemInfo">
@@ -472,16 +449,13 @@ function render(){
      </div>
 
      <div class="controls">
-
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},-1)">−</button>
+      <button ${pedidoHabilitado?"":"disabled"} onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},-1)">−</button>
       <b>${x.cantidad}</b>
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},1)">+</button>
-      <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id})">×</button>
-
+      <button ${pedidoHabilitado?"":"disabled"} onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},1)">+</button>
+      <button class="del" ${pedidoHabilitado?"":"disabled"} onclick="eliminar(${x.producto_id},${x.restaurante_id})">×</button>
      </div>
 
     </div>
-
    `).join("")}
 
    <div class="localTotals">
@@ -489,17 +463,11 @@ function render(){
     <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
     <div class="localTotal">Total restaurante: ${money(totalLocal)}</div>
    </div>
-
-  </div>
-  `;
-
+  </div>`;
  }).join("");
 
  const subtotalTotal=carrito.reduce(
-  (a,x)=>
-   a+
-   (Number(x.precio)||0)*
-   (Number(x.cantidad)||0),
+  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
   0
  );
 
@@ -507,40 +475,29 @@ function render(){
  const total=subtotalTotal+deliveryTotal;
 
  $("resumen").innerHTML=`
-
   <div class="money">
-
    ${grupos.map(g=>`
-
     <div class="summaryLocal">
      <span>${esc(g.nombre)}</span>
      <b>${money(subtotalGrupo(g))}</b>
     </div>
-
    `).join("")}
 
    <div class="summaryDelivery">
-    <span>
-     Delivery (${grupos.length}
-     ${grupos.length===1?"restaurante":"restaurantes"})
-    </span>
+    <span>Delivery (${grupos.length} ${grupos.length===1?"restaurante":"restaurantes"})</span>
     <b>${money(deliveryTotal)}</b>
    </div>
 
-   <div class="total">
-    Total: ${money(total)}
-   </div>
-
-  </div>
- `;
+   <div class="total">Total: ${money(total)}</div>
+  </div>`;
 }
 
 function cambiarCantidad(productoId,restauranteId,cambio){
 
+ if(!pedidoHabilitado)return;
+
  const i=carrito.findIndex(
-  x=>
-   x.producto_id===productoId&&
-   x.restaurante_id===restauranteId
+  x=>x.producto_id===productoId&&x.restaurante_id===restauranteId
  );
 
  if(i<0)return;
@@ -556,11 +513,10 @@ function cambiarCantidad(productoId,restauranteId,cambio){
 
 function eliminar(productoId,restauranteId){
 
+ if(!pedidoHabilitado)return;
+
  carrito=carrito.filter(
-  x=>!(
-   x.producto_id===productoId&&
-   x.restaurante_id===restauranteId
-  )
+  x=>!(x.producto_id===productoId&&x.restaurante_id===restauranteId)
  );
 
  guardarCarrito();
@@ -570,16 +526,19 @@ function eliminar(productoId,restauranteId){
 
 function vaciarCarrito(){
 
- if(!carrito.length)return;
+ if(!pedidoHabilitado||!carrito.length)return;
 
  if(!confirm("¿Vaciar todo el carrito?"))return;
 
  carrito=[];
-
  guardarCarrito();
  render();
  guardarFormulario();
 }
+
+/* =====================================================
+   UBICACIÓN
+===================================================== */
 
 function renderUbicacion(){
 
@@ -589,15 +548,10 @@ function renderUbicacion(){
 
   box.innerHTML=`
    <div class="locationTitle">Dirección</div>
-   <div class="address">
-    ${esc(ubicacion.direccion||"Ubicación seleccionada")}
-   </div>
+   <div class="address">${esc(ubicacion.direccion||"Ubicación seleccionada")}</div>
    <div id="locationStatus" class="locationStatus">
-    ${ubicacionCargando
-     ?"🔄 Buscando dirección..."
-     :"✅ Ubicación seleccionada"}
-   </div>
-  `;
+    ${ubicacionCargando?"🔄 Buscando dirección...":"✅ Ubicación seleccionada"}
+   </div>`;
 
  }else{
 
@@ -606,8 +560,7 @@ function renderUbicacion(){
    <div class="address">Todavía no has seleccionado una ubicación.</div>
    <div id="locationStatus" class="locationStatus">
     ${ubicacionCargando?"📍 Obteniendo ubicación...":""}
-   </div>
-  `;
+   </div>`;
  }
 }
 
@@ -635,12 +588,10 @@ async function obtenerDireccion(lat,lng){
 
 async function usarMiUbicacion(boton){
 
+ if(!pedidoHabilitado)return;
+
  if(!navigator.geolocation){
-
-  mostrarError(
-   "Tu navegador no permite obtener la ubicación."
-  );
-
+  mostrarError("Tu navegador no permite obtener la ubicación.");
   return;
  }
 
@@ -649,35 +600,26 @@ async function usarMiUbicacion(boton){
  ubicacionCargando=true;
 
  mostrarEstadoUbicacion(
-  "📍 Obteniendo tu ubicación...",
-  "loading"
+  "📍 Obteniendo tu ubicación...","loading"
  );
 
  try{
 
-  const pos=await new Promise(
-   (resolve,reject)=>
-    navigator.geolocation.getCurrentPosition(
-     resolve,
-     reject,
-     {
-      enableHighAccuracy:true,
-      timeout:15000,
-      maximumAge:0
-     }
-    )
+  const pos=await new Promise((resolve,reject)=>
+   navigator.geolocation.getCurrentPosition(
+    resolve,reject,
+    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+   )
   );
 
   const lat=pos.coords.latitude;
   const lng=pos.coords.longitude;
 
   ubicacion={lat,lng,direccion:""};
-
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "🔄 Ubicación encontrada. Buscando dirección...",
-   "loading"
+   "🔄 Ubicación encontrada. Buscando dirección...","loading"
   );
 
   const direccion=await obtenerDireccion(lat,lng);
@@ -689,8 +631,7 @@ async function usarMiUbicacion(boton){
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "✅ Ubicación seleccionada correctamente.",
-   "ok"
+   "✅ Ubicación seleccionada correctamente.","ok"
   );
 
  }catch(e){
@@ -698,12 +639,10 @@ async function usarMiUbicacion(boton){
   console.error(e);
 
   ubicacionCargando=false;
-
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "❌ No se pudo obtener la ubicación.",
-   "error"
+   "❌ No se pudo obtener la ubicación.","error"
   );
 
   mostrarError(
@@ -718,31 +657,17 @@ async function usarMiUbicacion(boton){
 
 function moverMarcador(lat,lng){
 
- if(!map)return;
+ if(!map||!pedidoHabilitado)return;
 
- if(!marker){
-
+ if(!marker)
   marker=L.marker([lat,lng]).addTo(map);
-
- }else{
-
+ else
   marker.setLatLng([lat,lng]);
- }
 
- ubicacionTemporal={
-  lat,
-  lng,
-  direccion:""
- };
-
+ ubicacionTemporal={lat,lng,direccion:""};
  renderDireccionTemporal();
 
  obtenerDireccion(lat,lng).then(direccion=>{
-
-  /*
-   * Solo aceptamos la respuesta si
-   * sigue siendo el punto actualmente seleccionado.
-   */
 
   if(
    ubicacionTemporal.lat!==lat||
@@ -750,9 +675,7 @@ function moverMarcador(lat,lng){
   )return;
 
   ubicacionTemporal.direccion=direccion;
-
   renderDireccionTemporal();
-
  });
 }
 
@@ -765,20 +688,17 @@ function renderDireccionTemporal(){
 
  box.innerHTML=`
   <div class="locationTitle">Dirección</div>
-  <div class="address">
-   ${esc(u.direccion||"🔄 Buscando dirección...")}
-  </div>
+  <div class="address">${esc(u.direccion||"🔄 Buscando dirección...")}</div>
   <div id="locationStatus" class="locationStatus ${u.direccion?"ok":"loading"}">
-   ${
-    u.direccion
+   ${u.direccion
     ?"✅ Dirección encontrada. Puedes aceptar esta ubicación."
-    :"🔄 Buscando dirección..."
-   }
-  </div>
- `;
+    :"🔄 Buscando dirección..."}
+  </div>`;
 }
 
 function abrirMapa(){
+
+ if(!pedidoHabilitado)return;
 
  $("mapWrap").style.display="block";
 
@@ -807,40 +727,23 @@ function abrirMapa(){
    ).addTo(map);
 
    map.on("click",e=>
-    moverMarcador(
-     e.latlng.lat,
-     e.latlng.lng
-    )
+    moverMarcador(e.latlng.lat,e.latlng.lng)
    );
 
   }else{
 
    map.invalidateSize();
 
-   if(ubicacion.lat!==null){
-
-    map.setView(
-     [ubicacion.lat,ubicacion.lng],
-     16
-    );
-   }
+   if(ubicacion.lat!==null)
+    map.setView([ubicacion.lat,ubicacion.lng],16);
   }
 
-  if(ubicacion.lat!==null){
+  if(ubicacion.lat!==null)
+   moverMarcador(ubicacion.lat,ubicacion.lng);
+  else{
 
-   moverMarcador(
-    ubicacion.lat,
-    ubicacion.lng
-   );
-
-  }else{
-
-   const centro=map.getCenter();
-
-   moverMarcador(
-    centro.lat,
-    centro.lng
-   );
+   const c=map.getCenter();
+   moverMarcador(c.lat,c.lng);
   }
 
  },100);
@@ -848,24 +751,18 @@ function abrirMapa(){
 
 function aceptarMapa(){
 
+ if(!pedidoHabilitado)return;
+
  if(
   ubicacionTemporal.lat===null||
   ubicacionTemporal.lng===null
  ){
-
-  mostrarError(
-   "Selecciona una ubicación en el mapa."
-  );
-
+  mostrarError("Selecciona una ubicación en el mapa.");
   return;
  }
 
  if(!ubicacionTemporal.direccion){
-
-  mostrarError(
-   "Espera un momento mientras se obtiene la dirección."
-  );
-
+  mostrarError("Espera un momento mientras se obtiene la dirección.");
   return;
  }
 
@@ -876,34 +773,34 @@ function aceptarMapa(){
  renderUbicacion();
 
  mostrarEstadoUbicacion(
-  "✅ Ubicación guardada correctamente.",
-  "ok"
+  "✅ Ubicación guardada correctamente.","ok"
  );
 
  cerrarMapa();
 }
 
 function cerrarMapa(){
-
  $("mapWrap").style.display="none";
 }
 
-$("requiereFactura").addEventListener(
- "change",
- ()=>{
+/* =====================================================
+   CAMPOS
+===================================================== */
 
-  $("datosFactura").classList.toggle(
-   "show",
-   $("requiereFactura").checked
-  );
+$("requiereFactura").addEventListener("change",()=>{
 
-  guardarFormulario();
- }
-);
+ if(!pedidoHabilitado)return;
+
+ $("datosFactura").classList.toggle(
+  "show",
+  $("requiereFactura").checked
+ );
+
+ guardarFormulario();
+});
 
 [
  "clienteNombre",
- "clienteTelefono",
  "telefonoReferente",
  "referencia",
  "tipoDocumento",
@@ -911,38 +808,30 @@ $("requiereFactura").addEventListener(
  "correoFactura"
 ].forEach(id=>{
 
- $(id).addEventListener(
-  "input",
-  guardarFormulario
- );
-
- $(id).addEventListener(
-  "change",
-  guardarFormulario
- );
+ $(id).addEventListener("input",guardarFormulario);
+ $(id).addEventListener("change",guardarFormulario);
 });
 
-
 /* =====================================================
-   VALIDACIÓN INMEDIATA DEL CLIENTE
-   ===================================================== */
+   CLIENTE EN TIEMPO REAL
+===================================================== */
 
 function programarValidacionCliente(){
 
  clearTimeout(timerCliente);
 
- const telefono=
-  normalizarTelefono(
-   $("clienteTelefono").value
-  );
+ const telefono=normalizarTelefono(
+  $("clienteTelefono").value
+ );
 
  clienteActual=null;
+ cambiarAccesoPedido(false);
 
  $("campoReferido").classList.remove("show");
+ $("telefonoReferente").value="";
  mostrarEstadoReferente("");
 
  if(!telefono){
-
   mostrarEstadoCliente("");
   return;
  }
@@ -950,51 +839,41 @@ function programarValidacionCliente(){
  if(telefono.length<7){
 
   mostrarEstadoCliente(
-   "Ingresa un número de teléfono válido.",
-   "error"
+   "Ingresa un número de teléfono válido.","error"
   );
 
   return;
  }
 
  mostrarEstadoCliente(
-  "🔄 Verificando cliente...",
-  "loading"
+  "🔄 Verificando cliente...","loading"
  );
 
  const id=++validacionClienteId;
 
  timerCliente=setTimeout(
-  ()=>validarClienteEnTiempoReal(id),
-  500
+  ()=>validarClienteEnTiempoReal(id),500
  );
 }
 
 async function validarClienteEnTiempoReal(id){
 
- const telefono=
-  normalizarTelefono(
-   $("clienteTelefono").value
-  );
+ const telefono=normalizarTelefono(
+  $("clienteTelefono").value
+ );
 
- if(
-  telefono.length<7||
-  id!==validacionClienteId
- )return;
+ if(telefono.length<7||id!==validacionClienteId)return;
 
  try{
 
-  const cliente=
-   await consultarCliente(telefono);
+  const cliente=await consultarCliente(telefono);
 
   if(id!==validacionClienteId)return;
 
-  const telefonoActual=
-   normalizarTelefono(
-    $("clienteTelefono").value
-   );
-
-  if(telefono!==telefonoActual)return;
+  if(
+   telefono!==
+   normalizarTelefono($("clienteTelefono").value)
+  )return;
 
   if(cliente){
 
@@ -1003,69 +882,67 @@ async function validarClienteEnTiempoReal(id){
     clienteActual=null;
 
     mostrarEstadoCliente(
-     "❌ Este cliente está inactivo.",
-     "error"
+     "❌ Este cliente está inactivo.","error"
     );
 
-    $("campoReferido")
-     .classList.remove("show");
-
+    cambiarAccesoPedido(false);
     return;
    }
 
    clienteActual=cliente;
 
-   $("campoReferido")
-    .classList.remove("show");
+   $("campoReferido").classList.remove("show");
+   mostrarEstadoReferente("");
 
    mostrarEstadoCliente(
-    "✅ Cliente registrado. Puedes continuar.",
-    "ok"
+    "✅ Cliente registrado. Puedes continuar.","ok"
    );
 
+   cambiarAccesoPedido(true);
    return;
   }
 
   clienteActual=null;
 
-  $("campoReferido")
-   .classList.add("show");
+  $("campoReferido").classList.add("show");
+
+  $("telefonoReferente").disabled=false;
 
   mostrarEstadoCliente(
-   "⚠️ Este número no está registrado. Necesitas un referente.",
-   "error"
+   "⚠️ Este número no está registrado. Necesitas un referente.","error"
   );
+
+  cambiarAccesoPedido(false);
+
+  $("telefonoReferente").disabled=false;
 
  }catch(e){
 
-  console.error(
-   "Error verificando cliente:",
-   e
-  );
+  console.error(e);
 
   if(id===validacionClienteId){
 
    mostrarEstadoCliente(
-    "No se pudo verificar el cliente.",
-    "error"
+    "No se pudo verificar el cliente.","error"
    );
+
+   cambiarAccesoPedido(false);
   }
- }
 }
 
-
 /* =====================================================
-   VALIDACIÓN DEL REFERENTE EN TIEMPO REAL
-   ===================================================== */
+   REFERENTE EN TIEMPO REAL
+===================================================== */
 
 function programarValidacionReferente(){
 
  clearTimeout(timerReferente);
 
- const telefono=
-  normalizarTelefono(
-   $("telefonoReferente").value
-  );
+ cambiarAccesoPedido(false);
+
+ const telefono=normalizarTelefono(
+  $("telefonoReferente").value
+ );
 
  if(!telefono){
 
@@ -1076,66 +953,55 @@ function programarValidacionReferente(){
  if(telefono.length<7){
 
   mostrarEstadoReferente(
-   "Ingresa un número válido.",
-   "error"
+   "Ingresa un número válido.","error"
   );
 
   return;
  }
 
  mostrarEstadoReferente(
-  "🔄 Verificando referente...",
-  "loading"
+  "🔄 Verificando referente...","loading"
  );
 
  const id=++validacionReferenteId;
 
  timerReferente=setTimeout(
-  ()=>validarReferenteEnTiempoReal(id),
-  500
+  ()=>validarReferenteEnTiempoReal(id),500
  );
 }
 
 async function validarReferenteEnTiempoReal(id){
 
- const telefono=
-  normalizarTelefono(
-   $("telefonoReferente").value
-  );
+ const telefono=normalizarTelefono(
+  $("telefonoReferente").value
+ );
 
- const telefonoCliente=
-  normalizarTelefono(
-   $("clienteTelefono").value
-  );
+ const telefonoCliente=normalizarTelefono(
+  $("clienteTelefono").value
+ );
 
- if(
-  telefono.length<7||
-  id!==validacionReferenteId
- )return;
+ if(telefono.length<7||id!==validacionReferenteId)return;
 
  if(telefono===telefonoCliente){
 
   mostrarEstadoReferente(
-   "❌ No puedes referirte a ti mismo.",
-   "error"
+   "❌ No puedes referirte a ti mismo.","error"
   );
 
+  cambiarAccesoPedido(false);
   return;
  }
 
  try{
 
-  const referente=
-   await consultarCliente(telefono);
+  const referente=await consultarCliente(telefono);
 
   if(id!==validacionReferenteId)return;
 
-  const telefonoActual=
-   normalizarTelefono(
-    $("telefonoReferente").value
-   );
-
-  if(telefono!==telefonoActual)return;
+  if(
+   telefono!==
+   normalizarTelefono($("telefonoReferente").value)
+  )return;
 
   if(!referente){
 
@@ -1144,16 +1010,17 @@ async function validarReferenteEnTiempoReal(id){
     "error"
    );
 
+   cambiarAccesoPedido(false);
    return;
   }
 
   if(referente.activo===false){
 
    mostrarEstadoReferente(
-    "❌ Este cliente está inactivo.",
-    "error"
+    "❌ Este cliente está inactivo.","error"
    );
 
+   cambiarAccesoPedido(false);
    return;
   }
 
@@ -1164,13 +1031,15 @@ async function validarReferenteEnTiempoReal(id){
     "error"
    );
 
+   cambiarAccesoPedido(false);
    return;
   }
 
   mostrarEstadoReferente(
-   "✅ Referente encontrado.",
-   "ok"
+   "✅ Referente encontrado.","ok"
   );
+
+  cambiarAccesoPedido(true);
 
  }catch(e){
 
@@ -1179,17 +1048,17 @@ async function validarReferenteEnTiempoReal(id){
   if(id===validacionReferenteId){
 
    mostrarEstadoReferente(
-    "No se pudo verificar el referente.",
-    "error"
+    "No se pudo verificar el referente.","error"
    );
+
+   cambiarAccesoPedido(false);
   }
  }
 }
 
-
 /* =====================================================
-   EVENTOS DE TELÉFONO
-   ===================================================== */
+   EVENTOS TELÉFONO
+===================================================== */
 
 $("clienteTelefono").addEventListener(
  "input",
@@ -1217,243 +1086,143 @@ $("telefonoReferente").addEventListener(
  programarValidacionReferente
 );
 
-
 /* =====================================================
-   CONSULTA DE CLIENTE
-   ===================================================== */
+   CONSULTA
+===================================================== */
 
 async function consultarCliente(telefono){
 
- const telefonoNormalizado=
-  normalizarTelefono(telefono);
+ const telefonoNormalizado=normalizarTelefono(telefono);
 
  if(!telefonoNormalizado)return null;
 
  const r=await supabaseClient.rpc(
   "buscar_cliente_por_telefono",
-  {
-   p_telefono:telefonoNormalizado
-  }
+  {p_telefono:telefonoNormalizado}
  );
 
  if(r.error)throw r.error;
 
- if(Array.isArray(r.data)){
+ if(Array.isArray(r.data))
   return r.data[0]||null;
- }
 
  return r.data||null;
 }
 
-
 /* =====================================================
-   VALIDACIÓN FINAL DEL CLIENTE
-   ===================================================== */
+   VALIDACIÓN FINAL
+===================================================== */
 
 async function validarCliente(){
 
- const nombre=
-  $("clienteNombre")
-   .value
-   .trim();
+ const nombre=$("clienteNombre").value.trim();
 
- const telefono=
-  normalizarTelefono(
-   $("clienteTelefono").value
-  );
+ const telefono=normalizarTelefono(
+  $("clienteTelefono").value
+ );
 
  if(!telefono){
-
   mostrarError("Ingresa tu teléfono.");
   $("clienteTelefono").focus();
   return false;
  }
 
  if(telefono.length<7){
-
-  mostrarError(
-   "Ingresa un número de teléfono válido."
-  );
-
+  mostrarError("Ingresa un número de teléfono válido.");
   $("clienteTelefono").focus();
-
   return false;
  }
 
  try{
 
-  const cliente=
-   await consultarCliente(telefono);
+  const cliente=await consultarCliente(telefono);
 
   if(cliente){
 
    if(cliente.activo===false){
-
-    mostrarError(
-     "Este cliente está inactivo y no puede realizar pedidos."
-    );
-
+    mostrarError("Este cliente está inactivo y no puede realizar pedidos.");
+    cambiarAccesoPedido(false);
     return false;
    }
 
    clienteActual=cliente;
-
-   mostrarEstadoCliente(
-    "✅ Cliente registrado. Puedes continuar.",
-    "ok"
-   );
-
    return true;
   }
 
-  const telefonoReferente=
-   normalizarTelefono(
-    $("telefonoReferente").value
-   );
+  const telefonoReferente=normalizarTelefono(
+   $("telefonoReferente").value
+  );
 
   if(!telefonoReferente){
-
-   $("campoReferido")
-    .classList.add("show");
-
-   mostrarEstadoCliente(
-    "⚠️ Este número no está registrado. Necesitas un referente.",
-    "error"
-   );
-
    mostrarError(
     "Este teléfono no está registrado. Debes ingresar el teléfono de quien te refirió."
    );
-
    $("telefonoReferente").focus();
-
    return false;
   }
 
   if(telefonoReferente===telefono){
-
-   mostrarEstadoReferente(
-    "❌ No puedes referirte a ti mismo.",
-    "error"
-   );
-
-   mostrarError(
-    "No puedes referirte a ti mismo."
-   );
-
+   mostrarError("No puedes referirte a ti mismo.");
    $("telefonoReferente").focus();
-
    return false;
   }
 
-  const referente=
-   await consultarCliente(
-    telefonoReferente
-   );
+  const referente=await consultarCliente(telefonoReferente);
 
   if(!referente){
-
-   mostrarEstadoReferente(
-    "❌ Referente no encontrado.",
-    "error"
-   );
-
    mostrarError(
     "El teléfono del referente no corresponde a un cliente registrado."
    );
-
-   $("telefonoReferente").focus();
-
    return false;
   }
 
   if(referente.activo===false){
-
-   mostrarEstadoReferente(
-    "❌ El referente está inactivo.",
-    "error"
-   );
-
-   mostrarError(
-    "El cliente que te refirió está inactivo."
-   );
-
-   $("telefonoReferente").focus();
-
+   mostrarError("El cliente que te refirió está inactivo.");
    return false;
   }
 
   if(!referente.codigo_referido){
-
-   mostrarError(
-    "El referente no tiene un código de referido válido."
-   );
-
+   mostrarError("El referente no tiene un código de referido válido.");
    return false;
   }
 
   const codigoNuevo=
    "SR"+
-   Date.now()
-    .toString(36)
-    .toUpperCase()+
-   Math.floor(
-    100+Math.random()*900
-   );
+   Date.now().toString(36).toUpperCase()+
+   Math.floor(100+Math.random()*900);
 
-  const cr=
-   await supabaseClient.rpc(
-    "crear_cliente",
-    {
-     p_nombre:nombre,
-     p_telefono:telefono,
-     p_codigo_referido:codigoNuevo,
-     p_codigo_referente:
-      referente.codigo_referido
-    }
-   );
+  const cr=await supabaseClient.rpc(
+   "crear_cliente",
+   {
+    p_nombre:nombre,
+    p_telefono:telefono,
+    p_codigo_referido:codigoNuevo,
+    p_codigo_referente:referente.codigo_referido
+   }
+  );
 
   if(cr.error)throw cr.error;
 
-  let nuevoCliente=null;
+  let nuevoCliente=
+   Array.isArray(cr.data)
+    ?cr.data[0]||null
+    :cr.data||null;
 
-  if(Array.isArray(cr.data)){
-   nuevoCliente=cr.data[0]||null;
-  }else{
-   nuevoCliente=cr.data||null;
-  }
+  if(!nuevoCliente)
+   nuevoCliente=await consultarCliente(telefono);
 
-  if(!nuevoCliente){
-
-   nuevoCliente=
-    await consultarCliente(telefono);
-  }
-
-  if(!nuevoCliente){
-
+  if(!nuevoCliente)
    throw Error(
     "El cliente fue registrado, pero no se pudo recuperar su información."
    );
-  }
 
   clienteActual=nuevoCliente;
-
-  $("campoReferido")
-   .classList.remove("show");
-
-  mostrarEstadoCliente(
-   "✅ Cliente registrado correctamente. Puedes continuar.",
-   "ok"
-  );
 
   return true;
 
  }catch(e){
 
-  console.error(
-   "Error validando cliente:",
-   e
-  );
+  console.error(e);
 
   mostrarError(
    "No se pudo validar el cliente: "+
@@ -1464,71 +1233,54 @@ async function validarCliente(){
  }
 }
 
-
 /* =====================================================
    VALIDACIÓN GENERAL
-   ===================================================== */
+===================================================== */
 
 function validar(){
 
- if(!carrito.length){
+ if(!pedidoHabilitado){
 
+  mostrarError(
+   "Debes validar tu teléfono antes de continuar."
+  );
+
+  $("clienteTelefono").focus();
+  return false;
+ }
+
+ if(!carrito.length){
   mostrarError("El carrito está vacío.");
   return false;
  }
 
  if(!$("clienteNombre").value.trim()){
-
   mostrarError("Ingresa tu nombre.");
   $("clienteNombre").focus();
   return false;
  }
 
- if(!$("clienteTelefono").value.trim()){
-
-  mostrarError("Ingresa tu teléfono.");
-  $("clienteTelefono").focus();
-  return false;
- }
-
- if(
-  ubicacion.lat===null||
-  ubicacion.lng===null
- ){
-
-  mostrarError(
-   "Selecciona tu ubicación de entrega."
-  );
-
+ if(!ubicacion.lat||ubicacion.lng===null){
+  mostrarError("Selecciona tu ubicación de entrega.");
   return false;
  }
 
  if(ubicacionCargando){
-
   mostrarError(
    "Espera mientras se obtiene la dirección de entrega."
   );
-
   return false;
  }
 
  if($("requiereFactura").checked){
 
   if(!$("numeroDocumento").value.trim()){
-
-   mostrarError(
-    "Ingresa tu cédula o RUC."
-   );
-
+   mostrarError("Ingresa tu cédula o RUC.");
    return false;
   }
 
   if(!$("correoFactura").value.trim()){
-
-   mostrarError(
-    "Ingresa el correo para la factura."
-   );
-
+   mostrarError("Ingresa el correo para la factura.");
    return false;
   }
  }
@@ -1536,348 +1288,205 @@ function validar(){
  return true;
 }
 
-
 /* =====================================================
    PEDIDO
-   ===================================================== */
+===================================================== */
 
 async function realizarPedido(){
 
  if(!validar())return;
 
- const boton=
-  document.querySelector(".whatsapp");
+ const boton=$("btnWhatsapp");
 
- if(boton)boton.disabled=true;
+ boton.disabled=true;
 
  try{
 
-  const clienteValido=
-   await validarCliente();
+  const clienteValido=await validarCliente();
 
   if(!clienteValido){
-
-   if(boton)boton.disabled=false;
+   boton.disabled=false;
    return;
   }
 
-  const numero=
-   generarNumeroPedido();
-
+  const numero=generarNumeroPedido();
   const grupos=agrupar();
 
-  const subtotalTotal=
-   carrito.reduce(
-    (a,x)=>
-     a+
-     (Number(x.precio)||0)*
-     (Number(x.cantidad)||0),
-    0
-   );
+  const subtotalTotal=carrito.reduce(
+   (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
+   0
+  );
 
   const deliveryUnitario=
-   Number(
-    configuracion.tarifaDelivery||0
-   );
+   Number(configuracion.tarifaDelivery||0);
 
   const deliveryTotal=
-   grupos.length*
-   deliveryUnitario;
+   grupos.length*deliveryUnitario;
 
-  const total=
-   subtotalTotal+
-   deliveryTotal;
+  const total=subtotalTotal+deliveryTotal;
 
   const pedido={
-
    numero,
-
-   cliente_nombre:
-    $("clienteNombre")
-     .value
-     .trim(),
-
-   cliente_telefono:
-    normalizarTelefono(
-     $("clienteTelefono").value
-    ),
-
+   cliente_nombre:$("clienteNombre").value.trim(),
+   cliente_telefono:normalizarTelefono($("clienteTelefono").value),
    direccion:
     ubicacion.direccion||
     `${ubicacion.lat}, ${ubicacion.lng}`,
-
-   referencia:
-    $("referencia")
-     .value
-     .trim()||
-    null,
-
-   total_productos:
-    subtotalTotal,
-
-   total_delivery:
-    deliveryTotal,
-
+   referencia:$("referencia").value.trim()||null,
+   total_productos:subtotalTotal,
+   total_delivery:deliveryTotal,
    total,
-
-   estado:
-    "Pedido recibido"
+   estado:"Pedido recibido"
   };
 
-  const pr=
-   await supabaseClient
-    .from("pedidos")
-    .insert(pedido)
-    .select("id")
-    .single();
+  const pr=await supabaseClient
+   .from("pedidos")
+   .insert(pedido)
+   .select("id")
+   .single();
 
   if(pr.error)throw pr.error;
 
-  const pedidoId=pr.data.id;
   const carreras=[];
 
-  for(
-   let i=0;
-   i<grupos.length;
-   i++
-  ){
+  for(let i=0;i<grupos.length;i++){
 
    const g=grupos[i];
+   const subtotal=subtotalGrupo(g);
 
-   const subtotal=
-    subtotalGrupo(g);
-
-   const carrera={
-
-    pedido_id:
-     pedidoId,
-
-    restaurante_id:
-     g.id,
-
-    numero:
-     `${numero}-${i+1}`,
-
-    subtotal,
-
-    delivery:
-     deliveryUnitario,
-
-    total:
-     subtotal+
-     deliveryUnitario,
-
-    estado:
-     "Pendiente de asignación"
-   };
-
-   const cr=
-    await supabaseClient
-     .from("carreras")
-     .insert(carrera)
-     .select("id")
-     .single();
+   const cr=await supabaseClient
+    .from("carreras")
+    .insert({
+     pedido_id:pr.data.id,
+     restaurante_id:g.id,
+     numero:`${numero}-${i+1}`,
+     subtotal,
+     delivery:deliveryUnitario,
+     total:subtotal+deliveryUnitario,
+     estado:"Pendiente de asignación"
+    })
+    .select("id")
+    .single();
 
    if(cr.error)throw cr.error;
 
    carreras.push({
     ...g,
-    carrera_id:
-     cr.data.id,
+    carrera_id:cr.data.id,
     subtotal
    });
   }
 
   for(const g of carreras){
 
-   const detalles=
-    g.items.map(x=>({
+   const detalles=g.items.map(x=>({
+    carrera_id:g.carrera_id,
+    producto_id:x.producto_id,
+    producto_nombre:x.producto_nombre,
+    precio_unitario:+x.precio,
+    cantidad:+x.cantidad,
+    subtotal:(+x.precio)*(+x.cantidad)
+   }));
 
-     carrera_id:
-      g.carrera_id,
-
-     producto_id:
-      x.producto_id,
-
-     producto_nombre:
-      x.producto_nombre,
-
-     precio_unitario:
-      +x.precio,
-
-     cantidad:
-      +x.cantidad,
-
-     subtotal:
-      (+x.precio)*
-      (+x.cantidad)
-    }));
-
-   const dr=
-    await supabaseClient
-     .from("detalle_carreras")
-     .insert(detalles);
+   const dr=await supabaseClient
+    .from("detalle_carreras")
+    .insert(detalles);
 
    if(dr.error)throw dr.error;
   }
 
   let msg=
-   `*${encodeURIComponent(
-    configuracion.nombreNegocio
-   )}*%0A`;
+   `*${encodeURIComponent(configuracion.nombreNegocio)}*%0A`;
 
-  msg+=
-   `🧾 *Pedido:* ${
-    encodeURIComponent(numero)
-   }%0A`;
+  msg+=`🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
 
-  msg+=
-   `👤 *Cliente:* ${
-    encodeURIComponent(
-     $("clienteNombre")
-      .value
-      .trim()
-    )
-   }%0A`;
+  msg+=`👤 *Cliente:* ${encodeURIComponent(
+   $("clienteNombre").value.trim()
+  )}%0A`;
 
-  msg+=
-   `📞 *Teléfono:* ${
-    encodeURIComponent(
-     normalizarTelefono(
-      $("clienteTelefono").value
-     )
-    )
-   }%0A`;
+  msg+=`📞 *Teléfono:* ${encodeURIComponent(
+   normalizarTelefono($("clienteTelefono").value)
+  )}%0A`;
 
-  msg+=
-   `📍 *Dirección:* ${
-    encodeURIComponent(
-     ubicacion.direccion||
-     "Ubicación seleccionada"
-    )
-   }%0A`;
+  msg+=`📍 *Dirección:* ${encodeURIComponent(
+   ubicacion.direccion||"Ubicación seleccionada"
+  )}%0A`;
 
-  if($("referencia").value.trim()){
+  if($("referencia").value.trim())
+   msg+=`📝 *Referencia:* ${encodeURIComponent(
+    $("referencia").value.trim()
+   )}%0A`;
 
-   msg+=
-    `📝 *Referencia:* ${
-     encodeURIComponent(
-      $("referencia")
-       .value
-       .trim()
-     )
-    }%0A`;
-  }
-
-  msg+=
-   `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
+  msg+=`📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
 
   if($("requiereFactura").checked){
 
-   msg+=
-    `🧾 *Factura:* Sí%0A`;
+   msg+=`🧾 *Factura:* Sí%0A`;
 
-   msg+=
-    `Documento: ${
-     encodeURIComponent(
-      $("tipoDocumento")
-       .value
-       .toUpperCase()
-     )
-    } ${
-     encodeURIComponent(
-      $("numeroDocumento")
-       .value
-       .trim()
-     )
-    }%0A`;
+   msg+=`Documento: ${
+    encodeURIComponent(
+     $("tipoDocumento").value.toUpperCase()
+    )
+   } ${
+    encodeURIComponent(
+     $("numeroDocumento").value.trim()
+    )
+   }%0A`;
 
-   msg+=
-    `Correo: ${
-     encodeURIComponent(
-      $("correoFactura")
-       .value
-       .trim()
-     )
-    }%0A`;
+   msg+=`Correo: ${
+    encodeURIComponent(
+     $("correoFactura").value.trim()
+    )
+   }%0A`;
 
   }else{
-
-   msg+=
-    `🧾 *Factura:* No%0A`;
+   msg+=`🧾 *Factura:* No%0A`;
   }
 
-  msg+=
-   `%0A*DETALLE DEL PEDIDO*%0A`;
+  msg+=`%0A*DETALLE DEL PEDIDO*%0A`;
 
   carreras.forEach(g=>{
 
-   msg+=
-    `%0A🏪 *${
-     encodeURIComponent(g.nombre)
-    }*%0A`;
+   msg+=`%0A🏪 *${encodeURIComponent(g.nombre)}*%0A`;
 
    g.items.forEach(x=>{
 
-    const sub=
-     (+x.precio)*
-     (+x.cantidad);
+    const sub=(+x.precio)*(+x.cantidad);
 
-    msg+=
-     `${x.cantidad} x ${
-      encodeURIComponent(
-       x.producto_nombre
-      )
-     } — ${
-      encodeURIComponent(
-       money(sub)
-      )
-     }%0A`;
+    msg+=`${x.cantidad} x ${
+     encodeURIComponent(x.producto_nombre)
+    } — ${
+     encodeURIComponent(money(sub))
+    }%0A`;
    });
 
-   msg+=
-    `Subtotal productos: ${
-     encodeURIComponent(
-      money(g.subtotal)
-     )
-    }%0A`;
+   msg+=`Subtotal productos: ${
+    encodeURIComponent(money(g.subtotal))
+   }%0A`;
 
-   msg+=
-    `Delivery: ${
-     encodeURIComponent(
-      money(deliveryUnitario)
-     )
-    }%0A`;
+   msg+=`Delivery: ${
+    encodeURIComponent(money(deliveryUnitario))
+   }%0A`;
 
-   msg+=
-    `Total restaurante: ${
-     encodeURIComponent(
-      money(
-       g.subtotal+
-       deliveryUnitario
-      )
-     )
-    }%0A`;
+   msg+=`Total restaurante: ${
+    encodeURIComponent(
+     money(g.subtotal+deliveryUnitario)
+    )
+   }%0A`;
   });
 
-  msg+=
-   `%0A💰 *TOTAL: ${
-    encodeURIComponent(
-     money(total)
-    )
-   }*`;
+  msg+=`%0A💰 *TOTAL: ${
+   encodeURIComponent(money(total))
+  }*`;
 
-  const wa=
-   String(
-    configuracion.whatsappNegocio||""
-   ).replace(/\D/g,"");
+  const wa=String(
+   configuracion.whatsappNegocio||""
+  ).replace(/\D/g,"");
 
-  if(!wa){
-
+  if(!wa)
    throw Error(
     "El número de WhatsApp del negocio no está configurado."
    );
-  }
 
   carrito=[];
   guardarCarrito();
@@ -1895,62 +1504,41 @@ async function realizarPedido(){
    (e.message||"Error desconocido")
   );
 
-  if(boton)boton.disabled=false;
+  boton.disabled=false;
  }
 }
 
-
 /* =====================================================
-   GENERAR NÚMERO DE PEDIDO
-   ===================================================== */
+   NÚMERO DE PEDIDO
+===================================================== */
 
 function generarNumeroPedido(){
 
- const fecha=
-  new Date();
+ const d=new Date();
 
- const y=
-  fecha.getFullYear();
-
- const m=
-  String(
-   fecha.getMonth()+1
-  ).padStart(2,"0");
-
- const d=
-  String(
-   fecha.getDate()
-  ).padStart(2,"0");
-
- const h=
-  String(
-   fecha.getHours()
-  ).padStart(2,"0");
-
- const min=
-  String(
-   fecha.getMinutes()
-  ).padStart(2,"0");
-
- const s=
-  String(
-   fecha.getSeconds()
-  ).padStart(2,"0");
-
- return `SR-${y}${m}${d}-${h}${min}${s}`;
+ return `SR-${d.getFullYear()}${
+  String(d.getMonth()+1).padStart(2,"0")
+ }${
+  String(d.getDate()).padStart(2,"0")
+ }-${
+  String(d.getHours()).padStart(2,"0")
+ }${
+  String(d.getMinutes()).padStart(2,"0")
+ }${
+  String(d.getSeconds()).padStart(2,"0")
+ }`;
 }
-
 
 /* =====================================================
    INICIO
-   ===================================================== */
+===================================================== */
 
+estadoInicialBloqueado();
 cargarCarrito();
 cargarFormulario();
 render();
 cargarConfiguracion();
 
 </script>
-
 </body>
 </html>
