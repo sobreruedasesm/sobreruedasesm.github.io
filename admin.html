@@ -1,44 +1,35 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Administración | Sobre Ruedas</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f5f7;color:#171717}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
 .header{background:#171717;color:#fff;padding:16px 20px;position:sticky;top:0;z-index:20}
-.header h1{margin:0;font-size:22px}
-.header small{color:#ccc}
+.header h1{margin:0;font-size:22px}.header small{color:#ccc}
 .wrap{max-width:1200px;margin:auto;padding:20px}
 .nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .nav button{border:0;border-radius:8px;padding:10px 14px;background:#fff;color:#171717;font-weight:700}
 .nav button.active{background:#d62828;color:#fff}
-.section{display:none}
-.section.active{display:block}
+.section{display:none}.section.active{display:block}
 .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:16px}
-h2{margin:0 0 15px;font-size:20px}
-h3{margin:0 0 12px}
+h2{margin:0 0 15px;font-size:20px}h3{margin:0 0 12px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field.full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
 label{font-size:13px;font-weight:700}
 input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:10px;background:#fff}
 textarea{min-height:90px;resize:vertical}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
 .btn{border:0;border-radius:8px;padding:10px 14px;font-weight:700}
-.primary{background:#d62828;color:#fff}
-.success{background:#198754;color:#fff}
-.info{background:#1261a0;color:#fff}
-.warning{background:#f4c542;color:#171717}
-.danger{background:#b42318;color:#fff}
-.secondary{background:#e5e7eb;color:#171717}
+.primary{background:#d62828;color:#fff}.success{background:#198754;color:#fff}
+.info{background:#1261a0;color:#fff}.warning{background:#f4c542;color:#171717}
+.danger{background:#b42318;color:#fff}.secondary{background:#e5e7eb;color:#171717}
 .muted{color:#5f6670;font-size:13px}
 .msg{padding:10px;border-radius:8px;margin-bottom:14px;display:none}
 .msg.ok{display:block;background:#dcfce7;color:#166534}
@@ -47,22 +38,18 @@ textarea{min-height:90px;resize:vertical}
 .local-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .local-card{border:1px solid #ddd;border-radius:12px;overflow:hidden;background:#fff}
 .local-banner{width:100%;height:160px;object-fit:cover;background:#e5e7eb}
-.local-body{padding:15px}
-.local-title{font-size:18px;font-weight:800}
+.local-body{padding:15px}.local-title{font-size:18px;font-weight:800}
 .badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:700}
-.badge.on{background:#dcfce7;color:#166534}
-.badge.off{background:#fee2e2;color:#991b1b}
+.badge.on{background:#dcfce7;color:#166534}.badge.off{background:#fee2e2;color:#991b1b}
 .category-list{display:grid;gap:10px}
 .category-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #ddd;border-radius:9px;padding:10px;background:#fff}
 .product-row{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;border:1px solid #ddd;border-radius:10px;padding:10px;margin-bottom:8px}
 .product-img{width:70px;height:70px;border-radius:8px;object-fit:cover;background:#eee}
-.product-info strong{display:block}
-.product-info small{color:#5f6670}
+.product-info strong{display:block}.product-info small{color:#5f6670}
 .product-actions{display:flex;gap:5px;flex-wrap:wrap}
 .horario-box{border:1px solid #ddd;border-radius:10px;overflow:hidden}
 .horario-row{display:grid;grid-template-columns:110px 100px 1fr 1fr;gap:10px;align-items:center;padding:9px;border-bottom:1px solid #eee}
-.horario-row:last-child{border-bottom:0}
-.day{font-weight:700}
+.horario-row:last-child{border-bottom:0}.day{font-weight:700}
 .toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 .toggle input{display:none}
 .eye{width:34px;height:24px;border-radius:20px;background:#d1d5db;display:flex;align-items:center;justify-content:center;font-size:14px}
@@ -71,30 +58,30 @@ textarea{min-height:90px;resize:vertical}
 .time-wrap input:disabled{background:#f3f4f6;color:#9ca3af}
 .mode-box{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px}
 .mode-option{display:flex;align-items:center;gap:7px;font-weight:700}
-.mode-option input{width:auto}
-.products-editor{margin-top:10px}
+.mode-option input{width:auto}.products-editor{margin-top:10px}
 .hidden{display:none!important}
 .client-status{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.client-switch{display:flex;align-items:center;gap:10px}
-.client-switch input{display:none}
+.client-switch{display:flex;align-items:center;gap:10px}.client-switch input{display:none}
 .client-switch .eye{width:44px;height:26px}
 .client-import{border:2px dashed #d1d5db;border-radius:10px;padding:18px;background:#fafafa}
 .import-result{margin-top:15px;padding:12px;border-radius:8px;background:#f4f5f7}
 .import-result strong{display:inline-block;margin-right:14px}
-@media(max-width:800px){
-.grid,.local-list{grid-template-columns:1fr}
-.horario-row{grid-template-columns:1fr 80px 1fr 1fr}
-}
+.client-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.client-tools input{flex:1;min-width:220px}
+.client-counts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.client-count{padding:10px 14px;border-radius:8px;background:#f4f5f7}
+.client-list{display:grid;gap:10px}
+.client-row{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:center;border:1px solid #ddd;border-radius:10px;padding:12px;background:#fff}
+.client-info strong{display:block}.client-info small{color:#5f6670;display:block;margin-top:3px}
+.client-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:800px){.grid,.local-list{grid-template-columns:1fr}.horario-row{grid-template-columns:1fr 80px 1fr 1fr}}
+@media(max-width:700px){.client-row{grid-template-columns:1fr}.client-actions{justify-content:flex-start}}
 @media(max-width:600px){
-.wrap{padding:12px}
-.product-row{grid-template-columns:55px 1fr}
-.product-actions{grid-column:1/-1}
-.product-img{width:55px;height:55px}
-.horario-row{grid-template-columns:1fr}
+.wrap{padding:12px}.product-row{grid-template-columns:55px 1fr}.product-actions{grid-column:1/-1}
+.product-img{width:55px;height:55px}.horario-row{grid-template-columns:1fr}
 }
 </style>
 </head>
-
 <body>
 
 <header class="header">
@@ -113,305 +100,155 @@ textarea{min-height:90px;resize:vertical}
 
 <div id="mensaje" class="msg"></div>
 
-<!-- CONFIGURACIÓN -->
 <section id="config" class="section active">
-
 <div class="card">
 <h2>Configuración del negocio</h2>
-
 <div class="grid">
-
-<div class="field">
-<label>Nombre del negocio</label>
-<input id="cfgNombre">
+<div class="field"><label>Nombre del negocio</label><input id="cfgNombre"></div>
+<div class="field"><label>Ciudad</label><input id="cfgCiudad"></div>
+<div class="field"><label>Tarifa delivery</label><input id="cfgDelivery" type="number" min="0" step="0.01"></div>
+<div class="field"><label>WhatsApp del negocio</label><input id="cfgWhatsapp"></div>
+<div class="field"><label>Moneda</label><input id="cfgMoneda"></div>
 </div>
-
-<div class="field">
-<label>Ciudad</label>
-<input id="cfgCiudad">
+<div class="actions"><button class="btn primary" onclick="guardarConfiguracion()">Guardar configuración</button></div>
 </div>
-
-<div class="field">
-<label>Tarifa delivery</label>
-<input id="cfgDelivery" type="number" min="0" step="0.01">
-</div>
-
-<div class="field">
-<label>WhatsApp del negocio</label>
-<input id="cfgWhatsapp">
-</div>
-
-<div class="field">
-<label>Moneda</label>
-<input id="cfgMoneda">
-</div>
-
-</div>
-
-<div class="actions">
-<button class="btn primary" onclick="guardarConfiguracion()">Guardar configuración</button>
-</div>
-</div>
-
 </section>
 
-<!-- CATEGORÍAS -->
 <section id="categorias" class="section">
-
 <div class="card">
 <h2>Registrar categoría</h2>
-
 <div class="grid">
-<div class="field">
-<label>Nombre</label>
-<input id="catNombre" placeholder="Ej. Hamburguesas">
+<div class="field"><label>Nombre</label><input id="catNombre" placeholder="Ej. Hamburguesas"></div>
 </div>
+<div class="actions"><button class="btn primary" onclick="crearCategoria()">Crear categoría</button></div>
 </div>
-
-<div class="actions">
-<button class="btn primary" onclick="crearCategoria()">Crear categoría</button>
-</div>
-</div>
-
-<div class="card">
-<h2>Lista de categorías</h2>
-<div id="listaCategorias"></div>
-</div>
-
+<div class="card"><h2>Lista de categorías</h2><div id="listaCategorias"></div></div>
 </section>
 
-<!-- LOCALES -->
 <section id="locales" class="section">
 
 <div class="card">
 <h2>Registro de nuevo local</h2>
 <p class="muted">Crea el local y configura su horario y productos.</p>
-
 <div class="grid">
-
-<div class="field">
-<label>Nombre del local</label>
-<input id="locNombre" placeholder="Ej. AGUA VIVA">
-</div>
-
-<div class="field">
-<label>Categoría</label>
-<select id="locCategoria"></select>
-</div>
-
-<div class="field full">
-<label>Descripción</label>
-<textarea id="locDescripcion" placeholder="Descripción del local"></textarea>
-</div>
-
+<div class="field"><label>Nombre del local</label><input id="locNombre" placeholder="Ej. AGUA VIVA"></div>
+<div class="field"><label>Categoría</label><select id="locCategoria"></select></div>
+<div class="field full"><label>Descripción</label><textarea id="locDescripcion" placeholder="Descripción del local"></textarea></div>
 <div class="field">
 <label>Banner opcional</label>
 <input id="locBanner" type="file" accept="image/*" onchange="previewArchivo(this,'previewBanner')">
 <img id="previewBanner" class="preview hidden">
 </div>
-
 </div>
 
 <div class="card" style="margin-top:15px;background:#fafafa">
 <h3>Horario de atención</h3>
-
 <div class="mode-box">
-
-<label class="mode-option">
-<input type="radio" name="modoHorario" value="siempre" onchange="cambiarModoHorario()">
-Siempre abierto
-</label>
-
-<label class="mode-option">
-<input type="radio" name="modoHorario" value="personalizado" checked onchange="cambiarModoHorario()">
-Horario personalizado
-</label>
-
-<label class="mode-option">
-<input type="radio" name="modoHorario" value="cerrado" onchange="cambiarModoHorario()">
-Cerrado
-</label>
-
+<label class="mode-option"><input type="radio" name="modoHorario" value="siempre" onchange="cambiarModoHorario()">Siempre abierto</label>
+<label class="mode-option"><input type="radio" name="modoHorario" value="personalizado" checked onchange="cambiarModoHorario()">Horario personalizado</label>
+<label class="mode-option"><input type="radio" name="modoHorario" value="cerrado" onchange="cambiarModoHorario()">Cerrado</label>
 </div>
-
 <div id="horarioEditor"></div>
 </div>
 
 <div class="card" style="margin-top:15px;background:#fafafa">
 <h3>Productos</h3>
 <div id="productosNuevos"></div>
-
-<div class="actions">
-<button class="btn success" onclick="agregarProductoNuevo()">+ Agregar producto</button>
-</div>
+<div class="actions"><button class="btn success" onclick="agregarProductoNuevo()">+ Agregar producto</button></div>
 </div>
 
 <div class="actions">
 <button class="btn primary" onclick="guardarNuevoLocal()">Guardar nuevo local</button>
 <button class="btn secondary" onclick="limpiarFormularioLocal()">Limpiar</button>
 </div>
-
 </div>
 
-<div class="card">
-<h2>Lista de locales</h2>
-<div id="listaLocales" class="local-list"></div>
-</div>
+<div class="card"><h2>Lista de locales</h2><div id="listaLocales" class="local-list"></div></div>
 
 <div id="editorLocal" class="card hidden">
 <h2>Editar local</h2>
-
 <input id="editId" type="hidden">
-
 <div class="grid">
-
-<div class="field">
-<label>Nombre del local</label>
-<input id="editNombre">
-</div>
-
-<div class="field">
-<label>Categoría</label>
-<select id="editCategoria"></select>
-</div>
-
-<div class="field full">
-<label>Descripción</label>
-<textarea id="editDescripcion"></textarea>
-</div>
-
-<div class="field">
-<label>Banner actual</label>
-<img id="editBannerPreview" class="preview hidden">
-</div>
-
-<div class="field">
-<label>Nueva imagen de banner opcional</label>
-<input id="editBanner" type="file" accept="image/*" onchange="previewArchivo(this,'editBannerPreview')">
-</div>
-
+<div class="field"><label>Nombre del local</label><input id="editNombre"></div>
+<div class="field"><label>Categoría</label><select id="editCategoria"></select></div>
+<div class="field full"><label>Descripción</label><textarea id="editDescripcion"></textarea></div>
+<div class="field"><label>Banner actual</label><img id="editBannerPreview" class="preview hidden"></div>
+<div class="field"><label>Nueva imagen de banner opcional</label><input id="editBanner" type="file" accept="image/*" onchange="previewArchivo(this,'editBannerPreview')"></div>
 </div>
 
 <div class="card" style="margin-top:15px;background:#fafafa">
 <h3>Horario de atención</h3>
-
 <div class="mode-box">
-
-<label class="mode-option">
-<input type="radio" name="editModoHorario" value="siempre" onchange="cambiarModoHorarioEdit()">
-Siempre abierto
-</label>
-
-<label class="mode-option">
-<input type="radio" name="editModoHorario" value="personalizado" onchange="cambiarModoHorarioEdit()">
-Horario personalizado
-</label>
-
-<label class="mode-option">
-<input type="radio" name="editModoHorario" value="cerrado" onchange="cambiarModoHorarioEdit()">
-Cerrado
-</label>
-
+<label class="mode-option"><input type="radio" name="editModoHorario" value="siempre" onchange="cambiarModoHorarioEdit()">Siempre abierto</label>
+<label class="mode-option"><input type="radio" name="editModoHorario" value="personalizado" onchange="cambiarModoHorarioEdit()">Horario personalizado</label>
+<label class="mode-option"><input type="radio" name="editModoHorario" value="cerrado" onchange="cambiarModoHorarioEdit()">Cerrado</label>
 </div>
-
 <div id="editHorarioEditor"></div>
 </div>
 
 <div class="card" style="margin-top:15px;background:#fafafa">
 <h3>Productos</h3>
 <div id="productosEditados"></div>
-
-<div class="actions">
-<button class="btn success" onclick="agregarProductoEditado()">+ Agregar producto</button>
-</div>
+<div class="actions"><button class="btn success" onclick="agregarProductoEditado()">+ Agregar producto</button></div>
 </div>
 
 <div class="actions">
 <button class="btn primary" onclick="guardarEdicionLocal()">Guardar cambios</button>
 <button class="btn secondary" onclick="cerrarEditor()">Cancelar</button>
 </div>
-
 </div>
-
 </section>
 
-<!-- CLIENTES -->
 <section id="clientes" class="section">
 
 <div class="card">
 <h2>Validación de clientes</h2>
-
 <div class="client-status">
-
 <label class="client-switch">
 <input id="validacionClientes" type="checkbox" onchange="cambiarValidacionClientes()">
 <span class="eye">✓</span>
 <span id="textoValidacionClientes">Validación activa</span>
 </label>
-
 </div>
-
-<p class="muted">
-Cuando está activa, los clientes nuevos deben estar registrados o ingresar
-un número de referente válido antes de realizar su primer pedido.
-</p>
-
+<p class="muted">Cuando está activa, los clientes nuevos deben estar registrados o ingresar un número de referente válido antes de realizar su primer pedido.</p>
 </div>
 
 <div class="card">
 <h2>Cargar clientes</h2>
-
-<p class="muted">
-Importa los contactos directamente desde el archivo exportado por tu teléfono.
-Se admite formato <strong>.vcf / vCard</strong>.
-</p>
-
+<p class="muted">Importa los contactos directamente desde el archivo exportado por tu teléfono. Se admite formato <strong>.vcf / vCard</strong>.</p>
 <div class="client-import">
-
 <div class="field">
 <label>Archivo de contactos</label>
-<input
- id="archivoContactos"
- type="file"
- accept=".vcf,text/vcard,text/x-vcard"
->
+<input id="archivoContactos" type="file" accept=".vcf,text/vcard,text/x-vcard">
 </div>
-
-<div class="actions">
-<button class="btn primary" onclick="importarContactos()">Importar contactos</button>
+<div class="actions"><button id="btnImportarContactos" class="btn primary" onclick="importarContactos()">Importar contactos</button></div>
+<p class="muted">El archivo se procesa en el navegador. No se almacena el archivo original. Solamente se envían a Supabase los contactos válidos.</p>
 </div>
-
-<p class="muted">
-El archivo se procesa en el navegador. No se almacena el archivo original.
-Solamente se envían a Supabase los contactos válidos.
-</p>
-
-</div>
-
 <div id="resultadoImportacion" class="import-result hidden"></div>
+</div>
 
+<div class="card">
+<h2>Clientes registrados</h2>
+<div class="client-tools">
+<input id="buscarCliente" type="search" placeholder="Buscar por nombre, teléfono o código..." oninput="filtrarClientes()">
+<button class="btn info" onclick="cargarClientes()">Actualizar</button>
+</div>
+<div id="resumenClientes" class="client-counts"></div>
+<div id="listaClientes" class="client-list"><p class="muted">Cargando clientes...</p></div>
 </div>
 
 </section>
-
 </div>
 
 <script>
 const BUCKET="restaurantes";
 const DIAS=[
- {n:"Domingo",d:0},
- {n:"Lunes",d:1},
- {n:"Martes",d:2},
- {n:"Miércoles",d:3},
- {n:"Jueves",d:4},
- {n:"Viernes",d:5},
- {n:"Sábado",d:6}
+{n:"Domingo",d:0},{n:"Lunes",d:1},{n:"Martes",d:2},{n:"Miércoles",d:3},
+{n:"Jueves",d:4},{n:"Viernes",d:5},{n:"Sábado",d:6}
 ];
 
-let categorias=[];
-let locales=[];
-let productosEdit=[];
-let productosNuevos=[];
+let categorias=[],locales=[],clientes=[],productosEdit=[],productosNuevos=[];
+let clientesCargados=false;
 
 document.addEventListener("DOMContentLoaded",async()=>{
  await cargarTodo();
@@ -424,6 +261,7 @@ function mostrarSeccion(id,btn){
  document.getElementById(id).classList.add("active");
  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
  btn.classList.add("active");
+ if(id==="clientes"&&!clientesCargados)cargarClientes();
 }
 
 function mensaje(texto,tipo="ok"){
@@ -441,35 +279,21 @@ function err(e){
 
 async function cargarTodo(){
  try{
-  await Promise.all([
-   cargarConfiguracion(),
-   cargarCategorias(),
-   cargarLocales()
-  ]);
+  await Promise.all([cargarConfiguracion(),cargarCategorias(),cargarLocales()]);
  }catch(e){err(e)}
 }
 
-/* =========================
-   CONFIGURACIÓN
-========================= */
-
+/* CONFIGURACIÓN */
 async function cargarConfiguracion(){
- const {data,error}=await supabaseClient
-  .from("configuracion_negocio")
-  .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes")
-  .order("id",{ascending:true})
-  .limit(1)
-  .maybeSingle();
-
- if(error)throw error;
- if(!data)return;
-
+ const {data,error}=await supabaseClient.from("configuracion_negocio")
+ .select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes")
+ .order("id",{ascending:true}).limit(1).maybeSingle();
+ if(error)throw error;if(!data)return;
  cfgNombre.value=data.nombre_negocio||"";
  cfgCiudad.value=data.ciudad||"";
  cfgDelivery.value=data.tarifa_delivery??1.5;
  cfgWhatsapp.value=data.whatsapp_negocio||"";
  cfgMoneda.value=data.moneda||"USD";
-
  validacionClientes.checked=data.validacion_clientes!==false;
  actualizarTextoValidacion();
 }
@@ -484,80 +308,35 @@ async function guardarConfiguracion(){
    moneda:cfgMoneda.value.trim()||"USD",
    actualizado_en:new Date().toISOString()
   };
-
-  const {data:exist,error:e0}=await supabaseClient
-   .from("configuracion_negocio")
-   .select("id")
-   .order("id",{ascending:true})
-   .limit(1)
-   .maybeSingle();
-
+  const {data:exist,error:e0}=await supabaseClient.from("configuracion_negocio")
+   .select("id").order("id",{ascending:true}).limit(1).maybeSingle();
   if(e0)throw e0;
-
   let error;
-
-  if(exist?.id){
-   ({error}=await supabaseClient
-    .from("configuracion_negocio")
-    .update(payload)
-    .eq("id",exist.id));
-  }else{
-   ({error}=await supabaseClient
-    .from("configuracion_negocio")
-    .insert(payload));
-  }
-
+  if(exist?.id)({error}=await supabaseClient.from("configuracion_negocio").update(payload).eq("id",exist.id));
+  else({error}=await supabaseClient.from("configuracion_negocio").insert(payload));
   if(error)throw error;
-
   mensaje("Configuración guardada correctamente.");
  }catch(e){err(e)}
 }
 
-/* =========================
-   CLIENTES
-========================= */
-
+/* CLIENTES */
 function actualizarTextoValidacion(){
  const activo=document.getElementById("validacionClientes").checked;
- document.getElementById("textoValidacionClientes").textContent=
-  activo?"Validación activa":"Validación inactiva";
+ document.getElementById("textoValidacionClientes").textContent=activo?"Validación activa":"Validación inactiva";
 }
 
 async function cambiarValidacionClientes(){
  try{
   const activo=validacionClientes.checked;
-
-  const {data,error}=await supabaseClient
-   .from("configuracion_negocio")
-   .select("id")
-   .order("id",{ascending:true})
-   .limit(1)
-   .maybeSingle();
-
+  const {data,error}=await supabaseClient.from("configuracion_negocio")
+   .select("id").order("id",{ascending:true}).limit(1).maybeSingle();
   if(error)throw error;
-
-  if(!data?.id){
-   throw new Error("No existe la configuración del negocio.");
-  }
-
-  const {error:e}=await supabaseClient
-   .from("configuracion_negocio")
-   .update({
-    validacion_clientes:activo,
-    actualizado_en:new Date().toISOString()
-   })
-   .eq("id",data.id);
-
+  if(!data?.id)throw new Error("No existe la configuración del negocio.");
+  const {error:e}=await supabaseClient.from("configuracion_negocio")
+   .update({validacion_clientes:activo,actualizado_en:new Date().toISOString()}).eq("id",data.id);
   if(e)throw e;
-
   actualizarTextoValidacion();
-
-  mensaje(
-   activo
-    ?"Validación de clientes activada."
-    :"Validación de clientes inactivada."
-  );
-
+  mensaje(activo?"Validación de clientes activada.":"Validación de clientes inactivada.");
  }catch(e){
   validacionClientes.checked=!validacionClientes.checked;
   actualizarTextoValidacion();
@@ -565,21 +344,128 @@ async function cambiarValidacionClientes(){
  }
 }
 
+async function cargarClientes(){
+ const box=document.getElementById("listaClientes");
+ if(box)box.innerHTML='<p class="muted">Cargando clientes...</p>';
+ try{
+  const {data,error}=await supabaseClient.from("clientes")
+   .select("id,nombre,telefono,codigo_referido,referido_por,activo,creado_en")
+   .order("creado_en",{ascending:false});
+  if(error)throw error;
+  clientes=data||[];
+  clientesCargados=true;
+  pintarClientes();
+ }catch(e){
+  clientesCargados=false;
+  if(box)box.innerHTML='<p class="muted">No se pudieron cargar los clientes.</p>';
+  err(e);
+ }
+}
+
+function filtrarClientes(){pintarClientes()}
+
+function pintarClientes(){
+ const box=document.getElementById("listaClientes");
+ const resumen=document.getElementById("resumenClientes");
+ if(!box)return;
+
+ const activos=clientes.filter(c=>c.activo).length;
+ const inactivos=clientes.length-activos;
+
+ if(resumen){
+  resumen.innerHTML=`
+   <div class="client-count"><strong>${clientes.length}</strong> Total</div>
+   <div class="client-count"><strong>${activos}</strong> Activos</div>
+   <div class="client-count"><strong>${inactivos}</strong> Inactivos</div>`;
+ }
+
+ const texto=(document.getElementById("buscarCliente")?.value||"").trim().toLowerCase();
+
+ const lista=clientes.filter(c=>{
+  if(!texto)return true;
+  return [c.nombre,c.telefono,c.codigo_referido]
+   .some(v=>String(v||"").toLowerCase().includes(texto));
+ });
+
+ if(!lista.length){
+  box.innerHTML='<p class="muted">No se encontraron clientes.</p>';
+  return;
+ }
+
+ box.innerHTML=lista.map(c=>`
+  <div class="client-row">
+   <div class="client-info">
+    <strong>${escapeHtml(c.nombre||"Cliente")}</strong>
+    <small>Teléfono: ${escapeHtml(c.telefono||"")}</small>
+    <small>Código: ${escapeHtml(c.codigo_referido||"")}</small>
+   </div>
+   <div class="client-info">
+    <span class="badge ${c.activo?"on":"off"}">${c.activo?"Activo":"Inactivo"}</span>
+    <small>${c.referido_por?`Referido por cliente #${c.referido_por}`:"Cliente principal"}</small>
+   </div>
+   <div class="client-actions">
+    <button class="btn ${c.activo?"warning":"success"}" onclick="cambiarEstadoCliente(${c.id},${!c.activo})">
+     ${c.activo?"Inactivar":"Activar"}
+    </button>
+    <button class="btn danger" onclick="eliminarCliente(${c.id})">Eliminar</button>
+   </div>
+  </div>
+ `).join("");
+}
+
+async function cambiarEstadoCliente(id,activo){
+ try{
+  const {error}=await supabaseClient.from("clientes").update({activo}).eq("id",id);
+  if(error)throw error;
+  const c=clientes.find(x=>x.id===id);
+  if(c)c.activo=activo;
+  pintarClientes();
+  mensaje(activo?"Cliente activado.":"Cliente inactivado.");
+ }catch(e){err(e)}
+}
+
+async function eliminarCliente(id){
+ try{
+  const cliente=clientes.find(c=>c.id===id);
+  if(!cliente)return;
+
+  if(!confirm(`¿Eliminar definitivamente al cliente "${cliente.nombre}"?\n\nSus referidos permanecerán registrados.`))return;
+
+  /*
+   * IMPORTANTE:
+   * Solo se elimina este cliente.
+   * Sus referidos directos permanecen y se desvinculan.
+   * Los referidos de segundo nivel no se modifican.
+   */
+  const {error:e1}=await supabaseClient
+   .from("clientes")
+   .update({referido_por:null})
+   .eq("referido_por",id);
+
+  if(e1)throw e1;
+
+  const {error:e2}=await supabaseClient
+   .from("clientes")
+   .delete()
+   .eq("id",id);
+
+  if(e2)throw e2;
+
+  await cargarClientes();
+  mensaje("Cliente eliminado. Sus referidos permanecen registrados.");
+ }catch(e){err(e)}
+}
+
 async function importarContactos(){
-
  const archivo=archivoContactos.files[0];
+ const boton=document.getElementById("btnImportarContactos");
 
- if(!archivo){
-  mensaje("Selecciona un archivo de contactos .vcf.","err");
-  return;
- }
-
- if(!/\.vcf$/i.test(archivo.name)){
-  mensaje("El archivo debe estar en formato .vcf.","err");
-  return;
- }
+ if(!archivo){mensaje("Selecciona un archivo de contactos .vcf.","err");return}
+ if(!/\.vcf$/i.test(archivo.name)){mensaje("El archivo debe estar en formato .vcf.","err");return}
 
  try{
+  boton.disabled=true;
+  boton.textContent="Importando...";
 
   const texto=await archivo.text();
   const contactos=parsearVCF(texto);
@@ -594,46 +480,27 @@ async function importarContactos(){
   contactos.forEach(c=>{
    const telefono=normalizarTelefono(c.telefono);
    if(!telefono)return;
-
    if(!unicos.has(telefono)){
-    unicos.set(telefono,{
-     nombre:c.nombre||"Cliente",
-     telefono
-    });
+    unicos.set(telefono,{nombre:c.nombre||"Cliente",telefono});
    }
   });
 
-  const clientes=[...unicos.values()];
+  const lista=[...unicos.values()];
 
-  if(!clientes.length){
+  if(!lista.length){
    mensaje("No se encontraron números de teléfono válidos.","err");
    return;
   }
 
-  /*
-   * Se envían por bloques para evitar payloads excesivamente grandes.
-   * Cada bloque genera una sola llamada RPC.
-   */
-  let procesados=0;
-  let importados=0;
-  let existentes=0;
-  let errores=0;
-
+  let procesados=0,importados=0,existentes=0,errores=0;
   const TAM_BLOQUE=500;
 
-  for(let i=0;i<clientes.length;i+=TAM_BLOQUE){
-
-   const bloque=clientes.slice(i,i+TAM_BLOQUE);
-
-   const {data,error}=await supabaseClient.rpc(
-    "importar_clientes_masivo",
-    {p_clientes:bloque}
-   );
-
+  for(let i=0;i<lista.length;i+=TAM_BLOQUE){
+   const bloque=lista.slice(i,i+TAM_BLOQUE);
+   const {data,error}=await supabaseClient.rpc("importar_clientes_masivo",{p_clientes:bloque});
    if(error)throw error;
 
    const r=Array.isArray(data)?data[0]:data;
-
    procesados+=Number(r?.procesados||0);
    importados+=Number(r?.importados||0);
    existentes+=Number(r?.existentes||0);
@@ -642,633 +509,312 @@ async function importarContactos(){
 
   mostrarResultadoImportacion({
    contactosArchivo:contactos.length,
-   unicos:clientes.length,
-   procesados,
-   importados,
-   existentes,
-   errores
+   unicos:lista.length,
+   procesados,importados,existentes,errores
   });
 
   archivoContactos.value="";
+  clientesCargados=false;
+  await cargarClientes();
 
-  mensaje(
-   `Importación terminada: ${importados} cliente(s) nuevo(s).`
-  );
-
+  mensaje(`Importación terminada: ${importados} cliente(s) nuevo(s).`);
  }catch(e){
   console.error(e);
-  mensaje(
-   e?.message||"No se pudo importar el archivo de contactos.",
-   "err"
-  );
+  mensaje(e?.message||"No se pudo importar el archivo de contactos.","err");
+ }finally{
+  boton.disabled=false;
+  boton.textContent="Importar contactos";
  }
 }
 
 function mostrarResultadoImportacion(r){
  const box=document.getElementById("resultadoImportacion");
-
  box.innerHTML=`
   <strong>Contactos encontrados: ${r.contactosArchivo}</strong>
   <strong>Teléfonos únicos: ${r.unicos}</strong>
   <strong>Procesados: ${r.procesados}</strong>
   <strong>Importados: ${r.importados}</strong>
   <strong>Ya existentes: ${r.existentes}</strong>
-  <strong>Errores: ${r.errores}</strong>
- `;
-
+  <strong>Errores: ${r.errores}</strong>`;
  box.classList.remove("hidden");
 }
 
 function parsearVCF(texto){
-
  const resultado=[];
-
- /*
-  * Un vCard puede contener líneas dobladas.
-  * Se unen las líneas que comienzan con espacio o tabulación.
-  */
- const normalizado=texto
-  .replace(/\r\n/g,"\n")
-  .replace(/\r/g,"\n")
-  .replace(/\n[ \t]/g,"");
-
+ const normalizado=texto.replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\n[ \t]/g,"");
  const bloques=normalizado.split(/BEGIN:VCARD/i);
 
  for(const bloqueRaw of bloques){
-
   if(!/TEL/i.test(bloqueRaw))continue;
-
   const bloque=bloqueRaw.split(/END:VCARD/i)[0];
-
   let nombre="";
-
   const fn=bloque.match(/^FN(?:;[^:]*)?:(.*)$/im);
 
-  if(fn){
-   nombre=decodificarVCF(fn[1].trim());
-  }else{
-
+  if(fn)nombre=decodificarVCF(fn[1].trim());
+  else{
    const n=bloque.match(/^N(?:;[^:]*)?:(.*)$/im);
-
    if(n){
     const partes=n[1].split(";");
-    nombre=decodificarVCF(
-     [partes[1],partes[0],partes[2]]
-      .filter(Boolean)
-      .join(" ")
-      .trim()
-    );
+    nombre=decodificarVCF([partes[1],partes[0],partes[2]].filter(Boolean).join(" ").trim());
    }
   }
 
   const lineas=bloque.split("\n");
-
   for(const linea of lineas){
-
    if(!/^TEL(?:;[^:]*)?:/i.test(linea))continue;
-
    const pos=linea.indexOf(":");
    if(pos<0)continue;
-
    const telefono=linea.substring(pos+1).trim();
-
-   if(telefono){
-    resultado.push({
-     nombre:nombre||"Cliente",
-     telefono
-    });
-   }
+   if(telefono)resultado.push({nombre:nombre||"Cliente",telefono});
   }
  }
-
  return resultado;
 }
 
 function decodificarVCF(valor){
-
- return String(valor||"")
-  .replace(/\\n/gi," ")
-  .replace(/\\,/g,",")
-  .replace(/\\;/g,";")
-  .replace(/\\\\/g,"\\")
-  .trim();
+ return String(valor||"").replace(/\\n/gi," ").replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\\\/g,"\\").trim();
 }
 
 function normalizarTelefono(valor){
-
- let t=String(valor||"").trim();
-
- t=t.replace(/^tel:/i,"");
- t=t.replace(/[^\d+]/g,"");
-
- if(t.startsWith("+")){
-  t=t.substring(1);
- }
-
- /*
-  * Ecuador:
-  * +593987654321 -> 593987654321
-  * 593987654321  -> 593987654321
-  * 0987654321    -> 593987654321
-  * 987654321     -> 593987654321
-  */
-
- if(/^5939\d{8}$/.test(t)){
-  return t;
- }
-
- if(/^09\d{8}$/.test(t)){
-  return "593"+t.substring(1);
- }
-
- if(/^9\d{8}$/.test(t)){
-  return "593"+t;
- }
-
+ let t=String(valor||"").trim().replace(/^tel:/i,"").replace(/[^\d+]/g,"");
+ if(t.startsWith("+"))t=t.substring(1);
+ if(/^5939\d{8}$/.test(t))return t;
+ if(/^09\d{8}$/.test(t))return "593"+t.substring(1);
+ if(/^9\d{8}$/.test(t))return "593"+t;
  return "";
 }
 
-/* =========================
-   CATEGORÍAS
-========================= */
-
+/* CATEGORÍAS */
 async function cargarCategorias(){
-
- const {data,error}=await supabaseClient
-  .from("categorias")
-  .select("id,nombre,activo")
-  .order("nombre");
-
+ const {data,error}=await supabaseClient.from("categorias")
+  .select("id,nombre,activo").order("nombre");
  if(error)throw error;
-
  categorias=data||[];
  pintarCategorias();
  cargarSelectCategorias();
 }
 
 function cargarSelectCategorias(){
-
  const html='<option value="">Sin categoría</option>'+
-  categorias
-   .map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`)
-   .join("");
-
+ categorias.map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`).join("");
  locCategoria.innerHTML=html;
  editCategoria.innerHTML=html;
 }
 
 function pintarCategorias(){
-
  listaCategorias.innerHTML="";
-
  if(!categorias.length){
   listaCategorias.innerHTML='<p class="muted">No hay categorías.</p>';
   return;
  }
 
  categorias.forEach(c=>{
-
   const row=document.createElement("div");
   row.className="category-row";
-
   row.innerHTML=`
    <div>
     <strong>${escapeHtml(c.nombre)}</strong>
-    <span class="badge ${c.activo?"on":"off"}">
-     ${c.activo?"Activa":"Inactiva"}
-    </span>
+    <span class="badge ${c.activo?"on":"off"}">${c.activo?"Activa":"Inactiva"}</span>
    </div>
-
    <div class="actions">
-    <button class="btn secondary" onclick="editarCategoria(${c.id})">
-     Editar
-    </button>
-
-    <button class="btn ${c.activo?"warning":"success"}"
-     onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
-     ${c.activo?"Inactivar":"Activar"}
-    </button>
-
-    <button class="btn danger" onclick="eliminarCategoria(${c.id})">
-     Eliminar
-    </button>
-   </div>
-  `;
-
+    <button class="btn secondary" onclick="editarCategoria(${c.id})">Editar</button>
+    <button class="btn ${c.activo?"warning":"success"}" onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">${c.activo?"Inactivar":"Activar"}</button>
+    <button class="btn danger" onclick="eliminarCategoria(${c.id})">Eliminar</button>
+   </div>`;
   listaCategorias.appendChild(row);
  });
 }
 
 async function crearCategoria(){
-
  try{
-
   const nombre=catNombre.value.trim();
+  if(!nombre){mensaje("Escribe el nombre de la categoría.","err");return}
+  const existe=categorias.some(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase());
+  if(existe){mensaje("Ya existe una categoría con ese nombre.","err");return}
 
-  if(!nombre){
-   mensaje("Escribe el nombre de la categoría.","err");
-   return;
-  }
-
-  const existe=categorias.some(
-   c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase()
-  );
-
-  if(existe){
-   mensaje("Ya existe una categoría con ese nombre.","err");
-   return;
-  }
-
-  const {error}=await supabaseClient
-   .from("categorias")
-   .insert({nombre,activo:true});
-
+  const {error}=await supabaseClient.from("categorias").insert({nombre,activo:true});
   if(error)throw error;
-
   catNombre.value="";
   await cargarCategorias();
-
   mensaje("Categoría creada.");
-
  }catch(e){err(e)}
 }
 
 async function editarCategoria(id){
-
  const cat=categorias.find(x=>x.id===id);
  if(!cat)return;
 
- const nombre=prompt(
-  "Nuevo nombre de categoría:",
-  cat.nombre
- );
-
+ const nombre=prompt("Nuevo nombre de categoría:",cat.nombre);
  if(nombre===null)return;
 
  const nuevo=nombre.trim();
  if(!nuevo)return;
 
- const existe=categorias.some(
-  c=>c.id!==id&&
-  c.nombre.trim().toLowerCase()===nuevo.toLowerCase()
- );
-
- if(existe){
-  mensaje("Ya existe una categoría con ese nombre.","err");
-  return;
- }
+ const existe=categorias.some(c=>c.id!==id&&c.nombre.trim().toLowerCase()===nuevo.toLowerCase());
+ if(existe){mensaje("Ya existe una categoría con ese nombre.","err");return}
 
  try{
-
-  const {error:e1}=await supabaseClient
-   .from("categorias")
-   .update({nombre:nuevo})
-   .eq("id",id);
-
+  const {error:e1}=await supabaseClient.from("categorias").update({nombre:nuevo}).eq("id",id);
   if(e1)throw e1;
-
-  const {error:e2}=await supabaseClient
-   .from("restaurantes")
-   .update({categoria:nuevo})
-   .eq("categoria",cat.nombre);
-
+  const {error:e2}=await supabaseClient.from("restaurantes").update({categoria:nuevo}).eq("categoria",cat.nombre);
   if(e2)throw e2;
-
   await cargarCategorias();
   await cargarLocales();
-
   mensaje("Categoría actualizada.");
-
  }catch(e){err(e)}
 }
 
 async function cambiarEstadoCategoria(id,activo){
-
  try{
-
-  const {error}=await supabaseClient
-   .from("categorias")
-   .update({activo})
-   .eq("id",id);
-
+  const {error}=await supabaseClient.from("categorias").update({activo}).eq("id",id);
   if(error)throw error;
-
   await cargarCategorias();
-
-  mensaje(
-   activo
-    ?"Categoría activada."
-    :"Categoría inactivada."
-  );
-
+  mensaje(activo?"Categoría activada.":"Categoría inactivada.");
  }catch(e){err(e)}
 }
 
 async function eliminarCategoria(id){
-
  const cat=categorias.find(x=>x.id===id);
  if(!cat)return;
 
- const asociados=locales.filter(
-  x=>x.categoria===cat.nombre
- );
-
+ const asociados=locales.filter(x=>x.categoria===cat.nombre);
  let texto=`¿Eliminar la categoría "${cat.nombre}"?`;
-
- if(asociados.length){
-  texto+=`\n\nTiene ${asociados.length} local(es) asociado(s). Su categoría quedará vacía.`;
- }
-
+ if(asociados.length)texto+=`\n\nTiene ${asociados.length} local(es) asociado(s). Su categoría quedará vacía.`;
  if(!confirm(texto))return;
 
  try{
-
   if(asociados.length){
-
-   const {error:e1}=await supabaseClient
-    .from("restaurantes")
-    .update({categoria:null})
-    .eq("categoria",cat.nombre);
-
+   const {error:e1}=await supabaseClient.from("restaurantes").update({categoria:null}).eq("categoria",cat.nombre);
    if(e1)throw e1;
   }
 
-  const {error}=await supabaseClient
-   .from("categorias")
-   .delete()
-   .eq("id",id);
-
+  const {error}=await supabaseClient.from("categorias").delete().eq("id",id);
   if(error)throw error;
 
   await cargarCategorias();
   await cargarLocales();
-
   mensaje("Categoría eliminada.");
-
  }catch(e){err(e)}
 }
 
-/* =========================
-   LOCALES
-========================= */
-
+/* LOCALES */
 async function cargarLocales(){
-
- const {data,error}=await supabaseClient
-  .from("restaurantes")
-  .select("id,nombre,categoria,descripcion,banner_url,activo")
-  .order("nombre");
-
+ const {data,error}=await supabaseClient.from("restaurantes")
+  .select("id,nombre,categoria,descripcion,banner_url,activo").order("nombre");
  if(error)throw error;
-
  locales=data||[];
  pintarLocales();
 }
 
 function pintarLocales(){
-
  listaLocales.innerHTML="";
-
  if(!locales.length){
   listaLocales.innerHTML='<p class="muted">No hay locales registrados.</p>';
   return;
  }
 
  locales.forEach(l=>{
-
   const div=document.createElement("div");
   div.className="local-card";
-
   const img=l.banner_url||"";
 
   div.innerHTML=`
-   ${img
-    ? `<img
-        class="local-banner"
-        src="${escapeAttr(img)}"
-        alt=""
-        loading="lazy"
-        decoding="async">`
-    : `<div class="local-banner"></div>`}
-
+   ${img?`<img class="local-banner" src="${escapeAttr(img)}" alt="" loading="lazy" decoding="async">`:`<div class="local-banner"></div>`}
    <div class="local-body">
-
-    <div class="local-title">
-     ${escapeHtml(l.nombre)}
-    </div>
-
-    <div class="muted">
-     ${escapeHtml(l.categoria||"Sin categoría")}
-    </div>
-
+    <div class="local-title">${escapeHtml(l.nombre)}</div>
+    <div class="muted">${escapeHtml(l.categoria||"Sin categoría")}</div>
     <p>${escapeHtml(l.descripcion||"")}</p>
-
-    <span class="badge ${l.activo?"on":"off"}">
-     ${l.activo?"Activo":"Inactivo"}
-    </span>
-
+    <span class="badge ${l.activo?"on":"off"}">${l.activo?"Activo":"Inactivo"}</span>
     <div class="actions">
-
-     <button class="btn info" onclick="editarLocal(${l.id})">
-      Editar
-     </button>
-
-     <button
-      class="btn ${l.activo?"warning":"success"}"
-      onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
-      ${l.activo?"Inactivar":"Activar"}
-     </button>
-
-     <button
-      class="btn danger"
-      onclick="eliminarLocal(${l.id})">
-      Eliminar
-     </button>
-
+     <button class="btn info" onclick="editarLocal(${l.id})">Editar</button>
+     <button class="btn ${l.activo?"warning":"success"}" onclick="cambiarEstadoLocal(${l.id},${!l.activo})">${l.activo?"Inactivar":"Activar"}</button>
+     <button class="btn danger" onclick="eliminarLocal(${l.id})">Eliminar</button>
     </div>
-
-   </div>
-  `;
-
+   </div>`;
   listaLocales.appendChild(div);
  });
 }
 
-/* =========================
-   HORARIOS
-========================= */
-
-function cambiarModoHorario(){
- construirHorario("horarioEditor","nuevo");
-}
-
-function cambiarModoHorarioEdit(){
- construirHorario("editHorarioEditor","edit");
-}
+/* HORARIOS */
+function cambiarModoHorario(){construirHorario("horarioEditor","nuevo")}
+function cambiarModoHorarioEdit(){construirHorario("editHorarioEditor","edit")}
 
 function modoSeleccionado(tipo){
-
- const name=tipo==="edit"
-  ?"editModoHorario"
-  :"modoHorario";
-
- return document.querySelector(
-  `input[name="${name}"]:checked`
- )?.value||"personalizado";
+ const name=tipo==="edit"?"editModoHorario":"modoHorario";
+ return document.querySelector(`input[name="${name}"]:checked`)?.value||"personalizado";
 }
 
 function construirHorario(id,tipo){
-
  const box=document.getElementById(id);
  if(!box)return;
-
  const modo=modoSeleccionado(tipo);
 
  if(modo==="siempre"){
-  box.innerHTML=
-   '<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
+  box.innerHTML='<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
   return;
  }
 
  if(modo==="cerrado"){
-  box.innerHTML=
-   '<p class="muted">El local estará cerrado todos los días.</p>';
+  box.innerHTML='<p class="muted">El local estará cerrado todos los días.</p>';
   return;
  }
 
  box.innerHTML=`
   <div class="horario-box">
-
    ${DIAS.map(d=>`
-
     <div class="horario-row">
-
      <div class="day">${d.n}</div>
-
      <label class="toggle">
-
-      <input
-       type="checkbox"
-       id="${tipo}Dia${d.d}"
-       checked
-       onchange="actualizarFilaHorario('${tipo}',${d.d})">
-
-      <span class="eye">👁</span>
-
-      <span class="estado-text">Abierto</span>
-
+      <input type="checkbox" id="${tipo}Dia${d.d}" checked onchange="actualizarFilaHorario('${tipo}',${d.d})">
+      <span class="eye">👁</span><span class="estado-text">Abierto</span>
      </label>
-
-     <div class="time-wrap">
-      <label>Desde</label>
-      <input
-       id="${tipo}Apertura${d.d}"
-       type="time"
-       value="10:00">
-     </div>
-
-     <div class="time-wrap">
-      <label>Hasta</label>
-      <input
-       id="${tipo}Cierre${d.d}"
-       type="time"
-       value="22:00">
-     </div>
-
-    </div>
-
-   `).join("")}
-
-  </div>
- `;
+     <div class="time-wrap"><label>Desde</label><input id="${tipo}Apertura${d.d}" type="time" value="10:00"></div>
+     <div class="time-wrap"><label>Hasta</label><input id="${tipo}Cierre${d.d}" type="time" value="22:00"></div>
+    </div>`).join("")}
+  </div>`;
 }
 
 function actualizarFilaHorario(tipo,dia){
-
  const chk=document.getElementById(`${tipo}Dia${dia}`);
  const ap=document.getElementById(`${tipo}Apertura${dia}`);
  const ci=document.getElementById(`${tipo}Cierre${dia}`);
  const text=chk?.parentElement?.querySelector(".estado-text");
-
  const abierto=!!chk?.checked;
-
  if(ap)ap.disabled=!abierto;
  if(ci)ci.disabled=!abierto;
  if(text)text.textContent=abierto?"Abierto":"Cerrado";
 }
 
 function obtenerHorario(tipo){
-
  const modo=modoSeleccionado(tipo);
 
- if(modo==="siempre"){
-  return DIAS.map(d=>({
-   dia_semana:d.d,
-   hora_apertura:"00:00",
-   hora_cierre:"23:59",
-   cerrado:false
-  }));
- }
-
- if(modo==="cerrado"){
-  return DIAS.map(d=>({
-   dia_semana:d.d,
-   hora_apertura:null,
-   hora_cierre:null,
-   cerrado:true
-  }));
- }
+ if(modo==="siempre")return DIAS.map(d=>({dia_semana:d.d,hora_apertura:"00:00",hora_cierre:"23:59",cerrado:false}));
+ if(modo==="cerrado")return DIAS.map(d=>({dia_semana:d.d,hora_apertura:null,hora_cierre:null,cerrado:true}));
 
  return DIAS.map(d=>{
-
-  const abierto=document.getElementById(
-   `${tipo}Dia${d.d}`
-  )?.checked;
-
-  return {
+  const abierto=document.getElementById(`${tipo}Dia${d.d}`)?.checked;
+  return{
    dia_semana:d.d,
-   hora_apertura:abierto
-    ?document.getElementById(`${tipo}Apertura${d.d}`)?.value||"10:00"
-    :null,
-   hora_cierre:abierto
-    ?document.getElementById(`${tipo}Cierre${d.d}`)?.value||"22:00"
-    :null,
+   hora_apertura:abierto?document.getElementById(`${tipo}Apertura${d.d}`)?.value||"10:00":null,
+   hora_cierre:abierto?document.getElementById(`${tipo}Cierre${d.d}`)?.value||"22:00":null,
    cerrado:!abierto
   };
  });
 }
 
 async function guardarHorario(restauranteId,tipo){
-
  const horario=obtenerHorario(tipo);
-
- const {error:eDelete}=await supabaseClient
-  .from("horarios_restaurantes")
-  .delete()
-  .eq("restaurante_id",restauranteId);
-
+ const {error:eDelete}=await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",restauranteId);
  if(eDelete)throw eDelete;
 
- const rows=horario.map(h=>({
-  restaurante_id:restauranteId,
-  ...h
- }));
-
- const {error:eInsert}=await supabaseClient
-  .from("horarios_restaurantes")
-  .insert(rows);
-
+ const rows=horario.map(h=>({restaurante_id:restauranteId,...h}));
+ const {error:eInsert}=await supabaseClient.from("horarios_restaurantes").insert(rows);
  if(eInsert)throw eInsert;
 }
 
-/* =========================
-   IMÁGENES / STORAGE
-========================= */
-
+/* IMÁGENES */
 function cargarImagen(file,maxWidth=1200,quality=.78){
-
  return new Promise((resolve,reject)=>{
-
   if(!file||!file.type?.startsWith("image/")){
    reject(new Error("El archivo seleccionado no es una imagen válida."));
    return;
@@ -1278,11 +824,8 @@ function cargarImagen(file,maxWidth=1200,quality=.78){
   const url=URL.createObjectURL(file);
 
   img.onload=()=>{
-
    URL.revokeObjectURL(url);
-
-   let width=img.naturalWidth;
-   let height=img.naturalHeight;
+   let width=img.naturalWidth,height=img.naturalHeight;
 
    if(width>maxWidth){
     height=Math.round(height*(maxWidth/width));
@@ -1290,30 +833,17 @@ function cargarImagen(file,maxWidth=1200,quality=.78){
    }
 
    const canvas=document.createElement("canvas");
-   canvas.width=width;
-   canvas.height=height;
-
+   canvas.width=width;canvas.height=height;
    const ctx=canvas.getContext("2d",{alpha:false});
 
-   if(!ctx){
-    reject(new Error("No se pudo procesar la imagen."));
-    return;
-   }
+   if(!ctx){reject(new Error("No se pudo procesar la imagen."));return}
 
    ctx.drawImage(img,0,0,width,height);
 
-   canvas.toBlob(
-    blob=>{
-     if(!blob){
-      reject(new Error("No se pudo comprimir la imagen."));
-      return;
-     }
-
-     resolve(blob);
-    },
-    "image/webp",
-    quality
-   );
+   canvas.toBlob(blob=>{
+    if(!blob){reject(new Error("No se pudo comprimir la imagen."));return}
+    resolve(blob);
+   },"image/webp",quality);
   };
 
   img.onerror=()=>{
@@ -1326,156 +856,77 @@ function cargarImagen(file,maxWidth=1200,quality=.78){
 }
 
 async function subirImagen(archivo,carpeta,id,subId=""){
-
  if(!archivo)return null;
 
  const maxWidth=carpeta==="productos"?900:1400;
+ const blob=await cargarImagen(archivo,maxWidth,.78);
 
- const blob=await cargarImagen(
-  archivo,
-  maxWidth,
-  .78
- );
+ const ruta=`${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${crypto.randomUUID()}.webp`;
 
- const ruta=
-  `${carpeta}/${id}${subId?"/"+subId:""}/`+
-  `${Date.now()}-${crypto.randomUUID()}.webp`;
-
- const {error}=await supabaseClient
-  .storage
-  .from(BUCKET)
-  .upload(ruta,blob,{
-   cacheControl:"31536000",
-   upsert:false,
-   contentType:"image/webp"
-  });
+ const {error}=await supabaseClient.storage.from(BUCKET).upload(ruta,blob,{
+  cacheControl:"31536000",upsert:false,contentType:"image/webp"
+ });
 
  if(error){
   console.error("Storage:",error);
-  throw new Error(
-   error.message||"No se pudo subir la imagen."
-  );
+  throw new Error(error.message||"No se pudo subir la imagen.");
  }
 
- const {data}=supabaseClient
-  .storage
-  .from(BUCKET)
-  .getPublicUrl(ruta);
+ const {data}=supabaseClient.storage.from(BUCKET).getPublicUrl(ruta);
 
  if(!data?.publicUrl){
-  try{
-   await supabaseClient.storage
-    .from(BUCKET)
-    .remove([ruta]);
-  }catch(_){}
-
-  throw new Error(
-   "No se pudo obtener la URL pública de la imagen."
-  );
+  try{await supabaseClient.storage.from(BUCKET).remove([ruta])}catch(_){}
+  throw new Error("No se pudo obtener la URL pública de la imagen.");
  }
 
- return {
-  url:data.publicUrl,
-  path:ruta
- };
+ return{url:data.publicUrl,path:ruta};
 }
 
 function obtenerPathStorage(url){
-
  if(!url)return null;
-
  try{
-
   const marker=`/storage/v1/object/public/${BUCKET}/`;
   const pos=url.indexOf(marker);
-
   if(pos===-1)return null;
-
-  return decodeURIComponent(
-   url.substring(pos+marker.length).split("?")[0]
-  );
-
- }catch(_){
-  return null;
- }
+  return decodeURIComponent(url.substring(pos+marker.length).split("?")[0]);
+ }catch(_){return null}
 }
 
 async function eliminarImagenStorage(url){
-
  const path=obtenerPathStorage(url);
-
  if(!path)return;
-
  try{
-
-  const {error}=await supabaseClient
-   .storage
-   .from(BUCKET)
-   .remove([path]);
-
+  const {error}=await supabaseClient.storage.from(BUCKET).remove([path]);
   if(error)console.warn("Storage remove:",error);
-
- }catch(e){
-  console.warn("No se pudo eliminar imagen:",e);
- }
+ }catch(e){console.warn("No se pudo eliminar imagen:",e)}
 }
 
-/* =========================
-   NUEVO LOCAL
-========================= */
-
+/* NUEVO LOCAL */
 async function guardarNuevoLocal(){
-
  try{
-
   const nombre=locNombre.value.trim();
+  if(!nombre){mensaje("El nombre del local es obligatorio.","err");return}
 
-  if(!nombre){
-   mensaje("El nombre del local es obligatorio.","err");
-   return;
-  }
+  const existe=locales.some(l=>l.nombre.trim().toLowerCase()===nombre.toLowerCase());
+  if(existe){mensaje("Ya existe un local con ese nombre.","err");return}
 
-  const existe=locales.some(
-   l=>l.nombre.trim().toLowerCase()===nombre.toLowerCase()
-  );
-
-  if(existe){
-   mensaje("Ya existe un local con ese nombre.","err");
-   return;
-  }
-
-  const {data,error}=await supabaseClient
-   .from("restaurantes")
+  const {data,error}=await supabaseClient.from("restaurantes")
    .insert({
     nombre,
     categoria:locCategoria.value||null,
     descripcion:locDescripcion.value.trim()||null,
     activo:true
-   })
-   .select("id")
-   .single();
+   }).select("id").single();
 
   if(error)throw error;
 
   const archivosSubidos=[];
 
   try{
-
    if(locBanner.files[0]){
-
-    const imagen=await subirImagen(
-     locBanner.files[0],
-     "banners",
-     data.id
-    );
-
+    const imagen=await subirImagen(locBanner.files[0],"banners",data.id);
     archivosSubidos.push(imagen.path);
-
-    const {error:eBanner}=await supabaseClient
-     .from("restaurantes")
-     .update({banner_url:imagen.url})
-     .eq("id",data.id);
-
+    const {error:eBanner}=await supabaseClient.from("restaurantes").update({banner_url:imagen.url}).eq("id",data.id);
     if(eBanner)throw eBanner;
    }
 
@@ -1483,53 +934,23 @@ async function guardarNuevoLocal(){
    await guardarProductosNuevos(data.id,archivosSubidos);
 
   }catch(e){
-
-   if(archivosSubidos.length){
-
-    await supabaseClient
-     .storage
-     .from(BUCKET)
-     .remove(archivosSubidos);
-   }
-
-   await supabaseClient
-    .from("productos")
-    .delete()
-    .eq("restaurante_id",data.id);
-
-   await supabaseClient
-    .from("horarios_restaurantes")
-    .delete()
-    .eq("restaurante_id",data.id);
-
-   await supabaseClient
-    .from("restaurantes")
-    .delete()
-    .eq("id",data.id);
-
+   if(archivosSubidos.length)await supabaseClient.storage.from(BUCKET).remove(archivosSubidos);
+   await supabaseClient.from("productos").delete().eq("restaurante_id",data.id);
+   await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",data.id);
+   await supabaseClient.from("restaurantes").delete().eq("id",data.id);
    throw e;
   }
 
   limpiarFormularioLocal();
   await cargarLocales();
-
   mensaje("Local creado correctamente.");
-
  }catch(e){err(e)}
 }
 
 function agregarProductoNuevo(){
-
  productosNuevos.push({
-  tempId:Date.now()+Math.random(),
-  nombre:"",
-  descripcion:"",
-  precio:"",
-  activo:true,
-  imagen:null,
-  imagenPreview:""
+  tempId:Date.now()+Math.random(),nombre:"",descripcion:"",precio:"",activo:true,imagen:null,imagenPreview:""
  });
-
  pintarProductosNuevos();
 }
 
@@ -1539,7 +960,6 @@ function pintarProductosNuevos(){
 }
 
 function productosNuevosContainer(){
-
  const box=document.getElementById("productosNuevos");
 
  if(!productosNuevos.length){
@@ -1548,67 +968,19 @@ function productosNuevosContainer(){
  }
 
  box.innerHTML=productosNuevos.map((p,i)=>`
-
-  <div class="card product-row"
-   data-product-new="${p.tempId}">
-
-   <div>
-    ${p.imagenPreview
-     ? `<img
-         class="product-img"
-         src="${escapeAttr(p.imagenPreview)}"
-         loading="lazy"
-         decoding="async">`
-     : `<div class="product-img"></div>`}
-   </div>
-
+  <div class="card product-row" data-product-new="${p.tempId}">
+   <div>${p.imagenPreview?`<img class="product-img" src="${escapeAttr(p.imagenPreview)}" loading="lazy" decoding="async">`:`<div class="product-img"></div>`}</div>
    <div class="product-info">
-
-    <input
-     placeholder="Nombre del producto"
-     value="${escapeAttr(p.nombre)}"
-     oninput="productosNuevos[${i}].nombre=this.value">
-
-    <input
-     style="margin-top:5px"
-     placeholder="Descripción"
-     value="${escapeAttr(p.descripcion)}"
-     oninput="productosNuevos[${i}].descripcion=this.value">
-
-    <input
-     style="margin-top:5px"
-     type="number"
-     min="0"
-     step="0.01"
-     placeholder="Precio"
-     value="${escapeAttr(p.precio)}"
-     oninput="productosNuevos[${i}].precio=this.value">
-
-    <input
-     style="margin-top:5px"
-     type="file"
-     accept="image/*"
-     onchange="seleccionarImagenNuevo(${i},this)">
-
+    <input placeholder="Nombre del producto" value="${escapeAttr(p.nombre)}" oninput="productosNuevos[${i}].nombre=this.value">
+    <input style="margin-top:5px" placeholder="Descripción" value="${escapeAttr(p.descripcion)}" oninput="productosNuevos[${i}].descripcion=this.value">
+    <input style="margin-top:5px" type="number" min="0" step="0.01" placeholder="Precio" value="${escapeAttr(p.precio)}" oninput="productosNuevos[${i}].precio=this.value">
+    <input style="margin-top:5px" type="file" accept="image/*" onchange="seleccionarImagenNuevo(${i},this)">
    </div>
-
-   <div class="product-actions">
-
-    <button
-     class="btn danger"
-     onclick="eliminarProductoNuevo(${i})">
-     Eliminar
-    </button>
-
-   </div>
-
-  </div>
-
- `).join("");
+   <div class="product-actions"><button class="btn danger" onclick="eliminarProductoNuevo(${i})">Eliminar</button></div>
+  </div>`).join("");
 }
 
 function seleccionarImagenNuevo(index,input){
-
  const file=input.files[0];
  if(!file)return;
 
@@ -1619,28 +991,21 @@ function seleccionarImagenNuevo(index,input){
  }
 
  productosNuevos[index].imagen=file;
-
  const url=URL.createObjectURL(file);
 
  if(productosNuevos[index].imagenPreview){
-  try{
-   URL.revokeObjectURL(productosNuevos[index].imagenPreview);
-  }catch(_){}
+  try{URL.revokeObjectURL(productosNuevos[index].imagenPreview)}catch(_){}
  }
 
  productosNuevos[index].imagenPreview=url;
-
  productosNuevosContainer();
 }
 
 function eliminarProductoNuevo(index){
-
  const p=productosNuevos[index];
 
  if(p?.imagenPreview){
-  try{
-   URL.revokeObjectURL(p.imagenPreview);
-  }catch(_){}
+  try{URL.revokeObjectURL(p.imagenPreview)}catch(_){}
  }
 
  productosNuevos.splice(index,1);
@@ -1648,53 +1013,33 @@ function eliminarProductoNuevo(index){
 }
 
 async function guardarProductosNuevos(localId,archivosSubidos=[]){
-
  for(const p of productosNuevos){
-
   if(!p.nombre.trim())continue;
 
-  const {data,error}=await supabaseClient
-   .from("productos")
-   .insert({
-    restaurante_id:localId,
-    nombre:p.nombre.trim(),
-    descripcion:p.descripcion.trim()||null,
-    precio:Number(p.precio)||0,
-    activo:true
-   })
-   .select("id")
-   .single();
+  const {data,error}=await supabaseClient.from("productos").insert({
+   restaurante_id:localId,
+   nombre:p.nombre.trim(),
+   descripcion:p.descripcion.trim()||null,
+   precio:Number(p.precio)||0,
+   activo:true
+  }).select("id").single();
 
   if(error)throw error;
 
   if(p.imagen){
-
-   const imagen=await subirImagen(
-    p.imagen,
-    "productos",
-    localId,
-    data.id
-   );
-
+   const imagen=await subirImagen(p.imagen,"productos",localId,data.id);
    archivosSubidos.push(imagen.path);
 
-   const {error:e}=await supabaseClient
-    .from("productos")
-    .update({imagen_url:imagen.url})
-    .eq("id",data.id);
-
+   const {error:e}=await supabaseClient.from("productos").update({imagen_url:imagen.url}).eq("id",data.id);
    if(e)throw e;
   }
  }
 }
 
 function limpiarFormularioLocal(){
-
  productosNuevos.forEach(p=>{
   if(p.imagenPreview){
-   try{
-    URL.revokeObjectURL(p.imagenPreview);
-   }catch(_){}
+   try{URL.revokeObjectURL(p.imagenPreview)}catch(_){}
   }
  });
 
@@ -1704,25 +1049,16 @@ function limpiarFormularioLocal(){
  locBanner.value="";
  previewBanner.src="";
  previewBanner.classList.add("hidden");
-
  productosNuevos=[];
 
- document.querySelector(
-  'input[name="modoHorario"][value="personalizado"]'
- ).checked=true;
-
+ document.querySelector('input[name="modoHorario"][value="personalizado"]').checked=true;
  construirHorario("horarioEditor","nuevo");
  productosNuevosContainer();
 }
 
-/* =========================
-   EDICIÓN
-========================= */
-
+/* EDICIÓN */
 async function editarLocal(id){
-
  try{
-
   const local=locales.find(x=>x.id===id);
   if(!local)return;
 
@@ -1740,103 +1076,58 @@ async function editarLocal(id){
    editBannerPreview.classList.add("hidden");
   }
 
-  const {data:horarios,error:e1}=await supabaseClient
-   .from("horarios_restaurantes")
+  const {data:horarios,error:e1}=await supabaseClient.from("horarios_restaurantes")
    .select("dia_semana,hora_apertura,hora_cierre,cerrado")
-   .eq("restaurante_id",id)
-   .order("dia_semana");
+   .eq("restaurante_id",id).order("dia_semana");
 
   if(e1)throw e1;
-
   prepararHorarioEdicion(horarios||[]);
 
-  const {data:productos,error:e2}=await supabaseClient
-   .from("productos")
+  const {data:productos,error:e2}=await supabaseClient.from("productos")
    .select("id,nombre,descripcion,precio,imagen_url,activo")
-   .eq("restaurante_id",id)
-   .order("id");
+   .eq("restaurante_id",id).order("id");
 
   if(e2)throw e2;
 
-  productosEdit=(productos||[]).map(p=>({
-   ...p,
-   nuevaImagen:null,
-   preview:p.imagen_url||""
-  }));
-
+  productosEdit=(productos||[]).map(p=>({...p,nuevaImagen:null,preview:p.imagen_url||""}));
   pintarProductosEditados();
 
   editorLocal.classList.remove("hidden");
-
-  editorLocal.scrollIntoView({
-   behavior:"smooth",
-   block:"start"
-  });
-
+  editorLocal.scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){err(e)}
 }
 
 function prepararHorarioEdicion(horarios){
-
- const todosSiempre=horarios.length===7&&
-  horarios.every(h=>
-   !h.cerrado &&
-   h.hora_apertura==="00:00:00" &&
-   (h.hora_cierre==="23:59:00"||
-    h.hora_cierre==="23:59:59")
-  );
-
- const todosCerrados=horarios.length===7&&
-  horarios.every(h=>h.cerrado);
+ const todosSiempre=horarios.length===7&&horarios.every(h=>!h.cerrado&&h.hora_apertura==="00:00:00"&&(h.hora_cierre==="23:59:00"||h.hora_cierre==="23:59:59"));
+ const todosCerrados=horarios.length===7&&horarios.every(h=>h.cerrado);
 
  if(todosSiempre){
-
-  document.querySelector(
-   'input[name="editModoHorario"][value="siempre"]'
-  ).checked=true;
-
-  construirHorario("editHorarioEditor","edit");
-  return;
+  document.querySelector('input[name="editModoHorario"][value="siempre"]').checked=true;
+  construirHorario("editHorarioEditor","edit");return;
  }
 
  if(todosCerrados){
-
-  document.querySelector(
-   'input[name="editModoHorario"][value="cerrado"]'
-  ).checked=true;
-
-  construirHorario("editHorarioEditor","edit");
-  return;
+  document.querySelector('input[name="editModoHorario"][value="cerrado"]').checked=true;
+  construirHorario("editHorarioEditor","edit");return;
  }
 
- document.querySelector(
-  'input[name="editModoHorario"][value="personalizado"]'
- ).checked=true;
-
+ document.querySelector('input[name="editModoHorario"][value="personalizado"]').checked=true;
  construirHorario("editHorarioEditor","edit");
 
  horarios.forEach(h=>{
-
   const chk=document.getElementById(`editDia${h.dia_semana}`);
   const ap=document.getElementById(`editApertura${h.dia_semana}`);
   const ci=document.getElementById(`editCierre${h.dia_semana}`);
-
   if(!chk)return;
 
   chk.checked=!h.cerrado;
-
-  if(h.hora_apertura)
-   ap.value=h.hora_apertura.substring(0,5);
-
-  if(h.hora_cierre)
-   ci.value=h.hora_cierre.substring(0,5);
-
+  if(h.hora_apertura)ap.value=h.hora_apertura.substring(0,5);
+  if(h.hora_cierre)ci.value=h.hora_cierre.substring(0,5);
   actualizarFilaHorario("edit",h.dia_semana);
  });
 }
 
 function pintarProductosEditados(){
-
  const box=document.getElementById("productosEditados");
 
  if(!productosEdit.length){
@@ -1845,101 +1136,30 @@ function pintarProductosEditados(){
  }
 
  box.innerHTML=productosEdit.map((p,i)=>`
-
   <div class="card product-row">
-
-   <div>
-    ${p.preview
-     ? `<img
-         class="product-img"
-         src="${escapeAttr(p.preview)}"
-         loading="lazy"
-         decoding="async">`
-     : `<div class="product-img"></div>`}
-   </div>
-
+   <div>${p.preview?`<img class="product-img" src="${escapeAttr(p.preview)}" loading="lazy" decoding="async">`:`<div class="product-img"></div>`}</div>
    <div class="product-info">
-
-    <input
-     value="${escapeAttr(p.nombre||"")}"
-     placeholder="Nombre"
-     oninput="productosEdit[${i}].nombre=this.value">
-
-    <input
-     style="margin-top:5px"
-     value="${escapeAttr(p.descripcion||"")}"
-     placeholder="Descripción"
-     oninput="productosEdit[${i}].descripcion=this.value">
-
-    <input
-     style="margin-top:5px"
-     type="number"
-     min="0"
-     step="0.01"
-     value="${escapeAttr(p.precio??0)}"
-     placeholder="Precio"
-     oninput="productosEdit[${i}].precio=this.value">
-
-    <input
-     style="margin-top:5px"
-     type="file"
-     accept="image/*"
-     onchange="seleccionarImagenEdit(${i},this)">
-
+    <input value="${escapeAttr(p.nombre||"")}" placeholder="Nombre" oninput="productosEdit[${i}].nombre=this.value">
+    <input style="margin-top:5px" value="${escapeAttr(p.descripcion||"")}" placeholder="Descripción" oninput="productosEdit[${i}].descripcion=this.value">
+    <input style="margin-top:5px" type="number" min="0" step="0.01" value="${escapeAttr(p.precio??0)}" placeholder="Precio" oninput="productosEdit[${i}].precio=this.value">
+    <input style="margin-top:5px" type="file" accept="image/*" onchange="seleccionarImagenEdit(${i},this)">
     <div style="margin-top:7px">
-
      <label class="toggle">
-
-      <input
-       type="checkbox"
-       ${p.activo!==false?"checked":""}
-       onchange="productosEdit[${i}].activo=this.checked">
-
-      <span class="eye">👁</span>
-
-      <span>
-       ${p.activo!==false?"Activo":"Inactivo"}
-      </span>
-
+      <input type="checkbox" ${p.activo!==false?"checked":""} onchange="productosEdit[${i}].activo=this.checked">
+      <span class="eye">👁</span><span>${p.activo!==false?"Activo":"Inactivo"}</span>
      </label>
-
     </div>
-
    </div>
-
-   <div class="product-actions">
-
-    <button
-     class="btn danger"
-     onclick="eliminarProductoEdit(${i})">
-     Eliminar
-    </button>
-
-   </div>
-
-  </div>
-
- `).join("");
+   <div class="product-actions"><button class="btn danger" onclick="eliminarProductoEdit(${i})">Eliminar</button></div>
+  </div>`).join("");
 }
 
 function agregarProductoEditado(){
-
- productosEdit.push({
-  id:null,
-  nombre:"",
-  descripcion:"",
-  precio:0,
-  activo:true,
-  imagen_url:null,
-  preview:"",
-  nuevaImagen:null
- });
-
+ productosEdit.push({id:null,nombre:"",descripcion:"",precio:0,activo:true,imagen_url:null,preview:"",nuevaImagen:null});
  pintarProductosEditados();
 }
 
 function seleccionarImagenEdit(index,input){
-
  const file=input.files[0];
  if(!file)return;
 
@@ -1951,89 +1171,48 @@ function seleccionarImagenEdit(index,input){
 
  productosEdit[index].nuevaImagen=file;
 
- if(productosEdit[index].preview&&
-    productosEdit[index].preview.startsWith("blob:")){
-
-  try{
-   URL.revokeObjectURL(productosEdit[index].preview);
-  }catch(_){}
+ if(productosEdit[index].preview&&productosEdit[index].preview.startsWith("blob:")){
+  try{URL.revokeObjectURL(productosEdit[index].preview)}catch(_){}
  }
 
  productosEdit[index].preview=URL.createObjectURL(file);
-
  pintarProductosEditados();
 }
 
 async function eliminarProductoEdit(index){
-
  const p=productosEdit[index];
 
  if(p.id){
-
-  if(!confirm(
-   `¿Eliminar el producto "${p.nombre}"?`
-  ))return;
+  if(!confirm(`¿Eliminar el producto "${p.nombre}"?`))return;
 
   try{
-
-   const {error}=await supabaseClient
-    .from("productos")
-    .delete()
-    .eq("id",p.id);
-
+   const {error}=await supabaseClient.from("productos").delete().eq("id",p.id);
    if(error)throw error;
-
-   if(p.imagen_url)
-    await eliminarImagenStorage(p.imagen_url);
-
-  }catch(e){
-   err(e);
-   return;
-  }
+   if(p.imagen_url)await eliminarImagenStorage(p.imagen_url);
+  }catch(e){err(e);return}
  }
 
  if(p.preview?.startsWith("blob:")){
-  try{
-   URL.revokeObjectURL(p.preview);
-  }catch(_){}
+  try{URL.revokeObjectURL(p.preview)}catch(_){}
  }
 
  productosEdit.splice(index,1);
  pintarProductosEditados();
-
  mensaje("Producto eliminado.");
 }
 
 async function guardarEdicionLocal(){
-
  try{
-
   const id=Number(editId.value);
-
-  if(!id){
-   mensaje("Local inválido.","err");
-   return;
-  }
+  if(!id){mensaje("Local inválido.","err");return}
 
   const nombre=editNombre.value.trim();
+  if(!nombre){mensaje("El nombre del local es obligatorio.","err");return}
 
-  if(!nombre){
-   mensaje("El nombre del local es obligatorio.","err");
-   return;
-  }
-
-  const duplicado=locales.some(l=>
-   l.id!==id&&
-   l.nombre.trim().toLowerCase()===nombre.toLowerCase()
-  );
-
-  if(duplicado){
-   mensaje("Ya existe otro local con ese nombre.","err");
-   return;
-  }
+  const duplicado=locales.some(l=>l.id!==id&&l.nombre.trim().toLowerCase()===nombre.toLowerCase());
+  if(duplicado){mensaje("Ya existe otro local con ese nombre.","err");return}
 
   const localActual=locales.find(x=>x.id===id);
-
   const payload={
    nombre,
    categoria:editCategoria.value||null,
@@ -2043,91 +1222,50 @@ async function guardarEdicionLocal(){
   let nuevaImagen=null;
 
   if(editBanner.files[0]){
-
-   nuevaImagen=await subirImagen(
-    editBanner.files[0],
-    "banners",
-    id
-   );
-
+   nuevaImagen=await subirImagen(editBanner.files[0],"banners",id);
    payload.banner_url=nuevaImagen.url;
   }
 
-  const {error:e1}=await supabaseClient
-   .from("restaurantes")
-   .update(payload)
-   .eq("id",id);
+  const {error:e1}=await supabaseClient.from("restaurantes").update(payload).eq("id",id);
 
   if(e1){
-
-   if(nuevaImagen)
-    await eliminarImagenStorage(nuevaImagen.url);
-
+   if(nuevaImagen)await eliminarImagenStorage(nuevaImagen.url);
    throw e1;
   }
 
-  /*
-   * Eliminamos el banner anterior únicamente después
-   * de haber actualizado correctamente la BD.
-   */
-  if(nuevaImagen&&localActual?.banner_url){
-   await eliminarImagenStorage(localActual.banner_url);
-  }
+  if(nuevaImagen&&localActual?.banner_url)await eliminarImagenStorage(localActual.banner_url);
 
   await guardarHorario(id,"edit");
 
   for(const p of productosEdit){
 
    if(!p.id){
-
     if(!p.nombre.trim())continue;
 
-    const {data,error}=await supabaseClient
-     .from("productos")
-     .insert({
-      restaurante_id:id,
-      nombre:p.nombre.trim(),
-      descripcion:p.descripcion?.trim()||null,
-      precio:Number(p.precio)||0,
-      activo:p.activo!==false
-     })
-     .select("id")
-     .single();
+    const {data,error}=await supabaseClient.from("productos").insert({
+     restaurante_id:id,
+     nombre:p.nombre.trim(),
+     descripcion:p.descripcion?.trim()||null,
+     precio:Number(p.precio)||0,
+     activo:p.activo!==false
+    }).select("id").single();
 
     if(error)throw error;
-
     p.id=data.id;
 
     if(p.nuevaImagen){
-
-     const imagen=await subirImagen(
-      p.nuevaImagen,
-      "productos",
-      id,
-      p.id
-     );
-
-     const {error:e}=await supabaseClient
-      .from("productos")
-      .update({
-       imagen_url:imagen.url
-      })
-      .eq("id",p.id);
+     const imagen=await subirImagen(p.nuevaImagen,"productos",id,p.id);
+     const {error:e}=await supabaseClient.from("productos").update({imagen_url:imagen.url}).eq("id",p.id);
 
      if(e){
-
       await eliminarImagenStorage(imagen.url);
       throw e;
      }
-
      p.imagen_url=imagen.url;
     }
 
    }else{
-
-    const original=await obtenerProductoOriginal(
-     p.id
-    );
+    const original=await obtenerProductoOriginal(p.id);
 
     const values={
      nombre:p.nombre.trim(),
@@ -2139,235 +1277,122 @@ async function guardarEdicionLocal(){
     let nuevaImagen=null;
 
     if(p.nuevaImagen){
-
-     nuevaImagen=await subirImagen(
-      p.nuevaImagen,
-      "productos",
-      id,
-      p.id
-     );
-
+     nuevaImagen=await subirImagen(p.nuevaImagen,"productos",id,p.id);
      values.imagen_url=nuevaImagen.url;
     }
 
-    const {error}=await supabaseClient
-     .from("productos")
-     .update(values)
-     .eq("id",p.id);
+    const {error}=await supabaseClient.from("productos").update(values).eq("id",p.id);
 
     if(error){
-
-     if(nuevaImagen)
-      await eliminarImagenStorage(nuevaImagen.url);
-
+     if(nuevaImagen)await eliminarImagenStorage(nuevaImagen.url);
      throw error;
     }
 
-    if(nuevaImagen&&original?.imagen_url){
-     await eliminarImagenStorage(
-      original.imagen_url
-     );
-    }
-
-    if(nuevaImagen)
-     p.imagen_url=nuevaImagen.url;
+    if(nuevaImagen&&original?.imagen_url)await eliminarImagenStorage(original.imagen_url);
+    if(nuevaImagen)p.imagen_url=nuevaImagen.url;
    }
   }
 
   cerrarEditor();
   await cargarLocales();
-
   mensaje("Local actualizado correctamente.");
-
  }catch(e){err(e)}
 }
 
 async function obtenerProductoOriginal(id){
-
- const {data,error}=await supabaseClient
-  .from("productos")
-  .select("id,imagen_url")
-  .eq("id",id)
-  .maybeSingle();
-
+ const {data,error}=await supabaseClient.from("productos").select("id,imagen_url").eq("id",id).maybeSingle();
  if(error)throw error;
-
  return data;
 }
 
-/* =========================
-   ESTADOS / ELIMINACIÓN
-========================= */
-
+/* ESTADOS / ELIMINACIÓN LOCALES */
 async function cambiarEstadoLocal(id,activo){
-
  try{
-
-  const {error}=await supabaseClient
-   .from("restaurantes")
-   .update({activo})
-   .eq("id",id);
-
+  const {error}=await supabaseClient.from("restaurantes").update({activo}).eq("id",id);
   if(error)throw error;
-
   await cargarLocales();
-
-  mensaje(
-   activo
-    ?"Local activado."
-    :"Local inactivado."
-  );
-
+  mensaje(activo?"Local activado.":"Local inactivado.");
  }catch(e){err(e)}
 }
 
 async function eliminarLocal(id){
-
  const local=locales.find(x=>x.id===id);
  if(!local)return;
 
- if(!confirm(
-  `¿Eliminar definitivamente el local "${local.nombre}"?\n\nTambién se eliminarán sus productos y horarios.`
- ))return;
+ if(!confirm(`¿Eliminar definitivamente el local "${local.nombre}"?\n\nTambién se eliminarán sus productos y horarios.`))return;
 
  try{
-
-  /*
-   * Obtenemos únicamente las URLs necesarias
-   * para poder limpiar Storage.
-   */
-  const {data:productos,error:e1}=await supabaseClient
-   .from("productos")
-   .select("id,imagen_url")
-   .eq("restaurante_id",id);
-
+  const {data:productos,error:e1}=await supabaseClient.from("productos")
+   .select("id,imagen_url").eq("restaurante_id",id);
   if(e1)throw e1;
 
-  const rutas=(productos||[])
-   .map(p=>p.imagen_url)
-   .filter(Boolean);
+  const rutas=(productos||[]).map(p=>p.imagen_url).filter(Boolean);
+  if(local.banner_url)rutas.push(local.banner_url);
 
-  if(local.banner_url)
-   rutas.push(local.banner_url);
-
-  const {error:e2}=await supabaseClient
-   .from("horarios_restaurantes")
-   .delete()
-   .eq("restaurante_id",id);
-
+  const {error:e2}=await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",id);
   if(e2)throw e2;
 
-  const {error:e3}=await supabaseClient
-   .from("productos")
-   .delete()
-   .eq("restaurante_id",id);
-
+  const {error:e3}=await supabaseClient.from("productos").delete().eq("restaurante_id",id);
   if(e3)throw e3;
 
-  const {error:e4}=await supabaseClient
-   .from("restaurantes")
-   .delete()
-   .eq("id",id);
-
+  const {error:e4}=await supabaseClient.from("restaurantes").delete().eq("id",id);
   if(e4)throw e4;
 
-  /*
-   * Limpiar Storage después de eliminar
-   * correctamente los registros.
-   */
-  const paths=rutas
-   .map(obtenerPathStorage)
-   .filter(Boolean);
+  const paths=rutas.map(obtenerPathStorage).filter(Boolean);
 
   if(paths.length){
-
-   const {error:eStorage}=await supabaseClient
-    .storage
-    .from(BUCKET)
-    .remove([...new Set(paths)]);
-
-   if(eStorage)
-    console.warn("Storage:",eStorage);
+   const {error:eStorage}=await supabaseClient.storage.from(BUCKET).remove([...new Set(paths)]);
+   if(eStorage)console.warn("Storage:",eStorage);
   }
 
   await cargarLocales();
-
   mensaje("Local eliminado.");
-
  }catch(e){err(e)}
 }
 
 function cerrarEditor(){
-
  productosEdit.forEach(p=>{
-
   if(p.preview?.startsWith("blob:")){
-
-   try{
-    URL.revokeObjectURL(p.preview);
-   }catch(_){}
+   try{URL.revokeObjectURL(p.preview)}catch(_){}
   }
-
  });
-
  editorLocal.classList.add("hidden");
  productosEdit=[];
 }
 
-/* =========================
-   PREVISUALIZACIÓN
-========================= */
-
+/* PREVISUALIZACIÓN */
 function previewArchivo(input,targetId){
-
  const file=input.files[0];
  const target=document.getElementById(targetId);
 
  if(!file){
-
   target.src="";
   target.classList.add("hidden");
   return;
  }
 
  if(!file.type.startsWith("image/")){
-
   mensaje("Selecciona una imagen válida.","err");
   input.value="";
   return;
  }
 
  if(target.dataset.blobUrl){
-
-  try{
-   URL.revokeObjectURL(target.dataset.blobUrl);
-  }catch(_){}
+  try{URL.revokeObjectURL(target.dataset.blobUrl)}catch(_){}
  }
 
  const url=URL.createObjectURL(file);
-
  target.dataset.blobUrl=url;
  target.src=url;
  target.classList.remove("hidden");
 }
 
-/* =========================
-   UTILIDADES
-========================= */
-
+/* UTILIDADES */
 function escapeHtml(value){
-
- return String(value??"")
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
+ return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
-function escapeAttr(value){
- return escapeHtml(value);
-}
+function escapeAttr(value){return escapeHtml(value)}
 </script>
 
 </body>
