@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,86 +8,96 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-header{background:#111;color:#fff;padding:18px;text-align:center;font-size:24px;font-weight:bold}
-.container{max-width:800px;margin:auto;padding:15px}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
-h2{font-size:19px;margin:0 0 14px}
-.producto{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:10px 0;gap:10px}
-.producto:last-child{border-bottom:0}
-.producto-info{flex:1}
-.producto-nombre{font-weight:bold}
-.producto-precio{color:#555;margin-top:3px}
-.controls{display:flex;align-items:center;gap:7px}
-.controls button{width:32px;height:32px;border:0;border-radius:7px;font-size:18px;cursor:pointer}
-.btnMenos{background:#eee}
-.btnMas{background:#111;color:#fff}
-.btnEliminar{background:#e53935;color:#fff}
-input,select,textarea{width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;font-size:15px;margin-top:6px}
-textarea{resize:vertical}
-label{display:block;font-weight:bold;margin-top:12px}
+body{margin:0;background:#f5f5f5;color:#222;font-family:Arial,sans-serif}
+header{background:#111;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.logo{font-size:20px;font-weight:bold}.logo span{color:#e53935}.back{color:#fff;text-decoration:none}
+main{max-width:900px;margin:auto;padding:15px}
+.card{background:#fff;border-radius:15px;padding:17px;margin-bottom:15px;box-shadow:0 2px 8px #0000000d}
+h1,h2,h3{margin-top:0}h1{font-size:24px}h2{font-size:19px;margin-bottom:13px}
+.local{border:1px solid #eee;border-radius:12px;margin-bottom:13px;overflow:hidden}
+.localHead{background:#111;color:#fff;padding:11px 13px;font-weight:bold}
+.item{display:flex;gap:10px;align-items:center;padding:11px;border-bottom:1px solid #eee}
+.item:last-child{border-bottom:0}.thumb{width:55px;height:55px;border-radius:8px;background:#eee;overflow:hidden;flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover}.itemInfo{flex:1;min-width:0}.itemInfo b{display:block}.itemInfo small{color:#777}
+.controls{display:flex;align-items:center;gap:7px}.controls button{border:0;width:30px;height:30px;border-radius:7px;background:#eee;font-weight:bold;cursor:pointer}
+.controls button:disabled{opacity:.45;cursor:not-allowed}.del{background:#fee!important;color:#d22}
+.money{text-align:right;margin-top:10px}.money div{padding:4px 0}.total{font-size:20px;font-weight:bold;border-top:1px solid #ddd;margin-top:8px;padding-top:10px}
+.localTotals{padding:9px 13px;border-top:1px solid #eee;background:#fafafa;text-align:right}.localTotals div{padding:3px 0}.localTotal{font-weight:bold;font-size:16px}
+label{display:block;font-weight:bold;margin:11px 0 5px}
+input,textarea,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:9px;font-size:15px;background:#fff}
 input:disabled,textarea:disabled,select:disabled{background:#f3f3f3;color:#888;cursor:not-allowed}
-.controls button:disabled{opacity:.45;cursor:not-allowed}
-.btn{border:0;border-radius:8px;padding:12px 15px;cursor:pointer;font-weight:bold;font-size:15px;margin:3px 0}
-.btnRed{background:#e53935;color:#fff}
-.btnDark{background:#111;color:#fff}
-.btnGray{background:#ddd;color:#222}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.whatsapp{width:100%;margin-top:10px;background:#25d366}
-.total{font-size:20px;font-weight:bold;text-align:right;margin-top:15px}
-.clienteEstado{font-size:13px;margin-top:6px;min-height:18px}
-.clienteEstado.ok{color:#16843a}
-.clienteEstado.error{color:#d32f2f}
-.clienteEstado.loading{color:#777}
-.referido{display:none;margin-top:12px;padding:12px;background:#fff8e1;border-radius:8px;border:1px solid #ffe082}
-.referido.show{display:block}
-.referido small{display:block;margin-top:8px;color:#666;line-height:1.4}
-#mapWrap{display:none;margin-top:12px}
-#map{height:350px;border-radius:10px}
-.ubicacion{margin-top:10px;padding:10px;background:#f7f7f7;border-radius:8px}
-.error{color:#d32f2f;font-weight:bold;margin-top:10px}
-.success{color:#16843a;font-weight:bold;margin-top:10px}
-.factura{margin-top:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:600px){
- .row{grid-template-columns:1fr}
- .producto{gap:8px}
-}
+textarea{min-height:75px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{display:flex;align-items:center;gap:9px;font-weight:normal;cursor:pointer}.check input{width:auto}
+.factura,.referido{display:none}.factura.show,.referido.show{display:block}.referido{margin-top:8px}
+.referido small{display:block;color:#777;margin-top:5px;line-height:1.35}
+.clienteEstado{font-size:13px;margin-top:7px;color:#555;min-height:16px}
+.clienteEstado.ok,.locationStatus.ok{color:#16823b}
+.clienteEstado.error,.locationStatus.error{color:#b00000}
+.clienteEstado.loading,.locationStatus.loading{color:#777}
+.locationButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.btn{border:0;border-radius:9px;padding:12px 14px;font-weight:bold;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}
+.btnRed{background:#e53935;color:#fff}.btnDark{background:#111;color:#fff}.btnGray{background:#eee;color:#222}
+.locationBox{border:1px solid #ddd;border-radius:10px;padding:12px;margin-top:12px;background:#fafafa}
+.locationTitle{font-weight:bold;margin-bottom:5px}.address{font-size:14px;color:#444;line-height:1.4}
+.locationStatus{font-size:13px;color:#777;margin-top:7px;line-height:1.4}
+#mapWrap{display:none;margin-top:12px}.map{height:300px;border-radius:10px;overflow:hidden}
+.mapActions{display:flex;gap:8px;margin-top:9px}.summaryLocal{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}
+.summaryDelivery{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ddd;margin-top:7px}
+.empty{text-align:center;padding:30px;color:#777}.alert{display:none;padding:11px;border-radius:9px;background:#fff0f0;color:#b00000;margin-bottom:12px}
+.alert.show{display:block}.whatsapp{width:100%;font-size:16px;margin-top:8px}.note{font-size:12px;color:#777;margin-top:8px}
+@media(max-width:600px){main{padding:10px}.row,.locationButtons{grid-template-columns:1fr}.item{align-items:flex-start}.controls{flex:none}}
 </style>
 </head>
 
 <body>
 
-<header>🛵 Sobre Ruedas</header>
+<header>
+<a href="index.html" class="back">← Volver</a>
+<div class="logo">Sobre <span>Ruedas</span></div>
+</header>
 
-<div class="container">
+<main>
 
-<div class="card">
-<h2>🛒 Mi carrito</h2>
+<div id="alerta" class="alert"></div>
+
+<section class="card">
+<h1>🛒 Mi pedido</h1>
 <div id="carrito"></div>
+</section>
+
+<section class="card">
+
+<h2>Datos del cliente</h2>
+
+<div class="row">
+
+<div>
+<label for="clienteNombre">Nombre</label>
+<input id="clienteNombre" placeholder="Tu nombre">
 </div>
 
-<div class="card">
-<h2>👤 Datos del cliente</h2>
-
-<label for="clienteNombre">Nombre</label>
-<input id="clienteNombre" type="text" placeholder="Tu nombre">
-
+<div>
 <label for="clienteTelefono">Teléfono</label>
-<input id="clienteTelefono" type="tel" placeholder="Tu número de teléfono">
-
+<input id="clienteTelefono" type="tel" placeholder="Tu teléfono">
 <div id="clienteEstado" class="clienteEstado"></div>
+</div>
+
+</div>
 
 <div id="campoReferido" class="referido">
 
-<label for="telefonoReferente">Teléfono de quien te refirió</label>
-<input id="telefonoReferente" type="tel" placeholder="Teléfono de tu referente">
+<label for="telefonoReferente">
+Teléfono de quien te refirió
+</label>
+
+<input id="telefonoReferente"
+       type="tel"
+       placeholder="Teléfono de tu referente">
 
 <div id="referenteEstado" class="clienteEstado"></div>
 
@@ -96,96 +107,136 @@ Por temas de seguridad, para realizar tu primer pedido debes haber sido referido
 
 </div>
 
-<div class="factura">
-
-<label>
+<label class="check">
 <input type="checkbox" id="requiereFactura" data-requiere-cliente>
- ¿Necesitas factura?
+¿Requiere factura?
 </label>
 
-<div id="datosFactura">
+<div id="datosFactura" class="factura">
 
 <div class="row">
 
 <div>
 <label for="tipoDocumento">Tipo de documento</label>
+
 <select id="tipoDocumento" data-requiere-cliente>
-<option value="CEDULA">Cédula</option>
-<option value="RUC">RUC</option>
+<option value="cedula">Cédula</option>
+<option value="ruc">RUC</option>
 </select>
 </div>
 
 <div>
-<label for="numeroDocumento">Número de documento</label>
-<input id="numeroDocumento" type="text" placeholder="Cédula o RUC" data-requiere-cliente>
+<label for="numeroDocumento">Cédula / RUC</label>
+
+<input id="numeroDocumento"
+       placeholder="Número de documento"
+       data-requiere-cliente>
 </div>
 
 </div>
 
-<label for="correoFactura">Correo para factura</label>
-<input id="correoFactura" type="email" placeholder="correo@ejemplo.com" data-requiere-cliente>
+<label for="correoFactura">
+Correo electrónico
+</label>
+
+<input id="correoFactura"
+       type="email"
+       placeholder="correo@ejemplo.com"
+       data-requiere-cliente>
 
 </div>
-</div>
-</div>
 
-<div class="card">
-<h2>📍 Dirección de entrega</h2>
+</section>
 
-<button class="btn btnRed requiere-cliente" onclick="usarMiUbicacion(this)">
+<section class="card">
+
+<h2>📍 Ubicación de entrega</h2>
+
+<div class="locationButtons">
+
+<button class="btn btnRed requiere-cliente"
+        onclick="usarMiUbicacion(this)">
 📍 Usar mi ubicación
 </button>
 
-<button class="btn btnDark requiere-cliente" onclick="abrirMapa()">
+<button class="btn btnDark requiere-cliente"
+        onclick="abrirMapa()">
 🗺️ Otra dirección
 </button>
 
-<div id="direccionGuardada" class="ubicacion">
-No has seleccionado una dirección.
+</div>
+
+<div id="direccionGuardada" class="locationBox">
+
+<div class="locationTitle">
+Dirección
+</div>
+
+<div class="address">
+Todavía no has seleccionado una ubicación.
+</div>
+
+<div id="locationStatus" class="locationStatus"></div>
+
 </div>
 
 <div id="mapWrap">
 
-<div id="map"></div>
+<div id="map" class="map"></div>
 
-<div style="margin-top:10px">
-<button class="btn btnRed requiere-cliente" onclick="aceptarMapa()">
+<div class="mapActions">
+
+<button class="btn btnRed requiere-cliente"
+        onclick="aceptarMapa()">
 Aceptar y guardar
 </button>
 
-<button class="btn btnGray requiere-cliente" onclick="cerrarMapa()">
+<button class="btn btnGray requiere-cliente"
+        onclick="cerrarMapa()">
 Cancelar
 </button>
+
+</div>
+
+<div class="note">
+Toca el mapa en el lugar exacto donde deseas recibir tu pedido.
 </div>
 
 </div>
 
-<label for="referencia">Referencia</label>
-<textarea id="referencia" rows="2"
-placeholder="Ej.: casa de dos pisos, junto a..."
-data-requiere-cliente></textarea>
+<label for="referencia">
+Referencia
+</label>
 
+<textarea id="referencia"
+          placeholder="Ej.: junto a..., casa de color..., edificio..."
+          data-requiere-cliente></textarea>
+
+<div class="note">
+La ubicación guardada se utilizará para generar el enlace de ubicación del pedido.
 </div>
 
-<div class="card">
+</section>
 
-<h2>💰 Resumen</h2>
+<section class="card">
+
+<h2>Resumen</h2>
 
 <div id="resumen"></div>
 
-<button class="btn btnGray requiere-cliente" onclick="vaciarCarrito()">
+<button class="btn btnGray requiere-cliente"
+        onclick="vaciarCarrito()">
 🗑️ Vaciar carrito
 </button>
 
-<button class="btn whatsapp requiere-cliente" onclick="realizarPedido()">
+<button class="btn btnRed whatsapp requiere-cliente"
+        onclick="realizarPedido()">
 📲 Realizar pedido por WhatsApp
 </button>
 
-<div id="mensaje"></div>
+</section>
 
-</div>
-
-</div>
+</main>
 
 <script>
 
@@ -198,24 +249,23 @@ const CONFIG_DEFAULT={
  ciudad:"Esmeraldas",
  tarifaDelivery:1.50,
  whatsappNegocio:"593985459479",
+ moneda:"USD",
 
  /*
-  IMPORTANTE:
-  Si ADM no proporciona este valor todavía,
-  la validación queda ACTIVADA por seguridad.
- */
- validacion_clientes:true,
+  TRUE  = validación de clientes activa
+  FALSE = validación de clientes desactivada
 
- moneda:"USD"
+  ADM podrá controlar este valor desde Supabase.
+ */
+ validacion_clientes:true
 };
 
 
 /* =========================================================
-   ESTADO
+   VARIABLES
 ========================================================= */
 
 let carrito=[];
-
 let configuracion={...CONFIG_DEFAULT};
 
 let validacionClientes=true;
@@ -246,166 +296,87 @@ let validacionReferenteId=0;
 let ubicacionCargando=false;
 
 let accesoPedido=false;
-
 let referenteValido=false;
-
-
-/* =========================================================
-   UTILIDADES
-========================================================= */
 
 const $=id=>document.getElementById(id);
 
-function normalizarTelefono(v){
- return String(v||"").replace(/\D/g,"");
-}
+const esc=s=>String(s??"").replace(
+ /[&<>"']/g,
+ m=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[m])
+);
 
-function guardarFormulario(){
+const money=n=>
+ `${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
 
- localStorage.setItem(
-  "sr_nombre",
-  $("clienteNombre").value
- );
-
- localStorage.setItem(
-  "sr_telefono",
-  $("clienteTelefono").value
- );
-
- localStorage.setItem(
-  "sr_referente",
-  $("telefonoReferente").value
- );
-
- localStorage.setItem(
-  "sr_referencia",
-  $("referencia").value
- );
-
-}
-
-function cargarFormulario(){
-
- $("clienteNombre").value=
-  localStorage.getItem("sr_nombre")||"";
-
- $("clienteTelefono").value=
-  localStorage.getItem("sr_telefono")||"";
-
- $("telefonoReferente").value=
-  localStorage.getItem("sr_referente")||"";
-
- $("referencia").value=
-  localStorage.getItem("sr_referencia")||"";
-
-}
-
-function mostrarEstadoCliente(texto,tipo=""){
-
- const e=$("clienteEstado");
-
- e.textContent=texto;
- e.className="clienteEstado "+tipo;
-
-}
-
-function mostrarEstadoReferente(texto,tipo=""){
-
- const e=$("referenteEstado");
-
- e.textContent=texto;
- e.className="clienteEstado "+tipo;
-
-}
-
-function mostrarError(texto){
-
- $("mensaje").innerHTML=
-  `<div class="error">${texto}</div>`;
-
-}
-
-function mostrarExito(texto){
-
- $("mensaje").innerHTML=
-  `<div class="success">${texto}</div>`;
-
-}
+const normalizarTelefono=t=>
+ String(t||"").replace(/\D/g,"");
 
 
 /* =========================================================
-   CONFIGURACIÓN DE VALIDACIÓN
+   MENSAJES
 ========================================================= */
 
-function aplicarConfiguracion(){
+function mostrarError(t){
 
- /*
-  Cualquier valor explícitamente false
-  desactiva la validación.
+ const a=$("alerta");
 
-  Si no existe el parámetro, se mantiene true.
- */
+ a.textContent=t;
 
- validacionClientes=
-  configuracion.validacion_clientes!==false;
+ a.classList.add("show");
 
- if(!validacionClientes){
+ window.scrollTo({
+  top:0,
+  behavior:"smooth"
+ });
 
-  /*
-   Si ADM desactiva la validación,
-   el pedido queda inmediatamente habilitado.
-  */
-
-  accesoPedido=true;
-
-  clienteActual=null;
-  referenteValido=false;
-
-  $("campoReferido").classList.remove("show");
-
-  mostrarEstadoCliente(
-   "ℹ️ La validación de clientes está desactivada.",
-   "ok"
-  );
-
- }else{
-
-  /*
-   Si está activada, todavía no damos acceso.
-   Se habilita solamente después de validar
-   cliente o referente.
-  */
-
-  accesoPedido=false;
-
- }
-
- actualizarAcceso();
+ setTimeout(
+  ()=>a.classList.remove("show"),
+  5000
+ );
 
 }
 
+function mostrarEstadoCliente(t,tipo=""){
 
-/*
- Esta función permite que posteriormente
- admin.html pueda cargar la configuración
- desde Supabase y simplemente hacer:
+ const e=$("clienteEstado");
 
- configuracion = datos;
- aplicarConfiguracion();
-*/
+ e.textContent=t;
+ e.className="clienteEstado";
 
-function establecerConfiguracion(datos){
+ if(tipo)
+  e.classList.add(tipo);
 
- if(datos && typeof datos==="object"){
+}
 
-  configuracion={
-   ...CONFIG_DEFAULT,
-   ...datos
-  };
+function mostrarEstadoReferente(t,tipo=""){
 
- }
+ const e=$("referenteEstado");
 
- aplicarConfiguracion();
+ e.textContent=t;
+ e.className="clienteEstado";
+
+ if(tipo)
+  e.classList.add(tipo);
+
+}
+
+function mostrarEstadoUbicacion(t,tipo=""){
+
+ const e=$("locationStatus");
+
+ if(!e)return;
+
+ e.textContent=t;
+ e.className="locationStatus";
+
+ if(tipo)
+  e.classList.add(tipo);
 
 }
 
@@ -417,13 +388,14 @@ function establecerConfiguracion(datos){
 function actualizarAcceso(){
 
  /*
-  Cuando la validación está desactivada,
-  todo lo relacionado al pedido está habilitado.
+  Si ADM desactiva la validación,
+  el acceso siempre está permitido.
  */
 
  const habilitado=
   !validacionClientes||
   accesoPedido===true;
+
 
  document
   .querySelectorAll(
@@ -435,52 +407,52 @@ function actualizarAcceso(){
 
 
  /*
-  Nombre y teléfono siempre editables.
+  Nombre y teléfono siempre disponibles.
  */
 
- $("clienteTelefono").disabled=false;
  $("clienteNombre").disabled=false;
+ $("clienteTelefono").disabled=false;
 
 
  /*
-  El referente solamente se bloquea cuando
-  ya existe un cliente registrado.
+  El referente nunca se bloquea mientras
+  el usuario necesite introducirlo.
  */
 
- $("telefonoReferente").disabled=!!clienteActual;
-
-
- /*
-  Si la validación está desactivada,
-  el referente no es necesario.
- */
-
- if(!validacionClientes){
+ if(clienteActual){
 
   $("telefonoReferente").disabled=true;
 
+ }else{
+
+  $("telefonoReferente").disabled=false;
+
  }
 
 
  /*
-  Nunca escondemos campoReferido aquí.
-  Esto evita el parpadeo/desaparición
-  cuando el usuario hace clic.
+  Cuando el pedido está bloqueado,
+  ocultamos solamente el mapa.
+  NUNCA ocultamos campoReferido aquí.
  */
 
- if(!habilitado){
-
+ if(!habilitado)
   $("mapWrap").style.display="none";
-
- }
 
 }
 
+
 function bloquearPedido(){
+
+ /*
+  Si la validación está desactivada,
+  nunca bloqueamos.
+ */
 
  if(!validacionClientes){
 
   accesoPedido=true;
+
   actualizarAcceso();
 
   return;
@@ -492,6 +464,7 @@ function bloquearPedido(){
 
 }
 
+
 function habilitarPedido(){
 
  accesoPedido=true;
@@ -502,17 +475,119 @@ function habilitarPedido(){
 
 
 /* =========================================================
-   CARRITO
+   CONFIGURACIÓN
 ========================================================= */
 
-function guardarCarrito(){
+async function cargarConfiguracion(){
 
- localStorage.setItem(
-  "sr_carrito",
-  JSON.stringify(carrito)
- );
+ try{
+
+  const r=
+   await supabaseClient
+    .from("configuracion_negocio")
+    .select("*")
+    .order("id",{ascending:true})
+    .limit(1)
+    .maybeSingle();
+
+
+  if(!r.error&&r.data){
+
+   configuracion={
+
+    ...CONFIG_DEFAULT,
+
+    nombreNegocio:
+     r.data.nombre_negocio||
+     CONFIG_DEFAULT.nombreNegocio,
+
+    ciudad:
+     r.data.ciudad||
+     CONFIG_DEFAULT.ciudad,
+
+    tarifaDelivery:
+     Number(
+      r.data.tarifa_delivery??
+      CONFIG_DEFAULT.tarifaDelivery
+     ),
+
+    whatsappNegocio:
+     r.data.whatsapp_negocio||
+     CONFIG_DEFAULT.whatsappNegocio,
+
+    moneda:
+     r.data.moneda||
+     CONFIG_DEFAULT.moneda,
+
+    /*
+     Si ADM ya tiene esta columna,
+     la toma automáticamente.
+
+     Si todavía no existe,
+     queda TRUE por seguridad.
+    */
+    validacion_clientes:
+     r.data.validacion_clientes??
+     CONFIG_DEFAULT.validacion_clientes
+
+   };
+
+  }
+
+ }catch(e){
+
+  console.warn(
+   "No se pudo cargar configuración:",
+   e
+  );
+
+ }
+
+
+ /*
+  Aplicamos la configuración.
+ */
+
+ validacionClientes=
+  configuracion.validacion_clientes!==false;
+
+
+ /*
+  VALIDACIÓN DESACTIVADA
+ */
+
+ if(!validacionClientes){
+
+  accesoPedido=true;
+
+  clienteActual=null;
+  referenteValido=false;
+
+  $("campoReferido")
+   .classList.remove("show");
+
+  mostrarEstadoCliente(
+   "ℹ️ Validación de clientes desactivada.",
+   "ok"
+  );
+
+ }else{
+
+  accesoPedido=false;
+
+ }
+
+
+ actualizarAcceso();
+
+ render();
 
 }
+
+
+/* =========================================================
+   CARRITO
+========================================================= */
 
 function cargarCarrito(){
 
@@ -520,11 +595,8 @@ function cargarCarrito(){
 
   carrito=
    JSON.parse(
-    localStorage.getItem("sr_carrito")||"[]"
+    sessionStorage.getItem("carrito")||"[]"
    );
-
-  if(!Array.isArray(carrito))
-   carrito=[];
 
  }catch{
 
@@ -532,144 +604,450 @@ function cargarCarrito(){
 
  }
 
+ if(!Array.isArray(carrito))
+  carrito=[];
+
 }
+
+
+function guardarCarrito(){
+
+ sessionStorage.setItem(
+  "carrito",
+  JSON.stringify(carrito)
+ );
+
+}
+
+
+function guardarFormulario(){
+
+ const data={
+
+  nombre:
+   $("clienteNombre").value,
+
+  telefono:
+   $("clienteTelefono").value,
+
+  telefonoReferente:
+   $("telefonoReferente").value,
+
+  referencia:
+   $("referencia").value,
+
+  requiere:
+   $("requiereFactura").checked,
+
+  tipo:
+   $("tipoDocumento").value,
+
+  documento:
+   $("numeroDocumento").value,
+
+  correo:
+   $("correoFactura").value,
+
+  ubicacion
+
+ };
+
+ sessionStorage.setItem(
+  "datosPedido",
+  JSON.stringify(data)
+ );
+
+}
+
+
+function cargarFormulario(){
+
+ try{
+
+  const d=
+   JSON.parse(
+    sessionStorage.getItem(
+     "datosPedido"
+    )||"null"
+   );
+
+
+  if(d){
+
+   $("clienteNombre").value=
+    d.nombre||"";
+
+   $("clienteTelefono").value=
+    d.telefono||"";
+
+   $("telefonoReferente").value=
+    d.telefonoReferente||"";
+
+   $("referencia").value=
+    d.referencia||"";
+
+   $("requiereFactura").checked=
+    !!d.requiere;
+
+   $("tipoDocumento").value=
+    d.tipo||"cedula";
+
+   $("numeroDocumento").value=
+    d.documento||"";
+
+   $("correoFactura").value=
+    d.correo||"";
+
+   if(d.ubicacion)
+    ubicacion=d.ubicacion;
+
+  }
+
+ }catch{}
+
+
+ $("datosFactura")
+  .classList.toggle(
+   "show",
+   $("requiereFactura").checked
+  );
+
+
+ renderUbicacion();
+
+
+ /*
+  Importante:
+  NO validamos aquí mediante blur.
+  Solo iniciamos la validación si
+  realmente existe un teléfono.
+ */
+
+ const t=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
+
+
+ if(t.length>=7)
+  programarValidacionCliente();
+ else
+  bloquearPedido();
+
+}
+
+
+function agrupar(){
+
+ const grupos={};
+
+ carrito.forEach(x=>{
+
+  if(!grupos[x.restaurante_id])
+
+   grupos[x.restaurante_id]={
+    id:x.restaurante_id,
+    nombre:x.restaurante_nombre,
+    items:[]
+   };
+
+  grupos[x.restaurante_id]
+   .items.push(x);
+
+ });
+
+ return Object.values(grupos);
+
+}
+
+
+function subtotalGrupo(g){
+
+ return g.items.reduce(
+  (a,x)=>
+   a+
+   (Number(x.precio)||0)*
+   (Number(x.cantidad)||0),
+  0
+ );
+
+}
+
 
 function render(){
 
- const c=$("carrito");
+ cargarCarrito();
+
+ const cont=$("carrito");
+
 
  if(!carrito.length){
 
-  c.innerHTML="<p>Tu carrito está vacío.</p>";
+  cont.innerHTML=
+   '<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar restaurantes y productos</a></div>';
 
   $("resumen").innerHTML="";
 
   actualizarAcceso();
 
   return;
+
  }
 
- let subtotal=0;
 
- c.innerHTML=
-  carrito.map((p,i)=>{
+ const grupos=agrupar();
 
-   const total=
-    Number(p.precio)*
-    Number(p.cantidad);
+ const deliveryUnitario=
+  Number(
+   configuracion.tarifaDelivery||0
+  );
 
-   subtotal+=total;
 
-   return `
-   <div class="producto">
+ cont.innerHTML=
 
-    <div class="producto-info">
+ grupos.map(g=>{
 
-     <div class="producto-nombre">
-      ${p.nombre}
+  const subtotal=
+   subtotalGrupo(g);
+
+  const totalLocal=
+   subtotal+
+   deliveryUnitario;
+
+
+  return `
+  <div class="local">
+
+   <div class="localHead">
+    ${esc(g.nombre)}
+   </div>
+
+   ${g.items.map(x=>`
+
+    <div class="item">
+
+     <div class="thumb">
+      ${
+       x.imagen_url
+       ?
+       `<img src="${esc(x.imagen_url)}" alt="" loading="lazy">`
+       :
+       ""
+      }
      </div>
 
-     <div class="producto-precio">
-      $${Number(p.precio).toFixed(2)}
-      × ${p.cantidad}
+     <div class="itemInfo">
+
+      <b>
+       ${esc(x.producto_nombre)}
+      </b>
+
+      <small>
+       ${money(x.precio)} c/u
+      </small>
+
+     </div>
+
+     <div class="controls">
+
+      <button
+       onclick="cambiarCantidad(
+        ${x.producto_id},
+        ${x.restaurante_id},
+        -1
+       )">
+       −
+      </button>
+
+      <b>${x.cantidad}</b>
+
+      <button
+       onclick="cambiarCantidad(
+        ${x.producto_id},
+        ${x.restaurante_id},
+        1
+       )">
+       +
+      </button>
+
+      <button
+       class="del"
+       onclick="eliminar(
+        ${x.producto_id},
+        ${x.restaurante_id}
+       )">
+       ×
+      </button>
+
      </div>
 
     </div>
 
-    <div class="controls">
+   `).join("")}
 
-     <button
-      class="btnMenos"
-      onclick="cambiarCantidad(${i},-1)">
-      −
-     </button>
+   <div class="localTotals">
 
-     <strong>${p.cantidad}</strong>
+    <div>
+     Subtotal productos:
+     <b>${money(subtotal)}</b>
+    </div>
 
-     <button
-      class="btnMas"
-      onclick="cambiarCantidad(${i},1)">
-      +
-     </button>
+    <div>
+     Delivery:
+     <b>${money(deliveryUnitario)}</b>
+    </div>
 
-     <button
-      class="btnEliminar"
-      onclick="eliminarProducto(${i})">
-      ×
-     </button>
-
+    <div class="localTotal">
+     Total restaurante:
+     ${money(totalLocal)}
     </div>
 
    </div>
-   `;
 
-  }).join("");
+  </div>
+  `;
+
+ }).join("");
 
 
- const delivery=
-  Number(configuracion.tarifaDelivery||0);
+ const subtotalTotal=
+  carrito.reduce(
+   (a,x)=>
+    a+
+    (Number(x.precio)||0)*
+    (Number(x.cantidad)||0),
+   0
+  );
+
+
+ const deliveryTotal=
+  grupos.length*
+  deliveryUnitario;
+
 
  const total=
-  subtotal+delivery;
+  subtotalTotal+
+  deliveryTotal;
 
 
  $("resumen").innerHTML=`
 
-  <div>
-   Subtotal:
-   <strong>$${subtotal.toFixed(2)}</strong>
-  </div>
+ <div class="money">
 
-  <div>
-   Delivery:
-   <strong>$${delivery.toFixed(2)}</strong>
+  ${grupos.map(g=>`
+
+   <div class="summaryLocal">
+
+    <span>
+     ${esc(g.nombre)}
+    </span>
+
+    <b>
+     ${money(subtotalGrupo(g))}
+    </b>
+
+   </div>
+
+  `).join("")}
+
+  <div class="summaryDelivery">
+
+   <span>
+    Delivery
+    (${grupos.length}
+    ${grupos.length===1
+     ?"restaurante"
+     :"restaurantes"})
+   </span>
+
+   <b>
+    ${money(deliveryTotal)}
+   </b>
+
   </div>
 
   <div class="total">
-   Total: $${total.toFixed(2)}
+   Total: ${money(total)}
   </div>
 
+ </div>
+
  `;
+
 
  actualizarAcceso();
 
 }
 
-function cambiarCantidad(i,cambio){
 
- if(!carrito[i])return;
+function cambiarCantidad(
+ productoId,
+ restauranteId,
+ cambio
+){
+
+ const i=
+  carrito.findIndex(
+   x=>
+    x.producto_id===productoId&&
+    x.restaurante_id===restauranteId
+  );
+
+
+ if(i<0)return;
+
 
  carrito[i].cantidad+=cambio;
+
 
  if(carrito[i].cantidad<=0)
   carrito.splice(i,1);
 
- guardarCarrito();
-
- render();
-
-}
-
-function eliminarProducto(i){
-
- carrito.splice(i,1);
 
  guardarCarrito();
 
  render();
 
+ guardarFormulario();
+
 }
+
+
+function eliminar(
+ productoId,
+ restauranteId
+){
+
+ carrito=
+  carrito.filter(
+   x=>
+    !(
+     x.producto_id===productoId&&
+     x.restaurante_id===restauranteId
+    )
+  );
+
+
+ guardarCarrito();
+
+ render();
+
+ guardarFormulario();
+
+}
+
 
 function vaciarCarrito(){
 
- if(validacionClientes&&!accesoPedido){
-
-  mostrarError(
-   "Primero debes ingresar un teléfono registrado o un referente válido."
-  );
-
+ if(!carrito.length)
   return;
- }
+
+ if(
+  !confirm(
+   "¿Vaciar todo el carrito?"
+  )
+ )
+  return;
 
  carrito=[];
 
@@ -677,56 +1055,578 @@ function vaciarCarrito(){
 
  render();
 
+ guardarFormulario();
+
 }
 
 
 /* =========================================================
-   CLIENTES
+   UBICACIÓN
 ========================================================= */
 
-async function consultarCliente(telefono){
+function renderUbicacion(){
 
- const telefonoNormalizado=
-  normalizarTelefono(telefono);
+ const box=
+  $("direccionGuardada");
 
- if(!telefonoNormalizado)
-  return null;
 
- const r=
-  await supabaseClient.rpc(
-   "buscar_cliente_por_telefono",
-   {
-    p_telefono:telefonoNormalizado
-   }
+ if(
+  ubicacion.lat!==null&&
+  ubicacion.lng!==null
+ ){
+
+  box.innerHTML=`
+
+   <div class="locationTitle">
+    Dirección
+   </div>
+
+   <div class="address">
+    ${esc(
+     ubicacion.direccion||
+     "Ubicación seleccionada"
+    )}
+   </div>
+
+   <div id="locationStatus"
+        class="locationStatus">
+
+    ${
+     ubicacionCargando
+     ?"🔄 Buscando dirección..."
+     :"✅ Ubicación seleccionada"
+    }
+
+   </div>
+
+  `;
+
+ }else{
+
+  box.innerHTML=`
+
+   <div class="locationTitle">
+    Dirección
+   </div>
+
+   <div class="address">
+    Todavía no has seleccionado una ubicación.
+   </div>
+
+   <div id="locationStatus"
+        class="locationStatus">
+
+    ${
+     ubicacionCargando
+     ?"📍 Obteniendo ubicación..."
+     :""
+    }
+
+   </div>
+
+  `;
+
+ }
+
+}
+
+
+async function obtenerDireccion(
+ lat,
+ lng
+){
+
+ try{
+
+  const r=
+   await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
+    {
+     headers:{
+      Accept:"application/json"
+     }
+    }
+   );
+
+
+  if(!r.ok)
+   throw Error();
+
+
+  const d=
+   await r.json();
+
+
+  return(
+   d.display_name||
+   `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
   );
 
- if(r.error)
-  throw r.error;
 
- if(Array.isArray(r.data))
-  return r.data[0]||null;
+ }catch{
 
- return r.data||null;
+  return(
+   `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
+  );
+
+ }
+
+}
+
+
+async function usarMiUbicacion(
+ boton
+){
+
+ if(
+  validacionClientes&&
+  !accesoPedido
+ )
+  return;
+
+
+ if(!navigator.geolocation){
+
+  mostrarError(
+   "Tu navegador no permite obtener la ubicación."
+  );
+
+  return;
+
+ }
+
+
+ if(boton)
+  boton.disabled=true;
+
+
+ ubicacionCargando=true;
+
+ mostrarEstadoUbicacion(
+  "📍 Obteniendo tu ubicación...",
+  "loading"
+ );
+
+
+ try{
+
+  const pos=
+   await new Promise(
+    (resolve,reject)=>
+     navigator.geolocation
+      .getCurrentPosition(
+       resolve,
+       reject,
+       {
+        enableHighAccuracy:true,
+        timeout:15000,
+        maximumAge:0
+       }
+      )
+   );
+
+
+  const lat=
+   pos.coords.latitude;
+
+  const lng=
+   pos.coords.longitude;
+
+
+  ubicacion={
+   lat,
+   lng,
+   direccion:""
+  };
+
+
+  renderUbicacion();
+
+
+  const direccion=
+   await obtenerDireccion(
+    lat,
+    lng
+   );
+
+
+  ubicacion={
+   lat,
+   lng,
+   direccion
+  };
+
+
+  ubicacionCargando=false;
+
+  guardarFormulario();
+
+  renderUbicacion();
+
+  mostrarEstadoUbicacion(
+   "✅ Ubicación seleccionada correctamente.",
+   "ok"
+  );
+
+
+ }catch(e){
+
+  console.error(e);
+
+  ubicacionCargando=false;
+
+  renderUbicacion();
+
+  mostrarEstadoUbicacion(
+   "❌ No se pudo obtener la ubicación.",
+   "error"
+  );
+
+  mostrarError(
+   "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
+  );
+
+
+ }finally{
+
+  if(boton)
+   boton.disabled=
+    validacionClientes&&!accesoPedido;
+
+ }
+
+}
+
+
+function moverMarcador(
+ lat,
+ lng
+){
+
+ if(!map)return;
+
+
+ if(!marker)
+
+  marker=
+   L.marker([lat,lng])
+    .addTo(map);
+
+ else
+
+  marker.setLatLng(
+   [lat,lng]
+  );
+
+
+ ubicacionTemporal={
+  lat,
+  lng,
+  direccion:""
+ };
+
+
+ renderDireccionTemporal();
+
+
+ obtenerDireccion(
+  lat,
+  lng
+ ).then(direccion=>{
+
+  if(
+   ubicacionTemporal.lat!==lat||
+   ubicacionTemporal.lng!==lng
+  )
+   return;
+
+
+  ubicacionTemporal.direccion=
+   direccion;
+
+
+  renderDireccionTemporal();
+
+ });
+
+}
+
+
+function renderDireccionTemporal(){
+
+ const box=
+  $("direccionGuardada");
+
+ const u=
+  ubicacionTemporal;
+
+
+ if(
+  u.lat===null||
+  u.lng===null
+ )
+  return;
+
+
+ box.innerHTML=`
+
+  <div class="locationTitle">
+   Dirección
+  </div>
+
+  <div class="address">
+   ${
+    esc(
+     u.direccion||
+     "🔄 Buscando dirección..."
+    )
+   }
+  </div>
+
+  <div id="locationStatus"
+       class="locationStatus ${
+        u.direccion
+        ?"ok"
+        :"loading"
+       }">
+
+   ${
+    u.direccion
+    ?
+    "✅ Dirección encontrada. Puedes aceptar esta ubicación."
+    :
+    "🔄 Buscando dirección..."
+   }
+
+  </div>
+
+ `;
+
+}
+
+
+function abrirMapa(){
+
+ if(
+  validacionClientes&&
+  !accesoPedido
+ )
+  return;
+
+
+ $("mapWrap").style.display=
+  "block";
+
+
+ mostrarEstadoUbicacion(
+  "🗺️ Selecciona en el mapa el punto exacto de entrega.",
+  "loading"
+ );
+
+
+ setTimeout(()=>{
+
+  if(!map){
+
+   map=
+    L.map("map")
+     .setView(
+      ubicacion.lat!==null
+      ?
+      [ubicacion.lat,ubicacion.lng]
+      :
+      [-0.9538,-79.6528],
+      ubicacion.lat!==null
+      ?16
+      :13
+     );
+
+
+   L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+     maxZoom:19,
+     attribution:"© OpenStreetMap"
+    }
+   ).addTo(map);
+
+
+   map.on(
+    "click",
+    e=>
+     moverMarcador(
+      e.latlng.lat,
+      e.latlng.lng
+     )
+   );
+
+  }else{
+
+   map.invalidateSize();
+
+   if(
+    ubicacion.lat!==null
+   )
+
+    map.setView(
+     [ubicacion.lat,ubicacion.lng],
+     16
+    );
+
+  }
+
+
+  if(
+   ubicacion.lat!==null
+  )
+
+   moverMarcador(
+    ubicacion.lat,
+    ubicacion.lng
+   );
+
+  else{
+
+   const c=
+    map.getCenter();
+
+   moverMarcador(
+    c.lat,
+    c.lng
+   );
+
+  }
+
+ },100);
+
+}
+
+
+function aceptarMapa(){
+
+ if(
+  validacionClientes&&
+  !accesoPedido
+ )
+  return;
+
+
+ if(
+  ubicacionTemporal.lat===null||
+  ubicacionTemporal.lng===null
+ ){
+
+  mostrarError(
+   "Selecciona una ubicación en el mapa."
+  );
+
+  return;
+
+ }
+
+
+ if(!ubicacionTemporal.direccion){
+
+  mostrarError(
+   "Espera un momento mientras se obtiene la dirección."
+  );
+
+  return;
+
+ }
+
+
+ ubicacion={
+  ...ubicacionTemporal
+ };
+
+
+ ubicacionCargando=false;
+
+ guardarFormulario();
+
+ renderUbicacion();
+
+ mostrarEstadoUbicacion(
+  "✅ Ubicación guardada correctamente.",
+  "ok"
+ );
+
+ cerrarMapa();
+
+}
+
+
+function cerrarMapa(){
+
+ $("mapWrap").style.display=
+  "none";
 
 }
 
 
 /* =========================================================
-   VALIDACIÓN DEL CLIENTE PRINCIPAL
+   FACTURA
+========================================================= */
+
+$("requiereFactura")
+ .addEventListener(
+  "change",
+  ()=>{
+
+   $("datosFactura")
+    .classList.toggle(
+     "show",
+     $("requiereFactura").checked
+    );
+
+   guardarFormulario();
+
+  }
+ );
+
+
+[
+ "clienteNombre",
+ "referencia",
+ "tipoDocumento",
+ "numeroDocumento",
+ "correoFactura"
+].forEach(id=>{
+
+ $(id).addEventListener(
+  "input",
+  guardarFormulario
+ );
+
+ $(id).addEventListener(
+  "change",
+  guardarFormulario
+ );
+
+});
+
+
+/* =========================================================
+   VALIDACIÓN CLIENTE
 ========================================================= */
 
 function programarValidacionCliente(){
 
  clearTimeout(timerCliente);
 
+
  /*
   Si ADM desactivó la validación,
-  no hacemos ninguna consulta.
+  no consultamos clientes.
  */
 
  if(!validacionClientes){
 
   accesoPedido=true;
+
+  clienteActual=null;
+  referenteValido=false;
 
   $("campoReferido")
    .classList.remove("show");
@@ -739,6 +1639,7 @@ function programarValidacionCliente(){
   actualizarAcceso();
 
   return;
+
  }
 
 
@@ -755,21 +1656,23 @@ function programarValidacionCliente(){
 
 
  /*
-  Solamente el teléfono principal
-  puede ocultar el campo referente.
+  NO hacemos aquí:
+  campoReferido.classList.remove("show")
+
+  Esto es importante para evitar el
+  parpadeo cuando el usuario entra
+  al campo referente.
  */
 
- $("campoReferido")
-  .classList.remove("show");
-
- mostrarEstadoReferente("");
-
-
  if(!telefono){
+
+  $("campoReferido")
+   .classList.remove("show");
 
   mostrarEstadoCliente("");
 
   return;
+
  }
 
 
@@ -781,6 +1684,7 @@ function programarValidacionCliente(){
   );
 
   return;
+
  }
 
 
@@ -790,7 +1694,9 @@ function programarValidacionCliente(){
  );
 
 
- const id=++validacionClienteId;
+ const id=
+  ++validacionClienteId;
+
 
  timerCliente=
   setTimeout(
@@ -823,10 +1729,14 @@ async function validarClienteEnTiempoReal(id){
  try{
 
   const cliente=
-   await consultarCliente(telefono);
+   await consultarCliente(
+    telefono
+   );
 
 
-  if(id!==validacionClienteId)
+  if(
+   id!==validacionClienteId
+  )
    return;
 
 
@@ -836,7 +1746,9 @@ async function validarClienteEnTiempoReal(id){
    );
 
 
-  if(telefono!==telefonoActual)
+  if(
+   telefono!==telefonoActual
+  )
    return;
 
 
@@ -858,11 +1770,11 @@ async function validarClienteEnTiempoReal(id){
      .classList.remove("show");
 
     return;
+
    }
 
 
    clienteActual=cliente;
-
    referenteValido=false;
 
 
@@ -884,8 +1796,13 @@ async function validarClienteEnTiempoReal(id){
 
 
   /*
-   No está registrado:
-   mostramos referente.
+   IMPORTANTE:
+   Si no existe el cliente,
+   aquí mostramos el referente.
+
+   Después de esto ninguna función
+   de validación del referente
+   volverá a ocultarlo.
   */
 
   clienteActual=null;
@@ -918,7 +1835,9 @@ async function validarClienteEnTiempoReal(id){
   bloquearPedido();
 
 
-  if(id===validacionClienteId){
+  if(
+   id===validacionClienteId
+  ){
 
    $("campoReferido")
     .classList.add("show");
@@ -943,6 +1862,12 @@ function programarValidacionReferente(){
 
  clearTimeout(timerReferente);
 
+
+ /*
+  Si validación está desactivada,
+  no hacemos nada.
+ */
+
  if(!validacionClientes)
   return;
 
@@ -957,8 +1882,8 @@ function programarValidacionReferente(){
 
 
  /*
-  MUY IMPORTANTE:
-  aquí jamás ocultamos campoReferido.
+  IMPORTANTE:
+  JAMÁS ocultamos campoReferido aquí.
  */
 
  if(!telefono){
@@ -970,6 +1895,7 @@ function programarValidacionReferente(){
   actualizarAcceso();
 
   return;
+
  }
 
 
@@ -985,6 +1911,7 @@ function programarValidacionReferente(){
   actualizarAcceso();
 
   return;
+
  }
 
 
@@ -999,7 +1926,8 @@ function programarValidacionReferente(){
  );
 
 
- const id=++validacionReferenteId;
+ const id=
+  ++validacionReferenteId;
 
 
  timerReferente=
@@ -1036,16 +1964,20 @@ async function validarReferenteEnTiempoReal(id){
   return;
 
 
- if(telefono===telefonoCliente){
+ if(
+  telefono===telefonoCliente
+ ){
 
   referenteValido=false;
 
   bloquearPedido();
 
+
   mostrarEstadoReferente(
    "❌ No puedes referirte a ti mismo.",
    "error"
   );
+
 
   return;
 
@@ -1055,10 +1987,14 @@ async function validarReferenteEnTiempoReal(id){
  try{
 
   const referente=
-   await consultarCliente(telefono);
+   await consultarCliente(
+    telefono
+   );
 
 
-  if(id!==validacionReferenteId)
+  if(
+   id!==validacionReferenteId
+  )
    return;
 
 
@@ -1068,7 +2004,9 @@ async function validarReferenteEnTiempoReal(id){
    );
 
 
-  if(telefono!==telefonoActual)
+  if(
+   telefono!==telefonoActual
+  )
    return;
 
 
@@ -1078,10 +2016,12 @@ async function validarReferenteEnTiempoReal(id){
 
    bloquearPedido();
 
+
    mostrarEstadoReferente(
     "❌ Este teléfono no corresponde a un cliente registrado.",
     "error"
    );
+
 
    return;
 
@@ -1094,10 +2034,12 @@ async function validarReferenteEnTiempoReal(id){
 
    bloquearPedido();
 
+
    mostrarEstadoReferente(
     "❌ Este cliente está inactivo.",
     "error"
    );
+
 
    return;
 
@@ -1110,10 +2052,12 @@ async function validarReferenteEnTiempoReal(id){
 
    bloquearPedido();
 
+
    mostrarEstadoReferente(
     "❌ Este cliente no tiene un código de referido válido.",
     "error"
    );
+
 
    return;
 
@@ -1145,292 +2089,399 @@ async function validarReferenteEnTiempoReal(id){
   bloquearPedido();
 
 
-  if(id===validacionReferenteId){
+  if(
+   id===validacionReferenteId
+  )
 
    mostrarEstadoReferente(
     "No se pudo verificar el referente.",
     "error"
    );
 
-  }
-
  }
 
 }
 
 
 /* =========================================================
-   UBICACIÓN
+   EVENTOS DE TELÉFONOS
 ========================================================= */
 
-async function usarMiUbicacion(btn){
+/*
+ IMPORTANTE:
 
- if(
-  validacionClientes&&
-  !accesoPedido
- ){
+ NO usamos blur en clienteTelefono.
 
-  mostrarError(
-   "Primero debes ingresar un teléfono registrado o un referente válido."
+ Al hacer clic en telefonoReferente,
+ clienteTelefono pierde el foco.
+
+ Si tuviéramos blur aquí,
+ volveríamos a ejecutar la validación,
+ ocultando momentáneamente el referente.
+
+ Esta es la corrección principal del parpadeo.
+ */
+
+$("clienteTelefono")
+ .addEventListener(
+  "input",
+  ()=>{
+   guardarFormulario();
+   programarValidacionCliente();
+  }
+ );
+
+
+/*
+ El referente tampoco necesita blur.
+ */
+
+$("telefonoReferente")
+ .addEventListener(
+  "input",
+  ()=>{
+   guardarFormulario();
+   programarValidacionReferente();
+  }
+ );
+
+
+/* =========================================================
+   CONSULTAR CLIENTE
+========================================================= */
+
+async function consultarCliente(
+ telefono
+){
+
+ const telefonoNormalizado=
+  normalizarTelefono(
+   telefono
   );
 
-  return;
+
+ if(!telefonoNormalizado)
+  return null;
+
+
+ const r=
+  await supabaseClient.rpc(
+   "buscar_cliente_por_telefono",
+   {
+    p_telefono:
+     telefonoNormalizado
+   }
+  );
+
+
+ if(r.error)
+  throw r.error;
+
+
+ if(Array.isArray(r.data))
+  return r.data[0]||null;
+
+
+ return r.data||null;
+
+}
+
+
+/* =========================================================
+   VALIDACIÓN FINAL DEL CLIENTE
+========================================================= */
+
+async function validarCliente(){
+
+ /*
+  Si ADM desactivó la validación,
+  no buscamos ni creamos cliente.
+ */
+
+ if(!validacionClientes)
+  return true;
+
+
+ const nombre=
+  $("clienteNombre")
+   .value
+   .trim();
+
+
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
+
+
+ if(!telefono){
+
+  mostrarError(
+   "Ingresa tu teléfono."
+  );
+
+  $("clienteTelefono").focus();
+
+  return false;
+
  }
 
 
- ubicacionCargando=true;
+ if(telefono.length<7){
+
+  mostrarError(
+   "Ingresa un número de teléfono válido."
+  );
+
+  $("clienteTelefono").focus();
+
+  return false;
+
+ }
 
 
- if(btn)
-  btn.disabled=true;
+ try{
+
+  const cliente=
+   await consultarCliente(
+    telefono
+   );
 
 
- $("direccionGuardada").textContent=
-  "📍 Obteniendo ubicación...";
+  if(cliente){
 
+   if(cliente.activo===false){
 
- navigator.geolocation.getCurrentPosition(
+    mostrarError(
+     "Este cliente está inactivo y no puede realizar pedidos."
+    );
 
-  async pos=>{
-
-   const lat=
-    pos.coords.latitude;
-
-   const lng=
-    pos.coords.longitude;
-
-
-   try{
-
-    const r=
-     await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-      {
-       headers:{
-        "Accept-Language":"es"
-       }
-      }
-     );
-
-
-    const data=
-     await r.json();
-
-
-    ubicacion={
-     lat,
-     lng,
-     direccion:
-      data.display_name||
-      `${lat}, ${lng}`
-    };
-
-
-    $("direccionGuardada").textContent=
-     "📍 "+ubicacion.direccion;
-
-
-   }catch(e){
-
-    ubicacion={
-     lat,
-     lng,
-     direccion:`${lat}, ${lng}`
-    };
-
-
-    $("direccionGuardada").textContent=
-     "📍 Ubicación obtenida.";
+    return false;
 
    }
 
 
-   ubicacionCargando=false;
+   clienteActual=cliente;
+
+   habilitarPedido();
+
+   mostrarEstadoCliente(
+    "✅ Cliente registrado. Puedes continuar.",
+    "ok"
+   );
 
 
-   if(btn)
-    btn.disabled=false;
+   return true;
 
-
-  },
-
-
-  err=>{
-
-   console.error(err);
-
-
-   ubicacionCargando=false;
-
-
-   if(btn)
-    btn.disabled=false;
-
-
-   $("direccionGuardada").textContent=
-    "No se pudo obtener tu ubicación.";
-
-  },
-
-
-  {
-   enableHighAccuracy:true,
-   timeout:15000,
-   maximumAge:0
   }
 
- );
 
-}
+  /*
+   CLIENTE NUEVO:
+   necesita referente.
+  */
 
-
-function abrirMapa(){
-
- if(
-  validacionClientes&&
-  !accesoPedido
- ){
-
-  mostrarError(
-   "Primero debes ingresar un teléfono registrado o un referente válido."
-  );
-
-  return;
- }
+  const telefonoReferente=
+   normalizarTelefono(
+    $("telefonoReferente").value
+   );
 
 
- $("mapWrap").style.display="block";
+  if(!telefonoReferente){
+
+   $("campoReferido")
+    .classList.add("show");
+
+   mostrarEstadoCliente(
+    "⚠️ Este número no está registrado. Necesitas un referente.",
+    "error"
+   );
+
+   mostrarError(
+    "Este teléfono no está registrado. Debes ingresar el teléfono de quien te refirió."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+
+  }
 
 
- setTimeout(()=>{
+  if(
+   telefonoReferente===telefono
+  ){
 
-  if(!map){
+   mostrarEstadoReferente(
+    "❌ No puedes referirte a ti mismo.",
+    "error"
+   );
 
-   map=
-    L.map("map")
-     .setView(
-      [0.9682,-79.6517],
-      13
-     );
+   mostrarError(
+    "No puedes referirte a ti mismo."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+
+  }
 
 
-   L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  const referente=
+   await consultarCliente(
+    telefonoReferente
+   );
+
+
+  if(!referente){
+
+   mostrarEstadoReferente(
+    "❌ Referente no encontrado.",
+    "error"
+   );
+
+   mostrarError(
+    "El teléfono del referente no corresponde a un cliente registrado."
+   );
+
+   $("telefonoReferente").focus();
+
+   return false;
+
+  }
+
+
+  if(referente.activo===false){
+
+   mostrarEstadoReferente(
+    "❌ El referente está inactivo.",
+    "error"
+   );
+
+   mostrarError(
+    "El cliente que te refirió está inactivo."
+   );
+
+   return false;
+
+  }
+
+
+  if(!referente.codigo_referido){
+
+   mostrarError(
+    "El referente no tiene un código de referido válido."
+   );
+
+   return false;
+
+  }
+
+
+  const codigoNuevo=
+   "SR"+
+   Date.now()
+    .toString(36)
+    .toUpperCase()+
+   Math.floor(
+    100+
+    Math.random()*900
+   );
+
+
+  const cr=
+   await supabaseClient.rpc(
+    "crear_cliente",
     {
-     attribution:"© OpenStreetMap"
-    }
-   ).addTo(map);
 
+     p_nombre:
+      nombre,
 
-   map.on(
-    "click",
-    async e=>{
+     p_telefono:
+      telefono,
 
-     const lat=
-      e.latlng.lat;
+     p_codigo_referido:
+      codigoNuevo,
 
-     const lng=
-      e.latlng.lng;
-
-
-     if(marker)
-      marker.setLatLng([lat,lng]);
-     else
-      marker=
-       L.marker([lat,lng])
-        .addTo(map);
-
-
-     ubicacionTemporal={
-      lat,
-      lng,
-      direccion:`${lat}, ${lng}`
-     };
-
-
-     try{
-
-      const r=
-       await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-        {
-         headers:{
-          "Accept-Language":"es"
-         }
-        }
-       );
-
-
-      const data=
-       await r.json();
-
-
-      ubicacionTemporal.direccion=
-       data.display_name||
-       ubicacionTemporal.direccion;
-
-
-     }catch(e){}
+     p_codigo_referente:
+      referente.codigo_referido
 
     }
    );
 
-  }
+
+  if(cr.error)
+   throw cr.error;
 
 
-  map.invalidateSize();
+  let nuevoCliente=
+   Array.isArray(cr.data)
+   ?
+   cr.data[0]||null
+   :
+   cr.data||null;
 
 
- },100);
-
-}
-
-
-function aceptarMapa(){
-
- if(
-  validacionClientes&&
-  !accesoPedido
- )
-  return;
+  if(!nuevoCliente)
+   nuevoCliente=
+    await consultarCliente(
+     telefono
+    );
 
 
- if(
-  ubicacionTemporal.lat===null||
-  ubicacionTemporal.lng===null
- ){
+  if(!nuevoCliente)
 
-  mostrarError(
-   "Selecciona una ubicación en el mapa."
+   throw Error(
+    "El cliente fue registrado, pero no se pudo recuperar su información."
+   );
+
+
+  clienteActual=
+   nuevoCliente;
+
+  referenteValido=false;
+
+  habilitarPedido();
+
+
+  $("campoReferido")
+   .classList.remove("show");
+
+
+  mostrarEstadoCliente(
+   "✅ Cliente registrado correctamente. Puedes continuar.",
+   "ok"
   );
 
-  return;
+
+  return true;
+
+
+ }catch(e){
+
+  console.error(
+   "Error validando cliente:",
+   e
+  );
+
+
+  mostrarError(
+   "No se pudo validar el cliente: "+
+   (e.message||
+   "Error desconocido")
+  );
+
+
+  return false;
+
  }
-
-
- ubicacion={
-  ...ubicacionTemporal
- };
-
-
- $("direccionGuardada").textContent=
-  "📍 "+ubicacion.direccion;
-
-
- cerrarMapa();
-
-}
-
-
-function cerrarMapa(){
-
- $("mapWrap").style.display="none";
 
 }
 
 
 /* =========================================================
-   VALIDACIÓN FINAL
+   VALIDACIÓN GENERAL
 ========================================================= */
 
 function validar(){
@@ -1442,10 +2493,15 @@ function validar(){
   );
 
   return false;
+
  }
 
 
- if(!$("clienteNombre").value.trim()){
+ if(
+  !$("clienteNombre")
+   .value
+   .trim()
+ ){
 
   mostrarError(
    "Ingresa tu nombre."
@@ -1454,10 +2510,15 @@ function validar(){
   $("clienteNombre").focus();
 
   return false;
+
  }
 
 
- if(!$("clienteTelefono").value.trim()){
+ if(
+  !$("clienteTelefono")
+   .value
+   .trim()
+ ){
 
   mostrarError(
    "Ingresa tu teléfono."
@@ -1466,12 +2527,13 @@ function validar(){
   $("clienteTelefono").focus();
 
   return false;
+
  }
 
 
  /*
-  Solo exigimos acceso si la validación
-  está activa.
+  Solo exigimos validación cuando ADM
+  la tiene activada.
  */
 
  if(
@@ -1484,6 +2546,7 @@ function validar(){
   );
 
   return false;
+
  }
 
 
@@ -1497,6 +2560,7 @@ function validar(){
   );
 
   return false;
+
  }
 
 
@@ -1507,28 +2571,41 @@ function validar(){
   );
 
   return false;
+
  }
 
 
- if($("requiereFactura").checked){
+ if(
+  $("requiereFactura").checked
+ ){
 
-  if(!$("numeroDocumento").value.trim()){
+  if(
+   !$("numeroDocumento")
+    .value
+    .trim()
+  ){
 
    mostrarError(
     "Ingresa tu cédula o RUC."
    );
 
    return false;
+
   }
 
 
-  if(!$("correoFactura").value.trim()){
+  if(
+   !$("correoFactura")
+    .value
+    .trim()
+  ){
 
    mostrarError(
     "Ingresa el correo para la factura."
    );
 
    return false;
+
   }
 
  }
@@ -1540,147 +2617,7 @@ function validar(){
 
 
 /* =========================================================
-   CREACIÓN DE CLIENTE
-========================================================= */
-
-async function validarCliente(){
-
- const telefono=
-  normalizarTelefono(
-   $("clienteTelefono").value
-  );
-
-
- /*
-  Si la validación está desactivada,
-  no necesitamos buscar ni crear cliente
-  para permitir el pedido.
- */
-
- if(!validacionClientes){
-
-  return null;
-
- }
-
-
- let cliente=
-  await consultarCliente(telefono);
-
-
- if(cliente){
-
-  if(cliente.activo===false)
-   throw new Error(
-    "El cliente está inactivo."
-   );
-
-
-  clienteActual=cliente;
-
-  return cliente;
-
- }
-
-
- const telefonoReferente=
-  normalizarTelefono(
-   $("telefonoReferente").value
-  );
-
-
- if(!telefonoReferente)
-  throw new Error(
-   "Debes ingresar un referente."
-  );
-
-
- const referente=
-  await consultarCliente(
-   telefonoReferente
-  );
-
-
- if(
-  !referente||
-  referente.activo===false||
-  !referente.codigo_referido
- ){
-
-  throw new Error(
-   "El referente no es válido."
-  );
-
- }
-
-
- const codigoNuevo=
-  "SR"+
-  Date.now()
-   .toString(36)
-   .toUpperCase()+
-  Math.floor(
-   100+
-   Math.random()*900
-  );
-
-
- const cr=
-  await supabaseClient.rpc(
-   "crear_cliente",
-   {
-    p_nombre:
-     $("clienteNombre")
-      .value
-      .trim(),
-
-    p_telefono:
-     telefono,
-
-    p_codigo_referido:
-     codigoNuevo,
-
-    p_codigo_referente:
-     referente.codigo_referido
-   }
-  );
-
-
- if(cr.error)
-  throw cr.error;
-
-
- cliente=
-  await consultarCliente(
-   telefono
-  );
-
-
- if(!cliente)
-  throw new Error(
-   "No se pudo crear el cliente."
-  );
-
-
- clienteActual=cliente;
-
- referenteValido=false;
-
-
- $("campoReferido")
-  .classList.remove("show");
-
-
- habilitarPedido();
-
-
- return cliente;
-
-}
-
-
-/* =========================================================
-   REALIZAR PEDIDO
+   PEDIDO
 ========================================================= */
 
 async function realizarPedido(){
@@ -1689,132 +2626,108 @@ async function realizarPedido(){
   return;
 
 
- const btn=
-  document.querySelector(".whatsapp");
+ const boton=
+  document.querySelector(
+   ".whatsapp"
+  );
 
 
- if(btn)
-  btn.disabled=true;
+ if(boton)
+  boton.disabled=true;
 
 
  try{
 
   /*
    Si validación está activa:
-   verifica/crea cliente.
+   verifica cliente/referente.
 
    Si está desactivada:
-   no realiza esta validación.
+   no exige cliente.
   */
 
-  const cliente=
+  const clienteValido=
    await validarCliente();
 
 
-  const ahora=
-   new Date();
+  if(!clienteValido){
+
+   if(boton)
+    boton.disabled=false;
+
+   return;
+
+  }
 
 
-  const pad=
-   n=>String(n).padStart(2,"0");
+  const numero=
+   generarNumeroPedido();
 
 
-  const numeroPedido=
-   "SR-"+
-   ahora.getFullYear()+
-   pad(ahora.getMonth()+1)+
-   pad(ahora.getDate())+
-   "-"+
-   pad(ahora.getHours())+
-   pad(ahora.getMinutes())+
-   pad(ahora.getSeconds());
+  const grupos=
+   agrupar();
 
 
-  let subtotal=0;
+  const subtotalTotal=
+   carrito.reduce(
+    (a,x)=>
+     a+
+     (Number(x.precio)||0)*
+     (Number(x.cantidad)||0),
+    0
+   );
 
 
-  carrito.forEach(p=>{
-
-   subtotal+=
-    Number(p.precio)*
-    Number(p.cantidad);
-
-  });
-
-
-  const delivery=
+  const deliveryUnitario=
    Number(
     configuracion.tarifaDelivery||0
    );
 
 
+  const deliveryTotal=
+   grupos.length*
+   deliveryUnitario;
+
+
   const total=
-   subtotal+delivery;
+   subtotalTotal+
+   deliveryTotal;
 
-
-  /*
-   Si existe cliente, usamos su ID.
-   Si la validación está desactivada,
-   cliente_id queda null.
-  */
 
   const pedido={
 
-   numero:
-    numeroPedido,
+   numero,
 
-   cliente_id:
-    cliente?.id||null,
-
-   nombre_cliente:
+   cliente_nombre:
     $("clienteNombre")
      .value
      .trim(),
 
-   telefono_cliente:
+   cliente_telefono:
     normalizarTelefono(
      $("clienteTelefono").value
     ),
 
-   subtotal,
-
-   costo_delivery:
-    delivery,
-
-   total,
-
-   latitud:
-    ubicacion.lat,
-
-   longitud:
-    ubicacion.lng,
-
    direccion:
-    ubicacion.direccion,
+    ubicacion.direccion||
+    `${ubicacion.lat}, ${ubicacion.lng}`,
 
    referencia:
     $("referencia")
      .value
-     .trim(),
+     .trim()||
+    null,
 
-   requiere_factura:
-    $("requiereFactura").checked,
+   total_productos:
+    subtotalTotal,
 
-   tipo_documento:
-    $("tipoDocumento").value,
+   total_delivery:
+    deliveryTotal,
 
-   numero_documento:
-    $("numeroDocumento")
-     .value
-     .trim(),
-
-   correo_factura:
-    $("correoFactura")
-     .value
-     .trim(),
+   total,
 
    estado:
-    "pendiente"
+    "Pedido recibido"
 
   };
 
@@ -1823,7 +2736,7 @@ async function realizarPedido(){
    await supabaseClient
     .from("pedidos")
     .insert(pedido)
-    .select()
+    .select("id")
     .single();
 
 
@@ -1831,72 +2744,107 @@ async function realizarPedido(){
    throw pr.error;
 
 
-  const pedidoCreado=
-   pr.data;
+  const pedidoId=
+   pr.data.id;
 
 
-  /*
-   Mantengo la estructura actual
-   de carreras.
-  */
-
-  const carrera={
-
-   pedido_id:
-    pedidoCreado.id,
-
-   restaurante_id:
-    carrito[0]?.restaurante_id||
-    null,
-
-   numero:
-    numeroPedido,
-
-   estado:
-    "pendiente"
-
-  };
+  const carreras=[];
 
 
-  const cr=
-   await supabaseClient
-    .from("carreras")
-    .insert(carrera)
-    .select()
-    .single();
+  for(
+   let i=0;
+   i<grupos.length;
+   i++
+  ){
+
+   const g=
+    grupos[i];
 
 
-  if(cr.error)
-   throw cr.error;
+   const subtotal=
+    subtotalGrupo(g);
 
 
-  const carreraCreada=
-   cr.data;
+   const carrera={
+
+    pedido_id:
+     pedidoId,
+
+    restaurante_id:
+     g.id,
+
+    numero:
+     `${numero}-${i+1}`,
+
+    subtotal,
+
+    delivery:
+     deliveryUnitario,
+
+    total:
+     subtotal+
+     deliveryUnitario,
+
+    estado:
+     "Pendiente de asignación"
+
+   };
 
 
-  const detalles=
-   carrito.map(p=>({
+   const cr=
+    await supabaseClient
+     .from("carreras")
+     .insert(carrera)
+     .select("id")
+     .single();
+
+
+   if(cr.error)
+    throw cr.error;
+
+
+   carreras.push({
+
+    ...g,
 
     carrera_id:
-     carreraCreada.id,
+     cr.data.id,
 
-    producto_id:
-     p.producto_id||p.id,
+    subtotal
 
-    cantidad:
-     p.cantidad,
+   });
 
-    precio_unitario:
-     Number(p.precio),
-
-    subtotal:
-     Number(p.precio)*
-     Number(p.cantidad)
-
-   }));
+  }
 
 
-  if(detalles.length){
+  for(
+   const g of carreras
+  ){
+
+   const detalles=
+    g.items.map(x=>({
+
+     carrera_id:
+      g.carrera_id,
+
+     producto_id:
+      x.producto_id,
+
+     producto_nombre:
+      x.producto_nombre,
+
+     precio_unitario:
+      +x.precio,
+
+     cantidad:
+      +x.cantidad,
+
+     subtotal:
+      (+x.precio)*
+      (+x.cantidad)
+
+    }));
+
 
    const dr=
     await supabaseClient
@@ -1910,69 +2858,166 @@ async function realizarPedido(){
   }
 
 
-  /*
-   WhatsApp
-  */
-
-  let mensaje=
-`🛵 *NUEVO PEDIDO - ${numeroPedido}*
-
-👤 *Cliente:* ${$("clienteNombre").value.trim()}
-📱 *Teléfono:* ${normalizarTelefono($("clienteTelefono").value)}
-
-📍 *Dirección:*
-${ubicacion.direccion}
-
-📝 *Referencia:*
-${$("referencia").value.trim()||"Sin referencia"}
-
-🛒 *Pedido:*
-`;
+  let msg=
+   `*${encodeURIComponent(
+    configuracion.nombreNegocio
+   )}*%0A`;
 
 
-  carrito.forEach(p=>{
-
-   mensaje+=
-`\n• ${p.nombre} × ${p.cantidad} = $${(
-    Number(p.precio)*
-    Number(p.cantidad)
-   ).toFixed(2)}`;
-
-  });
+  msg+=
+   `🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
 
 
-  mensaje+=
-`\n\nSubtotal: $${subtotal.toFixed(2)}
-Delivery: $${delivery.toFixed(2)}
-*TOTAL: $${total.toFixed(2)}*`;
+  msg+=
+   `👤 *Cliente:* ${encodeURIComponent(
+    $("clienteNombre").value.trim()
+   )}%0A`;
 
 
-  if($("requiereFactura").checked){
+  msg+=
+   `📞 *Teléfono:* ${encodeURIComponent(
+    normalizarTelefono(
+     $("clienteTelefono").value
+    )
+   )}%0A`;
 
-   mensaje+=
-`\n\n🧾 *FACTURA*
-${$("tipoDocumento").value}: ${$("numeroDocumento").value.trim()}
-Correo: ${$("correoFactura").value.trim()}`;
+
+  msg+=
+   `📍 *Dirección:* ${encodeURIComponent(
+    ubicacion.direccion||
+    "Ubicación seleccionada"
+   )}%0A`;
+
+
+  if(
+   $("referencia")
+    .value
+    .trim()
+  ){
+
+   msg+=
+    `📝 *Referencia:* ${encodeURIComponent(
+     $("referencia").value.trim()
+    )}%0A`;
 
   }
 
 
+  msg+=
+   `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
+
+
+  if(
+   $("requiereFactura").checked
+  ){
+
+   msg+=
+    `🧾 *Factura:* Sí%0A`;
+
+   msg+=
+    `Documento: ${encodeURIComponent(
+     $("tipoDocumento")
+      .value
+      .toUpperCase()
+    )} ${encodeURIComponent(
+     $("numeroDocumento")
+      .value
+      .trim()
+    )}%0A`;
+
+   msg+=
+    `Correo: ${encodeURIComponent(
+     $("correoFactura")
+      .value
+      .trim()
+    )}%0A`;
+
+  }else{
+
+   msg+=
+    `🧾 *Factura:* No%0A`;
+
+  }
+
+
+  msg+=
+   `%0A*DETALLE DEL PEDIDO*%0A`;
+
+
+  carreras.forEach(g=>{
+
+   msg+=
+    `%0A🏪 *${encodeURIComponent(
+     g.nombre
+    )}*%0A`;
+
+
+   g.items.forEach(x=>{
+
+    const sub=
+     (+x.precio)*
+     (+x.cantidad);
+
+
+    msg+=
+     `${x.cantidad} x ${encodeURIComponent(
+      x.producto_nombre
+     )} — ${encodeURIComponent(
+      money(sub)
+     )}%0A`;
+
+   });
+
+
+   msg+=
+    `Subtotal productos: ${encodeURIComponent(
+     money(g.subtotal)
+    )}%0A`;
+
+
+   msg+=
+    `Delivery: ${encodeURIComponent(
+     money(deliveryUnitario)
+    )}%0A`;
+
+
+   msg+=
+    `Total restaurante: ${encodeURIComponent(
+     money(
+      g.subtotal+
+      deliveryUnitario
+     )
+    )}%0A`;
+
+  });
+
+
+  msg+=
+   `%0A💰 *TOTAL: ${encodeURIComponent(
+    money(total)
+   )}*`;
+
+
   const wa=
-   configuracion.whatsappNegocio;
-
-
-  const msg=
-   encodeURIComponent(
-    mensaje
+   String(
+    configuracion.whatsappNegocio||""
+   ).replace(
+    /\D/g,
+    ""
    );
 
 
-  localStorage.removeItem(
-   "sr_carrito"
-  );
+  if(!wa)
+   throw Error(
+    "El número de WhatsApp del negocio no está configurado."
+   );
 
 
   carrito=[];
+
+  guardarCarrito();
+
+  render();
 
 
   window.location.href=
@@ -1985,136 +3030,71 @@ Correo: ${$("correoFactura").value.trim()}`;
 
 
   mostrarError(
-   e.message||
-   "No se pudo realizar el pedido."
+   "No se pudo registrar el pedido: "+
+   (
+    e.message||
+    "Error desconocido"
+   )
   );
 
 
-  if(btn)
-   btn.disabled=false;
+  if(boton)
+   boton.disabled=false;
 
  }
 
 }
 
 
-/* =========================================================
-   EVENTOS
-========================================================= */
+function generarNumeroPedido(){
 
-$("clienteNombre")
- .addEventListener(
-  "input",
-  guardarFormulario
- );
+ const f=
+  new Date();
 
 
-$("clienteTelefono")
- .addEventListener(
-  "input",
-  ()=>{
-   guardarFormulario();
-   programarValidacionCliente();
-  }
- );
+ return `SR-${
+  f.getFullYear()
+ }${
+  String(
+   f.getMonth()+1
+  ).padStart(2,"0")
+ }${
+  String(
+   f.getDate()
+  ).padStart(2,"0")
+ }-${
+  String(
+   f.getHours()
+  ).padStart(2,"0")
+ }${
+  String(
+   f.getMinutes()
+  ).padStart(2,"0")
+ }${
+  String(
+   f.getSeconds()
+  ).padStart(2,"0")
+ }`;
 
-
-$("clienteTelefono")
- .addEventListener(
-  "blur",
-  programarValidacionCliente
- );
-
-
-$("telefonoReferente")
- .addEventListener(
-  "input",
-  ()=>{
-   guardarFormulario();
-   programarValidacionReferente();
-  }
- );
-
-
-/*
- No usamos blur para referente.
-*/
-
-
-$("requiereFactura")
- .addEventListener(
-  "change",
-  ()=>{
-   $("datosFactura").style.display=
-    $("requiereFactura").checked
-    ?"block"
-    :"none";
-  }
-);
+}
 
 
 /* =========================================================
    INICIO
 ========================================================= */
 
-function iniciar(){
+bloquearPedido();
 
- cargarCarrito();
+cargarCarrito();
 
- cargarFormulario();
+cargarFormulario();
 
+render();
 
- $("datosFactura")
-  .style.display="none";
-
-
- /*
-  Por defecto:
-  validación ACTIVADA.
-
-  Posteriormente ADM podrá modificar
-  configuracion.validacion_clientes.
- */
-
- establecerConfiguracion(
-  CONFIG_DEFAULT
- );
-
-
- render();
-
-
- const telefono=
-  normalizarTelefono(
-   $("clienteTelefono").value
-  );
-
-
- /*
-  Solo validamos automáticamente
-  si la validación está activa.
- */
-
- if(
-  validacionClientes&&
-  telefono.length>=7
- ){
-
-  setTimeout(
-   programarValidacionCliente,
-   300
-  );
-
- }
-
-
- actualizarAcceso();
-
-}
-
-iniciar();
+cargarConfiguracion();
 
 </script>
 
 </body>
 </html>
+```
