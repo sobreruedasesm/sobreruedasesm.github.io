@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,7 +7,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -16,13 +14,10 @@
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f5;color:#222;font-family:Arial,sans-serif}
 header{background:#111;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
-.logo{font-size:20px;font-weight:bold}.logo span{color:#e53935}
-.back{color:#fff;text-decoration:none}
+.logo{font-size:20px;font-weight:bold}.logo span{color:#e53935}.back{color:#fff;text-decoration:none}
 main{max-width:900px;margin:auto;padding:15px}
 .card{background:#fff;border-radius:15px;padding:17px;margin-bottom:15px;box-shadow:0 2px 8px #0000000d}
-h1,h2,h3{margin-top:0}
-h1{font-size:24px}
-h2{font-size:19px;margin-bottom:13px}
+h1,h2,h3{margin-top:0}h1{font-size:24px}h2{font-size:19px;margin-bottom:13px}
 .local{border:1px solid #eee;border-radius:12px;margin-bottom:13px;overflow:hidden}
 .localHead{background:#111;color:#fff;padding:11px 13px;font-weight:bold}
 .item{display:flex;gap:10px;align-items:center;padding:11px;border-bottom:1px solid #eee}
@@ -33,55 +28,38 @@ h2{font-size:19px;margin-bottom:13px}
 .controls{display:flex;align-items:center;gap:7px}
 .controls button{border:0;width:30px;height:30px;border-radius:7px;background:#eee;font-weight:bold;cursor:pointer}
 .del{background:#fee!important;color:#d22}
-.money{text-align:right;margin-top:10px}
-.money div{padding:4px 0}
+.money{text-align:right;margin-top:10px}.money div{padding:4px 0}
 .total{font-size:20px;font-weight:bold;border-top:1px solid #ddd;margin-top:8px;padding-top:10px}
 .localTotals{padding:9px 13px;border-top:1px solid #eee;background:#fafafa;text-align:right}
-.localTotals div{padding:3px 0}
-.localTotal{font-weight:bold;font-size:16px}
+.localTotals div{padding:3px 0}.localTotal{font-weight:bold;font-size:16px}
 label{display:block;font-weight:bold;margin:11px 0 5px}
 input,textarea,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:9px;font-size:15px;background:#fff}
 textarea{min-height:75px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .check{display:flex;align-items:center;gap:9px;font-weight:normal;cursor:pointer}
 .check input{width:auto}
-.factura{display:none}.factura.show{display:block}
-.referido{display:none;margin-top:8px}
-.referido.show{display:block}
-.referido small{display:block;color:#777;margin-top:5px;line-height:1.35}
+.factura,.referido{display:none}.factura.show,.referido.show{display:block}
+.referido{margin-top:8px}.referido small{display:block;color:#777;margin-top:5px;line-height:1.35}
 .clienteEstado{font-size:13px;margin-top:7px;color:#555;min-height:16px}
-.clienteEstado.ok{color:#16823b}
-.clienteEstado.error{color:#b00000}
-.clienteEstado.loading{color:#777}
+.clienteEstado.ok,.locationStatus.ok{color:#16823b}
+.clienteEstado.error,.locationStatus.error{color:#b00000}
+.clienteEstado.loading,.locationStatus.loading{color:#777}
 .locationButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .btn{border:0;border-radius:9px;padding:12px 14px;font-weight:bold;cursor:pointer}
 .btn:disabled{opacity:.6;cursor:not-allowed}
-.btnRed{background:#e53935;color:#fff}
-.btnDark{background:#111;color:#fff}
-.btnGray{background:#eee;color:#222}
+.btnRed{background:#e53935;color:#fff}.btnDark{background:#111;color:#fff}.btnGray{background:#eee;color:#222}
 .locationBox{border:1px solid #ddd;border-radius:10px;padding:12px;margin-top:12px;background:#fafafa}
-.locationTitle{font-weight:bold;margin-bottom:5px}
-.address{font-size:14px;color:#444;line-height:1.4}
+.locationTitle{font-weight:bold;margin-bottom:5px}.address{font-size:14px;color:#444;line-height:1.4}
 .locationStatus{font-size:13px;color:#777;margin-top:7px;line-height:1.4}
-.locationStatus.ok{color:#16823b}
-.locationStatus.error{color:#b00000}
-#mapWrap{display:none;margin-top:12px}
-.map{height:300px;border-radius:10px;overflow:hidden}
+#mapWrap{display:none;margin-top:12px}.map{height:300px;border-radius:10px;overflow:hidden}
 .mapActions{display:flex;gap:8px;margin-top:9px}
 .summaryLocal{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}
 .summaryDelivery{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ddd;margin-top:7px}
 .empty{text-align:center;padding:30px;color:#777}
 .alert{display:none;padding:11px;border-radius:9px;background:#fff0f0;color:#b00000;margin-bottom:12px}
-.alert.show{display:block}
-.whatsapp{width:100%;font-size:16px;margin-top:8px}
+.alert.show{display:block}.whatsapp{width:100%;font-size:16px;margin-top:8px}
 .note{font-size:12px;color:#777;margin-top:8px}
-
-@media(max-width:600px){
- main{padding:10px}
- .row,.locationButtons{grid-template-columns:1fr}
- .item{align-items:flex-start}
- .controls{flex:none}
-}
+@media(max-width:600px){main{padding:10px}.row,.locationButtons{grid-template-columns:1fr}.item{align-items:flex-start}.controls{flex:none}}
 </style>
 </head>
 
@@ -121,9 +99,7 @@ textarea{min-height:75px;resize:vertical}
 <label for="telefonoReferente">Teléfono de quien te refirió</label>
 <input id="telefonoReferente" type="tel" placeholder="Teléfono de tu referente">
 <div id="referenteEstado" class="clienteEstado"></div>
-<small>
-Para realizar tu primer pedido debes haber sido referido por un cliente registrado.
-</small>
+<small>Para realizar tu primer pedido debes haber sido referido por un cliente registrado.</small>
 </div>
 
 <label class="check">
@@ -140,7 +116,6 @@ Para realizar tu primer pedido debes haber sido referido por un cliente registra
 <option value="ruc">RUC</option>
 </select>
 </div>
-
 <div>
 <label for="numeroDocumento">Cédula / RUC</label>
 <input id="numeroDocumento" placeholder="Número de documento">
@@ -174,9 +149,7 @@ Para realizar tu primer pedido debes haber sido referido por un cliente registra
 <button class="btn btnGray" onclick="cerrarMapa()">Cancelar</button>
 </div>
 
-<div class="note">
-Toca el mapa en el lugar exacto donde deseas recibir tu pedido.
-</div>
+<div class="note">Toca el mapa en el lugar exacto donde deseas recibir tu pedido.</div>
 </div>
 
 <label for="referencia">Referencia</label>
@@ -198,6 +171,7 @@ La ubicación guardada se utilizará para generar el enlace de ubicación del pe
 </main>
 
 <script>
+
 const CONFIG_DEFAULT={
  nombreNegocio:"Sobre Ruedas",
  ciudad:"Esmeraldas",
@@ -223,9 +197,10 @@ let ubicacionTemporal={
 };
 
 let clienteActual=null;
-let validandoCliente=false;
 let timerCliente=null;
 let timerReferente=null;
+let validacionClienteId=0;
+let validacionReferenteId=0;
 let ubicacionCargando=false;
 
 const $=id=>document.getElementById(id);
@@ -246,33 +221,29 @@ function normalizarTelefono(t){
 }
 
 function mostrarError(t){
+
  const a=$("alerta");
 
  a.textContent=t;
  a.classList.add("show");
 
- window.scrollTo({
-  top:0,
-  behavior:"smooth"
- });
+ window.scrollTo({top:0,behavior:"smooth"});
 
- setTimeout(()=>{
-  a.classList.remove("show");
- },5000);
+ setTimeout(()=>a.classList.remove("show"),5000);
 }
 
 function mostrarEstadoCliente(texto,tipo=""){
+
  const el=$("clienteEstado");
 
  el.textContent=texto;
  el.className="clienteEstado";
 
- if(tipo){
-  el.classList.add(tipo);
- }
+ if(tipo)el.classList.add(tipo);
 }
 
 function mostrarEstadoReferente(texto,tipo=""){
+
  const el=$("referenteEstado");
 
  if(!el)return;
@@ -280,12 +251,11 @@ function mostrarEstadoReferente(texto,tipo=""){
  el.textContent=texto;
  el.className="clienteEstado";
 
- if(tipo){
-  el.classList.add(tipo);
- }
+ if(tipo)el.classList.add(tipo);
 }
 
 function mostrarEstadoUbicacion(texto,tipo=""){
+
  const el=$("locationStatus");
 
  if(!el)return;
@@ -293,12 +263,11 @@ function mostrarEstadoUbicacion(texto,tipo=""){
  el.textContent=texto;
  el.className="locationStatus";
 
- if(tipo){
-  el.classList.add(tipo);
- }
+ if(tipo)el.classList.add(tipo);
 }
 
 function cargarCarrito(){
+
  try{
   carrito=JSON.parse(
    sessionStorage.getItem("carrito")||"[]"
@@ -307,12 +276,11 @@ function cargarCarrito(){
   carrito=[];
  }
 
- if(!Array.isArray(carrito)){
-  carrito=[];
- }
+ if(!Array.isArray(carrito))carrito=[];
 }
 
 function guardarCarrito(){
+
  sessionStorage.setItem(
   "carrito",
   JSON.stringify(carrito)
@@ -353,21 +321,12 @@ function cargarFormulario(){
    $("clienteTelefono").value=d.telefono||"";
    $("telefonoReferente").value=d.telefonoReferente||"";
    $("referencia").value=d.referencia||"";
-
    $("requiereFactura").checked=!!d.requiere;
+   $("tipoDocumento").value=d.tipo||"cedula";
+   $("numeroDocumento").value=d.documento||"";
+   $("correoFactura").value=d.correo||"";
 
-   $("tipoDocumento").value=
-    d.tipo||"cedula";
-
-   $("numeroDocumento").value=
-    d.documento||"";
-
-   $("correoFactura").value=
-    d.correo||"";
-
-   if(d.ubicacion){
-    ubicacion=d.ubicacion;
-   }
+   if(d.ubicacion)ubicacion=d.ubicacion;
   }
 
  }catch{}
@@ -379,17 +338,11 @@ function cargarFormulario(){
 
  renderUbicacion();
 
- /*
-  * Si había un teléfono guardado,
-  * lo validamos automáticamente.
-  */
  const telefono=normalizarTelefono(
   $("clienteTelefono").value
  );
 
- if(telefono.length>=7){
-  programarValidacionCliente();
- }
+ if(telefono.length>=7)programarValidacionCliente();
 }
 
 async function cargarConfiguracion(){
@@ -481,7 +434,6 @@ function render(){
    '<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar restaurantes y productos</a></div>';
 
   $("resumen").innerHTML="";
-
   return;
  }
 
@@ -493,16 +445,12 @@ function render(){
  cont.innerHTML=grupos.map(g=>{
 
   const subtotal=subtotalGrupo(g);
-
-  const totalLocal=
-   subtotal+deliveryUnitario;
+  const totalLocal=subtotal+deliveryUnitario;
 
   return `
   <div class="local">
 
-   <div class="localHead">
-    ${esc(g.nombre)}
-   </div>
+   <div class="localHead">${esc(g.nombre)}</div>
 
    ${g.items.map(x=>`
 
@@ -512,56 +460,23 @@ function render(){
       ${
        x.imagen_url
        ?
-       `<img
-        src="${esc(x.imagen_url)}"
-        alt=""
-        loading="lazy"
-        decoding="async"
-       >`
+       `<img src="${esc(x.imagen_url)}" alt="" loading="lazy" decoding="async">`
        :
        ""
       }
      </div>
 
      <div class="itemInfo">
-
-      <b>
-       ${esc(x.producto_nombre)}
-      </b>
-
-      <small>
-       ${money(x.precio)} c/u
-      </small>
-
+      <b>${esc(x.producto_nombre)}</b>
+      <small>${money(x.precio)} c/u</small>
      </div>
 
      <div class="controls">
 
-      <button
-       onclick="cambiarCantidad(
-        ${x.producto_id},
-        ${x.restaurante_id},
-        -1
-       )"
-      >−</button>
-
+      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},-1)">−</button>
       <b>${x.cantidad}</b>
-
-      <button
-       onclick="cambiarCantidad(
-        ${x.producto_id},
-        ${x.restaurante_id},
-        1
-       )"
-      >+</button>
-
-      <button
-       class="del"
-       onclick="eliminar(
-        ${x.producto_id},
-        ${x.restaurante_id}
-       )"
-      >×</button>
+      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},1)">+</button>
+      <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id})">×</button>
 
      </div>
 
@@ -570,22 +485,9 @@ function render(){
    `).join("")}
 
    <div class="localTotals">
-
-    <div>
-     Subtotal productos:
-     <b>${money(subtotal)}</b>
-    </div>
-
-    <div>
-     Delivery:
-     <b>${money(deliveryUnitario)}</b>
-    </div>
-
-    <div class="localTotal">
-     Total restaurante:
-     ${money(totalLocal)}
-    </div>
-
+    <div>Subtotal productos: <b>${money(subtotal)}</b></div>
+    <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
+    <div class="localTotal">Total restaurante: ${money(totalLocal)}</div>
    </div>
 
   </div>
@@ -601,11 +503,8 @@ function render(){
   0
  );
 
- const deliveryTotal=
-  grupos.length*deliveryUnitario;
-
- const total=
-  subtotalTotal+deliveryTotal;
+ const deliveryTotal=grupos.length*deliveryUnitario;
+ const total=subtotalTotal+deliveryTotal;
 
  $("resumen").innerHTML=`
 
@@ -614,30 +513,18 @@ function render(){
    ${grupos.map(g=>`
 
     <div class="summaryLocal">
-
-     <span>
-      ${esc(g.nombre)}
-     </span>
-
-     <b>
-      ${money(subtotalGrupo(g))}
-     </b>
-
+     <span>${esc(g.nombre)}</span>
+     <b>${money(subtotalGrupo(g))}</b>
     </div>
 
    `).join("")}
 
    <div class="summaryDelivery">
-
     <span>
      Delivery (${grupos.length}
      ${grupos.length===1?"restaurante":"restaurantes"})
     </span>
-
-    <b>
-     ${money(deliveryTotal)}
-    </b>
-
+    <b>${money(deliveryTotal)}</b>
    </div>
 
    <div class="total">
@@ -648,11 +535,7 @@ function render(){
  `;
 }
 
-function cambiarCantidad(
- productoId,
- restauranteId,
- cambio
-){
+function cambiarCantidad(productoId,restauranteId,cambio){
 
  const i=carrito.findIndex(
   x=>
@@ -664,26 +547,20 @@ function cambiarCantidad(
 
  carrito[i].cantidad+=cambio;
 
- if(carrito[i].cantidad<=0){
-  carrito.splice(i,1);
- }
+ if(carrito[i].cantidad<=0)carrito.splice(i,1);
 
  guardarCarrito();
  render();
  guardarFormulario();
 }
 
-function eliminar(
- productoId,
- restauranteId
-){
+function eliminar(productoId,restauranteId){
 
  carrito=carrito.filter(
-  x=>
-   !(
-    x.producto_id===productoId&&
-    x.restaurante_id===restauranteId
-   )
+  x=>!(
+   x.producto_id===productoId&&
+   x.restaurante_id===restauranteId
+  )
  );
 
  guardarCarrito();
@@ -708,49 +585,27 @@ function renderUbicacion(){
 
  const box=$("direccionGuardada");
 
- if(
-  ubicacion.lat!==null&&
-  ubicacion.lng!==null
- ){
+ if(ubicacion.lat!==null&&ubicacion.lng!==null){
 
   box.innerHTML=`
-
-   <div class="locationTitle">
-    Dirección
-   </div>
-
+   <div class="locationTitle">Dirección</div>
    <div class="address">
-    ${esc(
-     ubicacion.direccion||
-     "Ubicación seleccionada"
-    )}
+    ${esc(ubicacion.direccion||"Ubicación seleccionada")}
    </div>
-
    <div id="locationStatus" class="locationStatus">
     ${ubicacionCargando
-     ? "🔄 Buscando dirección..."
-     : "✅ Ubicación seleccionada"
-    }
+     ?"🔄 Buscando dirección..."
+     :"✅ Ubicación seleccionada"}
    </div>
   `;
 
  }else{
 
   box.innerHTML=`
-
-   <div class="locationTitle">
-    Dirección
-   </div>
-
-   <div class="address">
-    Todavía no has seleccionado una ubicación.
-   </div>
-
+   <div class="locationTitle">Dirección</div>
+   <div class="address">Todavía no has seleccionado una ubicación.</div>
    <div id="locationStatus" class="locationStatus">
-    ${ubicacionCargando
-     ? "📍 Obteniendo ubicación..."
-     : ""
-    }
+    ${ubicacionCargando?"📍 Obteniendo ubicación...":""}
    </div>
   `;
  }
@@ -762,11 +617,7 @@ async function obtenerDireccion(lat,lng){
 
   const r=await fetch(
    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
-   {
-    headers:{
-     Accept:"application/json"
-    }
-   }
+   {headers:{Accept:"application/json"}}
   );
 
   if(!r.ok)throw Error();
@@ -805,8 +656,7 @@ async function usarMiUbicacion(boton){
  try{
 
   const pos=await new Promise(
-   (resolve,reject)=>{
-
+   (resolve,reject)=>
     navigator.geolocation.getCurrentPosition(
      resolve,
      reject,
@@ -815,18 +665,13 @@ async function usarMiUbicacion(boton){
       timeout:15000,
       maximumAge:0
      }
-    );
-   }
+    )
   );
 
   const lat=pos.coords.latitude;
   const lng=pos.coords.longitude;
 
-  ubicacion={
-   lat,
-   lng,
-   direccion:""
-  };
+  ubicacion={lat,lng,direccion:""};
 
   renderUbicacion();
 
@@ -835,15 +680,9 @@ async function usarMiUbicacion(boton){
    "loading"
   );
 
-  const direccion=
-   await obtenerDireccion(lat,lng);
+  const direccion=await obtenerDireccion(lat,lng);
 
-  ubicacion={
-   lat,
-   lng,
-   direccion
-  };
-
+  ubicacion={lat,lng,direccion};
   ubicacionCargando=false;
 
   guardarFormulario();
@@ -883,15 +722,11 @@ function moverMarcador(lat,lng){
 
  if(!marker){
 
-  marker=L.marker(
-   [lat,lng]
-  ).addTo(map);
+  marker=L.marker([lat,lng]).addTo(map);
 
  }else{
 
-  marker.setLatLng(
-   [lat,lng]
-  );
+  marker.setLatLng([lat,lng]);
  }
 
  ubicacionTemporal={
@@ -902,61 +737,45 @@ function moverMarcador(lat,lng){
 
  renderDireccionTemporal();
 
- mostrarEstadoUbicacion(
-  "🔄 Ubicación seleccionada. Buscando dirección...",
-  "loading"
- );
+ obtenerDireccion(lat,lng).then(direccion=>{
 
- obtenerDireccion(lat,lng)
-  .then(direccion=>{
+  /*
+   * Solo aceptamos la respuesta si
+   * sigue siendo el punto actualmente seleccionado.
+   */
 
-   ubicacionTemporal.direccion=
-    direccion;
+  if(
+   ubicacionTemporal.lat!==lat||
+   ubicacionTemporal.lng!==lng
+  )return;
 
-   renderDireccionTemporal();
+  ubicacionTemporal.direccion=direccion;
 
-   mostrarEstadoUbicacion(
-    "✅ Dirección encontrada. Puedes aceptar esta ubicación.",
-    "ok"
-   );
-  });
+  renderDireccionTemporal();
+
+ });
 }
 
 function renderDireccionTemporal(){
 
  const box=$("direccionGuardada");
-
  const u=ubicacionTemporal;
 
- if(
-  u.lat!==null&&
-  u.lng!==null
- ){
+ if(u.lat===null||u.lng===null)return;
 
-  box.innerHTML=`
-
-   <div class="locationTitle">
-    Dirección
-   </div>
-
-   <div class="address">
-    ${esc(
-     u.direccion||
-     "🔄 Buscando dirección..."
-    )}
-   </div>
-
-   <div id="locationStatus" class="locationStatus loading">
-    ${
-     u.direccion
-      ?
-      "✅ Dirección encontrada. Puedes aceptar esta ubicación."
-      :
-      "🔄 Buscando dirección..."
-    }
-   </div>
-  `;
- }
+ box.innerHTML=`
+  <div class="locationTitle">Dirección</div>
+  <div class="address">
+   ${esc(u.direccion||"🔄 Buscando dirección...")}
+  </div>
+  <div id="locationStatus" class="locationStatus ${u.direccion?"ok":"loading"}">
+   ${
+    u.direccion
+    ?"✅ Dirección encontrada. Puedes aceptar esta ubicación."
+    :"🔄 Buscando dirección..."
+   }
+  </div>
+ `;
 }
 
 function abrirMapa(){
@@ -973,18 +792,10 @@ function abrirMapa(){
   if(!map){
 
    map=L.map("map").setView(
-
     ubicacion.lat!==null
-     ?
-     [ubicacion.lat,ubicacion.lng]
-     :
-     [-0.9538,-79.6528],
-
-    ubicacion.lat!==null
-     ?
-     16
-     :
-     13
+     ?[ubicacion.lat,ubicacion.lng]
+     :[-0.9538,-79.6528],
+    ubicacion.lat!==null?16:13
    );
 
    L.tileLayer(
@@ -995,13 +806,12 @@ function abrirMapa(){
     }
    ).addTo(map);
 
-   map.on("click",e=>{
-
+   map.on("click",e=>
     moverMarcador(
      e.latlng.lat,
      e.latlng.lng
-    );
-   });
+    )
+   );
 
   }else{
 
@@ -1018,10 +828,6 @@ function abrirMapa(){
 
   if(ubicacion.lat!==null){
 
-   ubicacionTemporal={
-    ...ubicacion
-   };
-
    moverMarcador(
     ubicacion.lat,
     ubicacion.lng
@@ -1029,8 +835,7 @@ function abrirMapa(){
 
   }else{
 
-   const centro=
-    map.getCenter();
+   const centro=map.getCenter();
 
    moverMarcador(
     centro.lat,
@@ -1064,10 +869,7 @@ function aceptarMapa(){
   return;
  }
 
- ubicacion={
-  ...ubicacionTemporal
- };
-
+ ubicacion={...ubicacionTemporal};
  ubicacionCargando=false;
 
  guardarFormulario();
@@ -1083,8 +885,7 @@ function aceptarMapa(){
 
 function cerrarMapa(){
 
- $("mapWrap").style.display=
-  "none";
+ $("mapWrap").style.display="none";
 }
 
 $("requiereFactura").addEventListener(
@@ -1137,15 +938,12 @@ function programarValidacionCliente(){
 
  clienteActual=null;
 
- $("campoReferido")
-  .classList.remove("show");
-
+ $("campoReferido").classList.remove("show");
  mostrarEstadoReferente("");
 
  if(!telefono){
 
   mostrarEstadoCliente("");
-
   return;
  }
 
@@ -1164,35 +962,32 @@ function programarValidacionCliente(){
   "loading"
  );
 
+ const id=++validacionClienteId;
+
  timerCliente=setTimeout(
-  validarClienteEnTiempoReal,
+  ()=>validarClienteEnTiempoReal(id),
   500
  );
 }
 
-async function validarClienteEnTiempoReal(){
-
- if(validandoCliente)return;
+async function validarClienteEnTiempoReal(id){
 
  const telefono=
   normalizarTelefono(
    $("clienteTelefono").value
   );
 
- if(telefono.length<7)return;
-
- validandoCliente=true;
+ if(
+  telefono.length<7||
+  id!==validacionClienteId
+ )return;
 
  try{
 
   const cliente=
    await consultarCliente(telefono);
 
-  /*
-   * Verificamos que el usuario no haya
-   * cambiado el teléfono mientras
-   * se hacía la consulta.
-   */
+  if(id!==validacionClienteId)return;
 
   const telefonoActual=
    normalizarTelefono(
@@ -1231,12 +1026,6 @@ async function validarClienteEnTiempoReal(){
    return;
   }
 
-  /*
-   * Cliente nuevo.
-   * Todavía NO lo registramos.
-   * Solo mostramos el campo de referente.
-   */
-
   clienteActual=null;
 
   $("campoReferido")
@@ -1254,14 +1043,13 @@ async function validarClienteEnTiempoReal(){
    e
   );
 
-  mostrarEstadoCliente(
-   "No se pudo verificar el cliente.",
-   "error"
-  );
+  if(id===validacionClienteId){
 
- }finally{
-
-  validandoCliente=false;
+   mostrarEstadoCliente(
+    "No se pudo verificar el cliente.",
+    "error"
+   );
+  }
  }
 }
 
@@ -1282,7 +1070,6 @@ function programarValidacionReferente(){
  if(!telefono){
 
   mostrarEstadoReferente("");
-
   return;
  }
 
@@ -1301,13 +1088,15 @@ function programarValidacionReferente(){
   "loading"
  );
 
+ const id=++validacionReferenteId;
+
  timerReferente=setTimeout(
-  validarReferenteEnTiempoReal,
+  ()=>validarReferenteEnTiempoReal(id),
   500
  );
 }
 
-async function validarReferenteEnTiempoReal(){
+async function validarReferenteEnTiempoReal(id){
 
  const telefono=
   normalizarTelefono(
@@ -1319,7 +1108,10 @@ async function validarReferenteEnTiempoReal(){
    $("clienteTelefono").value
   );
 
- if(telefono.length<7)return;
+ if(
+  telefono.length<7||
+  id!==validacionReferenteId
+ )return;
 
  if(telefono===telefonoCliente){
 
@@ -1335,6 +1127,8 @@ async function validarReferenteEnTiempoReal(){
 
   const referente=
    await consultarCliente(telefono);
+
+  if(id!==validacionReferenteId)return;
 
   const telefonoActual=
    normalizarTelefono(
@@ -1382,10 +1176,14 @@ async function validarReferenteEnTiempoReal(){
 
   console.error(e);
 
-  mostrarEstadoReferente(
-   "No se pudo verificar el referente.",
-   "error"
-  );
+  if(id===validacionReferenteId){
+
+   mostrarEstadoReferente(
+    "No se pudo verificar el referente.",
+    "error"
+   );
+  }
+ }
 }
 
 
@@ -1403,9 +1201,7 @@ $("clienteTelefono").addEventListener(
 
 $("clienteTelefono").addEventListener(
  "blur",
- ()=>{
-  programarValidacionCliente();
- }
+ programarValidacionCliente
 );
 
 $("telefonoReferente").addEventListener(
@@ -1418,14 +1214,12 @@ $("telefonoReferente").addEventListener(
 
 $("telefonoReferente").addEventListener(
  "blur",
- ()=>{
-  programarValidacionReferente();
- }
+ programarValidacionReferente
 );
 
 
 /* =====================================================
-   VALIDACIÓN FINAL DE CLIENTES
+   CONSULTA DE CLIENTE
    ===================================================== */
 
 async function consultarCliente(telefono){
@@ -1433,9 +1227,7 @@ async function consultarCliente(telefono){
  const telefonoNormalizado=
   normalizarTelefono(telefono);
 
- if(!telefonoNormalizado){
-  return null;
- }
+ if(!telefonoNormalizado)return null;
 
  const r=await supabaseClient.rpc(
   "buscar_cliente_por_telefono",
@@ -1444,9 +1236,7 @@ async function consultarCliente(telefono){
   }
  );
 
- if(r.error){
-  throw r.error;
- }
+ if(r.error)throw r.error;
 
  if(Array.isArray(r.data)){
   return r.data[0]||null;
@@ -1455,10 +1245,17 @@ async function consultarCliente(telefono){
  return r.data||null;
 }
 
+
+/* =====================================================
+   VALIDACIÓN FINAL DEL CLIENTE
+   ===================================================== */
+
 async function validarCliente(){
 
  const nombre=
-  $("clienteNombre").value.trim();
+  $("clienteNombre")
+   .value
+   .trim();
 
  const telefono=
   normalizarTelefono(
@@ -1467,12 +1264,8 @@ async function validarCliente(){
 
  if(!telefono){
 
-  mostrarError(
-   "Ingresa tu teléfono."
-  );
-
+  mostrarError("Ingresa tu teléfono.");
   $("clienteTelefono").focus();
-
   return false;
  }
 
@@ -1491,10 +1284,6 @@ async function validarCliente(){
 
   const cliente=
    await consultarCliente(telefono);
-
-  /*
-   * CLIENTE EXISTENTE
-   */
 
   if(cliente){
 
@@ -1516,10 +1305,6 @@ async function validarCliente(){
 
    return true;
   }
-
-  /*
-   * CLIENTE NUEVO
-   */
 
   const telefonoReferente=
    normalizarTelefono(
@@ -1545,10 +1330,7 @@ async function validarCliente(){
    return false;
   }
 
-  if(
-   telefonoReferente===
-   telefono
-  ){
+  if(telefonoReferente===telefono){
 
    mostrarEstadoReferente(
     "❌ No puedes referirte a ti mismo.",
@@ -1610,18 +1392,13 @@ async function validarCliente(){
    return false;
   }
 
-  /*
-   * GENERAR CÓDIGO DEL NUEVO CLIENTE
-   */
-
   const codigoNuevo=
    "SR"+
    Date.now()
     .toString(36)
     .toUpperCase()+
    Math.floor(
-    100+
-    Math.random()*900
+    100+Math.random()*900
    );
 
   const cr=
@@ -1636,26 +1413,20 @@ async function validarCliente(){
     }
    );
 
-  if(cr.error){
-   throw cr.error;
-  }
+  if(cr.error)throw cr.error;
 
   let nuevoCliente=null;
 
   if(Array.isArray(cr.data)){
-   nuevoCliente=
-    cr.data[0]||null;
+   nuevoCliente=cr.data[0]||null;
   }else{
-   nuevoCliente=
-    cr.data||null;
+   nuevoCliente=cr.data||null;
   }
 
   if(!nuevoCliente){
 
    nuevoCliente=
-    await consultarCliente(
-     telefono
-    );
+    await consultarCliente(telefono);
   }
 
   if(!nuevoCliente){
@@ -1702,36 +1473,21 @@ function validar(){
 
  if(!carrito.length){
 
-  mostrarError(
-   "El carrito está vacío."
-  );
-
+  mostrarError("El carrito está vacío.");
   return false;
  }
 
- if(
-  !$("clienteNombre").value.trim()
- ){
+ if(!$("clienteNombre").value.trim()){
 
-  mostrarError(
-   "Ingresa tu nombre."
-  );
-
+  mostrarError("Ingresa tu nombre.");
   $("clienteNombre").focus();
-
   return false;
  }
 
- if(
-  !$("clienteTelefono").value.trim()
- ){
+ if(!$("clienteTelefono").value.trim()){
 
-  mostrarError(
-   "Ingresa tu teléfono."
-  );
-
+  mostrarError("Ingresa tu teléfono.");
   $("clienteTelefono").focus();
-
   return false;
  }
 
@@ -1747,13 +1503,18 @@ function validar(){
   return false;
  }
 
- if(
-  $("requiereFactura").checked
- ){
+ if(ubicacionCargando){
 
-  if(
-   !$("numeroDocumento").value.trim()
-  ){
+  mostrarError(
+   "Espera mientras se obtiene la dirección de entrega."
+  );
+
+  return false;
+ }
+
+ if($("requiereFactura").checked){
+
+  if(!$("numeroDocumento").value.trim()){
 
    mostrarError(
     "Ingresa tu cédula o RUC."
@@ -1762,9 +1523,7 @@ function validar(){
    return false;
   }
 
-  if(
-   !$("correoFactura").value.trim()
-  ){
+  if(!$("correoFactura").value.trim()){
 
    mostrarError(
     "Ingresa el correo para la factura."
@@ -1779,7 +1538,7 @@ function validar(){
 
 
 /* =====================================================
-   REALIZAR PEDIDO
+   PEDIDO
    ===================================================== */
 
 async function realizarPedido(){
@@ -1789,9 +1548,7 @@ async function realizarPedido(){
  const boton=
   document.querySelector(".whatsapp");
 
- if(boton){
-  boton.disabled=true;
- }
+ if(boton)boton.disabled=true;
 
  try{
 
@@ -1800,18 +1557,14 @@ async function realizarPedido(){
 
   if(!clienteValido){
 
-   if(boton){
-    boton.disabled=false;
-   }
-
+   if(boton)boton.disabled=false;
    return;
   }
 
   const numero=
    generarNumeroPedido();
 
-  const grupos=
-   agrupar();
+  const grupos=agrupar();
 
   const subtotalTotal=
    carrito.reduce(
@@ -1878,13 +1631,9 @@ async function realizarPedido(){
     .select("id")
     .single();
 
-  if(pr.error){
-   throw pr.error;
-  }
+  if(pr.error)throw pr.error;
 
-  const pedidoId=
-   pr.data.id;
-
+  const pedidoId=pr.data.id;
   const carreras=[];
 
   for(
@@ -1929,9 +1678,7 @@ async function realizarPedido(){
      .select("id")
      .single();
 
-   if(cr.error){
-    throw cr.error;
-   }
+   if(cr.error)throw cr.error;
 
    carreras.push({
     ...g,
@@ -1971,9 +1718,7 @@ async function realizarPedido(){
      .from("detalle_carreras")
      .insert(detalles);
 
-   if(dr.error){
-    throw dr.error;
-   }
+   if(dr.error)throw dr.error;
   }
 
   let msg=
@@ -2012,11 +1757,7 @@ async function realizarPedido(){
     )
    }%0A`;
 
-  if(
-   $("referencia")
-    .value
-    .trim()
-  ){
+  if($("referencia").value.trim()){
 
    msg+=
     `📝 *Referencia:* ${
@@ -2031,9 +1772,7 @@ async function realizarPedido(){
   msg+=
    `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
 
-  if(
-   $("requiereFactura").checked
-  ){
+  if($("requiereFactura").checked){
 
    msg+=
     `🧾 *Factura:* Sí%0A`;
@@ -2128,11 +1867,6 @@ async function realizarPedido(){
     )
    }*`;
 
-  carrito=[];
-
-  guardarCarrito();
-  render();
-
   const wa=
    String(
     configuracion.whatsappNegocio||""
@@ -2145,6 +1879,10 @@ async function realizarPedido(){
    );
   }
 
+  carrito=[];
+  guardarCarrito();
+  render();
+
   window.location.href=
    `https://wa.me/${wa}?text=${msg}`;
 
@@ -2154,14 +1892,52 @@ async function realizarPedido(){
 
   mostrarError(
    "No se pudo registrar el pedido: "+
-   (e.message||
-    "Error desconocido")
+   (e.message||"Error desconocido")
   );
 
-  if(boton){
-   boton.disabled=false;
-  }
+  if(boton)boton.disabled=false;
  }
+}
+
+
+/* =====================================================
+   GENERAR NÚMERO DE PEDIDO
+   ===================================================== */
+
+function generarNumeroPedido(){
+
+ const fecha=
+  new Date();
+
+ const y=
+  fecha.getFullYear();
+
+ const m=
+  String(
+   fecha.getMonth()+1
+  ).padStart(2,"0");
+
+ const d=
+  String(
+   fecha.getDate()
+  ).padStart(2,"0");
+
+ const h=
+  String(
+   fecha.getHours()
+  ).padStart(2,"0");
+
+ const min=
+  String(
+   fecha.getMinutes()
+  ).padStart(2,"0");
+
+ const s=
+  String(
+   fecha.getSeconds()
+  ).padStart(2,"0");
+
+ return `SR-${y}${m}${d}-${h}${min}${s}`;
 }
 
 
@@ -2170,15 +1946,11 @@ async function realizarPedido(){
    ===================================================== */
 
 cargarCarrito();
-
 cargarFormulario();
-
 render();
-
 cargarConfiguracion();
 
 </script>
 
 </body>
 </html>
-```
