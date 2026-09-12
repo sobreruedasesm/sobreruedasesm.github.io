@@ -46,22 +46,18 @@ textarea{min-height:75px;resize:vertical}
 .check{display:flex;align-items:center;gap:9px;font-weight:normal;cursor:pointer}
 .check input{width:auto}
 .factura{display:none}.factura.show{display:block}
-
 .locationButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .btn{border:0;border-radius:9px;padding:12px 14px;font-weight:bold;cursor:pointer}
 .btn:disabled{opacity:.6;cursor:not-allowed}
 .btnRed{background:#e53935;color:#fff}
 .btnDark{background:#111;color:#fff}
 .btnGray{background:#eee;color:#222}
-
 .locationBox{border:1px solid #ddd;border-radius:10px;padding:12px;margin-top:12px;background:#fafafa}
 .locationTitle{font-weight:bold;margin-bottom:5px}
 .address{font-size:14px;color:#444;line-height:1.4}
-
 #mapWrap{display:none;margin-top:12px}
 .map{height:300px;border-radius:10px;overflow:hidden}
 .mapActions{display:flex;gap:8px;margin-top:9px}
-
 .summaryLocal{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}
 .summaryDelivery{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ddd;margin-top:7px}
 .empty{text-align:center;padding:30px;color:#777}
@@ -69,7 +65,6 @@ textarea{min-height:75px;resize:vertical}
 .alert.show{display:block}
 .whatsapp{width:100%;font-size:16px;margin-top:8px}
 .note{font-size:12px;color:#777;margin-top:8px}
-
 @media(max-width:600px){
  main{padding:10px}
  .row,.locationButtons{grid-template-columns:1fr}
@@ -158,7 +153,7 @@ textarea{min-height:75px;resize:vertical}
 </div>
 
 <div class="note">
-Arrastra el marcador hasta el lugar exacto de entrega.
+Toca el mapa en el lugar exacto donde deseas recibir tu pedido.
 </div>
 </div>
 
@@ -198,11 +193,7 @@ let ubicacionTemporal={lat:null,lng:null,direccion:""};
 const $=id=>document.getElementById(id);
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
- "&":"&amp;",
- "<":"&lt;",
- ">":"&gt;",
- '"':"&quot;",
- "'":"&#039;"
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
 }[m]));
 
 const money=n=>`${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
@@ -216,11 +207,8 @@ function mostrarError(t){
 }
 
 function cargarCarrito(){
- try{
-  carrito=JSON.parse(sessionStorage.getItem("carrito")||"[]");
- }catch{
-  carrito=[];
- }
+ try{carrito=JSON.parse(sessionStorage.getItem("carrito")||"[]")}
+ catch{carrito=[]}
  if(!Array.isArray(carrito))carrito=[];
 }
 
@@ -239,7 +227,6 @@ function guardarFormulario(){
   correo:$("correoFactura").value,
   ubicacion
  };
-
  sessionStorage.setItem("datosPedido",JSON.stringify(data));
 }
 
@@ -255,16 +242,11 @@ function cargarFormulario(){
    $("tipoDocumento").value=d.tipo||"cedula";
    $("numeroDocumento").value=d.documento||"";
    $("correoFactura").value=d.correo||"";
-
    if(d.ubicacion)ubicacion=d.ubicacion;
   }
  }catch{}
 
- $("datosFactura").classList.toggle(
-  "show",
-  $("requiereFactura").checked
- );
-
+ $("datosFactura").classList.toggle("show",$("requiereFactura").checked);
  renderUbicacion();
 }
 
@@ -281,17 +263,12 @@ async function cargarConfiguracion(){
    configuracion={
     nombreNegocio:r.data.nombre_negocio||CONFIG_DEFAULT.nombreNegocio,
     ciudad:r.data.ciudad||CONFIG_DEFAULT.ciudad,
-    tarifaDelivery:Number(
-     r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery
-    ),
-    whatsappNegocio:
-     r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
+    tarifaDelivery:Number(r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery),
+    whatsappNegocio:r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
     moneda:r.data.moneda||CONFIG_DEFAULT.moneda
    };
   }
- }catch(e){
-  console.warn(e);
- }
+ }catch(e){console.warn(e)}
 
  render();
 }
@@ -307,7 +284,6 @@ function agrupar(){
     items:[]
    };
   }
-
   grupos[x.restaurante_id].items.push(x);
  });
 
@@ -316,9 +292,7 @@ function agrupar(){
 
 function subtotalGrupo(g){
  return g.items.reduce(
-  (a,x)=>
-   a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
-  0
+  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
  );
 }
 
@@ -328,9 +302,7 @@ function render(){
  const cont=$("carrito");
 
  if(!carrito.length){
-  cont.innerHTML=
-   '<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar locales y productos</a></div>';
-
+  cont.innerHTML='<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar locales y productos</a></div>';
   $("resumen").innerHTML="";
   return;
  }
@@ -344,20 +316,12 @@ function render(){
 
   return `
   <div class="local">
-
-   <div class="localHead">
-    ${esc(g.nombre)}
-   </div>
+   <div class="localHead">${esc(g.nombre)}</div>
 
    ${g.items.map(x=>`
     <div class="item">
-
      <div class="thumb">
-      ${
-       x.imagen_url
-       ? `<img src="${esc(x.imagen_url)}" alt="">`
-       : ""
-      }
+      ${x.imagen_url?`<img src="${esc(x.imagen_url)}" alt="">`:""}
      </div>
 
      <div class="itemInfo">
@@ -371,7 +335,6 @@ function render(){
       <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},1)">+</button>
       <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id})">×</button>
      </div>
-
     </div>
    `).join("")}
 
@@ -380,15 +343,11 @@ function render(){
     <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
     <div class="localTotal">Total local: ${money(totalLocal)}</div>
    </div>
-
-  </div>
-  `;
+  </div>`;
  }).join("");
 
  const subtotalTotal=carrito.reduce(
-  (a,x)=>
-   a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
-  0
+  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
  );
 
  const deliveryTotal=grupos.length*deliveryUnitario;
@@ -396,7 +355,6 @@ function render(){
 
  $("resumen").innerHTML=`
   <div class="money">
-
    ${grupos.map(g=>`
     <div class="summaryLocal">
      <span>${esc(g.nombre)}</span>
@@ -405,33 +363,24 @@ function render(){
    `).join("")}
 
    <div class="summaryDelivery">
-    <span>Delivery (${grupos.length} ${
-     grupos.length===1?"local":"locales"
-    })</span>
+    <span>Delivery (${grupos.length} ${grupos.length===1?"local":"locales"})</span>
     <b>${money(deliveryTotal)}</b>
    </div>
 
-   <div class="total">
-    Total: ${money(total)}
-   </div>
-
-  </div>
- `;
+   <div class="total">Total: ${money(total)}</div>
+  </div>`;
 }
 
 function cambiarCantidad(productoId,restauranteId,cambio){
  const i=carrito.findIndex(
-  x=>
-   x.producto_id===productoId&&
-   x.restaurante_id===restauranteId
+  x=>x.producto_id===productoId&&x.restaurante_id===restauranteId
  );
 
  if(i<0)return;
 
  carrito[i].cantidad+=cambio;
 
- if(carrito[i].cantidad<=0)
-  carrito.splice(i,1);
+ if(carrito[i].cantidad<=0)carrito.splice(i,1);
 
  guardarCarrito();
  render();
@@ -440,9 +389,7 @@ function cambiarCantidad(productoId,restauranteId,cambio){
 
 function eliminar(productoId,restauranteId){
  carrito=carrito.filter(
-  x=>
-   !(x.producto_id===productoId&&
-     x.restaurante_id===restauranteId)
+  x=>!(x.producto_id===productoId&&x.restaurante_id===restauranteId)
  );
 
  guardarCarrito();
@@ -452,7 +399,6 @@ function eliminar(productoId,restauranteId){
 
 function vaciarCarrito(){
  if(!carrito.length)return;
-
  if(!confirm("¿Vaciar todo el carrito?"))return;
 
  carrito=[];
@@ -464,25 +410,15 @@ function vaciarCarrito(){
 function renderUbicacion(){
  const box=$("direccionGuardada");
 
- if(
-  ubicacion.lat!==null&&
-  ubicacion.lng!==null
- ){
+ if(ubicacion.lat!==null&&ubicacion.lng!==null){
   box.innerHTML=`
    <div class="locationTitle">Dirección</div>
-   <div class="address">
-    ${esc(
-     ubicacion.direccion||
-     "Ubicación seleccionada"
-    )}
-   </div>
+   <div class="address">${esc(ubicacion.direccion||"Ubicación seleccionada")}</div>
   `;
  }else{
   box.innerHTML=`
    <div class="locationTitle">Dirección</div>
-   <div class="address">
-    Todavía no has seleccionado una ubicación.
-   </div>
+   <div class="address">Todavía no has seleccionado una ubicación.</div>
   `;
  }
 }
@@ -491,11 +427,7 @@ async function obtenerDireccion(lat,lng){
  try{
   const r=await fetch(
    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
-   {
-    headers:{
-     "Accept":"application/json"
-    }
-   }
+   {headers:{Accept:"application/json"}}
   );
 
   if(!r.ok)throw Error();
@@ -512,9 +444,7 @@ async function obtenerDireccion(lat,lng){
 
 async function usarMiUbicacion(boton){
  if(!navigator.geolocation){
-  mostrarError(
-   "Tu navegador no permite obtener la ubicación."
-  );
+  mostrarError("Tu navegador no permite obtener la ubicación.");
   return;
  }
 
@@ -525,31 +455,20 @@ async function usarMiUbicacion(boton){
    try{
     const lat=pos.coords.latitude;
     const lng=pos.coords.longitude;
-
     const direccion=await obtenerDireccion(lat,lng);
 
-    ubicacion={
-     lat,
-     lng,
-     direccion
-    };
+    ubicacion={lat,lng,direccion};
 
     guardarFormulario();
     renderUbicacion();
-
    }finally{
     if(boton)boton.disabled=false;
    }
   },
-
   ()=>{
-   mostrarError(
-    "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
-   );
-
+   mostrarError("No se pudo obtener tu ubicación. Verifica los permisos del navegador.");
    if(boton)boton.disabled=false;
   },
-
   {
    enableHighAccuracy:true,
    timeout:15000,
@@ -558,54 +477,37 @@ async function usarMiUbicacion(boton){
  );
 }
 
-function actualizarMarcador(lat,lng){
+function moverMarcador(lat,lng){
  if(!map)return;
 
  if(!marker){
-  marker=L.marker([lat,lng],{
-   draggable:true
-  }).addTo(map);
-
-  marker.on("dragend",async()=>{
-   const p=marker.getLatLng();
-
-   ubicacionTemporal={
-    lat:p.lat,
-    lng:p.lng,
-    direccion:"Consultando dirección..."
-   };
-
-   renderDireccionTemporal();
-
-   const direccion=await obtenerDireccion(
-    p.lat,
-    p.lng
-   );
-
-   ubicacionTemporal.direccion=direccion;
-
-   renderDireccionTemporal();
-  });
-
+  marker=L.marker([lat,lng]).addTo(map);
  }else{
   marker.setLatLng([lat,lng]);
  }
+
+ ubicacionTemporal={
+  lat,
+  lng,
+  direccion:"Consultando dirección..."
+ };
+
+ renderDireccionTemporal();
+
+ obtenerDireccion(lat,lng).then(direccion=>{
+  ubicacionTemporal.direccion=direccion;
+  renderDireccionTemporal();
+ });
 }
 
 function renderDireccionTemporal(){
  const box=$("direccionGuardada");
-
  const u=ubicacionTemporal;
 
  if(u.lat!==null&&u.lng!==null){
   box.innerHTML=`
    <div class="locationTitle">Dirección</div>
-   <div class="address">
-    ${esc(
-     u.direccion||
-     "Ubicación seleccionada"
-    )}
-   </div>
+   <div class="address">${esc(u.direccion||"Consultando dirección...")}</div>
   `;
  }
 }
@@ -631,6 +533,17 @@ function abrirMapa(){
     }
    ).addTo(map);
 
+   /*
+    * AHORA EL USUARIO SELECCIONA LA UBICACIÓN
+    * HACIENDO CLIC DIRECTAMENTE EN EL MAPA.
+    */
+   map.on("click",e=>{
+    moverMarcador(
+     e.latlng.lat,
+     e.latlng.lng
+    );
+   });
+
   }else{
    map.invalidateSize();
 
@@ -645,36 +558,18 @@ function abrirMapa(){
   if(ubicacion.lat!==null){
    ubicacionTemporal={...ubicacion};
 
-   actualizarMarcador(
+   moverMarcador(
     ubicacion.lat,
     ubicacion.lng
    );
-  }else{
-   ubicacionTemporal={
-    lat:null,
-    lng:null,
-    direccion:""
-   };
 
-   /*
-    * Primera posición del marcador:
-    * centro aproximado de Esmeraldas.
-    * El usuario puede arrastrarlo.
-    */
+  }else{
    const centro=map.getCenter();
 
-   actualizarMarcador(
+   moverMarcador(
     centro.lat,
     centro.lng
    );
-
-   ubicacionTemporal={
-    lat:centro.lat,
-    lng:centro.lng,
-    direccion:"Mueve el marcador al lugar de entrega"
-   };
-
-   renderDireccionTemporal();
   }
 
  },100);
@@ -685,15 +580,11 @@ function aceptarMapa(){
   ubicacionTemporal.lat===null||
   ubicacionTemporal.lng===null
  ){
-  mostrarError(
-   "Selecciona una ubicación en el mapa."
-  );
+  mostrarError("Selecciona una ubicación en el mapa.");
   return;
  }
 
- ubicacion={
-  ...ubicacionTemporal
- };
+ ubicacion={...ubicacionTemporal};
 
  guardarFormulario();
  renderUbicacion();
@@ -711,7 +602,6 @@ $("requiereFactura").addEventListener(
    "show",
    $("requiereFactura").checked
   );
-
   guardarFormulario();
  }
 );
@@ -724,15 +614,8 @@ $("requiereFactura").addEventListener(
  "numeroDocumento",
  "correoFactura"
 ].forEach(id=>{
- $(id).addEventListener(
-  "input",
-  guardarFormulario
- );
-
- $(id).addEventListener(
-  "change",
-  guardarFormulario
- );
+ $(id).addEventListener("input",guardarFormulario);
+ $(id).addEventListener("change",guardarFormulario);
 });
 
 function generarNumeroPedido(){
@@ -742,8 +625,7 @@ function generarNumeroPedido(){
   .replace(/\D/g,"")
   .slice(2,14);
 
- const aleatorio=
-  Math.floor(100+Math.random()*900);
+ const aleatorio=Math.floor(100+Math.random()*900);
 
  return `SR-${parte}-${aleatorio}`;
 }
@@ -766,29 +648,20 @@ function validar(){
   return false;
  }
 
- if(
-  ubicacion.lat===null||
-  ubicacion.lng===null
- ){
-  mostrarError(
-   "Selecciona tu ubicación de entrega."
-  );
+ if(ubicacion.lat===null||ubicacion.lng===null){
+  mostrarError("Selecciona tu ubicación de entrega.");
   return false;
  }
 
  if($("requiereFactura").checked){
 
   if(!$("numeroDocumento").value.trim()){
-   mostrarError(
-    "Ingresa tu cédula o RUC."
-   );
+   mostrarError("Ingresa tu cédula o RUC.");
    return false;
   }
 
   if(!$("correoFactura").value.trim()){
-   mostrarError(
-    "Ingresa el correo para la factura."
-   );
+   mostrarError("Ingresa el correo para la factura.");
    return false;
   }
  }
@@ -800,7 +673,6 @@ async function realizarPedido(){
  if(!validar())return;
 
  const boton=document.querySelector(".whatsapp");
-
  if(boton)boton.disabled=true;
 
  try{
@@ -809,48 +681,22 @@ async function realizarPedido(){
   const grupos=agrupar();
 
   const subtotalTotal=carrito.reduce(
-   (a,x)=>
-    a+(Number(x.precio)||0)*
-    (Number(x.cantidad)||0),
-   0
+   (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
   );
 
-  const deliveryUnitario=
-   Number(configuracion.tarifaDelivery||0);
+  const deliveryUnitario=Number(configuracion.tarifaDelivery||0);
+  const deliveryTotal=grupos.length*deliveryUnitario;
+  const total=subtotalTotal+deliveryTotal;
 
-  const deliveryTotal=
-   grupos.length*deliveryUnitario;
-
-  const total=
-   subtotalTotal+deliveryTotal;
-
-  /*
-   * 1. CABECERA DEL PEDIDO
-   */
   const pedido={
    numero,
-
-   cliente_nombre:
-    $("clienteNombre").value.trim(),
-
-   cliente_telefono:
-    $("clienteTelefono").value.trim(),
-
-   direccion:
-    ubicacion.direccion||
-    `${ubicacion.lat}, ${ubicacion.lng}`,
-
-   referencia:
-    $("referencia").value.trim()||null,
-
-   total_productos:
-    subtotalTotal,
-
-   total_delivery:
-    deliveryTotal,
-
+   cliente_nombre:$("clienteNombre").value.trim(),
+   cliente_telefono:$("clienteTelefono").value.trim(),
+   direccion:ubicacion.direccion||`${ubicacion.lat}, ${ubicacion.lng}`,
+   referencia:$("referencia").value.trim()||null,
+   total_productos:subtotalTotal,
+   total_delivery:deliveryTotal,
    total,
-
    estado:"Pedido recibido"
   };
 
@@ -863,10 +709,6 @@ async function realizarPedido(){
   if(pr.error)throw pr.error;
 
   const pedidoId=pr.data.id;
-
-  /*
-   * 2. UNA CARRERA POR CADA LOCAL
-   */
   const carreras=[];
 
   for(let i=0;i<grupos.length;i++){
@@ -877,20 +719,11 @@ async function realizarPedido(){
    const carrera={
     pedido_id:pedidoId,
     restaurante_id:g.id,
-
-    numero:
-     `${numero}-${i+1}`,
-
+    numero:`${numero}-${i+1}`,
     subtotal,
-
-    delivery:
-     deliveryUnitario,
-
-    total:
-     subtotal+deliveryUnitario,
-
-    estado:
-     "Pendiente de asignación"
+    delivery:deliveryUnitario,
+    total:subtotal+deliveryUnitario,
+    estado:"Pendiente de asignación"
    };
 
    const cr=await supabaseClient
@@ -908,9 +741,6 @@ async function realizarPedido(){
    });
   }
 
-  /*
-   * 3. DETALLE DE CADA CARRERA
-   */
   for(const g of carreras){
 
    const detalles=g.items.map(x=>({
@@ -919,8 +749,7 @@ async function realizarPedido(){
     producto_nombre:x.producto_nombre,
     precio_unitario:+x.precio,
     cantidad:+x.cantidad,
-    subtotal:
-     (+x.precio)*(+x.cantidad)
+    subtotal:(+x.precio)*(+x.cantidad)
    }));
 
    const dr=await supabaseClient
@@ -930,58 +759,22 @@ async function realizarPedido(){
    if(dr.error)throw dr.error;
   }
 
-  /*
-   * 4. WHATSAPP
-   */
-  let msg=
-   `*${encodeURIComponent(configuracion.nombreNegocio)}*%0A`;
-
-  msg+=
-   `🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
-
-  msg+=
-   `👤 *Cliente:* ${encodeURIComponent(
-    $("clienteNombre").value.trim()
-   )}%0A`;
-
-  msg+=
-   `📞 *Teléfono:* ${encodeURIComponent(
-    $("clienteTelefono").value.trim()
-   )}%0A`;
-
-  msg+=
-   `📍 *Dirección:* ${encodeURIComponent(
-    ubicacion.direccion||
-    "Ubicación seleccionada"
-   )}%0A`;
+  let msg=`*${encodeURIComponent(configuracion.nombreNegocio)}*%0A`;
+  msg+=`🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
+  msg+=`👤 *Cliente:* ${encodeURIComponent($("clienteNombre").value.trim())}%0A`;
+  msg+=`📞 *Teléfono:* ${encodeURIComponent($("clienteTelefono").value.trim())}%0A`;
+  msg+=`📍 *Dirección:* ${encodeURIComponent(ubicacion.direccion||"Ubicación seleccionada")}%0A`;
 
   if($("referencia").value.trim()){
-   msg+=
-    `📝 *Referencia:* ${encodeURIComponent(
-     $("referencia").value.trim()
-    )}%0A`;
+   msg+=`📝 *Referencia:* ${encodeURIComponent($("referencia").value.trim())}%0A`;
   }
 
-  msg+=
-   `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
+  msg+=`📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
 
   if($("requiereFactura").checked){
-
-   msg+=
-    `🧾 *Factura:* Sí%0A`;
-
-   msg+=
-    `Documento: ${encodeURIComponent(
-     $("tipoDocumento").value.toUpperCase()
-    )} ${encodeURIComponent(
-     $("numeroDocumento").value.trim()
-    )}%0A`;
-
-   msg+=
-    `Correo: ${encodeURIComponent(
-     $("correoFactura").value.trim()
-    )}%0A`;
-
+   msg+=`🧾 *Factura:* Sí%0A`;
+   msg+=`Documento: ${encodeURIComponent($("tipoDocumento").value.toUpperCase())} ${encodeURIComponent($("numeroDocumento").value.trim())}%0A`;
+   msg+=`Correo: ${encodeURIComponent($("correoFactura").value.trim())}%0A`;
   }else{
    msg+=`🧾 *Factura:* No%0A`;
   }
@@ -990,64 +783,30 @@ async function realizarPedido(){
 
   carreras.forEach(g=>{
 
-   msg+=
-    `%0A🏪 *${encodeURIComponent(g.nombre)}*%0A`;
+   msg+=`%0A🏪 *${encodeURIComponent(g.nombre)}*%0A`;
 
    g.items.forEach(x=>{
+    const sub=(+x.precio)*(+x.cantidad);
 
-    const sub=
-     (+x.precio)*(+x.cantidad);
-
-    msg+=
-     `${x.cantidad} x ${encodeURIComponent(
-      x.producto_nombre
-     )} — ${encodeURIComponent(
-      money(sub)
-     )}%0A`;
+    msg+=`${x.cantidad} x ${encodeURIComponent(x.producto_nombre)} — ${encodeURIComponent(money(sub))}%0A`;
    });
 
-   msg+=
-    `Subtotal productos: ${encodeURIComponent(
-     money(g.subtotal)
-    )}%0A`;
-
-   msg+=
-    `Delivery: ${encodeURIComponent(
-     money(deliveryUnitario)
-    )}%0A`;
-
-   msg+=
-    `Total local: ${encodeURIComponent(
-     money(
-      g.subtotal+deliveryUnitario
-     )
-    )}%0A`;
+   msg+=`Subtotal productos: ${encodeURIComponent(money(g.subtotal))}%0A`;
+   msg+=`Delivery: ${encodeURIComponent(money(deliveryUnitario))}%0A`;
+   msg+=`Total local: ${encodeURIComponent(money(g.subtotal+deliveryUnitario))}%0A`;
   });
 
-  msg+=
-   `%0A💰 *TOTAL: ${encodeURIComponent(
-    money(total)
-   )}*`;
+  msg+=`%0A💰 *TOTAL: ${encodeURIComponent(money(total))}*`;
 
-  /*
-   * Vaciar carrito solamente de esta pestaña.
-   */
   carrito=[];
   guardarCarrito();
   render();
 
-  const wa=
-   String(
-    configuracion.whatsappNegocio||""
-   ).replace(/\D/g,"");
+  const wa=String(configuracion.whatsappNegocio||"").replace(/\D/g,"");
 
-  if(!wa)
-   throw Error(
-    "El número de WhatsApp del negocio no está configurado."
-   );
+  if(!wa)throw Error("El número de WhatsApp del negocio no está configurado.");
 
-  window.location.href=
-   `https://wa.me/${wa}?text=${msg}`;
+  window.location.href=`https://wa.me/${wa}?text=${msg}`;
 
  }catch(e){
 
