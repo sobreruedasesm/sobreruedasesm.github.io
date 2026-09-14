@@ -100,13 +100,25 @@ textarea{min-height:90px;resize:vertical}
 .bulk-table th,.bulk-table td{border:1px solid #e5e7eb;padding:7px;text-align:left}
 .bulk-table th{background:#f4f5f7}
 .bulk-ok{color:#166534;font-weight:700}.bulk-warn{color:#92400e;font-weight:700}.bulk-err{color:#991b1b;font-weight:700}
+.delivery-list{display:grid;gap:10px}
+.delivery-row{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:12px;align-items:center;border:1px solid #ddd;border-radius:10px;padding:13px;background:#fff}
+.delivery-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.delivery-code{font-family:monospace;font-weight:700;background:#f4f5f7;padding:5px 8px;border-radius:6px;display:inline-block}
+.delivery-link{font-size:12px;color:#1261a0;word-break:break-all;margin-top:5px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:15px}
+.stat{background:#f4f5f7;padding:13px;border-radius:9px}.stat strong{font-size:20px;display:block}
+@media(max-width:900px){
+.delivery-row{grid-template-columns:1fr 1fr}
+}
 @media(max-width:800px){
 .grid,.local-list,.bulk-grid{grid-template-columns:1fr}
 .horario-row{grid-template-columns:1fr 80px 1fr 1fr}
 .variant-row{grid-template-columns:1fr}
+.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:700px){
-.client-row{grid-template-columns:1fr}.client-actions{justify-content:flex-start}
+.client-row,.delivery-row{grid-template-columns:1fr}
+.client-actions,.delivery-actions{justify-content:flex-start}
 }
 @media(max-width:600px){
 .wrap{padding:12px}.product-row{grid-template-columns:55px 1fr}.product-actions{grid-column:1/-1}
@@ -131,14 +143,16 @@ textarea{min-height:90px;resize:vertical}
 <div id="adminApp" class="admin-app">
 <header class="header">
 <div class="header-inner">
-<div><h1>Sobre Ruedas · Administración</h1><small>Gestión del negocio</small></div>
+<div><h1>Sobre Ruedas · Administración</h1><small>SUPERADMIN</small></div>
 <div class="header-user"><small id="usuarioAdminActual"></small><button class="btn secondary" onclick="cerrarSesionAdmin()">Cerrar sesión</button></div>
 </div>
 </header>
 
 <div class="wrap">
 <nav class="nav">
-<button class="active" onclick="mostrarSeccion('config',this)">Configuración</button>
+<button class="active" onclick="mostrarSeccion('dashboard',this)">Resumen</button>
+<button onclick="mostrarSeccion('deliverys',this)">Deliverys</button>
+<button onclick="mostrarSeccion('config',this)">Configuración</button>
 <button onclick="mostrarSeccion('categorias',this)">Categorías</button>
 <button onclick="mostrarSeccion('locales',this)">Locales</button>
 <button onclick="mostrarSeccion('clientes',this)">Clientes</button>
@@ -147,14 +161,104 @@ textarea{min-height:90px;resize:vertical}
 
 <div id="mensaje" class="msg"></div>
 
-<section id="config" class="section active">
+<section id="dashboard" class="section active">
+<div class="card">
+<h2>Resumen de Sobre Ruedas</h2>
+<div class="stats-grid">
+<div class="stat"><small>Deliverys</small><strong id="statDeliverys">0</strong></div>
+<div class="stat"><small>Locales</small><strong id="statLocales">0</strong></div>
+<div class="stat"><small>Productos</small><strong id="statProductos">0</strong></div>
+<div class="stat"><small>Clientes</small><strong id="statClientes">0</strong></div>
+</div>
+<p class="muted">Desde este panel administras la plataforma completa. Los deliverys tendrán su propio acceso independiente.</p>
+</div>
+</section>
+
+<section id="deliverys" class="section">
+<div class="card">
+<h2>Crear nuevo delivery</h2>
+<p class="muted">El delivery será tu cliente. Tendrá su propio usuario, contraseña, WhatsApp, código y enlace comercial.</p>
+
+<div class="grid">
+<div class="field">
+<label>Nombre del delivery</label>
+<input id="deliveryNombre" placeholder="Ej. Carlos Delivery">
+</div>
+
+<div class="field">
+<label>WhatsApp</label>
+<input id="deliveryWhatsapp" type="tel" placeholder="0991234567">
+</div>
+
+<div class="field">
+<label>Teléfono</label>
+<input id="deliveryTelefono" type="tel" placeholder="0991234567">
+</div>
+
+<div class="field">
+<label>Código</label>
+<div class="code-row">
+<input id="deliveryCodigo" placeholder="Ej. SR001" maxlength="20">
+<button type="button" class="btn secondary" onclick="generarCodigoDelivery()">Generar</button>
+</div>
+</div>
+
+<div class="field">
+<label>Usuario de acceso</label>
+<input id="deliveryUsuario" placeholder="Ej. carlos">
+</div>
+
+<div class="field">
+<label>Contraseña inicial</label>
+<input id="deliveryPassword" type="password" placeholder="Mínimo 6 caracteres">
+</div>
+
+<div class="field">
+<label>Plan</label>
+<select id="deliveryPlan">
+<option value="Basico">Básico</option>
+<option value="Profesional">Profesional</option>
+<option value="Premium">Premium</option>
+</select>
+</div>
+
+<div class="field">
+<label>Fecha de vencimiento</label>
+<input id="deliveryFechaFin" type="date">
+</div>
+</div>
+
+<div class="actions">
+<button id="btnCrearDelivery" class="btn primary" onclick="crearDelivery()">Crear delivery</button>
+<button class="btn secondary" onclick="limpiarFormularioDelivery()">Limpiar</button>
+</div>
+
+<div id="resultadoDelivery" class="import-result hidden"></div>
+</div>
+
+<div class="card">
+<h2>Deliverys registrados</h2>
+
+<div class="client-tools">
+<input id="buscarDelivery" type="search" placeholder="Buscar por nombre, WhatsApp, usuario o código..." oninput="filtrarDeliverys()">
+<button class="btn info" onclick="cargarDeliverys()">Actualizar</button>
+</div>
+
+<div id="resumenDeliverys" class="client-counts"></div>
+<div id="listaDeliverys" class="delivery-list">
+<p class="muted">Cargando deliverys...</p>
+</div>
+</div>
+</section>
+
+<section id="config" class="section">
 <div class="card">
 <h2>Configuración del negocio</h2>
 <div class="grid">
 <div class="field"><label>Nombre del negocio</label><input id="cfgNombre"></div>
 <div class="field"><label>Ciudad</label><input id="cfgCiudad"></div>
 <div class="field"><label>Tarifa delivery</label><input id="cfgDelivery" type="number" min="0" step="0.01"></div>
-<div class="field"><label>WhatsApp del negocio</label><input id="cfgWhatsapp"></div>
+<div class="field"><label>WhatsApp general</label><input id="cfgWhatsapp"></div>
 <div class="field"><label>Moneda</label><input id="cfgMoneda"></div>
 </div>
 <div class="actions"><button class="btn primary" onclick="guardarConfiguracion()">Guardar configuración</button></div>
@@ -248,7 +352,7 @@ textarea{min-height:90px;resize:vertical}
 <h2>Validación de clientes</h2>
 <div class="client-status">
 <label class="client-switch">
-<input id="validacionClientes" type="checkbox" onchange="cambiarValidacionClientes">
+<input id="validacionClientes" type="checkbox" onchange="cambiarValidacionClientes()">
 <span class="eye">✓</span>
 <span id="textoValidacionClientes">Validación activa</span>
 </label>
@@ -258,7 +362,7 @@ textarea{min-height:90px;resize:vertical}
 
 <div class="card">
 <h2>Registrar cliente</h2>
-<p class="muted">El ADM puede registrar directamente un cliente nuevo sin necesidad de un referente. El <strong>código del nuevo cliente</strong> será el código que podrá utilizar posteriormente para referir a otras personas.</p>
+<p class="muted">El SUPERADMIN puede registrar directamente un cliente nuevo sin necesidad de un referente.</p>
 <div class="grid">
 <div class="field"><label>Nombre del cliente</label><input id="nuevoClienteNombre" placeholder="Ej. Juan Pérez"></div>
 <div class="field"><label>Teléfono</label><input id="nuevoClienteTelefono" type="tel" placeholder="0991234567"></div>
@@ -271,11 +375,11 @@ textarea{min-height:90px;resize:vertical}
 
 <div class="card">
 <h2>Cargar clientes</h2>
-<p class="muted">Importa los contactos directamente desde el archivo exportado por tu teléfono. Se admite formato <strong>.vcf / vCard</strong>.</p>
+<p class="muted">Importa contactos desde un archivo .vcf / vCard.</p>
 <div class="client-import">
 <div class="field"><label>Archivo de contactos</label><input id="archivoContactos" type="file" accept=".vcf,text/vcard,text/x-vcard"></div>
 <div class="actions"><button id="btnImportarContactos" class="btn primary" onclick="importarContactos()">Importar contactos</button></div>
-<p class="muted">El archivo se procesa en el navegador. No se almacena el archivo original. Solamente se envían a Supabase los contactos válidos.</p>
+<p class="muted">El archivo se procesa en el navegador. No se almacena el archivo original.</p>
 </div>
 <div id="resultadoImportacion" class="import-result hidden"></div>
 </div>
@@ -295,6 +399,7 @@ textarea{min-height:90px;resize:vertical}
 <div class="card">
 <h2>Carga masiva</h2>
 <p class="muted">Carga locales, productos y horarios desde archivos CSV.</p>
+
 <div class="bulk-grid">
 
 <div class="bulk-card">
@@ -353,22 +458,32 @@ const DIAS=[
 const DIAS_MAP={domingo:0,lunes:1,martes:2,miercoles:3,jueves:4,viernes:5,sabado:6};
 const BULK_BLOQUE=500;
 
-let categorias=[],locales=[],clientes=[],productosEdit=[],productosNuevos=[];
-let clientesCargados=false,adminActual=null,bulkPendiente=null;
+let categorias=[],locales=[],clientes=[],productosEdit=[],productosNuevos=[],deliverys=[];
+let clientesCargados=false,deliverysCargados=false,adminActual=null,bulkPendiente=null;
 
 document.addEventListener("DOMContentLoaded",async()=>{
 const sesion=sessionStorage.getItem("sobreRuedasAdmin");
 if(!sesion)return;
+
 try{
 const guardada=JSON.parse(sesion);
 if(!guardada?.token)throw new Error("Sesión inválida");
+
 const {data,error}=await supabaseClient.rpc("verificar_sesion_admin",{p_token:guardada.token});
 if(error)throw error;
+
 const resultado=Array.isArray(data)?data[0]:data;
 if(!resultado?.id)throw new Error("Sesión expirada");
-adminActual={id:resultado.id,usuario:resultado.usuario,token:guardada.token};
+
+adminActual={
+id:resultado.id,
+usuario:resultado.usuario,
+token:guardada.token
+};
+
 sessionStorage.setItem("sobreRuedasAdmin",JSON.stringify(adminActual));
 mostrarAdmin();
+
 }catch(_){
 sessionStorage.removeItem("sobreRuedasAdmin");
 adminActual=null;
@@ -377,33 +492,67 @@ adminActual=null;
 
 async function iniciarSesionAdmin(e){
 e.preventDefault();
+
 const usuario=document.getElementById("loginUsuario").value.trim();
 const password=document.getElementById("loginPassword").value;
 const boton=document.getElementById("btnLogin");
 const errorBox=document.getElementById("loginError");
+
 if(!usuario||!password)return;
+
 try{
-boton.disabled=true;boton.textContent="Ingresando...";errorBox.textContent="";
-const {data,error}=await supabaseClient.rpc("iniciar_sesion_admin",{p_usuario:usuario,p_password:password});
+boton.disabled=true;
+boton.textContent="Ingresando...";
+errorBox.textContent="";
+
+const {data,error}=await supabaseClient.rpc(
+"iniciar_sesion_admin",
+{
+p_usuario:usuario,
+p_password:password
+}
+);
+
 if(error)throw error;
+
 const resultado=Array.isArray(data)?data[0]:data;
-if(!resultado?.id||!resultado?.token)throw new Error("Usuario o contraseña incorrectos.");
-adminActual={id:resultado.id,usuario:resultado.usuario,token:resultado.token};
-sessionStorage.setItem("sobreRuedasAdmin",JSON.stringify(adminActual));
+
+if(!resultado?.id||!resultado?.token)
+throw new Error("Usuario o contraseña incorrectos.");
+
+adminActual={
+id:resultado.id,
+usuario:resultado.usuario,
+token:resultado.token
+};
+
+sessionStorage.setItem(
+"sobreRuedasAdmin",
+JSON.stringify(adminActual)
+);
+
 document.getElementById("loginPassword").value="";
 mostrarAdmin();
+
 }catch(e){
 console.error(e);
 errorBox.textContent=e?.message||"No se pudo iniciar sesión.";
+
 }finally{
-boton.disabled=false;boton.textContent="Ingresar";
+boton.disabled=false;
+boton.textContent="Ingresar";
 }
 }
 
 function mostrarAdmin(){
 document.getElementById("loginScreen").classList.add("hidden");
 document.getElementById("adminApp").style.display="block";
-document.getElementById("usuarioAdminActual").textContent=adminActual?.usuario?`ADM: ${adminActual.usuario}`:"";
+
+document.getElementById("usuarioAdminActual").textContent=
+adminActual?.usuario?
+`ADM: ${adminActual.usuario}`:
+"";
+
 iniciarPanel();
 }
 
@@ -412,37 +561,71 @@ try{
 await cargarTodo();
 construirHorario("horarioEditor","nuevo");
 construirHorario("editHorarioEditor","edit");
-}catch(e){err(e);}
+}catch(e){
+err(e);
+}
 }
 
 async function cerrarSesionAdmin(){
 if(!confirm("¿Cerrar sesión administrativa?"))return;
+
 try{
-if(adminActual?.token)await supabaseClient.rpc("cerrar_sesion_admin",{p_token:adminActual.token});
-}catch(e){console.warn("No se pudo cerrar la sesión:",e);}
+if(adminActual?.token){
+await supabaseClient.rpc(
+"cerrar_sesion_admin",
+{p_token:adminActual.token}
+);
+}
+}catch(e){
+console.warn("No se pudo cerrar la sesión:",e);
+}
+
 sessionStorage.removeItem("sobreRuedasAdmin");
 adminActual=null;
+
 document.getElementById("adminApp").style.display="none";
 document.getElementById("loginScreen").classList.remove("hidden");
+
 document.getElementById("loginUsuario").value="";
 document.getElementById("loginPassword").value="";
 document.getElementById("loginError").textContent="";
 }
 
 function mostrarSeccion(id,btn){
-document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+document.querySelectorAll(".section").forEach(
+x=>x.classList.remove("active")
+);
+
 document.getElementById(id).classList.add("active");
-document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+
+document.querySelectorAll(".nav button").forEach(
+x=>x.classList.remove("active")
+);
+
 btn.classList.add("active");
-if(id==="clientes"&&!clientesCargados)cargarClientes();
+
+if(id==="clientes"&&!clientesCargados)
+cargarClientes();
+
+if(id==="deliverys"&&!deliverysCargados)
+cargarDeliverys();
+
+if(id==="dashboard")
+actualizarDashboard();
 }
 
 function mensaje(texto,tipo="ok"){
 const el=document.getElementById("mensaje");
+
 el.textContent=texto;
 el.className="msg "+(tipo==="ok"?"ok":"err");
+
 clearTimeout(window.msgTimer);
-window.msgTimer=setTimeout(()=>el.className="msg",4000);
+
+window.msgTimer=setTimeout(
+()=>el.className="msg",
+4000
+);
 }
 
 function err(e){
@@ -452,1229 +635,5710 @@ mensaje(e?.message||"Ocurrió un error.","err");
 
 async function cargarTodo(){
 try{
-await Promise.all([cargarConfiguracion(),cargarCategorias(),cargarLocales()]);
-}catch(e){err(e);}
+await Promise.all([
+cargarConfiguracion(),
+cargarCategorias(),
+cargarLocales(),
+cargarDeliverys()
+]);
+
+actualizarDashboard();
+
+}catch(e){
+err(e);
+}
 }
 
+async function actualizarDashboard(){
+const d=deliverys.length;
+const l=locales.length;
+const p=await contarProductosDashboard();
+const c=clientes.length;
+
+if(document.getElementById("statDeliverys"))
+document.getElementById("statDeliverys").textContent=d;
+
+if(document.getElementById("statLocales"))
+document.getElementById("statLocales").textContent=l;
+
+if(document.getElementById("statProductos"))
+document.getElementById("statProductos").textContent=p;
+
+if(document.getElementById("statClientes"))
+document.getElementById("statClientes").textContent=c;
+}
+
+async function contarProductosDashboard(){
+try{
+const {count,error}=await supabaseClient
+.from("productos")
+.select("*",{count:"exact",head:true});
+
+if(error)return 0;
+return count||0;
+
+}catch(_){
+return 0;
+}
+}
+
+/* DELIVERY */
+function generarCodigoDelivery(){
+const caracteres="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+let codigo="SR";
+
+for(let i=0;i<6;i++){
+codigo+=caracteres[
+Math.floor(Math.random()*caracteres.length)
+];
+}
+
+deliveryCodigo.value=codigo;
+}
+
+function limpiarFormularioDelivery(){
+deliveryNombre.value="";
+deliveryWhatsapp.value="";
+deliveryTelefono.value="";
+deliveryCodigo.value="";
+deliveryUsuario.value="";
+deliveryPassword.value="";
+deliveryPlan.value="Basico";
+deliveryFechaFin.value="";
+
+const r=document.getElementById(
+"resultadoDelivery"
+);
+
+r.innerHTML="";
+r.classList.add("hidden");
+}
+
+async function crearDelivery(){
+const boton=document.getElementById("btnCrearDelivery");
+
+const nombre=
+deliveryNombre.value.trim();
+
+const whatsapp=
+normalizarTelefono(deliveryWhatsapp.value);
+
+const telefono=
+normalizarTelefono(deliveryTelefono.value);
+
+const codigo=
+deliveryCodigo.value.trim().toUpperCase();
+
+const usuario=
+deliveryUsuario.value.trim();
+
+const password=
+deliveryPassword.value;
+
+const plan=
+deliveryPlan.value;
+
+const fechaFin=
+deliveryFechaFin.value||null;
+
+if(!nombre){
+mensaje("Ingresa el nombre del delivery.","err");
+return;
+}
+
+if(!whatsapp){
+mensaje("Ingresa un WhatsApp válido de Ecuador.","err");
+return;
+}
+
+if(!codigo){
+mensaje("Ingresa o genera un código para el delivery.","err");
+return;
+}
+
+if(!usuario){
+mensaje("Ingresa el usuario de acceso.","err");
+return;
+}
+
+if(!password||password.length<6){
+mensaje("La contraseña debe tener al menos 6 caracteres.","err");
+return;
+}
+
+try{
+
+boton.disabled=true;
+boton.textContent="Creando...";
+
+const {data,error}=await supabaseClient.rpc(
+"crear_delivery_admin",
+{
+p_token:adminActual.token,
+p_nombre:nombre,
+p_whatsapp:whatsapp,
+p_usuario:usuario,
+p_password:password,
+p_telefono:telefono||null,
+p_codigo:codigo
+}
+);
+
+if(error)throw error;
+
+const r=Array.isArray(data)?data[0]:data;
+
+if(!r?.ok)
+throw new Error("No se pudo crear el delivery.");
+
+if(fechaFin){
+const up=await supabaseClient
+.from("deliverys")
+.update({
+plan,
+fecha_fin:fechaFin
+})
+.eq("id",r.delivery_id);
+
+if(up.error)throw up.error;
+}
+
+const resultado=document.getElementById(
+"resultadoDelivery"
+);
+
+const enlace=
+`${location.origin}${location.pathname.replace(/[^/]*$/,"")}index.html?d=${encodeURIComponent(r.codigo)}`;
+
+resultado.innerHTML=`
+<strong>Delivery creado correctamente.</strong>
+
+<div style="margin-top:8px">
+Nombre:
+<strong>${escapeHtml(r.nombre)}</strong>
+</div>
+
+<div style="margin-top:5px">
+WhatsApp:
+<strong>${escapeHtml(r.whatsapp)}</strong>
+</div>
+
+<div style="margin-top:5px">
+Usuario:
+<strong>${escapeHtml(r.usuario)}</strong>
+</div>
+
+<div style="margin-top:5px">
+Código:
+<span class="delivery-code">${escapeHtml(r.codigo)}</span>
+</div>
+
+<div style="margin-top:8px">
+<strong>Enlace comercial</strong>
+<div class="delivery-link">${escapeHtml(enlace)}</div>
+</div>
+`;
+
+resultado.classList.remove("hidden");
+
+limpiarCamposDeliveryBasicos();
+
+await cargarDeliverys();
+actualizarDashboard();
+
+mensaje("Delivery creado correctamente.");
+
+}catch(e){
+err(e);
+
+}finally{
+boton.disabled=false;
+boton.textContent="Crear delivery";
+}
+}
+
+function limpiarCamposDeliveryBasicos(){
+deliveryNombre.value="";
+deliveryWhatsapp.value="";
+deliveryTelefono.value="";
+deliveryCodigo.value="";
+deliveryUsuario.value="";
+deliveryPassword.value="";
+deliveryPlan.value="Basico";
+deliveryFechaFin.value="";
+}
+
+async function cargarDeliverys(){
+const box=document.getElementById("listaDeliverys");
+
+if(box)
+box.innerHTML=
+'<p class="muted">Cargando deliverys...</p>';
+
+try{
+
+if(!adminActual?.token)
+throw new Error(
+"La sesión administrativa no es válida."
+);
+
+const {data,error}=await supabaseClient.rpc(
+"listar_deliverys_admin",
+{
+p_token:adminActual.token
+}
+);
+
+if(error)throw error;
+
+deliverys=data||[];
+deliverysCargados=true;
+
+pintarDeliverys();
+actualizarDashboard();
+
+}catch(e){
+
+deliverysCargados=false;
+
+if(box)
+box.innerHTML=
+'<p class="muted">No se pudieron cargar los deliverys.</p>';
+
+err(e);
+}
+}
+
+function filtrarDeliverys(){
+pintarDeliverys();
+}
+
+function pintarDeliverys(){
+
+const box=
+document.getElementById("listaDeliverys");
+
+const resumen=
+document.getElementById("resumenDeliverys");
+
+if(!box)return;
+
+const activos=
+deliverys.filter(x=>x.activo).length;
+
+const inactivos=
+deliverys.length-activos;
+
+if(resumen){
+
+resumen.innerHTML=`
+<div class="client-count">
+<strong>${deliverys.length}</strong> Total
+</div>
+
+<div class="client-count">
+<strong>${activos}</strong> Activos
+</div>
+
+<div class="client-count">
+<strong>${inactivos}</strong> Inactivos
+</div>`;
+}
+
+const texto=
+(document.getElementById("buscarDelivery")?.value||"")
+.trim()
+.toLowerCase();
+
+const lista=
+deliverys.filter(d=>{
+
+if(!texto)return true;
+
+return[
+d.nombre,
+d.whatsapp,
+d.telefono,
+d.codigo,
+d.usuario
+].some(v=>
+String(v||"")
+.toLowerCase()
+.includes(texto)
+);
+
+});
+
+if(!lista.length){
+
+box.innerHTML=
+'<p class="muted">No se encontraron deliverys.</p>';
+
+return;
+}
+
+box.innerHTML=
+lista.map(d=>{
+
+const enlace=
+`${location.origin}${location.pathname.replace(/[^/]*$/,"")}index.html?d=${encodeURIComponent(d.codigo)}`;
+
+return`
+<div class="delivery-row">
+
+<div>
+<strong>${escapeHtml(d.nombre||"")}</strong>
+<small style="display:block;color:#666;margin-top:4px">
+Usuario: ${escapeHtml(d.usuario||"")}
+</small>
+</div>
+
+<div>
+<div>WhatsApp</div>
+<strong>${escapeHtml(d.whatsapp||"")}</strong>
+<small style="display:block;color:#666;margin-top:4px">
+${escapeHtml(d.plan||"Basico")}
+</small>
+</div>
+
+<div>
+<div>Código</div>
+<span class="delivery-code">${escapeHtml(d.codigo||"")}</span>
+<div class="delivery-link">${escapeHtml(enlace)}</div>
+</div>
+
+<div class="delivery-actions">
+<span class="badge ${d.activo?"on":"off"}">
+${d.activo?"Activo":"Inactivo"}
+</span>
+
+<button
+class="btn ${d.activo?"warning":"success"}"
+onclick="cambiarEstadoDelivery(${d.id},${!d.activo})">
+${d.activo?"Inactivar":"Activar"}
+</button>
+</div>
+
+</div>`;
+}).join("");
+}
+
+async function cambiarEstadoDelivery(id,activo){
+
+try{
+
+const {data,error}=await supabaseClient.rpc(
+"cambiar_estado_delivery_admin",
+{
+p_token:adminActual.token,
+p_delivery_id:id,
+p_activo:activo
+}
+);
+
+if(error)throw error;
+
+if(!data)
+throw new Error("No se encontró el delivery.");
+
+await cargarDeliverys();
+
+mensaje(
+activo?
+"Delivery activado.":
+"Delivery inactivado."
+);
+
+}catch(e){
+err(e);
+}
+}
+
+/* CONFIGURACIÓN */
 async function cargarConfiguracion(){
-const {data,error}=await supabaseClient.from("configuracion_negocio").select("id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes").order("id",{ascending:true}).limit(1).maybeSingle();
+
+const {
+data,
+error
+}=await supabaseClient
+.from("configuracion_negocio")
+.select(
+"id,nombre_negocio,ciudad,tarifa_delivery,whatsapp_negocio,moneda,validacion_clientes"
+)
+.order(
+"id",
+{ascending:true}
+)
+.limit(1)
+.maybeSingle();
+
 if(error)throw error;
 if(!data)return;
+
 cfgNombre.value=data.nombre_negocio||"";
 cfgCiudad.value=data.ciudad||"";
 cfgDelivery.value=data.tarifa_delivery??1.5;
 cfgWhatsapp.value=data.whatsapp_negocio||"";
 cfgMoneda.value=data.moneda||"USD";
-validacionClientes.checked=data.validacion_clientes!==false;
+
+validacionClientes.checked=
+data.validacion_clientes!==false;
+
 actualizarTextoValidacion();
 }
 
 async function guardarConfiguracion(){
+
 try{
+
 const payload={
-nombre_negocio:cfgNombre.value.trim(),
-ciudad:cfgCiudad.value.trim(),
-tarifa_delivery:Number(cfgDelivery.value)||0,
-whatsapp_negocio:cfgWhatsapp.value.trim(),
-moneda:cfgMoneda.value.trim()||"USD",
-actualizado_en:new Date().toISOString()
+nombre_negocio:
+cfgNombre.value.trim(),
+
+ciudad:
+cfgCiudad.value.trim(),
+
+tarifa_delivery:
+Number(cfgDelivery.value)||0,
+
+whatsapp_negocio:
+cfgWhatsapp.value.trim(),
+
+moneda:
+cfgMoneda.value.trim()||"USD",
+
+actualizado_en:
+new Date().toISOString()
 };
-const {data:exist,error:e0}=await supabaseClient.from("configuracion_negocio").select("id").order("id",{ascending:true}).limit(1).maybeSingle();
+
+const {
+data:exist,
+error:e0
+}=await supabaseClient
+.from("configuracion_negocio")
+.select("id")
+.order(
+"id",
+{ascending:true}
+)
+.limit(1)
+.maybeSingle();
+
 if(e0)throw e0;
+
 let error;
-if(exist?.id)({error}=await supabaseClient.from("configuracion_negocio").update(payload).eq("id",exist.id));
-else({error}=await supabaseClient.from("configuracion_negocio").insert(payload));
-if(error)throw error;
-mensaje("Configuración guardada correctamente.");
-}catch(e){err(e);}
+
+if(exist?.id){
+
+({
+error
+}=await supabaseClient
+.from("configuracion_negocio")
+.update(payload)
+.eq("id",exist.id));
+
+}else{
+
+({
+error
+}=await supabaseClient
+.from("configuracion_negocio")
+.insert(payload));
+
 }
 
-function actualizarTextoValidacion(){
-const activo=document.getElementById("validacionClientes").checked;
-document.getElementById("textoValidacionClientes").textContent=activo?"Validación activa":"Validación inactiva";
-}
-
-async function cambiarValidacionClientes(){
-try{
-const activo=validacionClientes.checked;
-const {data,error}=await supabaseClient.from("configuracion_negocio").select("id").order("id",{ascending:true}).limit(1).maybeSingle();
 if(error)throw error;
-if(!data?.id)throw new Error("No existe la configuración del negocio.");
-const {error:e}=await supabaseClient.from("configuracion_negocio").update({validacion_clientes:activo,actualizado_en:new Date().toISOString()}).eq("id",data.id);
-if(e)throw e;
-actualizarTextoValidacion();
-mensaje(activo?"Validación de clientes activada.":"Validación de clientes inactivada.");
+
+mensaje(
+"Configuración guardada correctamente."
+);
+
 }catch(e){
-validacionClientes.checked=!validacionClientes.checked;
-actualizarTextoValidacion();
 err(e);
 }
 }
 
+function actualizarTextoValidacion(){
+
+const activo=
+document.getElementById(
+"validacionClientes"
+).checked;
+
+document.getElementById(
+"textoValidacionClientes"
+).textContent=
+activo?
+"Validación activa":
+"Validación inactiva";
+}
+
+async function cambiarValidacionClientes(){
+
+try{
+
+const activo=
+validacionClientes.checked;
+
+const {
+data,
+error
+}=await supabaseClient
+.from("configuracion_negocio")
+.select("id")
+.order(
+"id",
+{ascending:true}
+)
+.limit(1)
+.maybeSingle();
+
+if(error)throw error;
+
+if(!data?.id)
+throw new Error(
+"No existe la configuración del negocio."
+);
+
+const {
+error:e
+}=await supabaseClient
+.from("configuracion_negocio")
+.update({
+validacion_clientes:activo,
+actualizado_en:
+new Date().toISOString()
+})
+.eq("id",data.id);
+
+if(e)throw e;
+
+actualizarTextoValidacion();
+
+mensaje(
+activo?
+"Validación de clientes activada.":
+"Validación de clientes inactivada."
+);
+
+}catch(e){
+
+validacionClientes.checked=
+!validacionClientes.checked;
+
+actualizarTextoValidacion();
+
+err(e);
+}
+}
+
+/* CLIENTES */
 function generarCodigoManual(){
-const caracteres="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+const caracteres=
+"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
 let codigo="SR";
-for(let i=0;i<8;i++)codigo+=caracteres[Math.floor(Math.random()*caracteres.length)];
-nuevoClienteCodigo.value=codigo;
+
+for(let i=0;i<8;i++)
+codigo+=caracteres[
+Math.floor(
+Math.random()*caracteres.length
+)
+];
+
+nuevoClienteCodigo.value=
+codigo;
 }
 
 function limpiarClienteManual(){
+
 nuevoClienteNombre.value="";
 nuevoClienteTelefono.value="";
 nuevoClienteCodigo.value="";
 nuevoClienteReferente.value="";
-const resultado=document.getElementById("resultadoClienteManual");
-resultado.innerHTML="";resultado.classList.add("hidden");
+
+const resultado=
+document.getElementById(
+"resultadoClienteManual"
+);
+
+resultado.innerHTML="";
+resultado.classList.add(
+"hidden"
+);
 }
 
 async function crearClienteManual(){
-const boton=document.getElementById("btnCrearCliente");
-const nombre=nuevoClienteNombre.value.trim();
-const telefono=normalizarTelefono(nuevoClienteTelefono.value);
-const codigo=nuevoClienteCodigo.value.trim().toUpperCase();
-const referente=nuevoClienteReferente.value.trim().toUpperCase();
-if(!nombre){mensaje("Ingresa el nombre del cliente.","err");return;}
-if(!telefono){mensaje("Ingresa un teléfono celular válido de Ecuador.","err");return;}
-if(!codigo){mensaje("Ingresa o genera el código del nuevo cliente.","err");return;}
-if(codigo.length<4){mensaje("El código del cliente debe tener al menos 4 caracteres.","err");return;}
+
+const boton=
+document.getElementById(
+"btnCrearCliente"
+);
+
+const nombre=
+nuevoClienteNombre.value.trim();
+
+const telefono=
+normalizarTelefono(
+nuevoClienteTelefono.value
+);
+
+const codigo=
+nuevoClienteCodigo.value
+.trim()
+.toUpperCase();
+
+const referente=
+nuevoClienteReferente.value
+.trim()
+.toUpperCase();
+
+if(!nombre){
+mensaje(
+"Ingresa el nombre del cliente.",
+"err"
+);
+return;
+}
+
+if(!telefono){
+mensaje(
+"Ingresa un teléfono celular válido de Ecuador.",
+"err"
+);
+return;
+}
+
+if(!codigo){
+mensaje(
+"Ingresa o genera el código del nuevo cliente.",
+"err"
+);
+return;
+}
+
+if(codigo.length<4){
+mensaje(
+"El código del cliente debe tener al menos 4 caracteres.",
+"err"
+);
+return;
+}
+
 try{
-boton.disabled=true;boton.textContent="Registrando...";
-const {data:existente,error:e1}=await supabaseClient.rpc("buscar_cliente_por_telefono",{p_telefono:telefono});
+
+boton.disabled=true;
+boton.textContent="Registrando...";
+
+const {
+data:existente,
+error:e1
+}=await supabaseClient.rpc(
+"buscar_cliente_por_telefono",
+{
+p_telefono:telefono
+}
+);
+
 if(e1)throw e1;
-if(Array.isArray(existente)&&existente.length)throw new Error(`El teléfono ya está registrado a nombre de "${existente[0].nombre||"otro cliente"}".`);
-const {data:existeCodigo,error:e2}=await supabaseClient.rpc("buscar_cliente_por_codigo",{p_codigo:codigo});
+
+if(
+Array.isArray(existente)&&
+existente.length
+){
+throw new Error(
+`El teléfono ya está registrado a nombre de "${existente[0].nombre||"otro cliente"}".`
+);
+}
+
+const {
+data:existeCodigo,
+error:e2
+}=await supabaseClient.rpc(
+"buscar_cliente_por_codigo",
+{
+p_codigo:codigo
+}
+);
+
 if(e2)throw e2;
-if(Array.isArray(existeCodigo)&&existeCodigo.length)throw new Error("El código del cliente ya está registrado.");
-const {data,error}=await supabaseClient.rpc("crear_cliente",{p_nombre:nombre,p_telefono:telefono,p_codigo_referido:codigo,p_codigo_referente:referente||null});
+
+if(
+Array.isArray(existeCodigo)&&
+existeCodigo.length
+){
+throw new Error(
+"El código del cliente ya está registrado."
+);
+}
+
+const {
+data,
+error
+}=await supabaseClient.rpc(
+"crear_cliente",
+{
+p_nombre:nombre,
+p_telefono:telefono,
+p_codigo_referido:codigo,
+p_codigo_referente:
+referente||null
+}
+);
+
 if(error)throw error;
-const resultado=document.getElementById("resultadoClienteManual");
-resultado.innerHTML=`<strong>Cliente registrado correctamente.</strong><div style="margin-top:8px">Cliente: <strong>${escapeHtml(nombre)}</strong></div><div style="margin-top:5px">Teléfono: <strong>${escapeHtml(telefono)}</strong></div><div style="margin-top:5px">Código de referido: <strong>${escapeHtml(codigo)}</strong></div>`;
-resultado.classList.remove("hidden");
-nuevoClienteNombre.value="";nuevoClienteTelefono.value="";nuevoClienteCodigo.value="";nuevoClienteReferente.value="";
+
+const resultado=
+document.getElementById(
+"resultadoClienteManual"
+);
+
+resultado.innerHTML=`
+<strong>Cliente registrado correctamente.</strong>
+<div style="margin-top:8px">
+Cliente:
+<strong>${escapeHtml(nombre)}</strong>
+</div>
+<div style="margin-top:5px">
+Teléfono:
+<strong>${escapeHtml(telefono)}</strong>
+</div>
+<div style="margin-top:5px">
+Código de referido:
+<strong>${escapeHtml(codigo)}</strong>
+</div>
+`;
+
+resultado.classList.remove(
+"hidden"
+);
+
+nuevoClienteNombre.value="";
+nuevoClienteTelefono.value="";
+nuevoClienteCodigo.value="";
+nuevoClienteReferente.value="";
+
 clientesCargados=false;
+
 await cargarClientes();
-mensaje("Cliente registrado correctamente.");
-}catch(e){err(e);}
-finally{boton.disabled=false;boton.textContent="Registrar cliente";}
+
+mensaje(
+"Cliente registrado correctamente."
+);
+
+}catch(e){
+err(e);
+
+}finally{
+
+boton.disabled=false;
+boton.textContent=
+"Registrar cliente";
+}
 }
 
 async function cargarClientes(){
-const box=document.getElementById("listaClientes");
-if(box)box.innerHTML='<p class="muted">Cargando clientes...</p>';
+
+const box=
+document.getElementById(
+"listaClientes"
+);
+
+if(box)
+box.innerHTML=
+'<p class="muted">Cargando clientes...</p>';
+
 try{
-if(!adminActual?.token)throw new Error("La sesión administrativa no es válida.");
-const {data,error}=await supabaseClient.rpc("listar_clientes_admin",{p_token:adminActual.token});
-if(error)throw error;
-clientes=data||[];clientesCargados=true;pintarClientes();
-}catch(e){
-clientesCargados=false;
-if(box)box.innerHTML='<p class="muted">No se pudieron cargar los clientes.</p>';
-const mensajeError=String(e?.message||"");
-if(/sesión administrativa/i.test(mensajeError)||/sesión inválida/i.test(mensajeError)){
-sessionStorage.removeItem("sobreRuedasAdmin");adminActual=null;
-document.getElementById("adminApp").style.display="none";
-document.getElementById("loginScreen").classList.remove("hidden");
-document.getElementById("loginError").textContent="La sesión administrativa expiró. Ingresa nuevamente.";
+
+if(!adminActual?.token)
+throw new Error(
+"La sesión administrativa no es válida."
+);
+
+const {
+data,
+error
+}=await supabaseClient.rpc(
+"listar_clientes_admin",
+{
+p_token:
+adminActual.token
 }
+);
+
+if(error)throw error;
+
+clientes=data||[];
+clientesCargados=true;
+
+pintarClientes();
+actualizarDashboard();
+
+}catch(e){
+
+clientesCargados=false;
+
+if(box)
+box.innerHTML=
+'<p class="muted">No se pudieron cargar los clientes.</p>';
+
 err(e);
 }
 }
 
-function filtrarClientes(){pintarClientes();}
-
-function pintarClientes(){
-const box=document.getElementById("listaClientes");
-const resumen=document.getElementById("resumenClientes");
-if(!box)return;
-const activos=clientes.filter(c=>c.activo).length;
-const inactivos=clientes.length-activos;
-if(resumen)resumen.innerHTML=`<div class="client-count"><strong>${clientes.length}</strong> Total</div><div class="client-count"><strong>${activos}</strong> Activos</div><div class="client-count"><strong>${inactivos}</strong> Inactivos</div>`;
-const texto=(document.getElementById("buscarCliente")?.value||"").trim().toLowerCase();
-const lista=clientes.filter(c=>{if(!texto)return true;return[c.nombre,c.telefono,c.codigo_referido].some(v=>String(v||"").toLowerCase().includes(texto));});
-if(!lista.length){box.innerHTML='<p class="muted">No se encontraron clientes.</p>';return;}
-box.innerHTML=lista.map(c=>`
-<div class="client-row">
-<div class="client-info"><strong>${escapeHtml(c.nombre||"Cliente")}</strong><small>Teléfono: ${escapeHtml(c.telefono||"")}</small><small>Código: ${escapeHtml(c.codigo_referido||"")}</small></div>
-<div class="client-info"><span class="badge ${c.activo?"on":"off"}">${c.activo?"Activo":"Inactivo"}</span><small>${c.referido_por?`Referido por cliente #${c.referido_por}`:"Cliente principal"}</small></div>
-<div class="client-actions">
-<button class="btn ${c.activo?"warning":"success"}" onclick="cambiarEstadoCliente(${c.id},${!c.activo})">${c.activo?"Inactivar":"Activar"}</button>
-<button class="btn danger" onclick="eliminarCliente(${c.id})">Eliminar</button>
-</div>
-</div>`).join("");
+function filtrarClientes(){
+pintarClientes();
 }
 
-async function cambiarEstadoCliente(id,activo){
+function pintarClientes(){
+
+const box=
+document.getElementById(
+"listaClientes"
+);
+
+const resumen=
+document.getElementById(
+"resumenClientes"
+);
+
+if(!box)return;
+
+const activos=
+clientes.filter(
+c=>c.activo
+).length;
+
+const inactivos=
+clientes.length-activos;
+
+if(resumen){
+
+resumen.innerHTML=`
+<div class="client-count">
+<strong>${clientes.length}</strong> Total
+</div>
+<div class="client-count">
+<strong>${activos}</strong> Activos
+</div>
+<div class="client-count">
+<strong>${inactivos}</strong> Inactivos
+</div>`;
+}
+
+const texto=
+(
+document.getElementById(
+"buscarCliente"
+)?.value||""
+)
+.trim()
+.toLowerCase();
+
+const lista=
+clientes.filter(c=>{
+
+if(!texto)return true;
+
+return[
+c.nombre,
+c.telefono,
+c.codigo_referido
+].some(v=>
+String(v||"")
+.toLowerCase()
+.includes(texto)
+);
+
+});
+
+if(!lista.length){
+
+box.innerHTML=
+'<p class="muted">No se encontraron clientes.</p>';
+
+return;
+}
+
+box.innerHTML=
+lista.map(c=>`
+
+<div class="client-row">
+
+<div class="client-info">
+
+<strong>
+${escapeHtml(
+c.nombre||"Cliente"
+)}
+</strong>
+
+<small>
+Teléfono:
+${escapeHtml(
+c.telefono||""
+)}
+</small>
+
+<small>
+Código:
+${escapeHtml(
+c.codigo_referido||""
+)}
+</small>
+
+</div>
+
+<div class="client-info">
+
+<span class="badge ${c.activo?"on":"off"}">
+${c.activo?"Activo":"Inactivo"}
+</span>
+
+<small>
+${
+c.referido_por?
+`Referido por cliente #${c.referido_por}`:
+"Cliente principal"
+}
+</small>
+
+</div>
+
+<div class="client-actions">
+
+<button
+class="btn ${c.activo?"warning":"success"}"
+onclick="cambiarEstadoCliente(${c.id},${!c.activo})">
+${c.activo?"Inactivar":"Activar"}
+</button>
+
+<button
+class="btn danger"
+onclick="eliminarCliente(${c.id})">
+Eliminar
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+}
+
+async function cambiarEstadoCliente(
+id,
+activo
+){
+
 try{
-if(!adminActual?.token)throw new Error("La sesión administrativa no es válida.");
-const {data,error}=await supabaseClient.rpc("cambiar_estado_cliente_admin",{p_token:adminActual.token,p_cliente_id:id,p_activo:activo});
+
+if(!adminActual?.token)
+throw new Error(
+"La sesión administrativa no es válida."
+);
+
+const {
+data,
+error
+}=await supabaseClient.rpc(
+"cambiar_estado_cliente_admin",
+{
+p_token:
+adminActual.token,
+p_cliente_id:id,
+p_activo:activo
+}
+);
+
 if(error)throw error;
-if(!data)throw new Error("No se encontró el cliente.");
-const c=clientes.find(x=>x.id===id);if(c)c.activo=activo;
-pintarClientes();mensaje(activo?"Cliente activado.":"Cliente inactivado.");
-}catch(e){err(e);}
+
+if(!data)
+throw new Error(
+"No se encontró el cliente."
+);
+
+const c=
+clientes.find(
+x=>x.id===id
+);
+
+if(c)c.activo=activo;
+
+pintarClientes();
+actualizarDashboard();
+
+mensaje(
+activo?
+"Cliente activado.":
+"Cliente inactivado."
+);
+
+}catch(e){
+err(e);
+}
 }
 
 async function eliminarCliente(id){
+
 try{
-const cliente=clientes.find(c=>c.id===id);if(!cliente)return;
-if(!confirm(`¿Eliminar definitivamente al cliente "${cliente.nombre}"?\n\nSus referidos permanecerán registrados.`))return;
-if(!adminActual?.token)throw new Error("La sesión administrativa no es válida.");
-const {data,error}=await supabaseClient.rpc("eliminar_cliente_admin",{p_token:adminActual.token,p_cliente_id:id});
+
+const cliente=
+clientes.find(
+c=>c.id===id
+);
+
+if(!cliente)return;
+
+if(!confirm(
+`¿Eliminar definitivamente al cliente "${cliente.nombre}"?\n\nSus referidos permanecerán registrados.`
+))
+return;
+
+if(!adminActual?.token)
+throw new Error(
+"La sesión administrativa no es válida."
+);
+
+const {
+data,
+error
+}=await supabaseClient.rpc(
+"eliminar_cliente_admin",
+{
+p_token:
+adminActual.token,
+p_cliente_id:id
+}
+);
+
 if(error)throw error;
-if(!data)throw new Error("No se encontró el cliente.");
-await cargarClientes();mensaje("Cliente eliminado. Sus referidos permanecen registrados.");
-}catch(e){err(e);}
+
+if(!data)
+throw new Error(
+"No se encontró el cliente."
+);
+
+await cargarClientes();
+
+mensaje(
+"Cliente eliminado. Sus referidos permanecen registrados."
+);
+
+}catch(e){
+err(e);
+}
 }
 
 async function importarContactos(){
-const archivo=archivoContactos.files[0];
-const boton=document.getElementById("btnImportarContactos");
-if(!archivo){mensaje("Selecciona un archivo de contactos .vcf.","err");return;}
-if(!/\.vcf$/i.test(archivo.name)){mensaje("El archivo debe estar en formato .vcf.","err");return;}
-try{
-boton.disabled=true;boton.textContent="Importando...";
-const texto=await archivo.text();
-const contactos=parsearVCF(texto);
-if(!contactos.length){mensaje("No se encontraron contactos válidos en el archivo.","err");return;}
-const unicos=new Map();
-contactos.forEach(c=>{
-const telefono=normalizarTelefono(c.telefono);
-if(!telefono)return;
-if(!unicos.has(telefono))unicos.set(telefono,{nombre:c.nombre||"Cliente",telefono});
-});
-const lista=[...unicos.values()];
-if(!lista.length){mensaje("No se encontraron números de teléfono válidos.","err");return;}
-let procesados=0,importados=0,existentes=0,errores=0;
-const TAM_BLOQUE=500;
-for(let i=0;i<lista.length;i+=TAM_BLOQUE){
-const bloque=lista.slice(i,i+TAM_BLOQUE);
-const {data,error}=await supabaseClient.rpc("importar_clientes_masivo",{p_clientes:bloque});
-if(error)throw error;
-const r=Array.isArray(data)?data[0]:data;
-procesados+=Number(r?.procesados||0);
-importados+=Number(r?.importados||0);
-existentes+=Number(r?.existentes||0);
-errores+=Number(r?.errores||0);
+
+const archivo=
+archivoContactos.files[0];
+
+const boton=
+document.getElementById(
+"btnImportarContactos"
+);
+
+if(!archivo){
+mensaje(
+"Selecciona un archivo de contactos .vcf.",
+"err"
+);
+return;
 }
-mostrarResultadoImportacion({contactosArchivo:contactos.length,unicos:lista.length,procesados,importados,existentes,errores});
-archivoContactos.value="";clientesCargados=false;await cargarClientes();
-mensaje(`Importación terminada: ${importados} cliente(s) nuevo(s).`);
+
+if(!/\.vcf$/i.test(
+archivo.name
+)){
+mensaje(
+"El archivo debe estar en formato .vcf.",
+"err"
+);
+return;
+}
+
+try{
+
+boton.disabled=true;
+boton.textContent="Importando...";
+
+const texto=
+await archivo.text();
+
+const contactos=
+parsearVCF(texto);
+
+if(!contactos.length){
+mensaje(
+"No se encontraron contactos válidos en el archivo.",
+"err"
+);
+return;
+}
+
+const unicos=
+new Map();
+
+contactos.forEach(c=>{
+
+const telefono=
+normalizarTelefono(
+c.telefono
+);
+
+if(!telefono)return;
+
+if(!unicos.has(telefono))
+unicos.set(
+telefono,
+{
+nombre:
+c.nombre||"Cliente",
+telefono
+}
+);
+
+});
+
+const lista=
+[...unicos.values()];
+
+if(!lista.length){
+mensaje(
+"No se encontraron números de teléfono válidos.",
+"err"
+);
+return;
+}
+
+let procesados=0;
+let importados=0;
+let existentes=0;
+let errores=0;
+
+const TAM_BLOQUE=500;
+
+for(
+let i=0;
+i<lista.length;
+i+=TAM_BLOQUE
+){
+
+const bloque=
+lista.slice(
+i,
+i+TAM_BLOQUE
+);
+
+const {
+data,
+error
+}=await supabaseClient.rpc(
+"importar_clientes_masivo",
+{
+p_clientes:
+bloque
+}
+);
+
+if(error)throw error;
+
+const r=
+Array.isArray(data)?
+data[0]:
+data;
+
+procesados+=
+Number(
+r?.procesados||0
+);
+
+importados+=
+Number(
+r?.importados||0
+);
+
+existentes+=
+Number(
+r?.existentes||0
+);
+
+errores+=
+Number(
+r?.errores||0
+);
+}
+
+mostrarResultadoImportacion({
+contactosArchivo:
+contactos.length,
+unicos:
+lista.length,
+procesados,
+importados,
+existentes,
+errores
+});
+
+archivoContactos.value="";
+clientesCargados=false;
+
+await cargarClientes();
+
+mensaje(
+`Importación terminada: ${importados} cliente(s) nuevo(s).`
+);
+
 }catch(e){
-console.error(e);mensaje(e?.message||"No se pudo importar el archivo de contactos.","err");
-}finally{boton.disabled=false;boton.textContent="Importar contactos";}
+
+console.error(e);
+
+mensaje(
+e?.message||
+"No se pudo importar el archivo de contactos.",
+"err"
+);
+
+}finally{
+
+boton.disabled=false;
+boton.textContent=
+"Importar contactos";
+}
 }
 
 function mostrarResultadoImportacion(r){
-const box=document.getElementById("resultadoImportacion");
-box.innerHTML=`<strong>Contactos encontrados: ${r.contactosArchivo}</strong><strong>Teléfonos únicos: ${r.unicos}</strong><strong>Procesados: ${r.procesados}</strong><strong>Importados: ${r.importados}</strong><strong>Ya existentes: ${r.existentes}</strong><strong>Errores: ${r.errores}</strong>`;
-box.classList.remove("hidden");
+
+const box=
+document.getElementById(
+"resultadoImportacion"
+);
+
+box.innerHTML=`
+<strong>Contactos encontrados: ${r.contactosArchivo}</strong>
+<strong>Teléfonos únicos: ${r.unicos}</strong>
+<strong>Procesados: ${r.procesados}</strong>
+<strong>Importados: ${r.importados}</strong>
+<strong>Ya existentes: ${r.existentes}</strong>
+<strong>Errores: ${r.errores}</strong>`;
+
+box.classList.remove(
+"hidden"
+);
 }
 
 function parsearVCF(texto){
+
 const resultado=[];
-const normalizado=texto.replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\n[ \t]/g,"");
-const bloques=normalizado.split(/BEGIN:VCARD/i);
-for(const bloqueRaw of bloques){
-if(!/TEL/i.test(bloqueRaw))continue;
-const bloque=bloqueRaw.split(/END:VCARD/i)[0];
+
+const normalizado=
+texto
+.replace(/\r\n/g,"\n")
+.replace(/\r/g,"\n")
+.replace(/\n[ \t]/g,"");
+
+const bloques=
+normalizado.split(
+/BEGIN:VCARD/i
+);
+
+for(
+const bloqueRaw of bloques
+){
+
+if(!/TEL/i.test(bloqueRaw))
+continue;
+
+const bloque=
+bloqueRaw.split(
+/END:VCARD/i
+)[0];
+
 let nombre="";
-const fn=bloque.match(/^FN(?:;[^:]*)?:(.*)$/im);
-if(fn)nombre=decodificarVCF(fn[1].trim());
+
+const fn=
+bloque.match(
+/^FN(?:;[^:]*)?:(.*)$/im
+);
+
+if(fn)
+nombre=
+decodificarVCF(
+fn[1].trim()
+);
+
 else{
-const n=bloque.match(/^N(?:;[^:]*)?:(.*)$/im);
+
+const n=
+bloque.match(
+/^N(?:;[^:]*)?:(.*)$/im
+);
+
 if(n){
-const partes=n[1].split(";");
-nombre=decodificarVCF([partes[1],partes[0],partes[2]].filter(Boolean).join(" ").trim());
+
+const partes=
+n[1].split(";");
+
+nombre=
+decodificarVCF(
+[
+partes[1],
+partes[0],
+partes[2]
+]
+.filter(Boolean)
+.join(" ")
+.trim()
+);
+
 }
 }
-const lineas=bloque.split("\n");
-for(const linea of lineas){
-if(!/^TEL(?:;[^:]*)?:/i.test(linea))continue;
-const pos=linea.indexOf(":");if(pos<0)continue;
-const telefono=linea.substring(pos+1).trim();
-if(telefono)resultado.push({nombre:nombre||"Cliente",telefono});
+
+const lineas=
+bloque.split("\n");
+
+for(
+const linea of lineas
+){
+
+if(!/^TEL(?:;[^:]*)?:/i.test(
+linea
+))
+continue;
+
+const pos=
+linea.indexOf(":");
+
+if(pos<0)continue;
+
+const telefono=
+linea.substring(
+pos+1
+).trim();
+
+if(telefono)
+resultado.push({
+nombre:
+nombre||"Cliente",
+telefono
+});
+
 }
 }
+
 return resultado;
 }
 
 function decodificarVCF(valor){
-return String(valor||"").replace(/\\n/gi," ").replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\\\/g,"\\").trim();
+
+return String(valor||"")
+.replace(/\\n/gi," ")
+.replace(/\\,/g,",")
+.replace(/\\;/g,";")
+.replace(/\\\\/g,"\\")
+.trim();
 }
 
 function normalizarTelefono(valor){
-let t=String(valor||"").trim().replace(/^tel:/i,"").replace(/[^\d+]/g,"");
-if(t.startsWith("+"))t=t.substring(1);
-if(/^5939\d{8}$/.test(t))return t;
-if(/^09\d{8}$/.test(t))return "593"+t.substring(1);
-if(/^9\d{8}$/.test(t))return "593"+t;
+
+let t=
+String(valor||"")
+.trim()
+.replace(/^tel:/i,"")
+.replace(/[^\d+]/g,"");
+
+if(t.startsWith("+"))
+t=t.substring(1);
+
+if(/^5939\d{8}$/.test(t))
+return t;
+
+if(/^09\d{8}$/.test(t))
+return "593"+t.substring(1);
+
+if(/^9\d{8}$/.test(t))
+return "593"+t;
+
 return "";
 }
 
+/* CATEGORIAS */
 async function cargarCategorias(){
-const {data,error}=await supabaseClient.from("categorias").select("id,nombre,activo").order("nombre");
+
+const {
+data,
+error
+}=await supabaseClient
+.from("categorias")
+.select(
+"id,nombre,activo"
+)
+.order("nombre");
+
 if(error)throw error;
-categorias=data||[];pintarCategorias();cargarSelectCategorias();
+
+categorias=data||[];
+
+pintarCategorias();
+cargarSelectCategorias();
 }
 
 function cargarSelectCategorias(){
-const html='<option value="">Sin categoría</option>'+categorias.map(c=>`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`).join("");
-locCategoria.innerHTML=html;editCategoria.innerHTML=html;
+
+const html=
+'<option value="">Sin categoría</option>'+
+categorias.map(c=>
+`<option value="${escapeHtml(c.nombre)}">${escapeHtml(c.nombre)}</option>`
+).join("");
+
+locCategoria.innerHTML=html;
+editCategoria.innerHTML=html;
 }
 
 function pintarCategorias(){
+
 listaCategorias.innerHTML="";
-if(!categorias.length){listaCategorias.innerHTML='<p class="muted">No hay categorías.</p>';return;}
+
+if(!categorias.length){
+
+listaCategorias.innerHTML=
+'<p class="muted">No hay categorías.</p>';
+
+return;
+}
+
 categorias.forEach(c=>{
-const row=document.createElement("div");
-row.className="category-row";
+
+const row=
+document.createElement(
+"div"
+);
+
+row.className=
+"category-row";
+
 row.innerHTML=`
-<div><strong>${escapeHtml(c.nombre)}</strong><span class="badge ${c.activo?"on":"off"}">${c.activo?"Activa":"Inactiva"}</span></div>
+
+<div>
+
+<strong>
+${escapeHtml(c.nombre)}
+</strong>
+
+<span class="badge ${c.activo?"on":"off"}">
+${c.activo?"Activa":"Inactiva"}
+</span>
+
+</div>
+
 <div class="actions">
-<button class="btn secondary" onclick="editarCategoria(${c.id})">Editar</button>
-<button class="btn ${c.activo?"warning":"success"}" onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">${c.activo?"Inactivar":"Activar"}</button>
-<button class="btn danger" onclick="eliminarCategoria(${c.id})">Eliminar</button>
+
+<button
+class="btn secondary"
+onclick="editarCategoria(${c.id})">
+Editar
+</button>
+
+<button
+class="btn ${c.activo?"warning":"success"}"
+onclick="cambiarEstadoCategoria(${c.id},${!c.activo})">
+${c.activo?"Inactivar":"Activar"}
+</button>
+
+<button
+class="btn danger"
+onclick="eliminarCategoria(${c.id})">
+Eliminar
+</button>
+
 </div>`;
+
 listaCategorias.appendChild(row);
 });
 }
 
 async function crearCategoria(){
+
 try{
-const nombre=catNombre.value.trim();
-if(!nombre){mensaje("Escribe el nombre de la categoría.","err");return;}
-const existe=categorias.some(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase());
-if(existe){mensaje("Ya existe una categoría con ese nombre.","err");return;}
-const {error}=await supabaseClient.from("categorias").insert({nombre,activo:true});
+
+const nombre=
+catNombre.value.trim();
+
+if(!nombre){
+
+mensaje(
+"Escribe el nombre de la categoría.",
+"err"
+);
+
+return;
+}
+
+const existe=
+categorias.some(
+c=>
+c.nombre
+.trim()
+.toLowerCase()===
+nombre.toLowerCase()
+);
+
+if(existe){
+
+mensaje(
+"Ya existe una categoría con ese nombre.",
+"err"
+);
+
+return;
+}
+
+const {
+error
+}=await supabaseClient
+.from("categorias")
+.insert({
+nombre,
+activo:true
+});
+
 if(error)throw error;
-catNombre.value="";await cargarCategorias();mensaje("Categoría creada.");
-}catch(e){err(e);}
+
+catNombre.value="";
+
+await cargarCategorias();
+
+mensaje(
+"Categoría creada."
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
 async function editarCategoria(id){
-const cat=categorias.find(x=>x.id===id);if(!cat)return;
-const nombre=prompt("Nuevo nombre de categoría:",cat.nombre);if(nombre===null)return;
-const nuevo=nombre.trim();if(!nuevo)return;
-const existe=categorias.some(c=>c.id!==id&&c.nombre.trim().toLowerCase()===nuevo.toLowerCase());
-if(existe){mensaje("Ya existe una categoría con ese nombre.","err");return;}
-try{
-const {error:e1}=await supabaseClient.from("categorias").update({nombre:nuevo}).eq("id",id);if(e1)throw e1;
-const {error:e2}=await supabaseClient.from("restaurantes").update({categoria:nuevo}).eq("categoria",cat.nombre);if(e2)throw e2;
-await cargarCategorias();await cargarLocales();mensaje("Categoría actualizada.");
-}catch(e){err(e);}
+
+const cat=
+categorias.find(
+x=>x.id===id
+);
+
+if(!cat)return;
+
+const nombre=
+prompt(
+"Nuevo nombre de categoría:",
+cat.nombre
+);
+
+if(nombre===null)return;
+
+const nuevo=
+nombre.trim();
+
+if(!nuevo)return;
+
+const existe=
+categorias.some(
+c=>
+c.id!==id&&
+c.nombre.trim().toLowerCase()===
+nuevo.toLowerCase()
+);
+
+if(existe){
+
+mensaje(
+"Ya existe una categoría con ese nombre.",
+"err"
+);
+
+return;
 }
 
-async function cambiarEstadoCategoria(id,activo){
 try{
-const {error}=await supabaseClient.from("categorias").update({activo}).eq("id",id);if(error)throw error;
-await cargarCategorias();mensaje(activo?"Categoría activada.":"Categoría inactivada.");
-}catch(e){err(e);}
+
+const {
+error:e1
+}=await supabaseClient
+.from("categorias")
+.update({
+nombre:nuevo
+})
+.eq(
+"id",
+id
+);
+
+if(e1)throw e1;
+
+const {
+error:e2
+}=await supabaseClient
+.from("restaurantes")
+.update({
+categoria:nuevo
+})
+.eq(
+"categoria",
+cat.nombre
+);
+
+if(e2)throw e2;
+
+await cargarCategorias();
+await cargarLocales();
+
+mensaje(
+"Categoría actualizada."
+);
+
+}catch(e){
+
+err(e);
+
+}
+}
+
+async function cambiarEstadoCategoria(
+id,
+activo
+){
+
+try{
+
+const {
+error
+}=await supabaseClient
+.from("categorias")
+.update({
+activo
+})
+.eq(
+"id",
+id
+);
+
+if(error)throw error;
+
+await cargarCategorias();
+
+mensaje(
+activo?
+"Categoría activada.":
+"Categoría inactivada."
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
 async function eliminarCategoria(id){
-const cat=categorias.find(x=>x.id===id);if(!cat)return;
-const asociados=locales.filter(x=>x.categoria===cat.nombre);
-let texto=`¿Eliminar la categoría "${cat.nombre}"?`;
-if(asociados.length)texto+=`\n\nTiene ${asociados.length} local(es) asociado(s). Su categoría quedará vacía.`;
-if(!confirm(texto))return;
+
+const cat=
+categorias.find(
+x=>x.id===id
+);
+
+if(!cat)return;
+
+const asociados=
+locales.filter(
+x=>x.categoria===
+cat.nombre
+);
+
+let texto=
+`¿Eliminar la categoría "${cat.nombre}"?`;
+
+if(asociados.length)
+texto+=
+`\n\nTiene ${asociados.length} local(es) asociado(s). Su categoría quedará vacía.`;
+
+if(!confirm(texto))
+return;
+
 try{
+
 if(asociados.length){
-const {error:e1}=await supabaseClient.from("restaurantes").update({categoria:null}).eq("categoria",cat.nombre);if(e1)throw e1;
-}
-const {error}=await supabaseClient.from("categorias").delete().eq("id",id);if(error)throw error;
-await cargarCategorias();await cargarLocales();mensaje("Categoría eliminada.");
-}catch(e){err(e);}
+
+const {
+error:e1
+}=await supabaseClient
+.from("restaurantes")
+.update({
+categoria:null
+})
+.eq(
+"categoria",
+cat.nombre
+);
+
+if(e1)throw e1;
 }
 
-async function cargarLocales(){
-const {data,error}=await supabaseClient.from("restaurantes").select("id,nombre,categoria,descripcion,banner_url,activo").order("nombre");
+const {
+error
+}=await supabaseClient
+.from("categorias")
+.delete()
+.eq(
+"id",
+id
+);
+
 if(error)throw error;
-locales=data||[];pintarLocales();
+
+await cargarCategorias();
+await cargarLocales();
+
+mensaje(
+"Categoría eliminada."
+);
+
+}catch(e){
+
+err(e);
+
+}
+}
+
+/* LOCALES */
+async function cargarLocales(){
+
+const {
+data,
+error
+}=await supabaseClient
+.from("restaurantes")
+.select(
+"id,nombre,categoria,descripcion,banner_url,activo"
+)
+.order("nombre");
+
+if(error)throw error;
+
+locales=data||[];
+
+pintarLocales();
+actualizarDashboard();
 }
 
 function pintarLocales(){
+
 listaLocales.innerHTML="";
-if(!locales.length){listaLocales.innerHTML='<p class="muted">No hay locales registrados.</p>';return;}
+
+if(!locales.length){
+
+listaLocales.innerHTML=
+'<p class="muted">No hay locales registrados.</p>';
+
+return;
+}
+
 locales.forEach(l=>{
-const div=document.createElement("div");div.className="local-card";
-const img=l.banner_url||"";
+
+const div=
+document.createElement(
+"div"
+);
+
+div.className=
+"local-card";
+
+const img=
+l.banner_url||"";
+
 div.innerHTML=`
-${img?`<img class="local-banner" src="${escapeAttr(img)}" alt="" loading="lazy" decoding="async">`:`<div class="local-banner"></div>`}
+
+${
+img?
+`<img
+class="local-banner"
+src="${escapeAttr(img)}"
+alt=""
+loading="lazy"
+decoding="async">`:
+`<div class="local-banner"></div>`
+}
+
 <div class="local-body">
-<div class="local-title">${escapeHtml(l.nombre)}</div>
-<div class="muted">${escapeHtml(l.categoria||"Sin categoría")}</div>
-<p>${escapeHtml(l.descripcion||"")}</p>
-<span class="badge ${l.activo?"on":"off"}">${l.activo?"Activo":"Inactivo"}</span>
+
+<div class="local-title">
+${escapeHtml(l.nombre)}
+</div>
+
+<div class="muted">
+${escapeHtml(
+l.categoria||
+"Sin categoría"
+)}
+</div>
+
+<p>
+${escapeHtml(
+l.descripcion||""
+)}
+</p>
+
+<span class="badge ${l.activo?"on":"off"}">
+${l.activo?"Activo":"Inactivo"}
+</span>
+
 <div class="actions">
-<button class="btn info" onclick="editarLocal(${l.id})">Editar</button>
-<button class="btn ${l.activo?"warning":"success"}" onclick="cambiarEstadoLocal(${l.id},${!l.activo})">${l.activo?"Inactivar":"Activar"}</button>
-<button class="btn danger" onclick="eliminarLocal(${l.id})">Eliminar</button>
+
+<button
+class="btn info"
+onclick="editarLocal(${l.id})">
+Editar
+</button>
+
+<button
+class="btn ${l.activo?"warning":"success"}"
+onclick="cambiarEstadoLocal(${l.id},${!l.activo})">
+${l.activo?"Inactivar":"Activar"}
+</button>
+
+<button
+class="btn danger"
+onclick="eliminarLocal(${l.id})">
+Eliminar
+</button>
+
 </div>
 </div>`;
+
 listaLocales.appendChild(div);
 });
 }
 
-function cambiarModoHorario(){construirHorario("horarioEditor","nuevo")}
-function cambiarModoHorarioEdit(){construirHorario("editHorarioEditor","edit")}
+function cambiarModoHorario(){
+construirHorario(
+"horarioEditor",
+"nuevo"
+);
+}
+
+function cambiarModoHorarioEdit(){
+construirHorario(
+"editHorarioEditor",
+"edit"
+);
+}
 
 function modoSeleccionado(tipo){
-const name=tipo==="edit"?"editModoHorario":"modoHorario";
-return document.querySelector(`input[name="${name}"]:checked`)?.value||"personalizado";
+
+const name=
+tipo==="edit"?
+"editModoHorario":
+"modoHorario";
+
+return document.querySelector(
+`input[name="${name}"]:checked`
+)?.value||
+"personalizado";
 }
 
-function construirHorario(id,tipo){
-const box=document.getElementById(id);if(!box)return;
-const modo=modoSeleccionado(tipo);
-if(modo==="siempre"){box.innerHTML='<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';return;}
-if(modo==="cerrado"){box.innerHTML='<p class="muted">El local estará cerrado todos los días.</p>';return;}
-box.innerHTML=`<div class="horario-box">${DIAS.map(d=>`
+function construirHorario(
+id,
+tipo
+){
+
+const box=
+document.getElementById(id);
+
+if(!box)return;
+
+const modo=
+modoSeleccionado(tipo);
+
+if(modo==="siempre"){
+
+box.innerHTML=
+'<p class="muted">El local estará abierto las 24 horas, todos los días.</p>';
+
+return;
+}
+
+if(modo==="cerrado"){
+
+box.innerHTML=
+'<p class="muted">El local estará cerrado todos los días.</p>';
+
+return;
+}
+
+box.innerHTML=`
+
+<div class="horario-box">
+
+${DIAS.map(d=>`
+
 <div class="horario-row">
-<div class="day">${d.n}</div>
+
+<div class="day">
+${d.n}
+</div>
+
 <label class="toggle">
-<input type="checkbox" id="${tipo}Dia${d.d}" checked onchange="actualizarFilaHorario('${tipo}',${d.d})">
-<span class="eye">👁</span><span class="estado-text">Abierto</span>
+
+<input
+type="checkbox"
+id="${tipo}Dia${d.d}"
+checked
+onchange="actualizarFilaHorario('${tipo}',${d.d})">
+
+<span class="eye">👁</span>
+
+<span class="estado-text">
+Abierto
+</span>
+
 </label>
-<div class="time-wrap"><label>Desde</label><input id="${tipo}Apertura${d.d}" type="time" value="10:00"></div>
-<div class="time-wrap"><label>Hasta</label><input id="${tipo}Cierre${d.d}" type="time" value="22:00"></div>
-</div>`).join("")}</div>`;
+
+<div class="time-wrap">
+
+<label>Desde</label>
+
+<input
+id="${tipo}Apertura${d.d}"
+type="time"
+value="10:00">
+
+</div>
+
+<div class="time-wrap">
+
+<label>Hasta</label>
+
+<input
+id="${tipo}Cierre${d.d}"
+type="time"
+value="22:00">
+
+</div>
+
+</div>
+
+`).join("")}
+
+</div>`;
 }
 
-function actualizarFilaHorario(tipo,dia){
-const chk=document.getElementById(`${tipo}Dia${dia}`);
-const ap=document.getElementById(`${tipo}Apertura${dia}`);
-const ci=document.getElementById(`${tipo}Cierre${dia}`);
-const text=chk?.parentElement?.querySelector(".estado-text");
-const abierto=!!chk?.checked;
-if(ap)ap.disabled=!abierto;
-if(ci)ci.disabled=!abierto;
-if(text)text.textContent=abierto?"Abierto":"Cerrado";
+function actualizarFilaHorario(
+tipo,
+dia
+){
+
+const chk=
+document.getElementById(
+`${tipo}Dia${dia}`
+);
+
+const ap=
+document.getElementById(
+`${tipo}Apertura${dia}`
+);
+
+const ci=
+document.getElementById(
+`${tipo}Cierre${dia}`
+);
+
+const text=
+chk?.parentElement?.querySelector(
+".estado-text"
+);
+
+const abierto=
+!!chk?.checked;
+
+if(ap)
+ap.disabled=!abierto;
+
+if(ci)
+ci.disabled=!abierto;
+
+if(text)
+text.textContent=
+abierto?
+"Abierto":
+"Cerrado";
 }
 
 function obtenerHorario(tipo){
-const modo=modoSeleccionado(tipo);
-if(modo==="siempre")return DIAS.map(d=>({dia_semana:d.d,hora_apertura:"00:00",hora_cierre:"23:59",cerrado:false}));
-if(modo==="cerrado")return DIAS.map(d=>({dia_semana:d.d,hora_apertura:null,hora_cierre:null,cerrado:true}));
-return DIAS.map(d=>{
-const abierto=document.getElementById(`${tipo}Dia${d.d}`)?.checked;
-return{
+
+const modo=
+modoSeleccionado(tipo);
+
+if(modo==="siempre")
+return DIAS.map(
+d=>({
 dia_semana:d.d,
-hora_apertura:abierto?document.getElementById(`${tipo}Apertura${d.d}`)?.value||"10:00":null,
-hora_cierre:abierto?document.getElementById(`${tipo}Cierre${d.d}`)?.value||"22:00":null,
-cerrado:!abierto
+hora_apertura:"00:00",
+hora_cierre:"23:59",
+cerrado:false
+})
+);
+
+if(modo==="cerrado")
+return DIAS.map(
+d=>({
+dia_semana:d.d,
+hora_apertura:null,
+hora_cierre:null,
+cerrado:true
+})
+);
+
+return DIAS.map(d=>{
+
+const abierto=
+document.getElementById(
+`${tipo}Dia${d.d}`
+)?.checked;
+
+return{
+
+dia_semana:
+d.d,
+
+hora_apertura:
+abierto?
+document.getElementById(
+`${tipo}Apertura${d.d}`
+)?.value||
+"10:00":
+null,
+
+hora_cierre:
+abierto?
+document.getElementById(
+`${tipo}Cierre${d.d}`
+)?.value||
+"22:00":
+null,
+
+cerrado:
+!abierto
+
 };
+
 });
 }
 
-async function guardarHorario(restauranteId,tipo){
-const horario=obtenerHorario(tipo);
-const {error:eDelete}=await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",restauranteId);
+async function guardarHorario(
+restauranteId,
+tipo
+){
+
+const horario=
+obtenerHorario(tipo);
+
+const {
+error:eDelete
+}=await supabaseClient
+.from("horarios_restaurantes")
+.delete()
+.eq(
+"restaurante_id",
+restauranteId
+);
+
 if(eDelete)throw eDelete;
-const rows=horario.map(h=>({restaurante_id:restauranteId,...h}));
-const {error:eInsert}=await supabaseClient.from("horarios_restaurantes").insert(rows);
+
+const rows=
+horario.map(
+h=>({
+restaurante_id:
+restauranteId,
+...h
+})
+);
+
+const {
+error:eInsert
+}=await supabaseClient
+.from("horarios_restaurantes")
+.insert(rows);
+
 if(eInsert)throw eInsert;
 }
 
-function cargarImagen(file,maxWidth=1200,quality=.78){
-return new Promise((resolve,reject)=>{
-if(!file||!file.type?.startsWith("image/")){reject(new Error("El archivo seleccionado no es una imagen válida."));return;}
-const img=new Image(),url=URL.createObjectURL(file);
-img.onload=()=>{
-URL.revokeObjectURL(url);
-let width=img.naturalWidth,height=img.naturalHeight;
-if(width>maxWidth){height=Math.round(height*(maxWidth/width));width=maxWidth;}
-const canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
-const ctx=canvas.getContext("2d",{alpha:false});
-if(!ctx){reject(new Error("No se pudo procesar la imagen."));return;}
-ctx.drawImage(img,0,0,width,height);
-canvas.toBlob(blob=>{
-if(!blob){reject(new Error("No se pudo comprimir la imagen."));return;}
-resolve(blob);
-},"image/webp",quality);
-};
-img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("No se pudo leer la imagen."));};
-img.src=url;
-});
+/* IMAGENES */
+function cargarImagen(
+file,
+maxWidth=1200,
+quality=.78
+){
+
+return new Promise(
+(resolve,reject)=>{
+
+if(
+!file||
+!file.type?.startsWith(
+"image/"
+)
+){
+
+reject(
+new Error(
+"El archivo seleccionado no es una imagen válida."
+)
+);
+
+return;
 }
 
-async function subirImagen(archivo,carpeta,id,subId=""){
-if(!archivo)return null;
-const maxWidth=carpeta==="productos"?900:1400;
-const blob=await cargarImagen(archivo,maxWidth,.78);
-const ruta=`${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${crypto.randomUUID()}.webp`;
-const {error}=await supabaseClient.storage.from(BUCKET).upload(ruta,blob,{cacheControl:"31536000",upsert:false,contentType:"image/webp"});
-if(error){console.error("Storage:",error);throw new Error(error.message||"No se pudo subir la imagen.");}
-const {data}=supabaseClient.storage.from(BUCKET).getPublicUrl(ruta);
-if(!data?.publicUrl){
-try{await supabaseClient.storage.from(BUCKET).remove([ruta]);}catch(_){}
-throw new Error("No se pudo obtener la URL pública de la imagen.");
+const img=
+new Image();
+
+const url=
+URL.createObjectURL(
+file
+);
+
+img.onload=()=>{
+
+URL.revokeObjectURL(url);
+
+let width=
+img.naturalWidth;
+
+let height=
+img.naturalHeight;
+
+if(width>maxWidth){
+
+height=
+Math.round(
+height*
+(maxWidth/width)
+);
+
+width=maxWidth;
 }
-return{url:data.publicUrl,path:ruta};
+
+const canvas=
+document.createElement(
+"canvas"
+);
+
+canvas.width=
+width;
+
+canvas.height=
+height;
+
+const ctx=
+canvas.getContext(
+"2d",
+{alpha:false}
+);
+
+if(!ctx){
+
+reject(
+new Error(
+"No se pudo procesar la imagen."
+)
+);
+
+return;
+}
+
+ctx.drawImage(
+img,
+0,
+0,
+width,
+height
+);
+
+canvas.toBlob(
+blob=>{
+
+if(!blob){
+
+reject(
+new Error(
+"No se pudo comprimir la imagen."
+)
+);
+
+return;
+}
+
+resolve(blob);
+
+},
+"image/webp",
+quality
+);
+
+};
+
+img.onerror=()=>{
+
+URL.revokeObjectURL(url);
+
+reject(
+new Error(
+"No se pudo leer la imagen."
+)
+);
+
+};
+
+img.src=url;
+
+}
+);
+}
+
+async function subirImagen(
+archivo,
+carpeta,
+id,
+subId=""
+){
+
+if(!archivo)return null;
+
+const maxWidth=
+carpeta==="productos"?
+900:
+1400;
+
+const blob=
+await cargarImagen(
+archivo,
+maxWidth,
+.78
+);
+
+const ruta=
+`${carpeta}/${id}${subId?"/"+subId:""}/${Date.now()}-${crypto.randomUUID()}.webp`;
+
+const {
+error
+}=await supabaseClient
+.storage
+.from(BUCKET)
+.upload(
+ruta,
+blob,
+{
+cacheControl:"31536000",
+upsert:false,
+contentType:"image/webp"
+}
+);
+
+if(error){
+
+console.error(
+"Storage:",
+error
+);
+
+throw new Error(
+error.message||
+"No se pudo subir la imagen."
+);
+
+}
+
+const {
+data
+}=supabaseClient
+.storage
+.from(BUCKET)
+.getPublicUrl(
+ruta
+);
+
+if(!data?.publicUrl){
+
+try{
+
+await supabaseClient
+.storage
+.from(BUCKET)
+.remove([
+ruta
+]);
+
+}catch(_){}
+
+throw new Error(
+"No se pudo obtener la URL pública de la imagen."
+);
+
+}
+
+return{
+url:data.publicUrl,
+path:ruta
+};
 }
 
 function obtenerPathStorage(url){
+
 if(!url)return null;
+
 try{
-const marker=`/storage/v1/object/public/${BUCKET}/`;
-const pos=url.indexOf(marker);
-if(pos===-1)return null;
-return decodeURIComponent(url.substring(pos+marker.length).split("?")[0]);
-}catch(_){return null;}
+
+const marker=
+`/storage/v1/object/public/${BUCKET}/`;
+
+const pos=
+url.indexOf(marker);
+
+if(pos===-1)
+return null;
+
+return decodeURIComponent(
+url.substring(
+pos+marker.length
+)
+.split("?")[0]
+);
+
+}catch(_){
+
+return null;
+
+}
 }
 
 async function eliminarImagenStorage(url){
-const path=obtenerPathStorage(url);if(!path)return;
+
+const path=
+obtenerPathStorage(
+url
+);
+
+if(!path)return;
+
 try{
-const {error}=await supabaseClient.storage.from(BUCKET).remove([path]);
-if(error)console.warn("Storage remove:",error);
-}catch(e){console.warn("No se pudo eliminar imagen:",e);}
+
+const {
+error
+}=await supabaseClient
+.storage
+.from(BUCKET)
+.remove([
+path
+]);
+
+if(error)
+console.warn(
+"Storage remove:",
+error
+);
+
+}catch(e){
+
+console.warn(
+"No se pudo eliminar imagen:",
+e
+);
+
+}
 }
 
+/* NUEVO LOCAL */
 async function guardarNuevoLocal(){
+
 try{
-const nombre=locNombre.value.trim();
-if(!nombre){mensaje("El nombre del local es obligatorio.","err");return;}
-const existe=locales.some(l=>l.nombre.trim().toLowerCase()===nombre.toLowerCase());
-if(existe){mensaje("Ya existe un local con ese nombre.","err");return;}
-const {data,error}=await supabaseClient.from("restaurantes").insert({
-nombre,categoria:locCategoria.value||null,descripcion:locDescripcion.value.trim()||null,activo:true
-}).select("id").single();
-if(error)throw error;
-const archivosSubidos=[];
-try{
-if(locBanner.files[0]){
-const imagen=await subirImagen(locBanner.files[0],"banners",data.id);
-archivosSubidos.push(imagen.path);
-const {error:eBanner}=await supabaseClient.from("restaurantes").update({banner_url:imagen.url}).eq("id",data.id);
-if(eBanner)throw eBanner;
+
+const nombre=
+locNombre.value.trim();
+
+if(!nombre){
+
+mensaje(
+"El nombre del local es obligatorio.",
+"err"
+);
+
+return;
 }
-await guardarHorario(data.id,"nuevo");
-await guardarProductosNuevos(data.id,archivosSubidos);
+
+const existe=
+locales.some(
+l=>
+l.nombre
+.trim()
+.toLowerCase()===
+nombre.toLowerCase()
+);
+
+if(existe){
+
+mensaje(
+"Ya existe un local con ese nombre.",
+"err"
+);
+
+return;
+}
+
+const {
+data,
+error
+}=await supabaseClient
+.from("restaurantes")
+.insert({
+nombre,
+categoria:
+locCategoria.value||
+null,
+descripcion:
+locDescripcion.value
+.trim()||
+null,
+activo:true
+})
+.select("id")
+.single();
+
+if(error)throw error;
+
+const archivosSubidos=[];
+
+try{
+
+if(locBanner.files[0]){
+
+const imagen=
+await subirImagen(
+locBanner.files[0],
+"banners",
+data.id
+);
+
+archivosSubidos.push(
+imagen.path
+);
+
+const {
+error:eBanner
+}=await supabaseClient
+.from("restaurantes")
+.update({
+banner_url:
+imagen.url
+})
+.eq(
+"id",
+data.id
+);
+
+if(eBanner)throw eBanner;
+
+}
+
+await guardarHorario(
+data.id,
+"nuevo"
+);
+
+await guardarProductosNuevos(
+data.id,
+archivosSubidos
+);
+
 }catch(e){
-if(archivosSubidos.length)await supabaseClient.storage.from(BUCKET).remove(archivosSubidos);
-await supabaseClient.from("productos").delete().eq("restaurante_id",data.id);
-await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",data.id);
-await supabaseClient.from("restaurantes").delete().eq("id",data.id);
+
+if(archivosSubidos.length)
+await supabaseClient
+.storage
+.from(BUCKET)
+.remove(
+archivosSubidos
+);
+
+await supabaseClient
+.from("productos")
+.delete()
+.eq(
+"restaurante_id",
+data.id
+);
+
+await supabaseClient
+.from("horarios_restaurantes")
+.delete()
+.eq(
+"restaurante_id",
+data.id
+);
+
+await supabaseClient
+.from("restaurantes")
+.delete()
+.eq(
+"id",
+data.id
+);
+
 throw e;
 }
+
 limpiarFormularioLocal();
+
 await cargarLocales();
-mensaje("Local creado correctamente.");
-}catch(e){err(e);}
+
+mensaje(
+"Local creado correctamente."
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
 function agregarProductoNuevo(){
+
 productosNuevos.push({
-tempId:Date.now()+Math.random(),
-nombre:"",descripcion:"",precio:"",activo:true,imagen:null,imagenPreview:"",
-tieneVariantes:false,variantes:[]
+
+tempId:
+Date.now()+
+Math.random(),
+
+nombre:"",
+descripcion:"",
+precio:"",
+activo:true,
+imagen:null,
+imagenPreview:"",
+
+tieneVariantes:false,
+variantes:[]
+
 });
+
 pintarProductosNuevos();
 }
 
 function pintarProductosNuevos(){
-productosNuevos.forEach((p,i)=>p._index=i);
+
+productosNuevos.forEach(
+(p,i)=>
+p._index=i
+);
+
 productosNuevosContainer();
 }
 
 function productosNuevosContainer(){
-const box=document.getElementById("productosNuevos");
-if(!productosNuevos.length){box.innerHTML='<p class="muted">Todavía no hay productos.</p>';return;}
 
-box.innerHTML=productosNuevos.map((p,i)=>`
-<div class="card product-row" data-product-new="${p.tempId}">
+const box=
+document.getElementById(
+"productosNuevos"
+);
+
+if(!productosNuevos.length){
+
+box.innerHTML=
+'<p class="muted">Todavía no hay productos.</p>';
+
+return;
+}
+
+box.innerHTML=
+productosNuevos.map(
+(p,i)=>`
+
+<div
+class="card product-row"
+data-product-new="${p.tempId}">
+
 <div>
-${p.imagenPreview?`<img class="product-img" src="${escapeAttr(p.imagenPreview)}" loading="lazy" decoding="async">`:`<div class="product-img"></div>`}
+
+${
+p.imagenPreview?
+`<img
+class="product-img"
+src="${escapeAttr(p.imagenPreview)}"
+loading="lazy"
+decoding="async">`:
+`<div class="product-img"></div>`
+}
+
 </div>
 
 <div class="product-info">
+
 <div class="product-main-fields">
-<input placeholder="Nombre del producto" value="${escapeAttr(p.nombre)}" oninput="productosNuevos[${i}].nombre=this.value">
-<input placeholder="Descripción" value="${escapeAttr(p.descripcion)}" oninput="productosNuevos[${i}].descripcion=this.value">
-<input type="number" min="0" step="0.01" placeholder="Precio base" value="${escapeAttr(p.precio)}" oninput="productosNuevos[${i}].precio=this.value">
-<input type="file" accept="image/*" onchange="seleccionarImagenNuevo(${i},this)">
+
+<input
+placeholder="Nombre del producto"
+value="${escapeAttr(p.nombre)}"
+oninput="productosNuevos[${i}].nombre=this.value">
+
+<input
+placeholder="Descripción"
+value="${escapeAttr(p.descripcion)}"
+oninput="productosNuevos[${i}].descripcion=this.value">
+
+<input
+type="number"
+min="0"
+step="0.01"
+placeholder="Precio base"
+value="${escapeAttr(p.precio)}"
+oninput="productosNuevos[${i}].precio=this.value">
+
+<input
+type="file"
+accept="image/*"
+onchange="seleccionarImagenNuevo(${i},this)">
+
 </div>
-<div class="product-base-note">${p.tieneVariantes?"El precio base se conserva para el producto; el precio elegido será el de la variante.":"Producto sin variantes."}</div>
+
+<div class="product-base-note">
+${
+p.tieneVariantes?
+"El precio base se conserva para el producto; el precio elegido será el de la variante.":
+"Producto sin variantes."
+}
+</div>
 
 <div class="variant-panel">
+
 <div class="variant-head">
+
 <label class="toggle">
-<input type="checkbox" ${p.tieneVariantes?"checked":""} onchange="productosNuevos[${i}].tieneVariantes=this.checked;if(this.checked&&!productosNuevos[${i}].variantes.length)productosNuevos[${i}].variantes=[{nombre:'',precio:productosNuevos[${i}].precio||'',activo:true}];pintarProductosNuevos()">
+
+<input
+type="checkbox"
+${p.tieneVariantes?"checked":""}
+onchange="
+productosNuevos[${i}].tieneVariantes=this.checked;
+if(
+this.checked&&
+!productosNuevos[${i}].variantes.length
+)
+productosNuevos[${i}].variantes=[
+{
+nombre:'',
+precio:
+productosNuevos[${i}].precio||'',
+activo:true
+}
+];
+pintarProductosNuevos()
+">
+
 <span class="eye">↕</span>
-<span>Tiene variantes / tamaños</span>
+
+<span>
+Tiene variantes / tamaños
+</span>
+
 </label>
-${p.tieneVariantes?`<button type="button" class="btn secondary" onclick="agregarVarianteNuevo(${i})">+ Variante</button>`:""}
+
+${
+p.tieneVariantes?
+`<button
+type="button"
+class="btn secondary"
+onclick="agregarVarianteNuevo(${i})">
++ Variante
+</button>`:
+""
+}
+
 </div>
-${p.tieneVariantes?(p.variantes.length?p.variantes.map((v,j)=>`
+
+${
+p.tieneVariantes?
+(
+p.variantes.length?
+p.variantes.map(
+(v,j)=>`
+
 <div class="variant-row">
-<input placeholder="Nombre / tamaño" value="${escapeAttr(v.nombre||"")}" oninput="productosNuevos[${i}].variantes[${j}].nombre=this.value">
-<input type="number" min="0" step="0.01" placeholder="Precio" value="${escapeAttr(v.precio??"")}" oninput="productosNuevos[${i}].variantes[${j}].precio=this.value">
-<label class="variant-active"><input type="checkbox" ${v.activo!==false?"checked":""} onchange="productosNuevos[${i}].variantes[${j}].activo=this.checked"> Activa</label>
-<button type="button" class="btn danger" onclick="eliminarVarianteNuevo(${i},${j})">×</button>
-</div>`).join(""):'<div class="variant-empty">Agrega al menos una variante.</div>'):""}
+
+<input
+placeholder="Nombre / tamaño"
+value="${escapeAttr(v.nombre||"")}"
+oninput="productosNuevos[${i}].variantes[${j}].nombre=this.value">
+
+<input
+type="number"
+min="0"
+step="0.01"
+placeholder="Precio"
+value="${escapeAttr(v.precio??"")}"
+oninput="productosNuevos[${i}].variantes[${j}].precio=this.value">
+
+<label class="variant-active">
+
+<input
+type="checkbox"
+${v.activo!==false?"checked":""}
+onchange="productosNuevos[${i}].variantes[${j}].activo=this.checked">
+
+Activa
+
+</label>
+
+<button
+type="button"
+class="btn danger"
+onclick="eliminarVarianteNuevo(${i},${j})">
+×
+</button>
+
 </div>
+
+`
+).join(""):
+'<div class="variant-empty">Agrega al menos una variante.</div>'
+):
+""
+}
+
+</div>
+
 </div>
 
 <div class="product-actions">
-<button class="btn danger" onclick="eliminarProductoNuevo(${i})">Eliminar</button>
+
+<button
+class="btn danger"
+onclick="eliminarProductoNuevo(${i})">
+Eliminar
+</button>
+
 </div>
-</div>`).join("");
+
+</div>
+
+`
+).join("");
 }
 
 function agregarVarianteNuevo(index){
-if(!productosNuevos[index].variantes)productosNuevos[index].variantes=[];
-productosNuevos[index].variantes.push({nombre:"",precio:"",activo:true});
-pintarProductosNuevos();
-}
 
-function eliminarVarianteNuevo(index,varIndex){
-productosNuevos[index].variantes.splice(varIndex,1);
-pintarProductosNuevos();
-}
+if(!productosNuevos[index].variantes)
+productosNuevos[index].variantes=[];
 
-function seleccionarImagenNuevo(index,input){
-const file=input.files[0];if(!file)return;
-if(!file.type.startsWith("image/")){mensaje("Selecciona una imagen válida.","err");input.value="";return;}
-productosNuevos[index].imagen=file;
-const url=URL.createObjectURL(file);
-if(productosNuevos[index].imagenPreview){try{URL.revokeObjectURL(productosNuevos[index].imagenPreview)}catch(_){}}
-productosNuevos[index].imagenPreview=url;
-pintarProductosNuevos();
-}
-
-function eliminarProductoNuevo(index){
-const p=productosNuevos[index];
-if(p?.imagenPreview){try{URL.revokeObjectURL(p.imagenPreview)}catch(_){}}
-productosNuevos.splice(index,1);productosNuevosContainer();
-}
-
-async function guardarProductosNuevos(localId,archivosSubidos=[]){
-for(const p of productosNuevos){
-if(!p.nombre.trim())continue;
-
-const {data,error}=await supabaseClient.from("productos").insert({
-restaurante_id:localId,
-nombre:p.nombre.trim(),
-descripcion:p.descripcion.trim()||null,
-precio:Number(p.precio)||0,
+productosNuevos[index].variantes.push({
+nombre:"",
+precio:"",
 activo:true
-}).select("id").single();
+});
+
+pintarProductosNuevos();
+}
+
+function eliminarVarianteNuevo(
+index,
+varIndex
+){
+
+productosNuevos[index]
+.variantes
+.splice(
+varIndex,
+1
+);
+
+pintarProductosNuevos();
+}
+
+function seleccionarImagenNuevo(
+index,
+input
+){
+
+const file=
+input.files[0];
+
+if(!file)return;
+
+if(
+!file.type.startsWith(
+"image/"
+)
+){
+
+mensaje(
+"Selecciona una imagen válida.",
+"err"
+);
+
+input.value="";
+
+return;
+}
+
+productosNuevos[index].imagen=
+file;
+
+const url=
+URL.createObjectURL(
+file
+);
+
+if(
+productosNuevos[index]
+.imagenPreview
+){
+
+try{
+
+URL.revokeObjectURL(
+productosNuevos[index]
+.imagenPreview
+);
+
+}catch(_){}
+
+}
+
+productosNuevos[index]
+.imagenPreview=
+url;
+
+pintarProductosNuevos();
+}
+
+function eliminarProductoNuevo(
+index
+){
+
+const p=
+productosNuevos[index];
+
+if(p?.imagenPreview){
+
+try{
+
+URL.revokeObjectURL(
+p.imagenPreview
+);
+
+}catch(_){}
+
+}
+
+productosNuevos.splice(
+index,
+1
+);
+
+productosNuevosContainer();
+}
+
+async function guardarProductosNuevos(
+localId,
+archivosSubidos=[]
+){
+
+for(
+const p of productosNuevos
+){
+
+if(!p.nombre.trim())
+continue;
+
+const {
+data,
+error
+}=await supabaseClient
+.from("productos")
+.insert({
+restaurante_id:
+localId,
+nombre:
+p.nombre.trim(),
+descripcion:
+p.descripcion.trim()||
+null,
+precio:
+Number(p.precio)||
+0,
+activo:true
+})
+.select("id")
+.single();
+
 if(error)throw error;
 
 if(p.imagen){
-const imagen=await subirImagen(p.imagen,"productos",localId,data.id);
-archivosSubidos.push(imagen.path);
-const {error:e}=await supabaseClient.from("productos").update({imagen_url:imagen.url}).eq("id",data.id);
+
+const imagen=
+await subirImagen(
+p.imagen,
+"productos",
+localId,
+data.id
+);
+
+archivosSubidos.push(
+imagen.path
+);
+
+const {
+error:e
+}=await supabaseClient
+.from("productos")
+.update({
+imagen_url:
+imagen.url
+})
+.eq(
+"id",
+data.id
+);
+
 if(e)throw e;
+
 }
 
-await guardarVariantesProducto(data.id,p.tieneVariantes?p.variantes:[]);
+await guardarVariantesProducto(
+data.id,
+p.tieneVariantes?
+p.variantes:
+[]
+);
+
 }
 }
 
-async function guardarVariantesProducto(productoId,variantes=[]){
-const {error:e0}=await supabaseClient.from("producto_variantes").delete().eq("producto_id",productoId);
+async function guardarVariantesProducto(
+productoId,
+variantes=[]
+){
+
+const {
+error:e0
+}=await supabaseClient
+.from("producto_variantes")
+.delete()
+.eq(
+"producto_id",
+productoId
+);
+
 if(e0)throw e0;
-const rows=(variantes||[])
-.map((v,i)=>({
-producto_id:productoId,
-nombre:String(v.nombre||"").trim(),
-precio:Number(v.precio)||0,
-activo:v.activo!==false,
+
+const rows=
+(variantes||[])
+.map(
+(v,i)=>({
+producto_id:
+productoId,
+nombre:
+String(
+v.nombre||""
+)
+.trim(),
+precio:
+Number(v.precio)||
+0,
+activo:
+v.activo!==false,
 orden:i
-}))
-.filter(v=>v.nombre);
-if(!rows.length)return;
-const {error}=await supabaseClient.from("producto_variantes").insert(rows);
+})
+)
+.filter(
+v=>v.nombre
+);
+
+if(!rows.length)
+return;
+
+const {
+error
+}=await supabaseClient
+.from("producto_variantes")
+.insert(
+rows
+);
+
 if(error)throw error;
 }
 
 function limpiarFormularioLocal(){
-productosNuevos.forEach(p=>{
-if(p.imagenPreview){try{URL.revokeObjectURL(p.imagenPreview)}catch(_){}}
+
+productosNuevos.forEach(
+p=>{
+
+if(
+p.imagenPreview
+){
+
+try{
+
+URL.revokeObjectURL(
+p.imagenPreview
+);
+
+}catch(_){}
+
+}
+
 });
-locNombre.value="";locCategoria.value="";locDescripcion.value="";locBanner.value="";
-previewBanner.src="";previewBanner.classList.add("hidden");
+
+locNombre.value="";
+locCategoria.value="";
+locDescripcion.value="";
+locBanner.value="";
+
+previewBanner.src="";
+previewBanner.classList.add(
+"hidden"
+);
+
 productosNuevos=[];
-document.querySelector('input[name="modoHorario"][value="personalizado"]').checked=true;
-construirHorario("horarioEditor","nuevo");
+
+document.querySelector(
+'input[name="modoHorario"][value="personalizado"]'
+).checked=true;
+
+construirHorario(
+"horarioEditor",
+"nuevo"
+);
+
 productosNuevosContainer();
 }
 
+/* EDICION */
 async function editarLocal(id){
+
 try{
-const local=locales.find(x=>x.id===id);if(!local)return;
-editId.value=id;editNombre.value=local.nombre||"";editCategoria.value=local.categoria||"";editDescripcion.value=local.descripcion||"";editBanner.value="";
+
+const local=
+locales.find(
+x=>x.id===id
+);
+
+if(!local)return;
+
+editId.value=id;
+editNombre.value=
+local.nombre||"";
+
+editCategoria.value=
+local.categoria||"";
+
+editDescripcion.value=
+local.descripcion||"";
+
+editBanner.value="";
+
 if(local.banner_url){
-editBannerPreview.src=local.banner_url;editBannerPreview.classList.remove("hidden");
+
+editBannerPreview.src=
+local.banner_url;
+
+editBannerPreview.classList.remove(
+"hidden"
+);
+
 }else{
-editBannerPreview.src="";editBannerPreview.classList.add("hidden");
+
+editBannerPreview.src="";
+
+editBannerPreview.classList.add(
+"hidden"
+);
+
 }
 
-const {data:horarios,error:e1}=await supabaseClient.from("horarios_restaurantes").select("dia_semana,hora_apertura,hora_cierre,cerrado").eq("restaurante_id",id).order("dia_semana");
-if(e1)throw e1;
-prepararHorarioEdicion(horarios||[]);
+const {
+data:horarios,
+error:e1
+}=await supabaseClient
+.from("horarios_restaurantes")
+.select(
+"dia_semana,hora_apertura,hora_cierre,cerrado"
+)
+.eq(
+"restaurante_id",
+id
+)
+.order(
+"dia_semana"
+);
 
-const {data:productos,error:e2}=await supabaseClient.from("productos").select("id,nombre,descripcion,precio,imagen_url,activo").eq("restaurante_id",id).order("id");
+if(e1)throw e1;
+
+prepararHorarioEdicion(
+horarios||[]
+);
+
+const {
+data:productos,
+error:e2
+}=await supabaseClient
+.from("productos")
+.select(
+"id,nombre,descripcion,precio,imagen_url,activo"
+)
+.eq(
+"restaurante_id",
+id
+)
+.order("id");
+
 if(e2)throw e2;
 
-const ids=(productos||[]).map(p=>p.id);
+const ids=
+(productos||[])
+.map(
+p=>p.id
+);
+
 let variantes=[];
+
 if(ids.length){
-const {data:vData,error:vError}=await supabaseClient.from("producto_variantes").select("id,producto_id,nombre,precio,activo,orden").in("producto_id",ids).order("orden");
+
+const {
+data:vData,
+error:vError
+}=await supabaseClient
+.from("producto_variantes")
+.select(
+"id,producto_id,nombre,precio,activo,orden"
+)
+.in(
+"producto_id",
+ids
+)
+.order(
+"orden"
+);
+
 if(vError)throw vError;
-variantes=vData||[];
+
+variantes=
+vData||[];
 }
 
-productosEdit=(productos||[]).map(p=>({
+productosEdit=
+(productos||[])
+.map(
+p=>({
+
 ...p,
+
 nuevaImagen:null,
-preview:p.imagen_url||"",
-tieneVariantes:variantes.some(v=>v.producto_id===p.id),
-variantes:variantes.filter(v=>v.producto_id===p.id).map(v=>({id:v.id,nombre:v.nombre,precio:v.precio,activo:v.activo,orden:v.orden}))
-}));
+
+preview:
+p.imagen_url||"",
+
+tieneVariantes:
+variantes.some(
+v=>v.producto_id===
+p.id
+),
+
+variantes:
+variantes
+.filter(
+v=>v.producto_id===
+p.id
+)
+.map(
+v=>({
+id:v.id,
+nombre:v.nombre,
+precio:v.precio,
+activo:v.activo,
+orden:v.orden
+})
+)
+
+})
+);
 
 pintarProductosEditados();
-editorLocal.classList.remove("hidden");
-editorLocal.scrollIntoView({behavior:"smooth",block:"start"});
-}catch(e){err(e);}
+
+editorLocal.classList.remove(
+"hidden"
+);
+
+editorLocal.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}catch(e){
+
+err(e);
+
+}
 }
 
-function prepararHorarioEdicion(horarios){
-const todosSiempre=horarios.length===7&&horarios.every(h=>!h.cerrado&&h.hora_apertura==="00:00:00"&&(h.hora_cierre==="23:59:00"||h.hora_cierre==="23:59:59"));
-const todosCerrados=horarios.length===7&&horarios.every(h=>h.cerrado);
+function prepararHorarioEdicion(
+horarios
+){
+
+const todosSiempre=
+horarios.length===7&&
+horarios.every(
+h=>
+!h.cerrado&&
+h.hora_apertura===
+"00:00:00"&&
+(
+h.hora_cierre===
+"23:59:00"||
+h.hora_cierre===
+"23:59:59"
+)
+);
+
+const todosCerrados=
+horarios.length===7&&
+horarios.every(
+h=>h.cerrado
+);
+
 if(todosSiempre){
-document.querySelector('input[name="editModoHorario"][value="siempre"]').checked=true;
-construirHorario("editHorarioEditor","edit");return;
+
+document.querySelector(
+'input[name="editModoHorario"][value="siempre"]'
+).checked=true;
+
+construirHorario(
+"editHorarioEditor",
+"edit"
+);
+
+return;
 }
+
 if(todosCerrados){
-document.querySelector('input[name="editModoHorario"][value="cerrado"]').checked=true;
-construirHorario("editHorarioEditor","edit");return;
+
+document.querySelector(
+'input[name="editModoHorario"][value="cerrado"]'
+).checked=true;
+
+construirHorario(
+"editHorarioEditor",
+"edit"
+);
+
+return;
 }
-document.querySelector('input[name="editModoHorario"][value="personalizado"]').checked=true;
-construirHorario("editHorarioEditor","edit");
-horarios.forEach(h=>{
-const chk=document.getElementById(`editDia${h.dia_semana}`);
-const ap=document.getElementById(`editApertura${h.dia_semana}`);
-const ci=document.getElementById(`editCierre${h.dia_semana}`);
+
+document.querySelector(
+'input[name="editModoHorario"][value="personalizado"]'
+).checked=true;
+
+construirHorario(
+"editHorarioEditor",
+"edit"
+);
+
+horarios.forEach(
+h=>{
+
+const chk=
+document.getElementById(
+`editDia${h.dia_semana}`
+);
+
+const ap=
+document.getElementById(
+`editApertura${h.dia_semana}`
+);
+
+const ci=
+document.getElementById(
+`editCierre${h.dia_semana}`
+);
+
 if(!chk)return;
-chk.checked=!h.cerrado;
-if(h.hora_apertura)ap.value=h.hora_apertura.substring(0,5);
-if(h.hora_cierre)ci.value=h.hora_cierre.substring(0,5);
-actualizarFilaHorario("edit",h.dia_semana);
-});
+
+chk.checked=
+!h.cerrado;
+
+if(h.hora_apertura)
+ap.value=
+h.hora_apertura.substring(
+0,
+5
+);
+
+if(h.hora_cierre)
+ci.value=
+h.hora_cierre.substring(
+0,
+5
+);
+
+actualizarFilaHorario(
+"edit",
+h.dia_semana
+);
+
+}
+);
 }
 
 function pintarProductosEditados(){
-const box=document.getElementById("productosEditados");
-if(!productosEdit.length){box.innerHTML='<p class="muted">No hay productos registrados.</p>';return;}
 
-box.innerHTML=productosEdit.map((p,i)=>`
+const box=
+document.getElementById(
+"productosEditados"
+);
+
+if(!productosEdit.length){
+
+box.innerHTML=
+'<p class="muted">No hay productos registrados.</p>';
+
+return;
+}
+
+box.innerHTML=
+productosEdit.map(
+(p,i)=>`
+
 <div class="card product-row">
+
 <div>
-${p.preview?`<img class="product-img" src="${escapeAttr(p.preview)}" loading="lazy" decoding="async">`:`<div class="product-img"></div>`}
+
+${
+p.preview?
+`<img
+class="product-img"
+src="${escapeAttr(p.preview)}"
+loading="lazy"
+decoding="async">`:
+`<div class="product-img"></div>`
+}
+
 </div>
 
 <div class="product-info">
+
 <div class="product-main-fields">
-<input value="${escapeAttr(p.nombre||"")}" placeholder="Nombre" oninput="productosEdit[${i}].nombre=this.value">
-<input value="${escapeAttr(p.descripcion||"")}" placeholder="Descripción" oninput="productosEdit[${i}].descripcion=this.value">
-<input type="number" min="0" step="0.01" value="${escapeAttr(p.precio??0)}" placeholder="Precio base" oninput="productosEdit[${i}].precio=this.value">
-<input type="file" accept="image/*" onchange="seleccionarImagenEdit(${i},this)">
+
+<input
+value="${escapeAttr(
+p.nombre||""
+)}"
+placeholder="Nombre"
+oninput="productosEdit[${i}].nombre=this.value">
+
+<input
+value="${escapeAttr(
+p.descripcion||""
+)}"
+placeholder="Descripción"
+oninput="productosEdit[${i}].descripcion=this.value">
+
+<input
+type="number"
+min="0"
+step="0.01"
+value="${escapeAttr(
+p.precio??0
+)}"
+placeholder="Precio base"
+oninput="productosEdit[${i}].precio=this.value">
+
+<input
+type="file"
+accept="image/*"
+onchange="seleccionarImagenEdit(${i},this)">
+
 </div>
 
-<div class="product-base-note">${p.tieneVariantes?"El precio base se conserva para el producto; el precio elegido será el de la variante.":"Producto sin variantes."}</div>
+<div class="product-base-note">
+
+${
+p.tieneVariantes?
+"El precio base se conserva para el producto; el precio elegido será el de la variante.":
+"Producto sin variantes."
+}
+
+</div>
 
 <div class="variant-panel">
+
 <div class="variant-head">
+
 <label class="toggle">
-<input type="checkbox" ${p.tieneVariantes?"checked":""} onchange="productosEdit[${i}].tieneVariantes=this.checked;if(this.checked&&!productosEdit[${i}].variantes.length)productosEdit[${i}].variantes=[{nombre:'',precio:productosEdit[${i}].precio||'',activo:true}];pintarProductosEditados()">
-<span class="eye">↕</span><span>Tiene variantes / tamaños</span>
+
+<input
+type="checkbox"
+${p.tieneVariantes?"checked":""}
+onchange="
+productosEdit[${i}].tieneVariantes=this.checked;
+if(
+this.checked&&
+!productosEdit[${i}].variantes.length
+)
+productosEdit[${i}].variantes=[
+{
+nombre:'',
+precio:
+productosEdit[${i}].precio||'',
+activo:true
+}
+];
+pintarProductosEditados()
+">
+
+<span class="eye">↕</span>
+
+<span>
+Tiene variantes / tamaños
+</span>
+
 </label>
-${p.tieneVariantes?`<button type="button" class="btn secondary" onclick="agregarVarianteEditado(${i})">+ Variante</button>`:""}
+
+${
+p.tieneVariantes?
+`<button
+type="button"
+class="btn secondary"
+onclick="agregarVarianteEditado(${i})">
++ Variante
+</button>`:
+""
+}
+
 </div>
 
-${p.tieneVariantes?(p.variantes.length?p.variantes.map((v,j)=>`
+${
+p.tieneVariantes?
+(
+p.variantes.length?
+p.variantes.map(
+(v,j)=>`
+
 <div class="variant-row">
-<input placeholder="Nombre / tamaño" value="${escapeAttr(v.nombre||"")}" oninput="productosEdit[${i}].variantes[${j}].nombre=this.value">
-<input type="number" min="0" step="0.01" placeholder="Precio" value="${escapeAttr(v.precio??"")}" oninput="productosEdit[${i}].variantes[${j}].precio=this.value">
-<label class="variant-active"><input type="checkbox" ${v.activo!==false?"checked":""} onchange="productosEdit[${i}].variantes[${j}].activo=this.checked"> Activa</label>
-<button type="button" class="btn danger" onclick="eliminarVarianteEditado(${i},${j})">×</button>
-</div>`).join(""):'<div class="variant-empty">Agrega al menos una variante.</div>'):""}
+
+<input
+placeholder="Nombre / tamaño"
+value="${escapeAttr(
+v.nombre||""
+)}"
+oninput="productosEdit[${i}].variantes[${j}].nombre=this.value">
+
+<input
+type="number"
+min="0"
+step="0.01"
+placeholder="Precio"
+value="${escapeAttr(
+v.precio??""
+)}"
+oninput="productosEdit[${i}].variantes[${j}].precio=this.value">
+
+<label class="variant-active">
+
+<input
+type="checkbox"
+${v.activo!==false?"checked":""}
+onchange="productosEdit[${i}].variantes[${j}].activo=this.checked">
+
+Activa
+
+</label>
+
+<button
+type="button"
+class="btn danger"
+onclick="eliminarVarianteEditado(${i},${j})">
+×
+</button>
+
+</div>
+
+`
+).join(""):
+'<div class="variant-empty">Agrega al menos una variante.</div>'
+):
+""
+}
+
 </div>
 
 <div style="margin-top:7px">
+
 <label class="toggle">
-<input type="checkbox" ${p.activo!==false?"checked":""} onchange="productosEdit[${i}].activo=this.checked">
-<span class="eye">👁</span><span>${p.activo!==false?"Activo":"Inactivo"}</span>
+
+<input
+type="checkbox"
+${p.activo!==false?"checked":""}
+onchange="productosEdit[${i}].activo=this.checked">
+
+<span class="eye">👁</span>
+
+<span>
+${p.activo!==false?
+"Activo":
+"Inactivo"}
+</span>
+
 </label>
+
 </div>
+
 </div>
 
 <div class="product-actions">
-<button class="btn danger" onclick="eliminarProductoEdit(${i})">Eliminar</button>
+
+<button
+class="btn danger"
+onclick="eliminarProductoEdit(${i})">
+Eliminar
+</button>
+
 </div>
-</div>`).join("");
+
+</div>
+
+`
+).join("");
 }
 
 function agregarProductoEditado(){
+
 productosEdit.push({
-id:null,nombre:"",descripcion:"",precio:0,activo:true,imagen_url:null,preview:"",nuevaImagen:null,tieneVariantes:false,variantes:[]
+
+id:null,
+nombre:"",
+descripcion:"",
+precio:0,
+activo:true,
+imagen_url:null,
+preview:"",
+nuevaImagen:null,
+tieneVariantes:false,
+variantes:[]
+
 });
+
 pintarProductosEditados();
 }
 
-function agregarVarianteEditado(index){
-if(!productosEdit[index].variantes)productosEdit[index].variantes=[];
-productosEdit[index].variantes.push({nombre:"",precio:"",activo:true});
+function agregarVarianteEditado(
+index
+){
+
+if(!productosEdit[index].variantes)
+productosEdit[index].variantes=[];
+
+productosEdit[index].variantes.push({
+nombre:"",
+precio:"",
+activo:true
+});
+
 pintarProductosEditados();
 }
 
-function eliminarVarianteEditado(index,varIndex){
-productosEdit[index].variantes.splice(varIndex,1);
+function eliminarVarianteEditado(
+index,
+varIndex
+){
+
+productosEdit[index]
+.variantes
+.splice(
+varIndex,
+1
+);
+
 pintarProductosEditados();
 }
 
-function seleccionarImagenEdit(index,input){
-const file=input.files[0];if(!file)return;
-if(!file.type.startsWith("image/")){mensaje("Selecciona una imagen válida.","err");input.value="";return;}
-productosEdit[index].nuevaImagen=file;
-if(productosEdit[index].preview&&productosEdit[index].preview.startsWith("blob:")){try{URL.revokeObjectURL(productosEdit[index].preview)}catch(_){}}
-productosEdit[index].preview=URL.createObjectURL(file);
-pintarProductosEditados();
+function seleccionarImagenEdit(
+index,
+input
+){
+
+const file=
+input.files[0];
+
+if(!file)return;
+
+if(
+!file.type.startsWith(
+"image/"
+)
+){
+
+mensaje(
+"Selecciona una imagen válida.",
+"err"
+);
+
+input.value="";
+
+return;
 }
 
-async function eliminarProductoEdit(index){
-const p=productosEdit[index];
-if(p.id){
-if(!confirm(`¿Eliminar el producto "${p.nombre}"?`))return;
+productosEdit[index]
+.nuevaImagen=
+file;
+
+if(
+productosEdit[index].preview&&
+productosEdit[index].preview.startsWith(
+"blob:"
+)
+){
+
 try{
-const {error}=await supabaseClient.from("productos").delete().eq("id",p.id);
-if(error)throw error;
-if(p.imagen_url)await eliminarImagenStorage(p.imagen_url);
-}catch(e){err(e);return;}
+
+URL.revokeObjectURL(
+productosEdit[index].preview
+);
+
+}catch(_){}
+
 }
-if(p.preview?.startsWith("blob:")){try{URL.revokeObjectURL(p.preview)}catch(_){}}
-productosEdit.splice(index,1);pintarProductosEditados();mensaje("Producto eliminado.");
+
+productosEdit[index].preview=
+URL.createObjectURL(
+file
+);
+
+pintarProductosEditados();
+}
+
+async function eliminarProductoEdit(
+index
+){
+
+const p=
+productosEdit[index];
+
+if(p.id){
+
+if(!confirm(
+`¿Eliminar el producto "${p.nombre}"?`
+))
+return;
+
+try{
+
+const {
+error
+}=await supabaseClient
+.from("productos")
+.delete()
+.eq(
+"id",
+p.id
+);
+
+if(error)throw error;
+
+if(p.imagen_url)
+await eliminarImagenStorage(
+p.imagen_url
+);
+
+}catch(e){
+
+err(e);
+
+return;
+}
+
+}
+
+if(
+p.preview?.startsWith(
+"blob:"
+)
+){
+
+try{
+
+URL.revokeObjectURL(
+p.preview
+);
+
+}catch(_){}
+
+}
+
+productosEdit.splice(
+index,
+1
+);
+
+pintarProductosEditados();
+
+mensaje(
+"Producto eliminado."
+);
 }
 
 async function guardarEdicionLocal(){
-try{
-const id=Number(editId.value);
-if(!id){mensaje("Local inválido.","err");return;}
-const nombre=editNombre.value.trim();
-if(!nombre){mensaje("El nombre del local es obligatorio.","err");return;}
-const duplicado=locales.some(l=>l.id!==id&&l.nombre.trim().toLowerCase()===nombre.toLowerCase());
-if(duplicado){mensaje("Ya existe otro local con ese nombre.","err");return;}
 
-const localActual=locales.find(x=>x.id===id);
-const payload={nombre,categoria:editCategoria.value||null,descripcion:editDescripcion.value.trim()||null};
+try{
+
+const id=
+Number(
+editId.value
+);
+
+if(!id){
+
+mensaje(
+"Local inválido.",
+"err"
+);
+
+return;
+}
+
+const nombre=
+editNombre.value.trim();
+
+if(!nombre){
+
+mensaje(
+"El nombre del local es obligatorio.",
+"err"
+);
+
+return;
+}
+
+const duplicado=
+locales.some(
+l=>
+l.id!==id&&
+l.nombre
+.trim()
+.toLowerCase()===
+nombre.toLowerCase()
+);
+
+if(duplicado){
+
+mensaje(
+"Ya existe otro local con ese nombre.",
+"err"
+);
+
+return;
+}
+
+const localActual=
+locales.find(
+x=>x.id===id
+);
+
+const payload={
+
+nombre,
+
+categoria:
+editCategoria.value||
+null,
+
+descripcion:
+editDescripcion.value
+.trim()||
+null
+
+};
+
 let nuevaImagen=null;
 
 if(editBanner.files[0]){
-nuevaImagen=await subirImagen(editBanner.files[0],"banners",id);
-payload.banner_url=nuevaImagen.url;
+
+nuevaImagen=
+await subirImagen(
+editBanner.files[0],
+"banners",
+id
+);
+
+payload.banner_url=
+nuevaImagen.url;
+
 }
 
-const {error:e1}=await supabaseClient.from("restaurantes").update(payload).eq("id",id);
+const {
+error:e1
+}=await supabaseClient
+.from("restaurantes")
+.update(payload)
+.eq(
+"id",
+id
+);
+
 if(e1){
-if(nuevaImagen)await eliminarImagenStorage(nuevaImagen.url);
+
+if(nuevaImagen)
+await eliminarImagenStorage(
+nuevaImagen.url
+);
+
 throw e1;
 }
 
-if(nuevaImagen&&localActual?.banner_url)await eliminarImagenStorage(localActual.banner_url);
+if(
+nuevaImagen&&
+localActual?.banner_url
+){
 
-await guardarHorario(id,"edit");
+await eliminarImagenStorage(
+localActual.banner_url
+);
 
-for(const p of productosEdit){
+}
+
+await guardarHorario(
+id,
+"edit"
+);
+
+for(
+const p of productosEdit
+){
+
 if(!p.id){
-if(!p.nombre.trim())continue;
-const {data,error}=await supabaseClient.from("productos").insert({
+
+if(!p.nombre.trim())
+continue;
+
+const {
+data,
+error
+}=await supabaseClient
+.from("productos")
+.insert({
 restaurante_id:id,
 nombre:p.nombre.trim(),
-descripcion:p.descripcion?.trim()||null,
-precio:Number(p.precio)||0,
-activo:p.activo!==false
-}).select("id").single();
+descripcion:
+p.descripcion?.trim()||
+null,
+precio:
+Number(p.precio)||
+0,
+activo:
+p.activo!==false
+})
+.select("id")
+.single();
+
 if(error)throw error;
+
 p.id=data.id;
 
 if(p.nuevaImagen){
-const imagen=await subirImagen(p.nuevaImagen,"productos",id,p.id);
-const {error:e}=await supabaseClient.from("productos").update({imagen_url:imagen.url}).eq("id",p.id);
-if(e){await eliminarImagenStorage(imagen.url);throw e;}
-p.imagen_url=imagen.url;
+
+const imagen=
+await subirImagen(
+p.nuevaImagen,
+"productos",
+id,
+p.id
+);
+
+const {
+error:e
+}=await supabaseClient
+.from("productos")
+.update({
+imagen_url:
+imagen.url
+})
+.eq(
+"id",
+p.id
+);
+
+if(e){
+
+await eliminarImagenStorage(
+imagen.url
+);
+
+throw e;
 }
+
+p.imagen_url=
+imagen.url;
+
+}
+
 }else{
-const original=await obtenerProductoOriginal(p.id);
+
+const original=
+await obtenerProductoOriginal(
+p.id
+);
+
 const values={
-nombre:p.nombre.trim(),
-descripcion:p.descripcion?.trim()||null,
-precio:Number(p.precio)||0,
-activo:p.activo!==false
+
+nombre:
+p.nombre.trim(),
+
+descripcion:
+p.descripcion?.trim()||
+null,
+
+precio:
+Number(p.precio)||
+0,
+
+activo:
+p.activo!==false
+
 };
+
 let nuevaImagenProducto=null;
 
 if(p.nuevaImagen){
-nuevaImagenProducto=await subirImagen(p.nuevaImagen,"productos",id,p.id);
-values.imagen_url=nuevaImagenProducto.url;
+
+nuevaImagenProducto=
+await subirImagen(
+p.nuevaImagen,
+"productos",
+id,
+p.id
+);
+
+values.imagen_url=
+nuevaImagenProducto.url;
+
 }
 
-const {error}=await supabaseClient.from("productos").update(values).eq("id",p.id);
+const {
+error
+}=await supabaseClient
+.from("productos")
+.update(values)
+.eq(
+"id",
+p.id
+);
+
 if(error){
-if(nuevaImagenProducto)await eliminarImagenStorage(nuevaImagenProducto.url);
+
+if(nuevaImagenProducto)
+await eliminarImagenStorage(
+nuevaImagenProducto.url
+);
+
 throw error;
 }
 
-if(nuevaImagenProducto&&original?.imagen_url)await eliminarImagenStorage(original.imagen_url);
-if(nuevaImagenProducto)p.imagen_url=nuevaImagenProducto.url;
+if(
+nuevaImagenProducto&&
+original?.imagen_url
+){
+
+await eliminarImagenStorage(
+original.imagen_url
+);
+
 }
-await guardarVariantesProducto(p.id,p.tieneVariantes?p.variantes:[]);
+
+if(nuevaImagenProducto)
+p.imagen_url=
+nuevaImagenProducto.url;
+
+}
+
+await guardarVariantesProducto(
+p.id,
+p.tieneVariantes?
+p.variantes:
+[]
+);
+
 }
 
 cerrarEditor();
+
 await cargarLocales();
-mensaje("Local actualizado correctamente.");
-}catch(e){err(e);}
+
+mensaje(
+"Local actualizado correctamente."
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
-async function obtenerProductoOriginal(id){
-const {data,error}=await supabaseClient.from("productos").select("id,imagen_url").eq("id",id).maybeSingle();
+async function obtenerProductoOriginal(
+id
+){
+
+const {
+data,
+error
+}=await supabaseClient
+.from("productos")
+.select(
+"id,imagen_url"
+)
+.eq(
+"id",
+id
+)
+.maybeSingle();
+
 if(error)throw error;
+
 return data;
 }
 
-async function cambiarEstadoLocal(id,activo){
+async function cambiarEstadoLocal(
+id,
+activo
+){
+
 try{
-const {error}=await supabaseClient.from("restaurantes").update({activo}).eq("id",id);
+
+const {
+error
+}=await supabaseClient
+.from("restaurantes")
+.update({
+activo
+})
+.eq(
+"id",
+id
+);
+
 if(error)throw error;
+
 await cargarLocales();
-mensaje(activo?"Local activado.":"Local inactivado.");
-}catch(e){err(e);}
+
+mensaje(
+activo?
+"Local activado.":
+"Local inactivado."
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
-async function eliminarLocal(id){
-const local=locales.find(x=>x.id===id);if(!local)return;
-if(!confirm(`¿Eliminar definitivamente el local "${local.nombre}"?\n\nTambién se eliminarán sus productos y horarios.`))return;
+async function eliminarLocal(
+id
+){
+
+const local=
+locales.find(
+x=>x.id===id
+);
+
+if(!local)return;
+
+if(!confirm(
+`¿Eliminar definitivamente el local "${local.nombre}"?\n\nTambién se eliminarán sus productos y horarios.`
+))
+return;
+
 try{
-const {data:productos,error:e1}=await supabaseClient.from("productos").select("id,imagen_url").eq("restaurante_id",id);
+
+const {
+data:productos,
+error:e1
+}=await supabaseClient
+.from("productos")
+.select(
+"id,imagen_url"
+)
+.eq(
+"restaurante_id",
+id
+);
+
 if(e1)throw e1;
-const rutas=(productos||[]).map(p=>p.imagen_url).filter(Boolean);
-if(local.banner_url)rutas.push(local.banner_url);
-const {error:e2}=await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",id);
+
+const rutas=
+(productos||[])
+.map(
+p=>p.imagen_url
+)
+.filter(Boolean);
+
+if(local.banner_url)
+rutas.push(
+local.banner_url
+);
+
+const {
+error:e2
+}=await supabaseClient
+.from("horarios_restaurantes")
+.delete()
+.eq(
+"restaurante_id",
+id
+);
+
 if(e2)throw e2;
-const {error:e3}=await supabaseClient.from("productos").delete().eq("restaurante_id",id);
+
+const {
+error:e3
+}=await supabaseClient
+.from("productos")
+.delete()
+.eq(
+"restaurante_id",
+id
+);
+
 if(e3)throw e3;
-const {error:e4}=await supabaseClient.from("restaurantes").delete().eq("id",id);
+
+const {
+error:e4
+}=await supabaseClient
+.from("restaurantes")
+.delete()
+.eq(
+"id",
+id
+);
+
 if(e4)throw e4;
-const paths=rutas.map(obtenerPathStorage).filter(Boolean);
+
+const paths=
+rutas
+.map(
+obtenerPathStorage
+)
+.filter(Boolean);
+
 if(paths.length){
-const {error:eStorage}=await supabaseClient.storage.from(BUCKET).remove([...new Set(paths)]);
-if(eStorage)console.warn("Storage:",eStorage);
+
+const {
+error:eStorage
+}=await supabaseClient
+.storage
+.from(BUCKET)
+.remove([
+...new Set(paths)
+]);
+
+if(eStorage)
+console.warn(
+"Storage:",
+eStorage
+);
+
 }
-await cargarLocales();mensaje("Local eliminado.");
-}catch(e){err(e);}
+
+await cargarLocales();
+
+mensaje(
+"Local eliminado."
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
 function cerrarEditor(){
-productosEdit.forEach(p=>{
-if(p.preview?.startsWith("blob:")){try{URL.revokeObjectURL(p.preview)}catch(_){}}
+
+productosEdit.forEach(
+p=>{
+
+if(
+p.preview?.startsWith(
+"blob:"
+)
+){
+
+try{
+
+URL.revokeObjectURL(
+p.preview
+);
+
+}catch(_){}
+
+}
+
 });
-editorLocal.classList.add("hidden");productosEdit=[];
+
+editorLocal.classList.add(
+"hidden"
+);
+
+productosEdit=[];
 }
 
-function previewArchivo(input,targetId){
-const file=input.files[0];
-const target=document.getElementById(targetId);
+function previewArchivo(
+input,
+targetId
+){
+
+const file=
+input.files[0];
+
+const target=
+document.getElementById(
+targetId
+);
+
 if(!file){
-target.src="";target.classList.add("hidden");return;
-}
-if(!file.type.startsWith("image/")){
-mensaje("Selecciona una imagen válida.","err");input.value="";return;
-}
-if(target.dataset.blobUrl){try{URL.revokeObjectURL(target.dataset.blobUrl)}catch(_){}}
-const url=URL.createObjectURL(file);
-target.dataset.blobUrl=url;target.src=url;target.classList.remove("hidden");
+
+target.src="";
+target.classList.add(
+"hidden"
+);
+
+return;
 }
 
+if(
+!file.type.startsWith(
+"image/"
+)
+){
+
+mensaje(
+"Selecciona una imagen válida.",
+"err"
+);
+
+input.value="";
+
+return;
+}
+
+if(
+target.dataset.blobUrl
+){
+
+try{
+
+URL.revokeObjectURL(
+target.dataset.blobUrl
+);
+
+}catch(_){}
+
+}
+
+const url=
+URL.createObjectURL(
+file
+);
+
+target.dataset.blobUrl=
+url;
+
+target.src=
+url;
+
+target.classList.remove(
+"hidden"
+);
+}
+
+/* CARGA MASIVA */
 function normalizarTexto(v){
-return String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLowerCase();
+
+return String(v??"")
+.normalize("NFD")
+.replace(
+/[\u0300-\u036f]/g,
+""
+)
+.trim()
+.toLowerCase();
 }
 
-function valorBooleano(v,def=true){
-const x=normalizarTexto(v);
-if(x==="si"||x==="true"||x==="1"||x==="activo"||x==="activa")return true;
-if(x==="no"||x==="false"||x==="0"||x==="inactivo"||x==="inactiva")return false;
+function valorBooleano(
+v,
+def=true
+){
+
+const x=
+normalizarTexto(v);
+
+if(
+x==="si"||
+x==="true"||
+x==="1"||
+x==="activo"||
+x==="activa"
+)
+return true;
+
+if(
+x==="no"||
+x==="false"||
+x==="0"||
+x==="inactivo"||
+x==="inactiva"
+)
+return false;
+
 return def;
 }
 
-function descargarCSV(nombre,headers,rows){
-const csv=[headers,...rows].map(r=>r.map(v=>{
-const s=String(v??"");
-return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;
-}).join(",")).join("\n");
-const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
-const a=document.createElement("a");
-a.href=URL.createObjectURL(blob);a.download=nombre;a.click();
-setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+function descargarCSV(
+nombre,
+headers,
+rows
+){
+
+const csv=
+[headers,...rows]
+.map(
+r=>
+r.map(v=>{
+
+const s=
+String(v??"");
+
+return /[",\n]/.test(s)?
+`"${s.replace(/"/g,'""')}"`:
+s;
+
+})
+.join(",")
+)
+.join("\n");
+
+const blob=
+new Blob(
+["\ufeff"+csv],
+{
+type:
+"text/csv;charset=utf-8;"
+}
+);
+
+const a=
+document.createElement(
+"a"
+);
+
+a.href=
+URL.createObjectURL(
+blob
+);
+
+a.download=
+nombre;
+
+a.click();
+
+setTimeout(
+()=>URL.revokeObjectURL(a.href),
+1000
+);
 }
 
 function descargarPlantillaLocales(){
-descargarCSV("plantilla_locales.csv",["nombre","categoria","descripcion","activo"],[
-["AGUA VIVA","Hamburguesas","Ejemplo de local","SI"]
-]);
+
+descargarCSV(
+"plantilla_locales.csv",
+[
+"nombre",
+"categoria",
+"descripcion",
+"activo"
+],
+[
+[
+"AGUA VIVA",
+"Hamburguesas",
+"Ejemplo de local",
+"SI"
+]
+]
+);
+
 }
 
 function descargarPlantillaProductos(){
-descargarCSV("plantilla_productos.csv",["local","nombre","descripcion","precio","activo"],[
-["AGUA VIVA","Hamburguesa clásica","Carne, queso y vegetales",5.5,"SI"]
-]);
+
+descargarCSV(
+"plantilla_productos.csv",
+[
+"local",
+"nombre",
+"descripcion",
+"precio",
+"activo"
+],
+[
+[
+"AGUA VIVA",
+"Hamburguesa clásica",
+"Carne, queso y vegetales",
+5.5,
+"SI"
+]
+]
+);
+
 }
 
 function descargarPlantillaHorarios(){
-const filas=[],dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-dias.forEach((d,i)=>filas.push(["AGUA VIVA",i,"10:00","22:00","NO"]));
-descargarCSV("plantilla_horarios.csv",["local","dia_semana","hora_apertura","hora_cierre","cerrado"],filas);
+
+const filas=[];
+
+const dias=[
+"Domingo",
+"Lunes",
+"Martes",
+"Miércoles",
+"Jueves",
+"Viernes",
+"Sábado"
+];
+
+dias.forEach(
+(d,i)=>
+filas.push([
+"AGUA VIVA",
+i,
+"10:00",
+"22:00",
+"NO"
+])
+);
+
+descargarCSV(
+"plantilla_horarios.csv",
+[
+"local",
+"dia_semana",
+"hora_apertura",
+"hora_cierre",
+"cerrado"
+],
+filas
+);
 }
 
 function parseCSV(text){
-text=String(text||"").replace(/^\ufeff/,"");
-const rows=[];let row=[],cell="",q=false;
-for(let i=0;i<text.length;i++){
-const c=text[i],n=text[i+1];
+
+text=
+String(text||"")
+.replace(/^\ufeff/,"");
+
+const rows=[];
+let row=[];
+let cell="";
+let q=false;
+
+for(
+let i=0;
+i<text.length;
+i++
+){
+
+const c=text[i];
+const n=text[i+1];
+
 if(q){
-if(c==='"'&&n==='"'){cell+='"';i++}
-else if(c==='"')q=false;
-else cell+=c;
-}else if(c==='"')q=true;
-else if(c===','){row.push(cell);cell=""}
-else if(c==='\n'){row.push(cell);if(row.some(x=>String(x).trim()))rows.push(row);row=[];cell=""}
-else if(c!=='\r')cell+=c;
+
+if(c==='"'&&n==='"'){
+
+cell+='"';
+i++;
+
+}else if(c==='"'){
+
+q=false;
+
+}else{
+
+cell+=c;
+
 }
-row.push(cell);if(row.some(x=>String(x).trim()))rows.push(row);
-if(!rows.length)return[];
-const headers=rows[0].map(normalizarTexto);
-return rows.slice(1).map((r,i)=>{
-const o={_fila:i+2};
-headers.forEach((h,j)=>o[h]=String(r[j]??"").trim());
+
+}else if(c==='"'){
+
+q=true;
+
+}else if(c===','){
+
+row.push(cell);
+cell="";
+
+}else if(c==='\n'){
+
+row.push(cell);
+
+if(
+row.some(
+x=>String(x).trim()
+)
+)
+rows.push(row);
+
+row=[];
+cell="";
+
+}else if(c!=='\r'){
+
+cell+=c;
+
+}
+}
+
+row.push(cell);
+
+if(
+row.some(
+x=>String(x).trim()
+)
+)
+rows.push(row);
+
+if(!rows.length)
+return[];
+
+const headers=
+rows[0].map(
+normalizarTexto
+);
+
+return rows
+.slice(1)
+.map(
+(r,i)=>{
+
+const o={
+_fila:i+2
+};
+
+headers.forEach(
+(h,j)=>
+o[h]=
+String(
+r[j]??
+""
+)
+.trim()
+);
+
 return o;
-});
+
+}
+);
 }
 
 async function leerBulkArchivo(id){
-const f=document.getElementById(id)?.files?.[0];
-if(!f)throw new Error("Selecciona un archivo CSV.");
-if(!/\.csv$/i.test(f.name))throw new Error("El archivo debe estar en formato CSV.");
-return parseCSV(await f.text());
+
+const f=
+document.getElementById(
+id
+)?.files?.[0];
+
+if(!f)
+throw new Error(
+"Selecciona un archivo CSV."
+);
+
+if(!/\.csv$/i.test(
+f.name
+))
+throw new Error(
+"El archivo debe estar en formato CSV."
+);
+
+return parseCSV(
+await f.text()
+);
 }
 
-function bulkBox(id,html){
-const b=document.getElementById(id);
-b.innerHTML=html;b.classList.remove("hidden");
+function bulkBox(
+id,
+html
+){
+
+const b=
+document.getElementById(
+id
+);
+
+b.innerHTML=
+html;
+
+b.classList.remove(
+"hidden"
+);
 }
 
-function bulkPreview(titulo,rows,cols){
-const box=document.getElementById("bulkPreview");
-const muestra=rows.slice(0,50);
-box.innerHTML=`<strong>${escapeHtml(titulo)}</strong><div class="muted">Mostrando ${muestra.length} de ${rows.length} registro(s).</div>
-<div style="overflow:auto"><table class="bulk-table"><thead><tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join("")}<th>Estado</th></tr></thead>
-<tbody>${muestra.map(r=>`<tr>${cols.map(c=>`<td>${escapeHtml(r[c])}</td>`).join("")}<td class="${r._error?"bulk-err":"bulk-ok"}">${escapeHtml(r._error||"Listo")}</td></tr>`).join("")}</tbody></table></div>`;
-box.classList.remove("hidden");
+function bulkPreview(
+titulo,
+rows,
+cols
+){
+
+const box=
+document.getElementById(
+"bulkPreview"
+);
+
+const muestra=
+rows.slice(
+0,
+50
+);
+
+box.innerHTML=`
+
+<strong>
+${escapeHtml(titulo)}
+</strong>
+
+<div class="muted">
+Mostrando ${muestra.length}
+de ${rows.length}
+registro(s).
+</div>
+
+<div style="overflow:auto">
+
+<table class="bulk-table">
+
+<thead>
+
+<tr>
+
+${cols.map(
+c=>`<th>${escapeHtml(c)}</th>`
+).join("")}
+
+<th>Estado</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${muestra.map(
+r=>`
+
+<tr>
+
+${cols.map(
+c=>
+`<td>
+${escapeHtml(r[c])}
+</td>`
+).join("")}
+
+<td
+class="${r._error?"bulk-err":"bulk-ok"}">
+
+${escapeHtml(
+r._error||"Listo"
+)}
+
+</td>
+
+</tr>
+
+`
+).join("")}
+
+</tbody>
+
+</table>
+
+</div>
+`;
+
+box.classList.remove(
+"hidden"
+);
 }
 
 function encontrarLocal(v){
-const n=normalizarTexto(v);
-return locales.find(l=>normalizarTexto(l.nombre)===n)||null;
+
+const n=
+normalizarTexto(v);
+
+return locales.find(
+l=>
+normalizarTexto(
+l.nombre
+)===n
+)||
+null;
 }
 
 function categoriasMap(){
-const m=new Map();
-categorias.forEach(c=>m.set(normalizarTexto(c.nombre),c.nombre));
+
+const m=
+new Map();
+
+categorias.forEach(
+c=>
+m.set(
+normalizarTexto(
+c.nombre
+),
+c.nombre
+)
+);
+
 return m;
 }
 
 function prepararCargaLocales(){
+
 (async()=>{
+
 try{
-const rows=await leerBulkArchivo("bulkLocalesFile");
-if(!rows.length)throw new Error("El archivo no contiene registros.");
-const cats=categoriasMap(),seen=new Set();
+
+const rows=
+await leerBulkArchivo(
+"bulkLocalesFile"
+);
+
+if(!rows.length)
+throw new Error(
+"El archivo no contiene registros."
+);
+
+const cats=
+categoriasMap();
+
+const seen=
+new Set();
+
 let validos=0;
-rows.forEach(r=>{
-const nombre=r.nombre?.trim(),cat=r.categoria?.trim(),activo=valorBooleano(r.activo,true),n=normalizarTexto(nombre);
+
+rows.forEach(
+r=>{
+
+const nombre=
+r.nombre?.trim();
+
+const cat=
+r.categoria?.trim();
+
+const activo=
+valorBooleano(
+r.activo,
+true
+);
+
+const n=
+normalizarTexto(
+nombre
+);
+
 r._error="";
-if(!nombre)r._error="Nombre obligatorio";
-else if(seen.has(n))r._error="Duplicado dentro del archivo";
-else if(locales.some(l=>normalizarTexto(l.nombre)===n))r._error="El local ya existe";
-else if(cat&&!cats.has(normalizarTexto(cat)))r._error="La categoría no existe";
-else if(activo===null)r._error="Activo debe ser SI/NO";
-else validos++;
-if(!r._error)seen.add(n);
-});
+
+if(!nombre)
+r._error=
+"Nombre obligatorio";
+
+else if(seen.has(n))
+r._error=
+"Duplicado dentro del archivo";
+
+else if(
+locales.some(
+l=>
+normalizarTexto(
+l.nombre
+)===n
+)
+)
+r._error=
+"El local ya existe";
+
+else if(
+cat&&
+!cats.has(
+normalizarTexto(cat)
+)
+)
+r._error=
+"La categoría no existe";
+
+else if(
+activo===null
+)
+r._error=
+"Activo debe ser SI/NO";
+
+else
+validos++;
+
+if(!r._error)
+seen.add(n);
+
+}
+);
+
 bulkPendiente={
 tipo:"locales",
-rows:rows.filter(r=>!r._error).map(r=>({
-nombre:r.nombre.trim(),
-categoria:cats.get(normalizarTexto(r.categoria))||null,
-descripcion:r.descripcion?.trim()||null,
-activo:valorBooleano(r.activo,true)
-}))
+rows:
+rows
+.filter(
+r=>!r._error
+)
+.map(
+r=>({
+
+nombre:
+r.nombre.trim(),
+
+categoria:
+cats.get(
+normalizarTexto(
+r.categoria
+)
+)||null,
+
+descripcion:
+r.descripcion?.trim()||
+null,
+
+activo:
+valorBooleano(
+r.activo,
+true
+)
+
+})
+)
 };
-bulkPreview("Locales",rows,["nombre","categoria","descripcion","activo"]);
-bulkBox("bulkLocalesResult",`<strong>${validos}</strong> listo(s) para importar · <strong>${rows.length-validos}</strong> con error(es). ${validos?'<div class="bulk-actions"><button class="btn success" onclick="importarBulkLocales()">Importar locales</button></div>':""}`);
-}catch(e){err(e);}
+
+bulkPreview(
+"Locales",
+rows,
+[
+"nombre",
+"categoria",
+"descripcion",
+"activo"
+]
+);
+
+bulkBox(
+"bulkLocalesResult",
+`
+<strong>
+${validos}
+</strong>
+listo(s) para importar ·
+
+<strong>
+${rows.length-validos}
+</strong>
+con error(es).
+
+${
+validos?
+'<div class="bulk-actions"><button class="btn success" onclick="importarBulkLocales()">Importar locales</button></div>':
+""
+}
+`
+);
+
+}catch(e){
+
+err(e);
+
+}
+
 })();
 }
 
-async function insertarBloques(tabla,rows){
-for(let i=0;i<rows.length;i+=BULK_BLOQUE){
-const {error}=await supabaseClient.from(tabla).insert(rows.slice(i,i+BULK_BLOQUE));
-if(error)throw error;
+async function insertarBloques(
+tabla,
+rows
+){
+
+for(
+let i=0;
+i<rows.length;
+i+=BULK_BLOQUE
+){
+
+const {
+error
+}=await supabaseClient
+.from(tabla)
+.insert(
+rows.slice(
+i,
+i+BULK_BLOQUE
+)
+);
+
+if(error)
+throw error;
 }
 }
 
 async function importarBulkLocales(){
-if(!bulkPendiente||bulkPendiente.tipo!=="locales"||!bulkPendiente.rows.length)return;
-const rows=bulkPendiente.rows;
+
+if(
+!bulkPendiente||
+bulkPendiente.tipo!=="locales"||
+!bulkPendiente.rows.length
+)
+return;
+
+const rows=
+bulkPendiente.rows;
+
 try{
-document.querySelector("#btnBulkLocales")?.setAttribute("disabled","true");
-await insertarBloques("restaurantes",rows);
+
+document
+.querySelector(
+"#btnBulkLocales"
+)
+?.setAttribute(
+"disabled",
+"true"
+);
+
+await insertarBloques(
+"restaurantes",
+rows
+);
+
 await cargarLocales();
-bulkBox("bulkLocalesResult",`<strong class="bulk-ok">${rows.length} local(es) creado(s) correctamente.</strong>`);
+
+bulkBox(
+"bulkLocalesResult",
+`
+<strong class="bulk-ok">
+${rows.length}
+local(es) creado(s) correctamente.
+</strong>
+`
+);
+
 bulkPendiente=null;
-document.getElementById("bulkLocalesFile").value="";
-mensaje(`${rows.length} local(es) importado(s) correctamente.`);
-}catch(e){err(e);}
+
+document.getElementById(
+"bulkLocalesFile"
+).value="";
+
+mensaje(
+`${rows.length} local(es) importado(s) correctamente.`
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
 function prepararCargaProductos(){
+
 (async()=>{
+
 try{
-const rows=await leerBulkArchivo("bulkProductosFile");
-if(!rows.length)throw new Error("El archivo no contiene registros.");
-const seen=new Set(),validos=[];
-rows.forEach(r=>{
-const l=encontrarLocal(r.local),nombre=r.nombre?.trim(),precio=Number(String(r.precio||"").replace(",",".")),activo=valorBooleano(r.activo,true);
+
+const rows=
+await leerBulkArchivo(
+"bulkProductosFile"
+);
+
+if(!rows.length)
+throw new Error(
+"El archivo no contiene registros."
+);
+
+const seen=
+new Set();
+
+const validos=[];
+
+rows.forEach(
+r=>{
+
+const l=
+encontrarLocal(
+r.local
+);
+
+const nombre=
+r.nombre?.trim();
+
+const precio=
+Number(
+String(
+r.precio||""
+)
+.replace(",",".")
+);
+
+const activo=
+valorBooleano(
+r.activo,
+true
+);
+
 r._error="";
-const key=normalizarTexto(r.local)+"|"+normalizarTexto(nombre);
-if(!l)r._error="El local no existe";
-else if(!nombre)r._error="Nombre obligatorio";
-else if(!Number.isFinite(precio)||precio<0)r._error="Precio inválido";
-else if(activo===null)r._error="Activo debe ser SI/NO";
-else if(seen.has(key))r._error="Producto duplicado en archivo";
-if(!r._error)validos.push({restaurante_id:l.id,nombre,descripcion:r.descripcion?.trim()||null,precio,activo});
-if(!r._error)seen.add(key);
+
+const key=
+normalizarTexto(
+r.local
+)+
+"|" +
+normalizarTexto(
+nombre
+);
+
+if(!l)
+r._error=
+"El local no existe";
+
+else if(!nombre)
+r._error=
+"Nombre obligatorio";
+
+else if(
+!Number.isFinite(
+precio
+)||
+precio<0
+)
+r._error=
+"Precio inválido";
+
+else if(
+activo===null
+)
+r._error=
+"Activo debe ser SI/NO";
+
+else if(
+seen.has(key)
+)
+r._error=
+"Producto duplicado en archivo";
+
+if(!r._error)
+validos.push({
+restaurante_id:
+l.id,
+nombre,
+descripcion:
+r.descripcion?.trim()||
+null,
+precio,
+activo
 });
+
+if(!r._error)
+seen.add(key);
+
+}
+);
+
 const existentes=[];
+
 if(validos.length){
-const ids=[...new Set(validos.map(x=>x.restaurante_id))];
-const {data,error}=await supabaseClient.from("productos").select("restaurante_id,nombre").in("restaurante_id",ids);
+
+const ids=[
+...new Set(
+validos.map(
+x=>x.restaurante_id
+)
+)
+];
+
+const {
+data,
+error
+}=await supabaseClient
+.from("productos")
+.select(
+"restaurante_id,nombre"
+)
+.in(
+"restaurante_id",
+ids
+);
+
 if(error)throw error;
-(data||[]).forEach(p=>existentes.push(normalizarTexto(p.restaurante_id)+"|"+normalizarTexto(p.nombre)));
+
+(data||[])
+.forEach(
+p=>
+existentes.push(
+normalizarTexto(
+p.restaurante_id
+)+
+"|" +
+normalizarTexto(
+p.nombre
+)
+)
+);
+
 }
-rows.forEach(r=>{
+
+rows.forEach(
+r=>{
+
 if(!r._error){
-const l=encontrarLocal(r.local),key=normalizarTexto(l.id)+"|"+normalizarTexto(r.nombre);
-if(existentes.includes(key))r._error="El producto ya existe en ese local";
+
+const l=
+encontrarLocal(
+r.local
+);
+
+const key=
+normalizarTexto(
+l.id
+)+
+"|" +
+normalizarTexto(
+r.nombre
+);
+
+if(
+existentes.includes(
+key
+)
+)
+r._error=
+"El producto ya existe en ese local";
+
 }
-});
-const final=validos.filter(p=>!existentes.includes(normalizarTexto(p.restaurante_id)+"|"+normalizarTexto(p.nombre)));
-bulkPendiente={tipo:"productos",rows:final};
-const ok=final.length,totalErr=rows.length-ok;
-bulkPreview("Productos",rows,["local","nombre","descripcion","precio","activo"]);
-bulkBox("bulkProductosResult",`<strong>${ok}</strong> listo(s) para importar · <strong>${totalErr}</strong> con error(es). ${ok?'<div class="bulk-actions"><button class="btn success" onclick="importarBulkProductos()">Importar productos</button></div>':""}`);
-}catch(e){err(e);}
+
+}
+);
+
+const final=
+validos.filter(
+p=>
+!existentes.includes(
+normalizarTexto(
+p.restaurante_id
+)+
+"|" +
+normalizarTexto(
+p.nombre
+)
+)
+);
+
+bulkPendiente={
+tipo:"productos",
+rows:final
+};
+
+const ok=
+final.length;
+
+const totalErr=
+rows.length-ok;
+
+bulkPreview(
+"Productos",
+rows,
+[
+"local",
+"nombre",
+"descripcion",
+"precio",
+"activo"
+]
+);
+
+bulkBox(
+"bulkProductosResult",
+`
+<strong>
+${ok}
+</strong>
+listo(s) para importar ·
+
+<strong>
+${totalErr}
+</strong>
+con error(es).
+
+${
+ok?
+'<div class="bulk-actions"><button class="btn success" onclick="importarBulkProductos()">Importar productos</button></div>':
+""
+}
+`
+);
+
+}catch(e){
+
+err(e);
+
+}
+
 })();
 }
 
 async function importarBulkProductos(){
-if(!bulkPendiente||bulkPendiente.tipo!=="productos"||!bulkPendiente.rows.length)return;
+
+if(
+!bulkPendiente||
+bulkPendiente.tipo!=="productos"||
+!bulkPendiente.rows.length
+)
+return;
+
 try{
-const rows=bulkPendiente.rows;
-await insertarBloques("productos",rows);
-bulkBox("bulkProductosResult",`<strong class="bulk-ok">${rows.length} producto(s) creado(s) correctamente.</strong>`);
+
+const rows=
+bulkPendiente.rows;
+
+await insertarBloques(
+"productos",
+rows
+);
+
+bulkBox(
+"bulkProductosResult",
+`
+<strong class="bulk-ok">
+${rows.length}
+producto(s) creado(s) correctamente.
+</strong>
+`
+);
+
 bulkPendiente=null;
-document.getElementById("bulkProductosFile").value="";
-mensaje(`${rows.length} producto(s) importado(s) correctamente.`);
-}catch(e){err(e);}
+
+document.getElementById(
+"bulkProductosFile"
+).value="";
+
+mensaje(
+`${rows.length} producto(s) importado(s) correctamente.`
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
 function diaNumero(v){
-const x=normalizarTexto(v);
-if(/^\d$/.test(x)&&Number(x)>=0&&Number(x)<=6)return Number(x);
+
+const x=
+normalizarTexto(v);
+
+if(
+/^\d$/.test(x)&&
+Number(x)>=0&&
+Number(x)<=6
+)
+return Number(x);
+
 return DIAS_MAP[x]??null;
 }
 
 function prepararCargaHorarios(){
+
 (async()=>{
+
 try{
-const rows=await leerBulkArchivo("bulkHorariosFile");
-if(!rows.length)throw new Error("El archivo no contiene registros.");
-const seen=new Set(),validos=[];
-rows.forEach(r=>{
-const l=encontrarLocal(r.local),dia=diaNumero(r.dia_semana),cerrado=valorBooleano(r.cerrado,null);
+
+const rows=
+await leerBulkArchivo(
+"bulkHorariosFile"
+);
+
+if(!rows.length)
+throw new Error(
+"El archivo no contiene registros."
+);
+
+const seen=
+new Set();
+
+const validos=[];
+
+rows.forEach(
+r=>{
+
+const l=
+encontrarLocal(
+r.local
+);
+
+const dia=
+diaNumero(
+r.dia_semana
+);
+
+const cerrado=
+valorBooleano(
+r.cerrado,
+null
+);
+
 r._error="";
-if(!l)r._error="El local no existe";
-else if(dia===null)r._error="Día inválido (0-6 o nombre)";
-else if(cerrado===null)r._error="Cerrado debe ser SI/NO";
-else if(!cerrado&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(r.hora_apertura||""))r._error="Hora de apertura inválida";
-else if(!cerrado&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(r.hora_cierre||""))r._error="Hora de cierre inválida";
-else if(seen.has(l.id+"|"+dia))r._error="Día duplicado para el local";
-else validos.push({
-restaurante_id:l.id,
-dia_semana:dia,
-hora_apertura:cerrado?null:r.hora_apertura,
-hora_cierre:cerrado?null:r.hora_cierre,
+
+if(!l)
+r._error=
+"El local no existe";
+
+else if(dia===null)
+r._error=
+"Día inválido (0-6 o nombre)";
+
+else if(cerrado===null)
+r._error=
+"Cerrado debe ser SI/NO";
+
+else if(
+!cerrado&&
+!/^([01]\d|2[0-3]):[0-5]\d$/.test(
+r.hora_apertura||""
+)
+)
+r._error=
+"Hora de apertura inválida";
+
+else if(
+!cerrado&&
+!/^([01]\d|2[0-3]):[0-5]\d$/.test(
+r.hora_cierre||""
+)
+)
+r._error=
+"Hora de cierre inválida";
+
+else if(
+seen.has(
+l.id+"|"+dia
+)
+)
+r._error=
+"Día duplicado para el local";
+
+else
+
+validos.push({
+
+restaurante_id:
+l.id,
+
+dia_semana:
+dia,
+
+hora_apertura:
+cerrado?
+null:
+r.hora_apertura,
+
+hora_cierre:
+cerrado?
+null:
+r.hora_cierre,
+
 cerrado
+
 });
-if(!r._error)seen.add(l.id+"|"+dia);
-});
-const grupos=new Map();
-validos.forEach(x=>{
-if(!grupos.has(x.restaurante_id))grupos.set(x.restaurante_id,[]);
-grupos.get(x.restaurante_id).push(x);
-});
-const incompletos=[...grupos].filter(([,a])=>a.length!==7).map(([id])=>id);
-if(incompletos.length){
-rows.filter(r=>{
-const l=encontrarLocal(r.local);
-return l&&incompletos.includes(l.id)&&!r._error;
-}).forEach(r=>{r._error="Debe haber 7 días por local";});
+
+if(!r._error)
+seen.add(
+l.id+"|"+dia
+);
+
 }
-const final=validos.filter(x=>!incompletos.includes(x.restaurante_id));
-bulkPendiente={tipo:"horarios",rows:final,locales:[...new Set(final.map(x=>x.restaurante_id))]};
-const ok=final.length;
-const errores=rows.filter(r=>r._error).length+(validos.length-final.length);
-bulkPreview("Horarios",rows,["local","dia_semana","hora_apertura","hora_cierre","cerrado"]);
-bulkBox("bulkHorariosResult",`<strong>${ok}</strong> fila(s) lista(s) para importar · <strong>${errores}</strong> con error(es). ${ok?'<div class="bulk-actions"><button class="btn success" onclick="importarBulkHorarios()">Importar horarios</button></div>':""}`);
-}catch(e){err(e);}
+);
+
+const grupos=
+new Map();
+
+validos.forEach(
+x=>{
+
+if(
+!grupos.has(
+x.restaurante_id
+)
+)
+grupos.set(
+x.restaurante_id,
+[]
+);
+
+grupos.get(
+x.restaurante_id
+).push(x);
+
+}
+);
+
+const incompletos=
+[...grupos]
+.filter(
+([,a])=>
+a.length!==7
+)
+.map(
+([id])=>id
+);
+
+if(incompletos.length){
+
+rows.filter(
+r=>{
+
+const l=
+encontrarLocal(
+r.local
+);
+
+return(
+l&&
+incompletos.includes(
+l.id
+)&&
+!r._error
+);
+
+}
+)
+.forEach(
+r=>{
+r._error=
+"Debe haber 7 días por local";
+}
+);
+
+}
+
+const final=
+validos.filter(
+x=>
+!incompletos.includes(
+x.restaurante_id
+)
+);
+
+bulkPendiente={
+tipo:"horarios",
+rows:final,
+locales:[
+...new Set(
+final.map(
+x=>x.restaurante_id
+)
+)
+]
+};
+
+const ok=
+final.length;
+
+const errores=
+rows.filter(
+r=>r._error
+).length+
+(
+validos.length-final.length
+);
+
+bulkPreview(
+"Horarios",
+rows,
+[
+"local",
+"dia_semana",
+"hora_apertura",
+"hora_cierre",
+"cerrado"
+]
+);
+
+bulkBox(
+"bulkHorariosResult",
+`
+<strong>
+${ok}
+</strong>
+fila(s) lista(s) para importar ·
+
+<strong>
+${errores}
+</strong>
+con error(es).
+
+${
+ok?
+'<div class="bulk-actions"><button class="btn success" onclick="importarBulkHorarios()">Importar horarios</button></div>':
+""
+}
+`
+);
+
+}catch(e){
+
+err(e);
+
+}
+
 })();
 }
 
 async function importarBulkHorarios(){
-if(!bulkPendiente||bulkPendiente.tipo!=="horarios"||!bulkPendiente.rows.length)return;
+
+if(
+!bulkPendiente||
+bulkPendiente.tipo!=="horarios"||
+!bulkPendiente.rows.length
+)
+return;
+
 try{
-for(const id of bulkPendiente.locales){
-const {error:e1}=await supabaseClient.from("horarios_restaurantes").delete().eq("restaurante_id",id);
+
+for(
+const id of
+bulkPendiente.locales
+){
+
+const {
+error:e1
+}=await supabaseClient
+.from("horarios_restaurantes")
+.delete()
+.eq(
+"restaurante_id",
+id
+);
+
 if(e1)throw e1;
-const rows=bulkPendiente.rows.filter(x=>x.restaurante_id===id);
-const {error:e2}=await supabaseClient.from("horarios_restaurantes").insert(rows);
+
+const rows=
+bulkPendiente.rows.filter(
+x=>
+x.restaurante_id===
+id
+);
+
+const {
+error:e2
+}=await supabaseClient
+.from("horarios_restaurantes")
+.insert(
+rows
+);
+
 if(e2)throw e2;
+
 }
-const n=bulkPendiente.locales.length;
-bulkBox("bulkHorariosResult",`<strong class="bulk-ok">Horarios actualizados para ${n} local(es).</strong>`);
+
+const n=
+bulkPendiente.locales.length;
+
+bulkBox(
+"bulkHorariosResult",
+`
+<strong class="bulk-ok">
+Horarios actualizados para
+${n}
+local(es).
+</strong>
+`
+);
+
 bulkPendiente=null;
-document.getElementById("bulkHorariosFile").value="";
-mensaje(`Horarios importados para ${n} local(es).`);
-}catch(e){err(e);}
+
+document.getElementById(
+"bulkHorariosFile"
+).value="";
+
+mensaje(
+`Horarios importados para ${n} local(es).`
+);
+
+}catch(e){
+
+err(e);
+
+}
 }
 
-function escapeHtml(value){
-return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+/* UTILIDADES */
+function escapeHtml(
+value
+){
+
+return String(
+value??""
+)
+.replace(
+/&/g,
+"&amp;"
+)
+.replace(
+/</g,
+"&lt;"
+)
+.replace(
+/>/g,
+"&gt;"
+)
+.replace(
+/"/g,
+"&quot;"
+)
+.replace(
+/'/g,
+"&#039;"
+);
+
 }
 
-function escapeAttr(value){
-return escapeHtml(value);
+function escapeAttr(
+value
+){
+
+return escapeHtml(
+value
+);
+
 }
 </script>
 </body>
