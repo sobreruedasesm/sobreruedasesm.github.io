@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,6 +21,7 @@ h1,h2,h3{margin-top:0}h1{font-size:24px}h2{font-size:19px;margin-bottom:13px}
 .item{display:flex;gap:10px;align-items:center;padding:11px;border-bottom:1px solid #eee}
 .item:last-child{border-bottom:0}.thumb{width:55px;height:55px;border-radius:8px;background:#eee;overflow:hidden;flex:none}
 .thumb img{width:100%;height:100%;object-fit:cover}.itemInfo{flex:1;min-width:0}.itemInfo b{display:block}.itemInfo small{color:#777}
+.variantName{display:block;color:#555;margin-top:3px}
 .controls{display:flex;align-items:center;gap:7px}.controls button{border:0;width:30px;height:30px;border-radius:7px;background:#eee;font-weight:bold;cursor:pointer}
 .controls button:disabled{opacity:.45;cursor:not-allowed}.del{background:#fee!important;color:#d22}
 .money{text-align:right;margin-top:10px}.money div{padding:4px 0}.total{font-size:20px;font-weight:bold;border-top:1px solid #ddd;margin-top:8px;padding-top:10px}
@@ -171,11 +171,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const money=n=>`${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
 
-/* NORMALIZACIÓN DE TELÉFONOS ECUATORIANOS
-   0989351622  -> 593989351622
-   593989351622 -> 593989351622
-   +593989351622 -> 593989351622
-*/
+/* NORMALIZACIÓN DE TELÉFONOS ECUATORIANOS */
 function normalizarTelefono(t){
  let n=String(t||"").replace(/\D/g,"");
 
@@ -285,6 +281,12 @@ function cargarCarrito(){
  }
 
  carrito=Array.isArray(datos)?datos:[];
+
+ carrito=carrito.map(x=>({
+  ...x,
+  variante_id:x.variante_id||null,
+  variante_nombre:x.variante_nombre||null
+ }));
 }
 
 function guardarCarrito(){
@@ -403,6 +405,10 @@ function subtotalGrupo(g){
  );
 }
 
+function subtotalItem(x){
+ return(Number(x.precio)||0)*(Number(x.cantidad)||0);
+}
+
 function render(){
  const cont=$("carrito");
 
@@ -422,23 +428,28 @@ function render(){
 
   return `<div class="local">
    <div class="localHead">${esc(g.nombre)}</div>
+
    ${g.items.map(x=>`
     <div class="item">
      <div class="thumb">
       ${x.imagen_url?`<img src="${esc(x.imagen_url)}" alt="" loading="lazy">`:""}
      </div>
+
      <div class="itemInfo">
       <b>${esc(x.producto_nombre)}</b>
+      ${x.variante_nombre?`<small class="variantName">Opción: ${esc(x.variante_nombre)}</small>`:""}
       <small>${money(x.precio)} c/u</small>
      </div>
+
      <div class="controls">
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},-1)">−</button>
+      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)},-1)">−</button>
       <b>${x.cantidad}</b>
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},1)">+</button>
-      <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id})">×</button>
+      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)},1)">+</button>
+      <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)})">×</button>
      </div>
     </div>
    `).join("")}
+
    <div class="localTotals">
     <div>Subtotal productos: <b>${money(subtotal)}</b></div>
     <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
@@ -448,7 +459,7 @@ function render(){
  }).join("");
 
  const subtotalTotal=carrito.reduce(
-  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
+  (a,x)=>a+subtotalItem(x),0
  );
 
  const deliveryTotal=grupos.length*deliveryUnitario;
@@ -462,19 +473,23 @@ function render(){
     <b>${money(subtotalGrupo(g))}</b>
    </div>
   `).join("")}
+
   <div class="summaryDelivery">
-   <span>Delivery (${grupos.length} ${grupos.length===1?"restaurante":"restaurantes"})</span>
+   <span>Delivery (${grupos.length} ${grupos.length===1?"local":"locales"})</span>
    <b>${money(deliveryTotal)}</b>
   </div>
+
   <div class="total">Total: ${money(total)}</div>
  </div>`;
 
  actualizarAcceso();
 }
 
-function cambiarCantidad(productoId,restauranteId,cambio){
- const i=carrito.findIndex(
-  x=>x.producto_id===productoId&&x.restaurante_id===restauranteId
+function cambiarCantidad(productoId,restauranteId,varianteId,cambio){
+ const i=carrito.findIndex(x=>
+  x.producto_id===productoId&&
+  x.restaurante_id===restauranteId&&
+  Number(x.variante_id||0)===Number(varianteId||0)
  );
 
  if(i<0)return;
@@ -489,9 +504,13 @@ function cambiarCantidad(productoId,restauranteId,cambio){
  guardarFormulario();
 }
 
-function eliminar(productoId,restauranteId){
- carrito=carrito.filter(
-  x=>!(x.producto_id===productoId&&x.restaurante_id===restauranteId)
+function eliminar(productoId,restauranteId,varianteId){
+ carrito=carrito.filter(x=>
+  !(
+   x.producto_id===productoId&&
+   x.restaurante_id===restauranteId&&
+   Number(x.variante_id||0)===Number(varianteId||0)
+  )
  );
 
  guardarCarrito();
@@ -1252,7 +1271,7 @@ async function realizarPedido(){
   const grupos=agrupar();
 
   const subtotalTotal=carrito.reduce(
-   (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
+   (a,x)=>a+subtotalItem(x),0
   );
 
   const deliveryUnitario=Number(configuracion.tarifaDelivery||0);
@@ -1316,13 +1335,16 @@ async function realizarPedido(){
   }
 
   for(const g of carreras){
+
    const detalles=g.items.map(x=>({
     carrera_id:g.carrera_id,
     producto_id:x.producto_id,
     producto_nombre:x.producto_nombre,
-    precio_unitario:+x.precio,
-    cantidad:+x.cantidad,
-    subtotal:(+x.precio)*(+x.cantidad)
+    precio_unitario:Number(x.precio)||0,
+    cantidad:Number(x.cantidad)||0,
+    subtotal:subtotalItem(x),
+    variante_id:x.variante_id||null,
+    variante_nombre:x.variante_nombre||null
    }));
 
    const dr=await supabaseClient
@@ -1375,10 +1397,19 @@ async function realizarPedido(){
     `%0A🏪 *${encodeURIComponent(g.nombre)}*%0A`;
 
    g.items.forEach(x=>{
-    const sub=(+x.precio)*(+x.cantidad);
+
+    const sub=subtotalItem(x);
 
     msg+=
-     `${x.cantidad} x ${encodeURIComponent(x.producto_nombre)} — ${encodeURIComponent(money(sub))}%0A`;
+     `${x.cantidad} x ${encodeURIComponent(x.producto_nombre)}`;
+
+    if(x.variante_nombre){
+     msg+=
+      ` — ${encodeURIComponent(x.variante_nombre)}`;
+    }
+
+    msg+=
+     ` — ${encodeURIComponent(money(sub))}%0A`;
    });
 
    msg+=
@@ -1438,4 +1469,3 @@ cargarConfiguracion();
 </script>
 </body>
 </html>
-```
