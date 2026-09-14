@@ -21,12 +21,17 @@ main{max-width:900px;margin:auto;padding:15px}
 .productos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:15px}
 .producto{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 8px #0001}
 .prodimg{height:150px;background:#eee}.prodimg img{width:100%;height:100%;object-fit:cover}
-.pinfo{padding:14px}.pinfo h3{margin:0 0 5px}.pdesc{font-size:14px;color:#666;min-height:34px}.precio{font-size:18px;font-weight:bold;margin:10px 0}
-.btn{width:100%;border:0;border-radius:9px;padding:11px;background:#e53935;color:#fff;font-weight:bold;cursor:pointer}.btn:disabled{background:#aaa;cursor:not-allowed}
+.pinfo{padding:14px}.pinfo h3{margin:0 0 5px}.pdesc{font-size:14px;color:#666;min-height:34px}
+.precio{font-size:18px;font-weight:bold;margin:10px 0}
+.variant-select{width:100%;border:1px solid #ddd;border-radius:9px;padding:10px;background:#fff;margin-top:8px}
+.variant-label{font-size:13px;font-weight:bold;margin-top:9px;display:block}
+.btn{width:100%;border:0;border-radius:9px;padding:11px;background:#e53935;color:#fff;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn:disabled{background:#aaa;cursor:not-allowed}
 .vacio{text-align:center;background:#fff;padding:25px;border-radius:14px;color:#777}
 </style>
 </head>
 <body>
+
 <header>
 <a class="back" href="index.html">← Volver</a>
 <div class="logo">Sobre <span>Ruedas</span></div>
@@ -39,111 +44,310 @@ main{max-width:900px;margin:auto;padding:15px}
 
 <script>
 const restauranteId=Number(new URLSearchParams(location.search).get("id"));
-let restaurante=null,productos=[],horarios=[],localAbierto=true;
+let restaurante=null,productos=[],variantes=[],horarios=[],localAbierto=true;
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 
 function obtenerCarrito(){
- try{return JSON.parse(sessionStorage.getItem("carrito")||"[]")}
- catch{return[]}
+try{return JSON.parse(sessionStorage.getItem("carrito")||"[]")}catch{return[]}
 }
-function guardarCarrito(c){sessionStorage.setItem("carrito",JSON.stringify(c));actualizarCarrito()}
-function actualizarCarrito(){$("cartCount").textContent=obtenerCarrito().reduce((a,x)=>a+(+x.cantidad||0),0)}
+
+function guardarCarrito(c){
+sessionStorage.setItem("carrito",JSON.stringify(c));
+actualizarCarrito();
+}
+
+function actualizarCarrito(){
+$("cartCount").textContent=obtenerCarrito().reduce((a,x)=>a+(+x.cantidad||0),0);
+}
 
 const DIAS_NOMBRES=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
 function horaEcuador(){
- return new Intl.DateTimeFormat("en-GB",{timeZone:"America/Guayaquil",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());
+return new Intl.DateTimeFormat("en-GB",{timeZone:"America/Guayaquil",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());
 }
+
 function ahoraDia(){
- return new Date(new Date().toLocaleString("en-US",{timeZone:"America/Guayaquil"})).getDay();
+return new Date(new Date().toLocaleString("en-US",{timeZone:"America/Guayaquil"})).getDay();
 }
+
 function obtenerEstadoLocal(){
- if(!horarios.length)return{abierto:true,texto:"Abierto"};
- const dia=ahoraDia(),min=(()=>{const [h,m]=horaEcuador().split(":").map(Number);return h*60+m})();
- const h=horarios.find(x=>x.dia_semana===dia);
- if(!h||h.cerrado)return{abierto:false,texto:"Cerrado hoy"};
- if(h.hora_apertura==="00:00:00"&&h.hora_cierre==="23:59:00")return{abierto:true,texto:"Abierto"};
- if(!h.hora_apertura||!h.hora_cierre)return{abierto:false,texto:"Cerrado"};
- const [ah,am]=h.hora_apertura.slice(0,5).split(":").map(Number);
- const [ch,cm]=h.hora_cierre.slice(0,5).split(":").map(Number);
- const a=ah*60+am,c=ch*60+cm;
- const ok=a<=c?min>=a&&min<=c:min>=a||min<=c;
- return{abierto:ok,texto:ok?"Abierto":`Cerrado · ${h.hora_apertura.slice(0,5)}–${h.hora_cierre.slice(0,5)}`};
+if(!horarios.length)return{abierto:true,texto:"Abierto"};
+
+const dia=ahoraDia();
+const min=(()=>{const[h,m]=horaEcuador().split(":").map(Number);return h*60+m})();
+const h=horarios.find(x=>x.dia_semana===dia);
+
+if(!h||h.cerrado)return{abierto:false,texto:"Cerrado hoy"};
+if(h.hora_apertura==="00:00:00"&&h.hora_cierre==="23:59:00")return{abierto:true,texto:"Abierto"};
+if(!h.hora_apertura||!h.hora_cierre)return{abierto:false,texto:"Cerrado"};
+
+const[ah,am]=h.hora_apertura.slice(0,5).split(":").map(Number);
+const[ch,cm]=h.hora_cierre.slice(0,5).split(":").map(Number);
+const a=ah*60+am,c=ch*60+cm;
+const ok=a<=c?min>=a&&min<=c:min>=a||min<=c;
+
+return{abierto:ok,texto:ok?"Abierto":`Cerrado · ${h.hora_apertura.slice(0,5)}–${h.hora_cierre.slice(0,5)}`};
 }
 
 async function cargarLocal(){
- try{
-  if(!restauranteId)throw Error("Local no válido");
-  const r=await supabaseClient.from("restaurantes").select("*").eq("id",restauranteId).eq("activo",true).single();
-  if(r.error)throw r.error;
-  restaurante=r.data;
+try{
+if(!restauranteId)throw Error("Local no válido");
 
-  const [p,h]=await Promise.all([
-   supabaseClient.from("productos").select("*").eq("restaurante_id",restauranteId).eq("activo",true).order("nombre"),
-   supabaseClient.from("horarios_restaurantes").select("*").eq("restaurante_id",restauranteId).order("dia_semana")
-  ]);
-  if(p.error)throw p.error;if(h.error)throw h.error;
-  productos=p.data||[];horarios=h.data||[];
-  pintar();actualizarEstado();
- }catch(e){
-  console.error(e);$("app").innerHTML='<div class="vacio">No se pudo cargar el local.</div>';
- }
+const r=await supabaseClient
+.from("restaurantes")
+.select("*")
+.eq("id",restauranteId)
+.eq("activo",true)
+.single();
+
+if(r.error)throw r.error;
+restaurante=r.data;
+
+const[p,h]=await Promise.all([
+supabaseClient
+.from("productos")
+.select("*")
+.eq("restaurante_id",restauranteId)
+.eq("activo",true)
+.order("nombre"),
+
+supabaseClient
+.from("horarios_restaurantes")
+.select("*")
+.eq("restaurante_id",restauranteId)
+.order("dia_semana")
+]);
+
+if(p.error)throw p.error;
+if(h.error)throw h.error;
+
+productos=p.data||[];
+horarios=h.data||[];
+
+const ids=productos.map(x=>x.id);
+
+if(ids.length){
+const v=await supabaseClient
+.from("producto_variantes")
+.select("id,producto_id,nombre,precio,activo,orden")
+.in("producto_id",ids)
+.eq("activo",true)
+.order("orden");
+
+if(v.error)throw v.error;
+variantes=v.data||[];
+}else{
+variantes=[];
+}
+
+pintar();
+actualizarEstado();
+
+}catch(e){
+console.error(e);
+$("app").innerHTML='<div class="vacio">No se pudo cargar el local.</div>';
+}
+}
+
+function variantesProducto(productoId){
+return variantes
+.filter(v=>v.producto_id===productoId&&v.activo!==false)
+.sort((a,b)=>(a.orden??0)-(b.orden??0));
 }
 
 function pintar(){
- $("app").innerHTML=`
- <div class="banner">${restaurante.banner_url?`<img src="${esc(restaurante.banner_url)}?v=${Date.now()}" alt="">`:""}</div>
- <section class="info">
-  <div class="categoria">${esc(restaurante.categoria||"")}</div>
-  <h1>${esc(restaurante.nombre)}</h1>
-  <div class="desc">${esc(restaurante.descripcion||"")}</div>
-  <div id="estado" class="estado">Cargando...</div>
-  <div id="cerrado"></div>
- </section>
- <h2>Productos</h2>
- <section id="productos" class="productos"></section>`;
- pintarProductos();
+$("app").innerHTML=`
+<div class="banner">
+${restaurante.banner_url?`<img src="${esc(restaurante.banner_url)}?v=${Date.now()}" alt="">`:""}
+</div>
+
+<section class="info">
+<div class="categoria">${esc(restaurante.categoria||"")}</div>
+<h1>${esc(restaurante.nombre)}</h1>
+<div class="desc">${esc(restaurante.descripcion||"")}</div>
+<div id="estado" class="estado">Cargando...</div>
+<div id="cerrado"></div>
+</section>
+
+<h2>Productos</h2>
+<section id="productos" class="productos"></section>`;
+
+pintarProductos();
 }
 
 function pintarProductos(){
- $("productos").innerHTML=productos.length?productos.map(p=>`
- <article class="producto">
-  <div class="prodimg">${p.imagen_url?`<img src="${esc(p.imagen_url)}?v=${Date.now()}" alt="">`:""}</div>
-  <div class="pinfo">
-   <h3>${esc(p.nombre)}</h3>
-   <div class="pdesc">${esc(p.descripcion||"")}</div>
-   <div class="precio">$${(+p.precio).toFixed(2)}</div>
-   <button class="btn agregar" data-id="${p.id}" onclick="agregarAlCarrito(${p.id})">Agregar</button>
-  </div>
- </article>`).join(""):'<div class="vacio">Este local no tiene productos disponibles.</div>';
+$("productos").innerHTML=productos.length?
+productos.map(p=>{
+const vs=variantesProducto(p.id);
+const precioMostrar=vs.length?Math.min(...vs.map(v=>+v.precio||0)):+p.precio;
+
+return`
+<article class="producto">
+
+<div class="prodimg">
+${p.imagen_url?`<img src="${esc(p.imagen_url)}?v=${Date.now()}" alt="">`:""}
+</div>
+
+<div class="pinfo">
+
+<h3>${esc(p.nombre)}</h3>
+
+<div class="pdesc">
+${esc(p.descripcion||"")}
+</div>
+
+${
+vs.length
+?`
+<label class="variant-label">Elige una opción</label>
+
+<select
+class="variant-select"
+id="variante-${p.id}"
+onchange="actualizarPrecioProducto(${p.id})">
+
+<option value="">Seleccionar...</option>
+
+${vs.map(v=>`
+<option value="${v.id}">
+${esc(v.nombre)} · $${(+v.precio).toFixed(2)}
+</option>
+`).join("")}
+
+</select>
+
+<div class="precio" id="precio-${p.id}">
+Desde $${precioMostrar.toFixed(2)}
+</div>
+`
+:`
+<div class="precio">$${(+p.precio).toFixed(2)}</div>
+`
+}
+
+<button
+class="btn agregar"
+id="btn-${p.id}"
+onclick="agregarAlCarrito(${p.id})"
+${vs.length?"disabled":""}>
+${vs.length?"Elegir opción":"Agregar"}
+</button>
+
+</div>
+</article>`;
+}).join("")
+:'<div class="vacio">Este local no tiene productos disponibles.</div>';
+
+actualizarEstado();
+}
+
+function actualizarPrecioProducto(id){
+const p=productos.find(x=>x.id===id);
+if(!p)return;
+
+const vs=variantesProducto(id);
+const select=document.getElementById(`variante-${id}`);
+const btn=document.getElementById(`btn-${id}`);
+const precio=document.getElementById(`precio-${id}`);
+
+if(!select||!btn)return;
+
+const variante=vs.find(v=>String(v.id)===String(select.value));
+
+if(variante){
+precio.textContent=`$${(+variante.precio).toFixed(2)}`;
+btn.disabled=!localAbierto;
+btn.textContent="Agregar";
+}else{
+precio.textContent=`Desde $${Math.min(...vs.map(v=>+v.precio||0)).toFixed(2)}`;
+btn.disabled=true;
+btn.textContent="Elegir opción";
+}
 }
 
 function actualizarEstado(){
- const e=obtenerEstadoLocal();localAbierto=e.abierto;
- const el=$("estado");if(!el)return;
- el.textContent=e.texto;el.classList.toggle("cerrado",!e.abierto);
- $("cerrado").innerHTML=e.abierto?"":'<div class="cerradoBox">Este local está cerrado. Podrás consultar sus productos, pero no realizar pedidos ahora.</div>';
- document.querySelectorAll(".agregar").forEach(b=>b.disabled=!e.abierto);
+const e=obtenerEstadoLocal();
+localAbierto=e.abierto;
+
+const el=$("estado");
+if(!el)return;
+
+el.textContent=e.texto;
+el.classList.toggle("cerrado",!e.abierto);
+
+$("cerrado").innerHTML=e.abierto
+?""
+:'<div class="cerradoBox">Este local está cerrado. Podrás consultar sus productos, pero no realizar pedidos ahora.</div>';
+
+document.querySelectorAll(".agregar").forEach(btn=>{
+const id=Number(btn.id.replace("btn-",""));
+const vs=variantesProducto(id);
+const select=document.getElementById(`variante-${id}`);
+
+if(vs.length){
+btn.disabled=!e.abierto||!select?.value;
+}else{
+btn.disabled=!e.abierto;
+}
+});
 }
 
 function agregarAlCarrito(id){
- if(!localAbierto)return;
- const p=productos.find(x=>x.id===id);if(!p)return;
- const c=obtenerCarrito();
- const existente=c.find(x=>x.producto_id===p.id&&x.restaurante_id===restaurante.id);
- if(existente)existente.cantidad++;
- else c.push({
-  producto_id:p.id,
-  restaurante_id:restaurante.id,
-  restaurante_nombre:restaurante.nombre,
-  producto_nombre:p.nombre,
-  precio:+p.precio,
-  cantidad:1,
-  imagen_url:p.imagen_url||null
- });
- guardarCarrito(c);
+if(!localAbierto)return;
+
+const p=productos.find(x=>x.id===id);
+if(!p)return;
+
+const vs=variantesProducto(id);
+let variante=null;
+
+if(vs.length){
+const select=document.getElementById(`variante-${id}`);
+if(!select?.value){
+alert("Selecciona una opción antes de agregar el producto.");
+return;
+}
+variante=vs.find(v=>String(v.id)===String(select.value));
+if(!variante)return;
+}
+
+const c=obtenerCarrito();
+
+const existente=c.find(x=>
+x.producto_id===p.id&&
+x.restaurante_id===restaurante.id&&
+Number(x.variante_id||0)===Number(variante?.id||0)
+);
+
+if(existente){
+existente.cantidad++;
+}else{
+c.push({
+producto_id:p.id,
+restaurante_id:restaurante.id,
+restaurante_nombre:restaurante.nombre,
+producto_nombre:p.nombre,
+precio:variante?+variante.precio:+p.precio,
+cantidad:1,
+imagen_url:p.imagen_url||null,
+variante_id:variante?.id||null,
+variante_nombre:variante?.nombre||null
+});
+}
+
+guardarCarrito(c);
+
+const btn=document.getElementById(`btn-${id}`);
+
+if(btn){
+const textoOriginal=btn.textContent;
+btn.textContent="✓ Agregado";
+setTimeout(()=>{
+if(btn&&!btn.disabled)btn.textContent=textoOriginal;
+},800);
+}
 }
 
 actualizarCarrito();
