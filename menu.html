@@ -46,18 +46,21 @@ textarea{min-height:75px;resize:vertical}.row{display:grid;grid-template-columns
 .summaryDelivery{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ddd;margin-top:7px}
 .empty{text-align:center;padding:30px;color:#777}.alert{display:none;padding:11px;border-radius:9px;background:#fff0f0;color:#b00000;margin-bottom:12px}
 .alert.show{display:block}.whatsapp{width:100%;font-size:16px;margin-top:8px}.note{font-size:12px;color:#777;margin-top:8px}
+.deliveryBadge{display:none;font-size:12px;background:#222;color:#fff;padding:7px 10px;border-radius:8px;margin-bottom:12px}
+.deliveryBadge.show{display:block}
 @media(max-width:600px){main{padding:10px}.row,.locationButtons{grid-template-columns:1fr}.item{align-items:flex-start}.controls{flex:none}}
 </style>
 </head>
 
 <body>
 <header>
-<a href="index.html" class="back">← Volver</a>
+<a href="index.html" class="back" id="backLink">← Volver</a>
 <div class="logo">Sobre <span>Ruedas</span></div>
 </header>
 
 <main>
 <div id="alerta" class="alert"></div>
+<div id="deliveryBadge" class="deliveryBadge"></div>
 
 <section class="card">
 <h1>🛒 Mi pedido</h1>
@@ -167,22 +170,26 @@ let clienteActual=null,timerCliente=null,timerReferente=null;
 let validacionClienteId=0,validacionReferenteId=0,ubicacionCargando=false;
 let accesoPedido=false,referenteValido=false;
 
+/* DELIVERY */
+let deliveryActual=null;
+let deliveryCodigo=null;
+let deliveryCargando=false;
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const money=n=>`${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
 
-/* NORMALIZACIÓN DE TELÉFONOS ECUATORIANOS */
+/* NORMALIZACIÓN TELEFONO */
 function normalizarTelefono(t){
  let n=String(t||"").replace(/\D/g,"");
 
  if(n.startsWith("00"))
   n=n.slice(2);
 
- if(n.startsWith("593")){
+ if(n.startsWith("593"))
   n=n.slice(3);
- }else if(n.startsWith("0")){
+ else if(n.startsWith("0"))
   n=n.slice(1);
- }
 
  if(n.length===9)
   return "593"+n;
@@ -190,6 +197,93 @@ function normalizarTelefono(t){
  return n;
 }
 
+/* DELIVERY */
+function obtenerCodigoDelivery(){
+ const params=new URLSearchParams(location.search);
+ const desdeUrl=(params.get("d")||"").trim().toUpperCase();
+
+ if(desdeUrl)return desdeUrl;
+
+ try{
+  const ctx=JSON.parse(
+   sessionStorage.getItem("delivery_context")||"null"
+  );
+  return ctx?.codigo||null;
+ }catch{
+  return null;
+ }
+}
+
+async function cargarDelivery(){
+ deliveryCodigo=obtenerCodigoDelivery();
+
+ if(!deliveryCodigo){
+  deliveryActual=null;
+  actualizarInterfazDelivery();
+  return;
+ }
+
+ deliveryCargando=true;
+
+ try{
+  const r=await supabaseClient
+   .from("deliverys")
+   .select("id,nombre,whatsapp,codigo,activo")
+   .eq("codigo",deliveryCodigo)
+   .eq("activo",true)
+   .maybeSingle();
+
+  if(r.error)throw r.error;
+
+  if(!r.data){
+   deliveryActual=null;
+   mostrarError(
+    "El enlace del delivery no es válido o se encuentra inactivo."
+   );
+   return;
+  }
+
+  deliveryActual=r.data;
+  deliveryCodigo=r.data.codigo;
+
+  sessionStorage.setItem(
+   "delivery_context",
+   JSON.stringify({
+    id:r.data.id,
+    nombre:r.data.nombre,
+    whatsapp:r.data.whatsapp,
+    codigo:r.data.codigo
+   })
+  );
+
+  actualizarInterfazDelivery();
+
+ }catch(e){
+  console.error("Error cargando delivery:",e);
+  deliveryActual=null;
+ }finally{
+  deliveryCargando=false;
+ }
+}
+
+function actualizarInterfazDelivery(){
+ const badge=$("deliveryBadge");
+ const back=$("backLink");
+
+ if(deliveryActual){
+  badge.textContent=
+   `🚚 Pedido gestionado por ${deliveryActual.nombre}`;
+  badge.classList.add("show");
+
+  back.href=
+   `index.html?d=${encodeURIComponent(deliveryActual.codigo)}`;
+ }else{
+  badge.classList.remove("show");
+  back.href="index.html";
+ }
+}
+
+/* ALERTAS */
 function mostrarError(t){
  const a=$("alerta");
  a.textContent=t;
@@ -220,11 +314,14 @@ function mostrarEstadoUbicacion(t,tipo=""){
  if(tipo)e.classList.add(tipo);
 }
 
-/* CONTROL DE ACCESO */
+/* ACCESO */
 function actualizarAcceso(){
- const habilitado=!configuracion.validacionClientes||accesoPedido===true;
+ const habilitado=
+  !configuracion.validacionClientes||accesoPedido===true;
 
- document.querySelectorAll("[data-requiere-cliente],.requiere-cliente").forEach(e=>{
+ document.querySelectorAll(
+  "[data-requiere-cliente],.requiere-cliente"
+ ).forEach(e=>{
   e.disabled=!habilitado;
  });
 
@@ -291,6 +388,7 @@ function cargarCarrito(){
 
 function guardarCarrito(){
  const datos=JSON.stringify(carrito);
+
  try{sessionStorage.setItem("carrito",datos)}catch(e){}
  try{localStorage.setItem("carrito",datos)}catch(e){}
 }
@@ -309,13 +407,18 @@ function guardarFormulario(){
  };
 
  try{
-  sessionStorage.setItem("datosPedido",JSON.stringify(data));
+  sessionStorage.setItem(
+   "datosPedido",
+   JSON.stringify(data)
+  );
  }catch(e){}
 }
 
 function cargarFormulario(){
  try{
-  const d=JSON.parse(sessionStorage.getItem("datosPedido")||"null");
+  const d=JSON.parse(
+   sessionStorage.getItem("datosPedido")||"null"
+  );
 
   if(d){
    $("clienteNombre").value=d.nombre||"";
@@ -330,7 +433,11 @@ function cargarFormulario(){
   }
  }catch(e){}
 
- $("datosFactura").classList.toggle("show",$("requiereFactura").checked);
+ $("datosFactura").classList.toggle(
+  "show",
+  $("requiereFactura").checked
+ );
+
  renderUbicacion();
 
  if(!configuracion.validacionClientes){
@@ -338,7 +445,9 @@ function cargarFormulario(){
   return;
  }
 
- const t=normalizarTelefono($("clienteTelefono").value);
+ const t=normalizarTelefono(
+  $("clienteTelefono").value
+ );
 
  if(t.length>=7)
   programarValidacionCliente();
@@ -358,12 +467,18 @@ async function cargarConfiguracion(){
 
   if(!r.error&&r.data){
    configuracion={
-    nombreNegocio:r.data.nombre_negocio||CONFIG_DEFAULT.nombreNegocio,
-    ciudad:r.data.ciudad||CONFIG_DEFAULT.ciudad,
-    tarifaDelivery:Number(r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery),
-    whatsappNegocio:r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
-    moneda:r.data.moneda||CONFIG_DEFAULT.moneda,
-    validacionClientes:r.data.validacion_clientes===false?false:true
+    nombreNegocio:
+     r.data.nombre_negocio||CONFIG_DEFAULT.nombreNegocio,
+    ciudad:
+     r.data.ciudad||CONFIG_DEFAULT.ciudad,
+    tarifaDelivery:
+     Number(r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery),
+    whatsappNegocio:
+     r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
+    moneda:
+     r.data.moneda||CONFIG_DEFAULT.moneda,
+    validacionClientes:
+     r.data.validacion_clientes===false?false:true
    };
   }
  }catch(e){
@@ -380,7 +495,7 @@ async function cargarConfiguracion(){
  render();
 }
 
-/* CARRITO AGRUPADO */
+/* AGRUPAR */
 function agrupar(){
  const grupos={};
 
@@ -401,7 +516,9 @@ function agrupar(){
 
 function subtotalGrupo(g){
  return g.items.reduce(
-  (a,x)=>a+(Number(x.precio)||0)*(Number(x.cantidad)||0),0
+  (a,x)=>
+   a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
+  0
  );
 }
 
@@ -409,18 +526,22 @@ function subtotalItem(x){
  return(Number(x.precio)||0)*(Number(x.cantidad)||0);
 }
 
+/* RENDER */
 function render(){
  const cont=$("carrito");
 
  if(!carrito.length){
-  cont.innerHTML='<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar restaurantes y productos</a></div>';
+  cont.innerHTML=
+   '<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar restaurantes y productos</a></div>';
+
   $("resumen").innerHTML="";
   actualizarAcceso();
   return;
  }
 
  const grupos=agrupar();
- const deliveryUnitario=Number(configuracion.tarifaDelivery||0);
+ const deliveryUnitario=
+  Number(configuracion.tarifaDelivery||0);
 
  cont.innerHTML=grupos.map(g=>{
   const subtotal=subtotalGrupo(g);
@@ -431,20 +552,32 @@ function render(){
 
    ${g.items.map(x=>`
     <div class="item">
+
      <div class="thumb">
-      ${x.imagen_url?`<img src="${esc(x.imagen_url)}" alt="" loading="lazy">`:""}
+      ${x.imagen_url
+       ?`<img src="${esc(x.imagen_url)}" alt="" loading="lazy">`
+       :""
+      }
      </div>
 
      <div class="itemInfo">
       <b>${esc(x.producto_nombre)}</b>
-      ${x.variante_nombre?`<small class="variantName">Opción: ${esc(x.variante_nombre)}</small>`:""}
+
+      ${x.variante_nombre
+       ?`<small class="variantName">Opción: ${esc(x.variante_nombre)}</small>`
+       :""
+      }
+
       <small>${money(x.precio)} c/u</small>
      </div>
 
      <div class="controls">
       <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)},-1)">−</button>
+
       <b>${x.cantidad}</b>
+
       <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)},1)">+</button>
+
       <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)})">×</button>
      </div>
     </div>
@@ -453,7 +586,9 @@ function render(){
    <div class="localTotals">
     <div>Subtotal productos: <b>${money(subtotal)}</b></div>
     <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
-    <div class="localTotal">Total restaurante: ${money(totalLocal)}</div>
+    <div class="localTotal">
+     Total restaurante: ${money(totalLocal)}
+    </div>
    </div>
   </div>`;
  }).join("");
@@ -462,11 +597,14 @@ function render(){
   (a,x)=>a+subtotalItem(x),0
  );
 
- const deliveryTotal=grupos.length*deliveryUnitario;
+ const deliveryTotal=
+  grupos.length*deliveryUnitario;
+
  const total=subtotalTotal+deliveryTotal;
 
  $("resumen").innerHTML=`
  <div class="money">
+
   ${grupos.map(g=>`
    <div class="summaryLocal">
     <span>${esc(g.nombre)}</span>
@@ -475,17 +613,29 @@ function render(){
   `).join("")}
 
   <div class="summaryDelivery">
-   <span>Delivery (${grupos.length} ${grupos.length===1?"local":"locales"})</span>
+   <span>
+    Delivery (${grupos.length}
+    ${grupos.length===1?"local":"locales"})
+   </span>
    <b>${money(deliveryTotal)}</b>
   </div>
 
-  <div class="total">Total: ${money(total)}</div>
+  <div class="total">
+   Total: ${money(total)}
+  </div>
+
  </div>`;
 
  actualizarAcceso();
 }
 
-function cambiarCantidad(productoId,restauranteId,varianteId,cambio){
+/* CANTIDADES */
+function cambiarCantidad(
+ productoId,
+ restauranteId,
+ varianteId,
+ cambio
+){
  const i=carrito.findIndex(x=>
   x.producto_id===productoId&&
   x.restaurante_id===restauranteId&&
@@ -504,7 +654,11 @@ function cambiarCantidad(productoId,restauranteId,varianteId,cambio){
  guardarFormulario();
 }
 
-function eliminar(productoId,restauranteId,varianteId){
+function eliminar(
+ productoId,
+ restauranteId,
+ varianteId
+){
  carrito=carrito.filter(x=>
   !(
    x.producto_id===productoId&&
@@ -520,6 +674,7 @@ function eliminar(productoId,restauranteId,varianteId){
 
 function vaciarCarrito(){
  if(!carrito.length)return;
+
  if(!confirm("¿Vaciar todo el carrito?"))return;
 
  carrito=[];
@@ -535,16 +690,32 @@ function renderUbicacion(){
  if(ubicacion.lat!==null&&ubicacion.lng!==null){
   box.innerHTML=`
    <div class="locationTitle">Dirección</div>
-   <div class="address">${esc(ubicacion.direccion||"Ubicación seleccionada")}</div>
-   <div id="locationStatus" class="locationStatus">
-    ${ubicacionCargando?"🔄 Buscando dirección...":"✅ Ubicación seleccionada"}
+
+   <div class="address">
+    ${esc(
+     ubicacion.direccion||
+     "Ubicación seleccionada"
+    )}
+   </div>
+
+   <div id="locationStatus"
+    class="locationStatus">
+    ${ubicacionCargando
+     ?"🔄 Buscando dirección..."
+     :"✅ Ubicación seleccionada"}
    </div>`;
  }else{
   box.innerHTML=`
    <div class="locationTitle">Dirección</div>
-   <div class="address">Todavía no has seleccionado una ubicación.</div>
-   <div id="locationStatus" class="locationStatus">
-    ${ubicacionCargando?"📍 Obteniendo ubicación...":""}
+   <div class="address">
+    Todavía no has seleccionado una ubicación.
+   </div>
+
+   <div id="locationStatus"
+    class="locationStatus">
+    ${ubicacionCargando
+     ?"📍 Obteniendo ubicación..."
+     :""}
    </div>`;
  }
 }
@@ -553,7 +724,11 @@ async function obtenerDireccion(lat,lng){
  try{
   const r=await fetch(
    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
-   {headers:{Accept:"application/json"}}
+   {
+    headers:{
+     Accept:"application/json"
+    }
+   }
   );
 
   if(!r.ok)throw Error();
@@ -562,64 +737,94 @@ async function obtenerDireccion(lat,lng){
 
   return d.display_name||
    `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
+
  }catch{
   return `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
  }
 }
 
 async function usarMiUbicacion(boton){
- if(!accesoPedido&&!(!configuracion.validacionClientes))return;
+ if(!accesoPedido&&!(!configuracion.validacionClientes))
+  return;
 
  if(!navigator.geolocation){
-  mostrarError("Tu navegador no permite obtener la ubicación.");
+  mostrarError(
+   "Tu navegador no permite obtener la ubicación."
+  );
   return;
  }
 
  if(boton)boton.disabled=true;
 
  ubicacionCargando=true;
- mostrarEstadoUbicacion("📍 Obteniendo tu ubicación...","loading");
+
+ mostrarEstadoUbicacion(
+  "📍 Obteniendo tu ubicación...",
+  "loading"
+ );
 
  try{
   const pos=await new Promise((resolve,reject)=>
    navigator.geolocation.getCurrentPosition(
-    resolve,reject,
-    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+    resolve,
+    reject,
+    {
+     enableHighAccuracy:true,
+     timeout:15000,
+     maximumAge:0
+    }
    )
   );
 
   const lat=pos.coords.latitude;
   const lng=pos.coords.longitude;
 
-  ubicacion={lat,lng,direccion:""};
+  ubicacion={
+   lat,
+   lng,
+   direccion:""
+  };
+
   renderUbicacion();
 
-  const direccion=await obtenerDireccion(lat,lng);
+  const direccion=
+   await obtenerDireccion(lat,lng);
 
-  ubicacion={lat,lng,direccion};
+  ubicacion={
+   lat,
+   lng,
+   direccion
+  };
+
   ubicacionCargando=false;
 
   guardarFormulario();
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "✅ Ubicación seleccionada correctamente.","ok"
+   "✅ Ubicación seleccionada correctamente.",
+   "ok"
   );
+
  }catch(e){
   console.error(e);
+
   ubicacionCargando=false;
   renderUbicacion();
 
   mostrarEstadoUbicacion(
-   "❌ No se pudo obtener la ubicación.","error"
+   "❌ No se pudo obtener la ubicación.",
+   "error"
   );
 
   mostrarError(
    "No se pudo obtener tu ubicación. Verifica los permisos del navegador."
   );
+
  }finally{
   if(boton)
-   boton.disabled=!(!configuracion.validacionClientes||accesoPedido);
+   boton.disabled=
+    !(!configuracion.validacionClientes||accesoPedido);
  }
 }
 
@@ -631,7 +836,12 @@ function moverMarcador(lat,lng){
  else
   marker.setLatLng([lat,lng]);
 
- ubicacionTemporal={lat,lng,direccion:""};
+ ubicacionTemporal={
+  lat,
+  lng,
+  direccion:""
+ };
+
  renderDireccionTemporal();
 
  obtenerDireccion(lat,lng).then(direccion=>{
@@ -641,6 +851,7 @@ function moverMarcador(lat,lng){
   )return;
 
   ubicacionTemporal.direccion=direccion;
+
   renderDireccionTemporal();
  });
 }
@@ -653,24 +864,37 @@ function renderDireccionTemporal(){
 
  box.innerHTML=`
   <div class="locationTitle">Dirección</div>
-  <div class="address">${esc(u.direccion||"🔄 Buscando dirección...")}</div>
-  <div id="locationStatus" class="locationStatus ${u.direccion?"ok":"loading"}">
-   ${u.direccion
-    ?"✅ Dirección encontrada. Puedes aceptar esta ubicación."
-    :"🔄 Buscando dirección..."}
+
+  <div class="address">
+   ${esc(
+    u.direccion||
+    "🔄 Buscando dirección..."
+   )}
+  </div>
+
+  <div id="locationStatus"
+   class="locationStatus ${u.direccion?"ok":"loading"}">
+   ${
+    u.direccion
+     ?"✅ Dirección encontrada. Puedes aceptar esta ubicación."
+     :"🔄 Buscando dirección..."
+   }
   </div>`;
 }
 
 function abrirMapa(){
  if(!configuracion.validacionClientes||accesoPedido){
+
   $("mapWrap").style.display="block";
 
   mostrarEstadoUbicacion(
-   "🗺️ Selecciona en el mapa el punto exacto de entrega.","loading"
+   "🗺️ Selecciona en el mapa el punto exacto de entrega.",
+   "loading"
   );
 
   setTimeout(()=>{
    if(!map){
+
     map=L.map("map").setView(
      ubicacion.lat!==null
       ?[ubicacion.lat,ubicacion.lng]
@@ -687,49 +911,74 @@ function abrirMapa(){
     ).addTo(map);
 
     map.on("click",e=>
-     moverMarcador(e.latlng.lat,e.latlng.lng)
+     moverMarcador(
+      e.latlng.lat,
+      e.latlng.lng
+     )
     );
+
    }else{
+
     map.invalidateSize();
 
     if(ubicacion.lat!==null)
-     map.setView([ubicacion.lat,ubicacion.lng],16);
+     map.setView(
+      [ubicacion.lat,ubicacion.lng],
+      16
+     );
    }
 
    if(ubicacion.lat!==null)
-    moverMarcador(ubicacion.lat,ubicacion.lng);
+    moverMarcador(
+     ubicacion.lat,
+     ubicacion.lng
+    );
    else{
     const c=map.getCenter();
-    moverMarcador(c.lat,c.lng);
+
+    moverMarcador(
+     c.lat,
+     c.lng
+    );
    }
+
   },100);
  }
 }
 
 function aceptarMapa(){
- if(configuracion.validacionClientes&&!accesoPedido)return;
+ if(configuracion.validacionClientes&&!accesoPedido)
+  return;
 
  if(
   ubicacionTemporal.lat===null||
   ubicacionTemporal.lng===null
  ){
-  mostrarError("Selecciona una ubicación en el mapa.");
+  mostrarError(
+   "Selecciona una ubicación en el mapa."
+  );
   return;
  }
 
  if(!ubicacionTemporal.direccion){
-  mostrarError("Espera un momento mientras se obtiene la dirección.");
+  mostrarError(
+   "Espera un momento mientras se obtiene la dirección."
+  );
   return;
  }
 
- ubicacion={...ubicacionTemporal};
+ ubicacion={
+  ...ubicacionTemporal
+ };
+
  ubicacionCargando=false;
 
  guardarFormulario();
  renderUbicacion();
 
  mostrarEstadoUbicacion(
-  "✅ Ubicación guardada correctamente.","ok"
+  "✅ Ubicación guardada correctamente.",
+  "ok"
  );
 
  cerrarMapa();
@@ -740,12 +989,17 @@ function cerrarMapa(){
 }
 
 /* FACTURA */
-$("requiereFactura").addEventListener("change",()=>{
- $("datosFactura").classList.toggle(
-  "show",$("requiereFactura").checked
- );
- guardarFormulario();
-});
+$("requiereFactura").addEventListener(
+ "change",
+ ()=>{
+  $("datosFactura").classList.toggle(
+   "show",
+   $("requiereFactura").checked
+  );
+
+  guardarFormulario();
+ }
+);
 
 [
  "clienteNombre",
@@ -756,8 +1010,15 @@ $("requiereFactura").addEventListener("change",()=>{
  "numeroDocumento",
  "correoFactura"
 ].forEach(id=>{
- $(id).addEventListener("input",guardarFormulario);
- $(id).addEventListener("change",guardarFormulario);
+ $(id).addEventListener(
+  "input",
+  guardarFormulario
+ );
+
+ $(id).addEventListener(
+  "change",
+  guardarFormulario
+ );
 });
 
 /* VALIDACIÓN CLIENTE */
@@ -773,10 +1034,14 @@ function programarValidacionCliente(){
   return;
  }
 
- const telefono=normalizarTelefono($("clienteTelefono").value);
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
 
  clienteActual=null;
  referenteValido=false;
+
  bloquearPedido();
 
  $("campoReferido").classList.remove("show");
@@ -789,64 +1054,82 @@ function programarValidacionCliente(){
 
  if(telefono.length<7){
   mostrarEstadoCliente(
-   "Ingresa un número de teléfono válido.","error"
+   "Ingresa un número de teléfono válido.",
+   "error"
   );
   return;
  }
 
  mostrarEstadoCliente(
-  "🔄 Verificando cliente...","loading"
+  "🔄 Verificando cliente...",
+  "loading"
  );
 
  const id=++validacionClienteId;
 
  timerCliente=setTimeout(
-  ()=>validarClienteEnTiempoReal(id),500
+  ()=>validarClienteEnTiempoReal(id),
+  500
  );
 }
 
 async function validarClienteEnTiempoReal(id){
  if(!configuracion.validacionClientes)return;
 
- const telefono=normalizarTelefono(
-  $("clienteTelefono").value
- );
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
 
- if(telefono.length<7||id!==validacionClienteId)return;
+ if(
+  telefono.length<7||
+  id!==validacionClienteId
+ )return;
 
  try{
-  const cliente=await consultarCliente(telefono);
+  const cliente=
+   await consultarCliente(telefono);
 
   if(id!==validacionClienteId)return;
 
-  const telefonoActual=normalizarTelefono(
-   $("clienteTelefono").value
-  );
+  const telefonoActual=
+   normalizarTelefono(
+    $("clienteTelefono").value
+   );
 
   if(telefono!==telefonoActual)return;
 
   if(cliente){
 
    if(cliente.activo===false){
+
     clienteActual=null;
     referenteValido=false;
+
     bloquearPedido();
 
     mostrarEstadoCliente(
-     "❌ Este cliente está inactivo.","error"
+     "❌ Este cliente está inactivo.",
+     "error"
     );
 
-    $("campoReferido").classList.remove("show");
+    $("campoReferido").classList.remove(
+     "show"
+    );
+
     return;
    }
 
    clienteActual=cliente;
    referenteValido=false;
 
-   $("campoReferido").classList.remove("show");
+   $("campoReferido").classList.remove(
+    "show"
+   );
 
    mostrarEstadoCliente(
-    "✅ Cliente registrado. Puedes continuar.","ok"
+    "✅ Cliente registrado. Puedes continuar.",
+    "ok"
    );
 
    habilitarPedido();
@@ -855,24 +1138,32 @@ async function validarClienteEnTiempoReal(id){
 
   clienteActual=null;
   referenteValido=false;
+
   bloquearPedido();
 
   $("campoReferido").classList.add("show");
 
   mostrarEstadoCliente(
-   "⚠️ Este número no está registrado. Necesitas un referente.","error"
+   "⚠️ Este número no está registrado. Necesitas un referente.",
+   "error"
   );
 
  }catch(e){
-  console.error("Error verificando cliente:",e);
+
+  console.error(
+   "Error verificando cliente:",
+   e
+  );
 
   clienteActual=null;
   referenteValido=false;
+
   bloquearPedido();
 
   if(id===validacionClienteId)
    mostrarEstadoCliente(
-    "No se pudo verificar el cliente.","error"
+    "No se pudo verificar el cliente.",
+    "error"
    );
  }
 }
@@ -888,11 +1179,13 @@ function programarValidacionReferente(){
 
  referenteValido=false;
 
- if(!clienteActual)bloquearPedido();
+ if(!clienteActual)
+  bloquearPedido();
 
- const telefono=normalizarTelefono(
-  $("telefonoReferente").value
- );
+ const telefono=
+  normalizarTelefono(
+   $("telefonoReferente").value
+  );
 
  if(!telefono){
   mostrarEstadoReferente("");
@@ -901,95 +1194,120 @@ function programarValidacionReferente(){
 
  if(telefono.length<7){
   mostrarEstadoReferente(
-   "Ingresa un número válido.","error"
+   "Ingresa un número válido.",
+   "error"
   );
   return;
  }
 
  mostrarEstadoReferente(
-  "🔄 Verificando referente...","loading"
+  "🔄 Verificando referente...",
+  "loading"
  );
 
  const id=++validacionReferenteId;
 
  timerReferente=setTimeout(
-  ()=>validarReferenteEnTiempoReal(id),500
+  ()=>validarReferenteEnTiempoReal(id),
+  500
  );
 }
 
 async function validarReferenteEnTiempoReal(id){
  if(!configuracion.validacionClientes)return;
 
- const telefono=normalizarTelefono(
-  $("telefonoReferente").value
- );
+ const telefono=
+  normalizarTelefono(
+   $("telefonoReferente").value
+  );
 
- const telefonoCliente=normalizarTelefono(
-  $("clienteTelefono").value
- );
+ const telefonoCliente=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
 
- if(telefono.length<7||id!==validacionReferenteId)return;
+ if(
+  telefono.length<7||
+  id!==validacionReferenteId
+ )return;
 
  if(telefono===telefonoCliente){
+
   referenteValido=false;
   bloquearPedido();
 
   mostrarEstadoReferente(
-   "❌ No puedes referirte a ti mismo.","error"
+   "❌ No puedes referirte a ti mismo.",
+   "error"
   );
+
   return;
  }
 
  try{
-  const referente=await consultarCliente(telefono);
+
+  const referente=
+   await consultarCliente(telefono);
 
   if(id!==validacionReferenteId)return;
 
-  const telefonoActual=normalizarTelefono(
-   $("telefonoReferente").value
-  );
+  const telefonoActual=
+   normalizarTelefono(
+    $("telefonoReferente").value
+   );
 
   if(telefono!==telefonoActual)return;
 
   if(!referente){
+
    referenteValido=false;
    bloquearPedido();
 
    mostrarEstadoReferente(
-    "❌ Este teléfono no corresponde a un cliente registrado.","error"
+    "❌ Este teléfono no corresponde a un cliente registrado.",
+    "error"
    );
+
    return;
   }
 
   if(referente.activo===false){
+
    referenteValido=false;
    bloquearPedido();
 
    mostrarEstadoReferente(
-    "❌ Este cliente está inactivo.","error"
+    "❌ Este cliente está inactivo.",
+    "error"
    );
+
    return;
   }
 
   if(!referente.codigo_referido){
+
    referenteValido=false;
    bloquearPedido();
 
    mostrarEstadoReferente(
-    "❌ Este cliente no tiene un código de referido válido.","error"
+    "❌ Este cliente no tiene un código de referido válido.",
+    "error"
    );
+
    return;
   }
 
   referenteValido=true;
 
   mostrarEstadoReferente(
-   "✅ Referente encontrado. Puedes continuar.","ok"
+   "✅ Referente encontrado. Puedes continuar.",
+   "ok"
   );
 
   habilitarPedido();
 
  }catch(e){
+
   console.error(e);
 
   referenteValido=false;
@@ -997,31 +1315,42 @@ async function validarReferenteEnTiempoReal(id){
 
   if(id===validacionReferenteId)
    mostrarEstadoReferente(
-    "No se pudo verificar el referente.","error"
+    "No se pudo verificar el referente.",
+    "error"
    );
  }
 }
 
-/* EVENTOS TELÉFONO */
-$("clienteTelefono").addEventListener("input",()=>{
- guardarFormulario();
- programarValidacionCliente();
-});
+/* EVENTOS TELEFONO */
+$("clienteTelefono").addEventListener(
+ "input",
+ ()=>{
+  guardarFormulario();
+  programarValidacionCliente();
+ }
+);
 
-$("telefonoReferente").addEventListener("input",()=>{
- guardarFormulario();
- programarValidacionReferente();
-});
+$("telefonoReferente").addEventListener(
+ "input",
+ ()=>{
+  guardarFormulario();
+  programarValidacionReferente();
+ }
+);
 
 /* CONSULTA CLIENTE */
 async function consultarCliente(telefono){
- const telefonoNormalizado=normalizarTelefono(telefono);
+
+ const telefonoNormalizado=
+  normalizarTelefono(telefono);
 
  if(!telefonoNormalizado)return null;
 
  const r=await supabaseClient.rpc(
   "buscar_cliente_por_telefono",
-  {p_telefono:telefonoNormalizado}
+  {
+   p_telefono:telefonoNormalizado
+  }
  );
 
  if(r.error)throw r.error;
@@ -1034,30 +1363,40 @@ async function consultarCliente(telefono){
 
 /* VALIDACIÓN FINAL */
 async function validarCliente(){
+
  if(!configuracion.validacionClientes){
   habilitarPedido();
   return true;
  }
 
- const nombre=$("clienteNombre").value.trim();
- const telefono=normalizarTelefono(
-  $("clienteTelefono").value
- );
+ const nombre=
+  $("clienteNombre").value.trim();
+
+ const telefono=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
 
  if(!telefono){
-  mostrarError("Ingresa tu teléfono.");
+  mostrarError(
+   "Ingresa tu teléfono."
+  );
   $("clienteTelefono").focus();
   return false;
  }
 
  if(telefono.length<7){
-  mostrarError("Ingresa un número de teléfono válido.");
+  mostrarError(
+   "Ingresa un número de teléfono válido."
+  );
   $("clienteTelefono").focus();
   return false;
  }
 
  try{
-  const cliente=await consultarCliente(telefono);
+
+  const cliente=
+   await consultarCliente(telefono);
 
   if(cliente){
 
@@ -1069,24 +1408,31 @@ async function validarCliente(){
    }
 
    clienteActual=cliente;
+
    habilitarPedido();
 
    mostrarEstadoCliente(
-    "✅ Cliente registrado. Puedes continuar.","ok"
+    "✅ Cliente registrado. Puedes continuar.",
+    "ok"
    );
 
    return true;
   }
 
-  const telefonoReferente=normalizarTelefono(
-   $("telefonoReferente").value
-  );
+  const telefonoReferente=
+   normalizarTelefono(
+    $("telefonoReferente").value
+   );
 
   if(!telefonoReferente){
-   $("campoReferido").classList.add("show");
+
+   $("campoReferido").classList.add(
+    "show"
+   );
 
    mostrarEstadoCliente(
-    "⚠️ Este número no está registrado. Necesitas un referente.","error"
+    "⚠️ Este número no está registrado. Necesitas un referente.",
+    "error"
    );
 
    mostrarError(
@@ -1094,24 +1440,36 @@ async function validarCliente(){
    );
 
    $("telefonoReferente").focus();
+
    return false;
   }
 
   if(telefonoReferente===telefono){
+
    mostrarEstadoReferente(
-    "❌ No puedes referirte a ti mismo.","error"
+    "❌ No puedes referirte a ti mismo.",
+    "error"
    );
 
-   mostrarError("No puedes referirte a ti mismo.");
+   mostrarError(
+    "No puedes referirte a ti mismo."
+   );
+
    $("telefonoReferente").focus();
+
    return false;
   }
 
-  const referente=await consultarCliente(telefonoReferente);
+  const referente=
+   await consultarCliente(
+    telefonoReferente
+   );
 
   if(!referente){
+
    mostrarEstadoReferente(
-    "❌ Referente no encontrado.","error"
+    "❌ Referente no encontrado.",
+    "error"
    );
 
    mostrarError(
@@ -1119,12 +1477,15 @@ async function validarCliente(){
    );
 
    $("telefonoReferente").focus();
+
    return false;
   }
 
   if(referente.activo===false){
+
    mostrarEstadoReferente(
-    "❌ El referente está inactivo.","error"
+    "❌ El referente está inactivo.",
+    "error"
    );
 
    mostrarError(
@@ -1132,13 +1493,16 @@ async function validarCliente(){
    );
 
    $("telefonoReferente").focus();
+
    return false;
   }
 
   if(!referente.codigo_referido){
+
    mostrarError(
     "El referente no tiene un código de referido válido."
    );
+
    return false;
   }
 
@@ -1147,15 +1511,16 @@ async function validarCliente(){
    Date.now().toString(36).toUpperCase()+
    Math.floor(100+Math.random()*900);
 
-  const cr=await supabaseClient.rpc(
-   "crear_cliente",
-   {
-    p_nombre:nombre,
-    p_telefono:telefono,
-    p_codigo_referido:codigoNuevo,
-    p_codigo_referente:referente.codigo_referido
-   }
-  );
+  const cr=
+   await supabaseClient.rpc(
+    "crear_cliente",
+    {
+     p_nombre:nombre,
+     p_telefono:telefono,
+     p_codigo_referido:codigoNuevo,
+     p_codigo_referente:referente.codigo_referido
+    }
+   );
 
   if(cr.error)throw cr.error;
 
@@ -1165,7 +1530,8 @@ async function validarCliente(){
     :cr.data||null;
 
   if(!nuevoCliente)
-   nuevoCliente=await consultarCliente(telefono);
+   nuevoCliente=
+    await consultarCliente(telefono);
 
   if(!nuevoCliente)
    throw Error(
@@ -1176,16 +1542,24 @@ async function validarCliente(){
   referenteValido=false;
 
   habilitarPedido();
-  $("campoReferido").classList.remove("show");
+
+  $("campoReferido").classList.remove(
+   "show"
+  );
 
   mostrarEstadoCliente(
-   "✅ Cliente registrado correctamente. Puedes continuar.","ok"
+   "✅ Cliente registrado correctamente. Puedes continuar.",
+   "ok"
   );
 
   return true;
 
  }catch(e){
-  console.error("Error validando cliente:",e);
+
+  console.error(
+   "Error validando cliente:",
+   e
+  );
 
   mostrarError(
    "No se pudo validar el cliente: "+
@@ -1198,32 +1572,47 @@ async function validarCliente(){
 
 /* VALIDACIÓN GENERAL */
 function validar(){
+
  if(!carrito.length){
-  mostrarError("El carrito está vacío.");
+  mostrarError(
+   "El carrito está vacío."
+  );
   return false;
  }
 
  if(!$("clienteNombre").value.trim()){
-  mostrarError("Ingresa tu nombre.");
+  mostrarError(
+   "Ingresa tu nombre."
+  );
   $("clienteNombre").focus();
   return false;
  }
 
  if(!$("clienteTelefono").value.trim()){
-  mostrarError("Ingresa tu teléfono.");
+  mostrarError(
+   "Ingresa tu teléfono."
+  );
   $("clienteTelefono").focus();
   return false;
  }
 
- if(configuracion.validacionClientes&&!accesoPedido){
+ if(
+  configuracion.validacionClientes&&
+  !accesoPedido
+ ){
   mostrarError(
    "Primero debes ingresar un teléfono registrado o un referente válido."
   );
   return false;
  }
 
- if(ubicacion.lat===null||ubicacion.lng===null){
-  mostrarError("Selecciona tu ubicación de entrega.");
+ if(
+  ubicacion.lat===null||
+  ubicacion.lng===null
+ ){
+  mostrarError(
+   "Selecciona tu ubicación de entrega."
+  );
   return false;
  }
 
@@ -1237,12 +1626,16 @@ function validar(){
  if($("requiereFactura").checked){
 
   if(!$("numeroDocumento").value.trim()){
-   mostrarError("Ingresa tu cédula o RUC.");
+   mostrarError(
+    "Ingresa tu cédula o RUC."
+   );
    return false;
   }
 
   if(!$("correoFactura").value.trim()){
-   mostrarError("Ingresa el correo para la factura.");
+   mostrarError(
+    "Ingresa el correo para la factura."
+   );
    return false;
   }
  }
@@ -1252,192 +1645,382 @@ function validar(){
 
 /* PEDIDO */
 async function realizarPedido(){
+
  if(!validar())return;
 
- const boton=document.querySelector(".whatsapp");
+ const boton=
+  document.querySelector(".whatsapp");
+
  if(boton)boton.disabled=true;
 
  try{
+
+  /*
+   RECARGAMOS EL DELIVERY ANTES DE CREAR
+   EL PEDIDO PARA ASEGURAR QUE LA
+   INFORMACIÓN SEA LA ACTUAL.
+  */
+  if(deliveryCodigo&&!deliveryActual)
+   await cargarDelivery();
+
   const clienteValido=
    !configuracion.validacionClientes||
    await validarCliente();
 
   if(!clienteValido){
+
    if(boton)boton.disabled=false;
+
    return;
   }
 
-  const numero=generarNumeroPedido();
-  const grupos=agrupar();
+  const numero=
+   generarNumeroPedido();
 
-  const subtotalTotal=carrito.reduce(
-   (a,x)=>a+subtotalItem(x),0
-  );
+  const grupos=
+   agrupar();
 
-  const deliveryUnitario=Number(configuracion.tarifaDelivery||0);
-  const deliveryTotal=grupos.length*deliveryUnitario;
-  const total=subtotalTotal+deliveryTotal;
+  const subtotalTotal=
+   carrito.reduce(
+    (a,x)=>a+subtotalItem(x),
+    0
+   );
 
+  const deliveryUnitario=
+   Number(
+    configuracion.tarifaDelivery||0
+   );
+
+  const deliveryTotal=
+   grupos.length*deliveryUnitario;
+
+  const total=
+   subtotalTotal+deliveryTotal;
+
+  /*
+   DATOS DEL DELIVERY
+  */
+  const deliveryId=
+   deliveryActual?.id||null;
+
+  const deliveryCodigoPedido=
+   deliveryActual?.codigo||
+   deliveryCodigo||
+   null;
+
+  const deliveryWhatsapp=
+   deliveryActual?.whatsapp||
+   null;
+
+  /*
+   PEDIDO
+  */
   const pedido={
    numero,
-   cliente_nombre:$("clienteNombre").value.trim(),
-   cliente_telefono:normalizarTelefono(
-    $("clienteTelefono").value
-   ),
+
+   cliente_nombre:
+    $("clienteNombre").value.trim(),
+
+   cliente_telefono:
+    normalizarTelefono(
+     $("clienteTelefono").value
+    ),
+
    direccion:
     ubicacion.direccion||
     `${ubicacion.lat}, ${ubicacion.lng}`,
-   referencia:$("referencia").value.trim()||null,
-   total_productos:subtotalTotal,
-   total_delivery:deliveryTotal,
+
+   referencia:
+    $("referencia").value.trim()||
+    null,
+
+   total_productos:
+    subtotalTotal,
+
+   total_delivery:
+    deliveryTotal,
+
    total,
-   estado:"Pedido recibido"
+
+   estado:
+    "Pedido recibido",
+
+   /*
+    NUEVOS CAMPOS MULTICLIENTE
+   */
+   delivery_id:
+    deliveryId,
+
+   delivery_codigo:
+    deliveryCodigoPedido,
+
+   delivery_whatsapp:
+    deliveryWhatsapp
   };
 
-  const pr=await supabaseClient
-   .from("pedidos")
-   .insert(pedido)
-   .select("id")
-   .single();
-
-  if(pr.error)throw pr.error;
-
-  const pedidoId=pr.data.id;
-  const carreras=[];
-
-  for(let i=0;i<grupos.length;i++){
-   const g=grupos[i];
-   const subtotal=subtotalGrupo(g);
-
-   const carrera={
-    pedido_id:pedidoId,
-    restaurante_id:g.id,
-    numero:`${numero}-${i+1}`,
-    subtotal,
-    delivery:deliveryUnitario,
-    total:subtotal+deliveryUnitario,
-    estado:"Pendiente de asignación"
-   };
-
-   const cr=await supabaseClient
-    .from("carreras")
-    .insert(carrera)
+  const pr=
+   await supabaseClient
+    .from("pedidos")
+    .insert(pedido)
     .select("id")
     .single();
 
-   if(cr.error)throw cr.error;
+  if(pr.error)throw pr.error;
+
+  const pedidoId=
+   pr.data.id;
+
+  const carreras=[];
+
+  /*
+   CREAR CARRERAS
+  */
+  for(
+   let i=0;
+   i<grupos.length;
+   i++
+  ){
+
+   const g=grupos[i];
+
+   const subtotal=
+    subtotalGrupo(g);
+
+   const carrera={
+    pedido_id:
+     pedidoId,
+
+    restaurante_id:
+     g.id,
+
+    numero:
+     `${numero}-${i+1}`,
+
+    subtotal,
+
+    delivery:
+     deliveryUnitario,
+
+    total:
+     subtotal+deliveryUnitario,
+
+    estado:
+     "Pendiente de asignación"
+   };
+
+   const cr=
+    await supabaseClient
+     .from("carreras")
+     .insert(carrera)
+     .select("id")
+     .single();
+
+   if(cr.error)
+    throw cr.error;
 
    carreras.push({
     ...g,
-    carrera_id:cr.data.id,
+    carrera_id:
+     cr.data.id,
     subtotal
    });
   }
 
+  /*
+   DETALLES
+  */
   for(const g of carreras){
 
-   const detalles=g.items.map(x=>({
-    carrera_id:g.carrera_id,
-    producto_id:x.producto_id,
-    producto_nombre:x.producto_nombre,
-    precio_unitario:Number(x.precio)||0,
-    cantidad:Number(x.cantidad)||0,
-    subtotal:subtotalItem(x),
-    variante_id:x.variante_id||null,
-    variante_nombre:x.variante_nombre||null
-   }));
+   const detalles=
+    g.items.map(x=>({
+     carrera_id:
+      g.carrera_id,
 
-   const dr=await supabaseClient
-    .from("detalle_carreras")
-    .insert(detalles);
+     producto_id:
+      x.producto_id,
 
-   if(dr.error)throw dr.error;
+     producto_nombre:
+      x.producto_nombre,
+
+     precio_unitario:
+      Number(x.precio)||0,
+
+     cantidad:
+      Number(x.cantidad)||0,
+
+     subtotal:
+      subtotalItem(x),
+
+     variante_id:
+      x.variante_id||null,
+
+     variante_nombre:
+      x.variante_nombre||null
+    }));
+
+   const dr=
+    await supabaseClient
+     .from("detalle_carreras")
+     .insert(detalles);
+
+   if(dr.error)
+    throw dr.error;
   }
 
+  /*
+   WHATSAPP
+  */
   let msg=
-   `*${encodeURIComponent(configuracion.nombreNegocio)}*%0A`;
-
-  msg+=`🧾 *Pedido:* ${encodeURIComponent(numero)}%0A`;
-
-  msg+=
-   `👤 *Cliente:* ${encodeURIComponent($("clienteNombre").value.trim())}%0A`;
+   `*${encodeURIComponent(
+    configuracion.nombreNegocio
+   )}*%0A`;
 
   msg+=
-   `📞 *Teléfono:* ${encodeURIComponent(normalizarTelefono($("clienteTelefono").value))}%0A`;
+   `🧾 *Pedido:* ${encodeURIComponent(
+    numero
+   )}%0A`;
+
+  if(deliveryActual){
+   msg+=
+    `🚚 *Delivery:* ${encodeURIComponent(
+     deliveryActual.nombre
+    )}%0A`;
+  }
 
   msg+=
-   `📍 *Dirección:* ${encodeURIComponent(ubicacion.direccion||"Ubicación seleccionada")}%0A`;
+   `👤 *Cliente:* ${encodeURIComponent(
+    $("clienteNombre").value.trim()
+   )}%0A`;
+
+  msg+=
+   `📞 *Teléfono:* ${encodeURIComponent(
+    normalizarTelefono(
+     $("clienteTelefono").value
+    )
+   )}%0A`;
+
+  msg+=
+   `📍 *Dirección:* ${encodeURIComponent(
+    ubicacion.direccion||
+    "Ubicación seleccionada"
+   )}%0A`;
 
   if($("referencia").value.trim())
    msg+=
-    `📝 *Referencia:* ${encodeURIComponent($("referencia").value.trim())}%0A`;
+    `📝 *Referencia:* ${encodeURIComponent(
+     $("referencia").value.trim()
+    )}%0A`;
 
   msg+=
    `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
 
   if($("requiereFactura").checked){
 
-   msg+=`🧾 *Factura:* Sí%0A`;
+   msg+=
+    `🧾 *Factura:* Sí%0A`;
 
    msg+=
-    `Documento: ${encodeURIComponent($("tipoDocumento").value.toUpperCase())} ${encodeURIComponent($("numeroDocumento").value.trim())}%0A`;
+    `Documento: ${encodeURIComponent(
+     $("tipoDocumento").value.toUpperCase()
+    )} ${encodeURIComponent(
+     $("numeroDocumento").value.trim()
+    )}%0A`;
 
    msg+=
-    `Correo: ${encodeURIComponent($("correoFactura").value.trim())}%0A`;
+    `Correo: ${encodeURIComponent(
+     $("correoFactura").value.trim()
+    )}%0A`;
 
   }else{
-   msg+=`🧾 *Factura:* No%0A`;
+
+   msg+=
+    `🧾 *Factura:* No%0A`;
   }
 
-  msg+=`%0A*DETALLE DEL PEDIDO*%0A`;
+  msg+=
+   `%0A*DETALLE DEL PEDIDO*%0A`;
 
   carreras.forEach(g=>{
 
    msg+=
-    `%0A🏪 *${encodeURIComponent(g.nombre)}*%0A`;
+    `%0A🏪 *${encodeURIComponent(
+     g.nombre
+    )}*%0A`;
 
    g.items.forEach(x=>{
 
-    const sub=subtotalItem(x);
+    const sub=
+     subtotalItem(x);
 
     msg+=
-     `${x.cantidad} x ${encodeURIComponent(x.producto_nombre)}`;
+     `${x.cantidad} x ${encodeURIComponent(
+      x.producto_nombre
+     )}`;
 
     if(x.variante_nombre){
+
      msg+=
-      ` — ${encodeURIComponent(x.variante_nombre)}`;
+      ` — ${encodeURIComponent(
+       x.variante_nombre
+      )}`;
     }
 
     msg+=
-     ` — ${encodeURIComponent(money(sub))}%0A`;
+     ` — ${encodeURIComponent(
+      money(sub)
+     )}%0A`;
    });
 
    msg+=
-    `Subtotal productos: ${encodeURIComponent(money(g.subtotal))}%0A`;
+    `Subtotal productos: ${encodeURIComponent(
+     money(g.subtotal)
+    )}%0A`;
 
    msg+=
-    `Delivery: ${encodeURIComponent(money(deliveryUnitario))}%0A`;
+    `Delivery: ${encodeURIComponent(
+     money(deliveryUnitario)
+    )}%0A`;
 
    msg+=
-    `Total restaurante: ${encodeURIComponent(money(g.subtotal+deliveryUnitario))}%0A`;
+    `Total restaurante: ${encodeURIComponent(
+     money(
+      g.subtotal+
+      deliveryUnitario
+     )
+    )}%0A`;
   });
 
   msg+=
-   `%0A💰 *TOTAL: ${encodeURIComponent(money(total))}*`;
+   `%0A💰 *TOTAL: ${encodeURIComponent(
+    money(total)
+   )}*`;
 
-  const wa=String(
-   configuracion.whatsappNegocio||""
-  ).replace(/\D/g,"");
+  /*
+   WHATSAPP DESTINO
+   DELIVERY > GENERAL
+  */
+  const wa=
+   String(
+    deliveryActual?.whatsapp||
+    configuracion.whatsappNegocio||
+    ""
+   ).replace(/\D/g,"");
 
   if(!wa)
    throw Error(
-    "El número de WhatsApp del negocio no está configurado."
+    "No existe un número de WhatsApp configurado para recibir el pedido."
    );
 
+  /*
+   LIMPIAR CARRITO
+  */
   carrito=[];
   guardarCarrito();
   render();
 
+  /*
+   ABRIR WHATSAPP
+  */
   window.location.href=
    `https://wa.me/${wa}?text=${msg}`;
 
@@ -1450,22 +2033,45 @@ async function realizarPedido(){
    (e.message||"Error desconocido")
   );
 
-  if(boton)boton.disabled=false;
+  if(boton)
+   boton.disabled=false;
  }
 }
 
 function generarNumeroPedido(){
+
  const f=new Date();
 
- return `SR-${f.getFullYear()}${String(f.getMonth()+1).padStart(2,"0")}${String(f.getDate()).padStart(2,"0")}-${String(f.getHours()).padStart(2,"0")}${String(f.getMinutes()).padStart(2,"0")}${String(f.getSeconds()).padStart(2,"0")}`;
+ return `SR-${f.getFullYear()}${String(
+  f.getMonth()+1
+ ).padStart(2,"0")}${String(
+  f.getDate()
+ ).padStart(2,"0")}-${String(
+  f.getHours()
+ ).padStart(2,"0")}${String(
+  f.getMinutes()
+ ).padStart(2,"0")}${String(
+  f.getSeconds()
+ ).padStart(2,"0")}`;
 }
 
 /* INICIO */
-cargarCarrito();
-bloquearPedido();
-cargarFormulario();
-render();
-cargarConfiguracion();
+async function iniciar(){
+
+ cargarCarrito();
+
+ bloquearPedido();
+
+ cargarFormulario();
+
+ render();
+
+ await cargarDelivery();
+
+ await cargarConfiguracion();
+}
+
+iniciar();
 </script>
 </body>
 </html>
