@@ -15,6 +15,7 @@ header{background:#111;color:#fff;padding:14px 18px;display:flex;align-items:cen
 main{max-width:1100px;margin:auto;padding:18px}
 .hero{background:#111;color:#fff;border-radius:16px;padding:24px;margin-bottom:18px}
 .hero h1{margin:0 0 6px;font-size:28px}.hero p{margin:0;color:#ccc}
+.deliveryInfo{display:none;margin-top:10px;color:#fff;font-size:13px;background:#ffffff12;padding:8px 10px;border-radius:8px}
 .search{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:12px;font-size:16px;margin:18px 0;background:#fff}
 h2{font-size:20px;margin:18px 0 12px}
 .categorias{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px}
@@ -28,19 +29,22 @@ h2{font-size:20px;margin:18px 0 12px}
 .info{padding:14px}.info h3{margin:0 0 5px}.categoria{font-size:12px;color:#e53935;font-weight:bold}.desc{color:#666;font-size:14px;margin:7px 0}
 .prod{display:flex;justify-content:space-between;border-top:1px solid #eee;padding:8px 0;font-size:13px}.prod b{color:#111}
 .vacio{text-align:center;background:#fff;padding:30px;border-radius:14px;color:#777}
+.errorDelivery{background:#fff3f3;color:#a00;border:1px solid #f0caca;padding:18px;border-radius:14px;text-align:center}
 @media(max-width:600px){main{padding:12px}.hero{padding:19px}.hero h1{font-size:24px}}
 </style>
 </head>
 <body>
+
 <header>
 <div class="logo">Sobre <span>Ruedas</span></div>
-<a class="cart" href="menu.html">🛒 <span id="cartCount">0</span></a>
+<a class="cart" id="cartLink" href="menu.html">🛒 <span id="cartCount">0</span></a>
 </header>
 
 <main>
 <section class="hero">
 <h1>¿Qué quieres pedir?</h1>
 <p>Encuentra locales y productos en Esmeraldas.</p>
+<div id="deliveryInfo" class="deliveryInfo"></div>
 <input id="busqueda" class="search" placeholder="Buscar local o producto...">
 </section>
 
@@ -53,122 +57,327 @@ h2{font-size:20px;margin:18px 0 12px}
 
 <script>
 const $=id=>document.getElementById(id);
-let locales=[],categorias=[],horarios={},productos=[],categoriaActual="";
 
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+let locales=[],categorias=[],horarios={},productos=[],categoriaActual="";
+let deliveryActual=null;
+let deliveryCodigo=null;
+let deliveryValido=true;
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+}[m]));
 
 function carrito(){
  try{return JSON.parse(sessionStorage.getItem("carrito")||"[]")}
  catch{return[]}
 }
+
 function actualizarCarrito(){
  $("cartCount").textContent=carrito().reduce((a,x)=>a+(+x.cantidad||0),0);
 }
 
 function obtenerHoraEcuador(){
- return new Intl.DateTimeFormat("en-GB",{timeZone:"America/Guayaquil",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());
+ return new Intl.DateTimeFormat("en-GB",{
+  timeZone:"America/Guayaquil",
+  hour:"2-digit",
+  minute:"2-digit",
+  hour12:false
+ }).format(new Date());
+}
+
+function obtenerCodigoDelivery(){
+ const params=new URLSearchParams(location.search);
+ const codigo=(params.get("d")||"").trim().toUpperCase();
+
+ if(codigo)return codigo;
+
+ try{
+  const guardado=JSON.parse(sessionStorage.getItem("delivery_context")||"null");
+  return guardado?.codigo||null;
+ }catch{
+  return null;
+ }
+}
+
+async function cargarDelivery(){
+ deliveryCodigo=obtenerCodigoDelivery();
+
+ if(!deliveryCodigo){
+  deliveryActual=null;
+  deliveryValido=true;
+  return;
+ }
+
+ try{
+  const {data,error}=await supabaseClient
+   .from("deliverys")
+   .select("id,nombre,whatsapp,codigo,activo")
+   .eq("codigo",deliveryCodigo)
+   .eq("activo",true)
+   .maybeSingle();
+
+  if(error)throw error;
+
+  if(!data){
+   deliveryActual=null;
+   deliveryValido=false;
+   return;
+  }
+
+  deliveryActual=data;
+  deliveryValido=true;
+
+  sessionStorage.setItem("delivery_context",JSON.stringify({
+   id:data.id,
+   nombre:data.nombre,
+   whatsapp:data.whatsapp,
+   codigo:data.codigo
+  }));
+
+  $("deliveryInfo").style.display="block";
+  $("deliveryInfo").textContent=`Pedidos gestionados por ${data.nombre}`;
+ }catch(e){
+  console.error("Error cargando delivery:",e);
+  deliveryActual=null;
+  deliveryValido=false;
+ }
 }
 
 function localEstaAbierto(local){
  const hs=horarios[local.id]||[];
  if(!hs.length)return true;
+
  const ahora=obtenerHoraEcuador();
  const [h,m]=ahora.split(":").map(Number),min=h*60+m;
- const dia=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Guayaquil"})).getDay();
+
+ const dia=new Date(
+  new Date().toLocaleString("en-US",{timeZone:"America/Guayaquil"})
+ ).getDay();
+
  const hoy=hs.find(x=>x.dia_semana===dia);
+
  if(!hoy||hoy.cerrado)return false;
- if(hoy.hora_apertura==="00:00:00"&&hoy.hora_cierre==="23:59:00")return true;
- const a=hoy.hora_apertura?.slice(0,5),c=hoy.hora_cierre?.slice(0,5);
+
+ if(hoy.hora_apertura==="00:00:00"&&hoy.hora_cierre==="23:59:00")
+  return true;
+
+ const a=hoy.hora_apertura?.slice(0,5);
+ const c=hoy.hora_cierre?.slice(0,5);
+
  if(!a||!c)return false;
- const [ah,am]=a.split(":").map(Number),[ch,cm]=c.split(":").map(Number);
- const ini=ah*60+am,fin=ch*60+cm;
- return ini<=fin?min>=ini&&min<=fin:min>=ini||min<=fin;
+
+ const [ah,am]=a.split(":").map(Number);
+ const [ch,cm]=c.split(":").map(Number);
+
+ const ini=ah*60+am;
+ const fin=ch*60+cm;
+
+ return ini<=fin
+  ?min>=ini&&min<=fin
+  :min>=ini||min<=fin;
 }
 
 async function cargar(){
  try{
-  const [l,c,p]=await Promise.all([
-   supabaseClient.from("restaurantes").select("*").eq("activo",true).order("nombre"),
-   supabaseClient.from("categorias").select("*").eq("activo",true).order("nombre"),
-   supabaseClient.from("productos").select("*").eq("activo",true).order("nombre")
-  ]);
-  if(l.error)throw l.error;if(c.error)throw c.error;if(p.error)throw p.error;
-  locales=l.data||[];categorias=c.data||[];productos=p.data||[];
-  const ids=locales.map(x=>x.id);
-  if(ids.length){
-   const r=await supabaseClient.from("horarios_restaurantes").select("*").in("restaurante_id",ids);
-   if(r.error)throw r.error;
-   (r.data||[]).forEach(x=>(horarios[x.restaurante_id]??=[]).push(x));
+  await cargarDelivery();
+
+  if(!deliveryValido){
+   $("categorias").innerHTML="";
+   $("locales").innerHTML=
+    '<div class="errorDelivery">El enlace de este delivery no es válido o se encuentra inactivo.</div>';
+   return;
   }
-  renderCategorias();renderLocales();
+
+  let idsPermitidos=null;
+
+  if(deliveryActual){
+   const r=await supabaseClient
+    .from("delivery_locales")
+    .select("restaurante_id")
+    .eq("delivery_id",deliveryActual.id)
+    .eq("activo",true);
+
+   if(r.error)throw r.error;
+
+   idsPermitidos=(r.data||[]).map(x=>x.restaurante_id);
+
+   if(!idsPermitidos.length){
+    $("categorias").innerHTML="";
+    $("locales").innerHTML=
+     '<div class="vacio">Este delivery todavía no tiene locales asignados.</div>';
+    return;
+   }
+  }
+
+  const [l,c,p]=await Promise.all([
+   supabaseClient
+    .from("restaurantes")
+    .select("*")
+    .eq("activo",true)
+    .order("nombre"),
+
+   supabaseClient
+    .from("categorias")
+    .select("*")
+    .eq("activo",true)
+    .order("nombre"),
+
+   supabaseClient
+    .from("productos")
+    .select("*")
+    .eq("activo",true)
+    .order("nombre")
+  ]);
+
+  if(l.error)throw l.error;
+  if(c.error)throw c.error;
+  if(p.error)throw p.error;
+
+  locales=l.data||[];
+  categorias=c.data||[];
+  productos=p.data||[];
+
+  if(deliveryActual){
+   const permitidos=new Set(idsPermitidos);
+   locales=locales.filter(x=>permitidos.has(x.id));
+   productos=productos.filter(x=>permitidos.has(x.restaurante_id));
+  }
+
+  const ids=locales.map(x=>x.id);
+
+  if(ids.length){
+   const r=await supabaseClient
+    .from("horarios_restaurantes")
+    .select("*")
+    .in("restaurante_id",ids);
+
+   if(r.error)throw r.error;
+
+   (r.data||[]).forEach(x=>
+    (horarios[x.restaurante_id]??=[]).push(x)
+   );
+  }
+
+  actualizarLinkCarrito();
+  renderCategorias();
+  renderLocales();
+
  }catch(e){
-  console.error(e);$("locales").innerHTML='<div class="vacio">No se pudieron cargar los locales.</div>';
+  console.error(e);
+  $("locales").innerHTML=
+   '<div class="vacio">No se pudieron cargar los locales.</div>';
  }
+}
+
+function actualizarLinkCarrito(){
+ const href=deliveryActual
+  ?`menu.html?d=${encodeURIComponent(deliveryActual.codigo)}`
+  :"menu.html";
+
+ $("cartLink").href=href;
 }
 
 function renderCategorias(){
  const q=$("busqueda").value.trim();
+
  $("categorias").innerHTML=
- `<button class="cat ${!categoriaActual?"activa":""}" onclick="seleccionarCategoria('')">Todos</button>`+
- categorias.map(c=>`<button class="cat ${categoriaActual===c.nombre&&!q?"activa":""}" onclick="seleccionarCategoria('${esc(c.nombre).replace(/'/g,"\\'")}')">${esc(c.nombre)}</button>`).join("");
+  `<button class="cat ${!categoriaActual?"activa":""}" onclick="seleccionarCategoria('')">Todos</button>`+
+  categorias.map(c=>
+   `<button class="cat ${categoriaActual===c.nombre&&!q?"activa":""}"
+    onclick="seleccionarCategoria('${esc(c.nombre).replace(/'/g,"\\'")}')">
+    ${esc(c.nombre)}
+   </button>`
+  ).join("");
 }
 
 function seleccionarCategoria(c){
  categoriaActual=c;
  $("busqueda").value="";
- renderCategorias();renderLocales();
+ renderCategorias();
+ renderLocales();
 }
 
 function renderLocales(){
  const q=$("busqueda").value.trim().toLowerCase();
 
- /*
-  BUSCADOR GLOBAL:
-  Si existe texto en el buscador, la categoría seleccionada se ignora.
-  Sin texto, sí se aplica la categoría.
- */
  let lista=locales.filter(l=>{
   const ps=productos.filter(p=>p.restaurante_id===l.id);
+
   if(q){
    return l.nombre.toLowerCase().includes(q)||
-          (l.categoria||"").toLowerCase().includes(q)||
-          (l.descripcion||"").toLowerCase().includes(q)||
-          ps.some(p=>(p.nombre+" "+(p.descripcion||"")).toLowerCase().includes(q));
+    (l.categoria||"").toLowerCase().includes(q)||
+    (l.descripcion||"").toLowerCase().includes(q)||
+    ps.some(p=>
+     (p.nombre+" "+(p.descripcion||"")).toLowerCase().includes(q)
+    );
   }
+
   return !categoriaActual||l.categoria===categoriaActual;
  });
 
- $("locales").innerHTML=lista.length?lista.map(l=>{
-  const ps=productos.filter(p=>{
-   if(p.restaurante_id!==l.id)return false;
-   return !q||p.nombre.toLowerCase().includes(q)||(p.descripcion||"").toLowerCase().includes(q);
-  }).slice(0,3);
-  const abierto=localEstaAbierto(l);
-  return `<article class="local" onclick="abrirLocal(${l.id})">
-   <div class="banner">
-    ${l.banner_url?`<img src="${esc(l.banner_url)}?v=${Date.now()}" alt="">`:""}
-    <span class="estado ${abierto?"":"cerrado"}">${abierto?"Abierto":"Cerrado"}</span>
-   </div>
-   <div class="info">
-    <div class="categoria">${esc(l.categoria||"")}</div>
-    <h3>${esc(l.nombre)}</h3>
-    <div class="desc">${esc(l.descripcion||"")}</div>
-    ${ps.map(p=>`<div class="prod"><span>${esc(p.nombre)}</span><b>$${(+p.precio).toFixed(2)}</b></div>`).join("")}
-   </div>
-  </article>`;
- }).join(""):'<div class="vacio">No encontramos resultados.</div>';
+ $("locales").innerHTML=lista.length
+  ?lista.map(l=>{
+    const ps=productos.filter(p=>{
+     if(p.restaurante_id!==l.id)return false;
+     return !q||
+      p.nombre.toLowerCase().includes(q)||
+      (p.descripcion||"").toLowerCase().includes(q);
+    }).slice(0,3);
+
+    const abierto=localEstaAbierto(l);
+
+    return `<article class="local" onclick="abrirLocal(${l.id})">
+     <div class="banner">
+      ${l.banner_url
+       ?`<img src="${esc(l.banner_url)}?v=${Date.now()}" alt="">`
+       :""
+      }
+      <span class="estado ${abierto?"":"cerrado"}">
+       ${abierto?"Abierto":"Cerrado"}
+      </span>
+     </div>
+
+     <div class="info">
+      <div class="categoria">${esc(l.categoria||"")}</div>
+      <h3>${esc(l.nombre)}</h3>
+      <div class="desc">${esc(l.descripcion||"")}</div>
+
+      ${ps.map(p=>
+       `<div class="prod">
+        <span>${esc(p.nombre)}</span>
+        <b>$${(+p.precio).toFixed(2)}</b>
+       </div>`
+      ).join("")}
+     </div>
+    </article>`;
+   }).join("")
+  :'<div class="vacio">No encontramos resultados.</div>';
+
  renderCategorias();
 }
 
-function abrirLocal(id){location.href=`restaurante.html?id=${encodeURIComponent(id)}`}
+function abrirLocal(id){
+ let url=`restaurante.html?id=${encodeURIComponent(id)}`;
+
+ if(deliveryActual?.codigo){
+  url+=`&d=${encodeURIComponent(deliveryActual.codigo)}`;
+ }
+
+ location.href=url;
+}
 
 $("busqueda").addEventListener("input",()=>{
- renderCategorias();renderLocales();
+ renderCategorias();
+ renderLocales();
 });
 
 window.addEventListener("storage",actualizarCarrito);
 document.addEventListener("visibilitychange",actualizarCarrito);
-setInterval(()=>{renderLocales()},60000);
+
+setInterval(()=>{
+ renderLocales();
+},60000);
+
 actualizarCarrito();
 cargar();
 </script>
