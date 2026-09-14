@@ -53,12 +53,14 @@ textarea{min-height:75px;resize:vertical}.row{display:grid;grid-template-columns
 </head>
 
 <body>
+
 <header>
 <a href="index.html" class="back" id="backLink">← Volver</a>
 <div class="logo">Sobre <span>Ruedas</span></div>
 </header>
 
 <main>
+
 <div id="alerta" class="alert"></div>
 <div id="deliveryBadge" class="deliveryBadge"></div>
 
@@ -71,6 +73,7 @@ textarea{min-height:75px;resize:vertical}.row{display:grid;grid-template-columns
 <h2>Datos del cliente</h2>
 
 <div class="row">
+
 <div>
 <label for="clienteNombre">Nombre</label>
 <input id="clienteNombre" placeholder="Tu nombre">
@@ -81,79 +84,190 @@ textarea{min-height:75px;resize:vertical}.row{display:grid;grid-template-columns
 <input id="clienteTelefono" type="tel" placeholder="Tu teléfono">
 <div id="clienteEstado" class="clienteEstado"></div>
 </div>
+
 </div>
 
 <div id="campoReferido" class="referido">
-<label for="telefonoReferente">Teléfono de quien te refirió</label>
-<input id="telefonoReferente" type="tel" placeholder="Teléfono de tu referente">
+
+<label for="telefonoReferente">
+Teléfono de quien te refirió
+</label>
+
+<input
+id="telefonoReferente"
+type="tel"
+placeholder="Teléfono de tu referente">
+
 <div id="referenteEstado" class="clienteEstado"></div>
-<small>Por temas de seguridad, para realizar tu primer pedido debes haber sido referido por un cliente registrado.</small>
+
+<small>
+Por temas de seguridad, para realizar tu primer pedido debes haber sido referido por un cliente registrado.
+</small>
+
 </div>
 
 <label class="check">
-<input type="checkbox" id="requiereFactura" data-requiere-cliente>
+<input
+type="checkbox"
+id="requiereFactura"
+data-requiere-cliente>
 ¿Requiere factura?
 </label>
 
 <div id="datosFactura" class="factura">
+
 <div class="row">
+
 <div>
-<label for="tipoDocumento">Tipo de documento</label>
-<select id="tipoDocumento" data-requiere-cliente>
-<option value="cedula">Cédula</option>
-<option value="ruc">RUC</option>
+<label for="tipoDocumento">
+Tipo de documento
+</label>
+
+<select
+id="tipoDocumento"
+data-requiere-cliente>
+<option value="cedula">
+Cédula
+</option>
+<option value="ruc">
+RUC
+</option>
 </select>
 </div>
+
 <div>
-<label for="numeroDocumento">Cédula / RUC</label>
-<input id="numeroDocumento" placeholder="Número de documento" data-requiere-cliente>
-</div>
+<label for="numeroDocumento">
+Cédula / RUC
+</label>
+
+<input
+id="numeroDocumento"
+placeholder="Número de documento"
+data-requiere-cliente>
 </div>
 
-<label for="correoFactura">Correo electrónico</label>
-<input id="correoFactura" type="email" placeholder="correo@ejemplo.com" data-requiere-cliente>
 </div>
+
+<label for="correoFactura">
+Correo electrónico
+</label>
+
+<input
+id="correoFactura"
+type="email"
+placeholder="correo@ejemplo.com"
+data-requiere-cliente>
+
+</div>
+
 </section>
 
 <section class="card">
+
 <h2>📍 Ubicación de entrega</h2>
 
 <div class="locationButtons">
-<button class="btn btnRed requiere-cliente" onclick="usarMiUbicacion(this)">📍 Usar mi ubicación</button>
-<button class="btn btnDark requiere-cliente" onclick="abrirMapa()">🗺️ Otra dirección</button>
+
+<button
+class="btn btnRed requiere-cliente"
+onclick="usarMiUbicacion(this)">
+📍 Usar mi ubicación
+</button>
+
+<button
+class="btn btnDark requiere-cliente"
+onclick="abrirMapa()">
+🗺️ Otra dirección
+</button>
+
 </div>
 
 <div id="direccionGuardada" class="locationBox">
-<div class="locationTitle">Dirección</div>
-<div class="address">Todavía no has seleccionado una ubicación.</div>
-<div id="locationStatus" class="locationStatus"></div>
+
+<div class="locationTitle">
+Dirección
+</div>
+
+<div class="address">
+Todavía no has seleccionado una ubicación.
+</div>
+
+<div
+id="locationStatus"
+class="locationStatus">
+</div>
+
 </div>
 
 <div id="mapWrap">
-<div id="map" class="map"></div>
+
+<div
+id="map"
+class="map">
+</div>
+
 <div class="mapActions">
-<button class="btn btnRed requiere-cliente" onclick="aceptarMapa()">Aceptar y guardar</button>
-<button class="btn btnGray requiere-cliente" onclick="cerrarMapa()">Cancelar</button>
-</div>
-<div class="note">Toca el mapa en el lugar exacto donde deseas recibir tu pedido.</div>
+
+<button
+class="btn btnRed requiere-cliente"
+onclick="aceptarMapa()">
+Aceptar y guardar
+</button>
+
+<button
+class="btn btnGray requiere-cliente"
+onclick="cerrarMapa()">
+Cancelar
+</button>
+
 </div>
 
-<label for="referencia">Referencia</label>
-<textarea id="referencia" placeholder="Ej.: junto a..., casa de color..., edificio..." data-requiere-cliente></textarea>
+<div class="note">
+Toca el mapa en el lugar exacto donde deseas recibir tu pedido.
+</div>
 
-<div class="note">La ubicación guardada se utilizará para generar el enlace de ubicación del pedido.</div>
+</div>
+
+<label for="referencia">
+Referencia
+</label>
+
+<textarea
+id="referencia"
+placeholder="Ej.: junto a..., casa de color..., edificio..."
+data-requiere-cliente>
+</textarea>
+
+<div class="note">
+La ubicación guardada se utilizará para generar el enlace de ubicación del pedido.
+</div>
+
 </section>
 
 <section class="card">
+
 <h2>Resumen</h2>
+
 <div id="resumen"></div>
 
-<button class="btn btnGray requiere-cliente" onclick="vaciarCarrito()">🗑️ Vaciar carrito</button>
-<button class="btn btnRed whatsapp requiere-cliente" onclick="realizarPedido()">📲 Realizar pedido por WhatsApp</button>
+<button
+class="btn btnGray requiere-cliente"
+onclick="vaciarCarrito()">
+🗑️ Vaciar carrito
+</button>
+
+<button
+class="btn btnRed whatsapp requiere-cliente"
+onclick="realizarPedido()">
+📲 Realizar pedido por WhatsApp
+</button>
+
 </section>
+
 </main>
 
 <script>
+
 const CONFIG_DEFAULT={
  nombreNegocio:"Sobre Ruedas",
  ciudad:"Esmeraldas",
@@ -163,25 +277,69 @@ const CONFIG_DEFAULT={
  validacionClientes:true
 };
 
-let carrito=[],configuracion={...CONFIG_DEFAULT},map=null,marker=null;
-let ubicacion={lat:null,lng:null,direccion:""};
-let ubicacionTemporal={lat:null,lng:null,direccion:""};
-let clienteActual=null,timerCliente=null,timerReferente=null;
-let validacionClienteId=0,validacionReferenteId=0,ubicacionCargando=false;
-let accesoPedido=false,referenteValido=false;
+let carrito=[];
+let configuracion={...CONFIG_DEFAULT};
+
+let map=null;
+let marker=null;
+
+let ubicacion={
+ lat:null,
+ lng:null,
+ direccion:""
+};
+
+let ubicacionTemporal={
+ lat:null,
+ lng:null,
+ direccion:""
+};
+
+let clienteActual=null;
+let timerCliente=null;
+let timerReferente=null;
+
+let validacionClienteId=0;
+let validacionReferenteId=0;
+
+let ubicacionCargando=false;
+
+let accesoPedido=false;
+let referenteValido=false;
 
 /* DELIVERY */
+
 let deliveryActual=null;
 let deliveryCodigo=null;
 let deliveryCargando=false;
 
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const money=n=>`${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
+const $=id=>
+ document.getElementById(id);
 
-/* NORMALIZACIÓN TELEFONO */
+const esc=s=>
+ String(s??"").replace(
+  /[&<>"']/g,
+  m=>({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#039;"
+  }[m])
+ );
+
+const money=n=>
+ `${configuracion.moneda||"USD"} ${(Number(n)||0).toFixed(2)}`;
+
+/* =========================================================
+   TELEFONO
+   ========================================================= */
+
 function normalizarTelefono(t){
- let n=String(t||"").replace(/\D/g,"");
+
+ let n=
+  String(t||"")
+  .replace(/\D/g,"");
 
  if(n.startsWith("00"))
   n=n.slice(2);
@@ -197,257 +355,539 @@ function normalizarTelefono(t){
  return n;
 }
 
-/* DELIVERY */
-function obtenerCodigoDelivery(){
- const params=new URLSearchParams(location.search);
- const desdeUrl=(params.get("d")||"").trim().toUpperCase();
+/* =========================================================
+   DELIVERY
+   ========================================================= */
 
- if(desdeUrl)return desdeUrl;
+function obtenerCodigoDelivery(){
+
+ const params=
+  new URLSearchParams(
+   location.search
+  );
+
+ const desdeUrl=
+  (params.get("d")||"")
+  .trim()
+  .toUpperCase();
+
+ if(desdeUrl)
+  return desdeUrl;
 
  try{
-  const ctx=JSON.parse(
-   sessionStorage.getItem("delivery_context")||"null"
-  );
+
+  const ctx=
+   JSON.parse(
+    sessionStorage.getItem(
+     "delivery_context"
+    )||"null"
+   );
+
   return ctx?.codigo||null;
+
  }catch{
+
   return null;
+
  }
 }
 
 async function cargarDelivery(){
- deliveryCodigo=obtenerCodigoDelivery();
+
+ deliveryCodigo=
+  obtenerCodigoDelivery();
 
  if(!deliveryCodigo){
+
   deliveryActual=null;
+
   actualizarInterfazDelivery();
+
   return;
+
  }
 
  deliveryCargando=true;
 
  try{
-  const r=await supabaseClient
-   .from("deliverys")
-   .select("id,nombre,whatsapp,codigo,activo")
-   .eq("codigo",deliveryCodigo)
-   .eq("activo",true)
-   .maybeSingle();
 
-  if(r.error)throw r.error;
+  const r=
+   await supabaseClient
+    .from("deliverys")
+    .select(
+     "id,nombre,whatsapp,codigo,activo,validacion_clientes"
+    )
+    .eq(
+     "codigo",
+     deliveryCodigo
+    )
+    .eq(
+     "activo",
+     true
+    )
+    .maybeSingle();
+
+  if(r.error)
+   throw r.error;
 
   if(!r.data){
+
    deliveryActual=null;
+
    mostrarError(
     "El enlace del delivery no es válido o se encuentra inactivo."
    );
+
    return;
+
   }
 
   deliveryActual=r.data;
-  deliveryCodigo=r.data.codigo;
 
+  deliveryCodigo=
+   r.data.codigo;
+
+  /*
+   GUARDAR CONTEXTO ACTUAL
+  */
   sessionStorage.setItem(
    "delivery_context",
    JSON.stringify({
     id:r.data.id,
     nombre:r.data.nombre,
     whatsapp:r.data.whatsapp,
-    codigo:r.data.codigo
+    codigo:r.data.codigo,
+    validacion_clientes:
+     r.data.validacion_clientes!==false
    })
   );
+
+  /*
+   LA CONFIGURACIÓN DEL DELIVERY
+   TIENE PRIORIDAD SOBRE LA GLOBAL
+  */
+  configuracion.validacionClientes=
+   r.data.validacion_clientes!==false;
 
   actualizarInterfazDelivery();
 
  }catch(e){
-  console.error("Error cargando delivery:",e);
+
+  console.error(
+   "Error cargando delivery:",
+   e
+  );
+
   deliveryActual=null;
+
  }finally{
+
   deliveryCargando=false;
+
  }
 }
 
 function actualizarInterfazDelivery(){
- const badge=$("deliveryBadge");
- const back=$("backLink");
+
+ const badge=
+  $("deliveryBadge");
+
+ const back=
+  $("backLink");
 
  if(deliveryActual){
+
   badge.textContent=
    `🚚 Pedido gestionado por ${deliveryActual.nombre}`;
+
   badge.classList.add("show");
 
   back.href=
-   `index.html?d=${encodeURIComponent(deliveryActual.codigo)}`;
+   `index.html?d=${encodeURIComponent(
+    deliveryActual.codigo
+   )}`;
+
  }else{
-  badge.classList.remove("show");
-  back.href="index.html";
+
+  badge.classList.remove(
+   "show"
+  );
+
+  back.href=
+   "index.html";
+
  }
+
 }
 
-/* ALERTAS */
+/* =========================================================
+   ALERTAS
+   ========================================================= */
+
 function mostrarError(t){
- const a=$("alerta");
+
+ const a=
+  $("alerta");
+
  a.textContent=t;
- a.classList.add("show");
- window.scrollTo({top:0,behavior:"smooth"});
- setTimeout(()=>a.classList.remove("show"),5000);
-}
 
-function mostrarEstadoCliente(t,tipo=""){
- const e=$("clienteEstado");
- e.textContent=t;
- e.className="clienteEstado";
- if(tipo)e.classList.add(tipo);
-}
+ a.classList.add(
+  "show"
+ );
 
-function mostrarEstadoReferente(t,tipo=""){
- const e=$("referenteEstado");
- e.textContent=t;
- e.className="clienteEstado";
- if(tipo)e.classList.add(tipo);
-}
-
-function mostrarEstadoUbicacion(t,tipo=""){
- const e=$("locationStatus");
- if(!e)return;
- e.textContent=t;
- e.className="locationStatus";
- if(tipo)e.classList.add(tipo);
-}
-
-/* ACCESO */
-function actualizarAcceso(){
- const habilitado=
-  !configuracion.validacionClientes||accesoPedido===true;
-
- document.querySelectorAll(
-  "[data-requiere-cliente],.requiere-cliente"
- ).forEach(e=>{
-  e.disabled=!habilitado;
+ window.scrollTo({
+  top:0,
+  behavior:"smooth"
  });
 
+ setTimeout(
+  ()=>a.classList.remove("show"),
+  5000
+ );
+}
+
+function mostrarEstadoCliente(
+ t,
+ tipo=""
+){
+
+ const e=
+  $("clienteEstado");
+
+ e.textContent=t;
+
+ e.className=
+  "clienteEstado";
+
+ if(tipo)
+  e.classList.add(tipo);
+}
+
+function mostrarEstadoReferente(
+ t,
+ tipo=""
+){
+
+ const e=
+  $("referenteEstado");
+
+ e.textContent=t;
+
+ e.className=
+  "clienteEstado";
+
+ if(tipo)
+  e.classList.add(tipo);
+}
+
+function mostrarEstadoUbicacion(
+ t,
+ tipo=""
+){
+
+ const e=
+  $("locationStatus");
+
+ if(!e)return;
+
+ e.textContent=t;
+
+ e.className=
+  "locationStatus";
+
+ if(tipo)
+  e.classList.add(tipo);
+}
+
+/* =========================================================
+   ACCESO SEGUN DELIVERY
+   ========================================================= */
+
+function actualizarAcceso(){
+
+ const habilitado=
+  !configuracion.validacionClientes||
+  accesoPedido===true;
+
+ document
+  .querySelectorAll(
+   "[data-requiere-cliente],.requiere-cliente"
+  )
+  .forEach(
+   e=>{
+    e.disabled=
+     !habilitado;
+   }
+  );
+
+ /*
+  NOMBRE Y TELEFONO SIEMPRE SE PUEDEN ESCRIBIR
+ */
  $("clienteTelefono").disabled=false;
  $("clienteNombre").disabled=false;
 
  if(!configuracion.validacionClientes){
-  $("campoReferido").classList.remove("show");
+
+  $("campoReferido")
+   .classList
+   .remove("show");
+
   $("telefonoReferente").disabled=true;
+
   return;
+
  }
 
  $("telefonoReferente").disabled=false;
 
  if(clienteActual){
-  $("campoReferido").classList.remove("show");
+
+  $("campoReferido")
+   .classList
+   .remove("show");
+
   $("telefonoReferente").disabled=true;
+
  }
 
  if(!habilitado)
-  $("mapWrap").style.display="none";
+  $("mapWrap").style.display=
+   "none";
 }
 
 function bloquearPedido(){
+
  if(!configuracion.validacionClientes){
+
   accesoPedido=true;
+
   actualizarAcceso();
+
   return;
  }
 
  accesoPedido=false;
+
  actualizarAcceso();
 }
 
 function habilitarPedido(){
+
  accesoPedido=true;
+
  actualizarAcceso();
 }
 
-/* CARRITO */
+/* =========================================================
+   CARRITO
+   ========================================================= */
+
 function cargarCarrito(){
+
  let datos=null;
 
  try{
-  const s=sessionStorage.getItem("carrito");
-  if(s)datos=JSON.parse(s);
- }catch(e){console.warn(e)}
 
- if(!Array.isArray(datos)||!datos.length){
-  try{
-   const l=localStorage.getItem("carrito");
-   if(l)datos=JSON.parse(l);
-  }catch(e){console.warn(e)}
+  const s=
+   sessionStorage.getItem(
+    "carrito"
+   );
+
+  if(s)
+   datos=
+    JSON.parse(s);
+
+ }catch(e){
+
+  console.warn(e);
+
  }
 
- carrito=Array.isArray(datos)?datos:[];
+ if(
+  !Array.isArray(datos)||
+  !datos.length
+ ){
 
- carrito=carrito.map(x=>({
-  ...x,
-  variante_id:x.variante_id||null,
-  variante_nombre:x.variante_nombre||null
- }));
+  try{
+
+   const l=
+    localStorage.getItem(
+     "carrito"
+    );
+
+   if(l)
+    datos=
+     JSON.parse(l);
+
+  }catch(e){
+
+   console.warn(e);
+
+  }
+
+ }
+
+ carrito=
+  Array.isArray(datos)?
+   datos:
+   [];
+
+ carrito=
+  carrito.map(
+   x=>({
+    ...x,
+    variante_id:
+     x.variante_id||
+     null,
+    variante_nombre:
+     x.variante_nombre||
+     null
+   })
+  );
 }
 
 function guardarCarrito(){
- const datos=JSON.stringify(carrito);
 
- try{sessionStorage.setItem("carrito",datos)}catch(e){}
- try{localStorage.setItem("carrito",datos)}catch(e){}
+ const datos=
+  JSON.stringify(
+   carrito
+  );
+
+ try{
+
+  sessionStorage.setItem(
+   "carrito",
+   datos
+  );
+
+ }catch(e){}
+
+ try{
+
+  localStorage.setItem(
+   "carrito",
+   datos
+  );
+
+ }catch(e){}
+
 }
 
 function guardarFormulario(){
+
  const data={
-  nombre:$("clienteNombre").value,
-  telefono:$("clienteTelefono").value,
-  telefonoReferente:$("telefonoReferente").value,
-  referencia:$("referencia").value,
-  requiere:$("requiereFactura").checked,
-  tipo:$("tipoDocumento").value,
-  documento:$("numeroDocumento").value,
-  correo:$("correoFactura").value,
+
+  nombre:
+   $("clienteNombre").value,
+
+  telefono:
+   $("clienteTelefono").value,
+
+  telefonoReferente:
+   $("telefonoReferente").value,
+
+  referencia:
+   $("referencia").value,
+
+  requiere:
+   $("requiereFactura").checked,
+
+  tipo:
+   $("tipoDocumento").value,
+
+  documento:
+   $("numeroDocumento").value,
+
+  correo:
+   $("correoFactura").value,
+
   ubicacion
+
  };
 
  try{
+
   sessionStorage.setItem(
    "datosPedido",
    JSON.stringify(data)
   );
+
  }catch(e){}
+
 }
 
 function cargarFormulario(){
+
  try{
-  const d=JSON.parse(
-   sessionStorage.getItem("datosPedido")||"null"
-  );
+
+  const d=
+   JSON.parse(
+    sessionStorage.getItem(
+     "datosPedido"
+    )||"null"
+   );
 
   if(d){
-   $("clienteNombre").value=d.nombre||"";
-   $("clienteTelefono").value=d.telefono||"";
-   $("telefonoReferente").value=d.telefonoReferente||"";
-   $("referencia").value=d.referencia||"";
-   $("requiereFactura").checked=!!d.requiere;
-   $("tipoDocumento").value=d.tipo||"cedula";
-   $("numeroDocumento").value=d.documento||"";
-   $("correoFactura").value=d.correo||"";
-   if(d.ubicacion)ubicacion=d.ubicacion;
+
+   $("clienteNombre").value=
+    d.nombre||"";
+
+   $("clienteTelefono").value=
+    d.telefono||"";
+
+   $("telefonoReferente").value=
+    d.telefonoReferente||"";
+
+   $("referencia").value=
+    d.referencia||"";
+
+   $("requiereFactura").checked=
+    !!d.requiere;
+
+   $("tipoDocumento").value=
+    d.tipo||
+    "cedula";
+
+   $("numeroDocumento").value=
+    d.documento||
+    "";
+
+   $("correoFactura").value=
+    d.correo||
+    "";
+
+   if(d.ubicacion)
+    ubicacion=
+     d.ubicacion;
   }
+
  }catch(e){}
 
- $("datosFactura").classList.toggle(
-  "show",
-  $("requiereFactura").checked
- );
+ $("datosFactura")
+  .classList
+  .toggle(
+   "show",
+   $("requiereFactura").checked
+  );
 
  renderUbicacion();
 
+ /*
+  IMPORTANTE:
+  AQUÍ YA SE HA CARGADO EL DELIVERY
+  Y SU CONFIGURACIÓN
+ */
  if(!configuracion.validacionClientes){
+
   habilitarPedido();
+
   return;
  }
 
- const t=normalizarTelefono(
-  $("clienteTelefono").value
- );
+ const t=
+  normalizarTelefono(
+   $("clienteTelefono").value
+  );
 
  if(t.length>=7)
   programarValidacionCliente();
@@ -455,202 +895,447 @@ function cargarFormulario(){
   bloquearPedido();
 }
 
-/* CONFIGURACIÓN */
-async function cargarConfiguracion(){
- try{
-  const r=await supabaseClient
-   .from("configuracion_negocio")
-   .select("*")
-   .order("id",{ascending:true})
-   .limit(1)
-   .maybeSingle();
+/* =========================================================
+   CONFIGURACIÓN GLOBAL
+   ========================================================= */
 
-  if(!r.error&&r.data){
+async function cargarConfiguracion(){
+
+ try{
+
+  const r=
+   await supabaseClient
+    .from("configuracion_negocio")
+    .select("*")
+    .order(
+     "id",
+     {
+      ascending:true
+     }
+    )
+    .limit(1)
+    .maybeSingle();
+
+  if(
+   !r.error&&
+   r.data
+  ){
+
    configuracion={
+
     nombreNegocio:
-     r.data.nombre_negocio||CONFIG_DEFAULT.nombreNegocio,
+     r.data.nombre_negocio||
+     CONFIG_DEFAULT.nombreNegocio,
+
     ciudad:
-     r.data.ciudad||CONFIG_DEFAULT.ciudad,
+     r.data.ciudad||
+     CONFIG_DEFAULT.ciudad,
+
     tarifaDelivery:
-     Number(r.data.tarifa_delivery??CONFIG_DEFAULT.tarifaDelivery),
+     Number(
+      r.data.tarifa_delivery??
+      CONFIG_DEFAULT.tarifaDelivery
+     ),
+
     whatsappNegocio:
-     r.data.whatsapp_negocio||CONFIG_DEFAULT.whatsappNegocio,
+     r.data.whatsapp_negocio||
+     CONFIG_DEFAULT.whatsappNegocio,
+
     moneda:
-     r.data.moneda||CONFIG_DEFAULT.moneda,
+     r.data.moneda||
+     CONFIG_DEFAULT.moneda,
+
+    /*
+     GLOBAL SOLO COMO RESPALDO
+    */
     validacionClientes:
-     r.data.validacion_clientes===false?false:true
+     r.data.validacion_clientes===
+      false?
+       false:
+       true
    };
+
   }
+
  }catch(e){
-  console.warn("No se pudo cargar configuración:",e);
+
+  console.warn(
+   "No se pudo cargar configuración:",
+   e
+  );
+
+ }
+
+ /*
+  SI EXISTE DELIVERY, SU CONFIGURACIÓN
+  TIENE PRIORIDAD.
+ */
+ if(deliveryActual){
+
+  configuracion.validacionClientes=
+   deliveryActual.validacion_clientes!==false;
+
  }
 
  if(!configuracion.validacionClientes){
+
   clienteActual=null;
   referenteValido=false;
   accesoPedido=true;
+
  }
 
  actualizarAcceso();
  render();
 }
 
-/* AGRUPAR */
+/* =========================================================
+   AGRUPAR CARRITO
+   ========================================================= */
+
 function agrupar(){
+
  const grupos={};
 
- carrito.forEach(x=>{
-  if(!grupos[x.restaurante_id]){
-   grupos[x.restaurante_id]={
-    id:x.restaurante_id,
-    nombre:x.restaurante_nombre,
-    items:[]
-   };
+ carrito.forEach(
+  x=>{
+
+   if(!grupos[x.restaurante_id]){
+
+    grupos[x.restaurante_id]={
+
+     id:
+      x.restaurante_id,
+
+     nombre:
+      x.restaurante_nombre,
+
+     items:[]
+    };
+
+   }
+
+   grupos[
+    x.restaurante_id
+   ].items.push(x);
+
   }
+ );
 
-  grupos[x.restaurante_id].items.push(x);
- });
-
- return Object.values(grupos);
+ return Object.values(
+  grupos
+ );
 }
 
 function subtotalGrupo(g){
+
  return g.items.reduce(
   (a,x)=>
-   a+(Number(x.precio)||0)*(Number(x.cantidad)||0),
+   a+
+   (Number(x.precio)||0)*
+   (Number(x.cantidad)||0),
   0
  );
 }
 
 function subtotalItem(x){
- return(Number(x.precio)||0)*(Number(x.cantidad)||0);
+
+ return(
+  Number(x.precio)||0
+ )*
+ (
+  Number(x.cantidad)||0
+ );
 }
 
-/* RENDER */
+/* =========================================================
+   RENDER
+   ========================================================= */
+
 function render(){
- const cont=$("carrito");
+
+ const cont=
+  $("carrito");
 
  if(!carrito.length){
+
   cont.innerHTML=
    '<div class="empty">Tu carrito está vacío.<br><br><a href="index.html">Buscar restaurantes y productos</a></div>';
 
   $("resumen").innerHTML="";
+
   actualizarAcceso();
+
   return;
  }
 
- const grupos=agrupar();
+ const grupos=
+  agrupar();
+
  const deliveryUnitario=
-  Number(configuracion.tarifaDelivery||0);
+  Number(
+   configuracion.tarifaDelivery||
+   0
+  );
 
- cont.innerHTML=grupos.map(g=>{
-  const subtotal=subtotalGrupo(g);
-  const totalLocal=subtotal+deliveryUnitario;
+ cont.innerHTML=
+  grupos.map(
+   g=>{
 
-  return `<div class="local">
-   <div class="localHead">${esc(g.nombre)}</div>
+    const subtotal=
+     subtotalGrupo(g);
 
-   ${g.items.map(x=>`
-    <div class="item">
+    const totalLocal=
+     subtotal+
+     deliveryUnitario;
 
-     <div class="thumb">
-      ${x.imagen_url
-       ?`<img src="${esc(x.imagen_url)}" alt="" loading="lazy">`
-       :""
-      }
+    return`
+
+     <div class="local">
+
+      <div class="localHead">
+       ${esc(g.nombre)}
+      </div>
+
+      ${g.items.map(
+       x=>`
+
+        <div class="item">
+
+         <div class="thumb">
+
+          ${
+           x.imagen_url
+            ?`<img
+               src="${esc(x.imagen_url)}"
+               alt=""
+               loading="lazy">`
+            :""
+          }
+
+         </div>
+
+         <div class="itemInfo">
+
+          <b>
+           ${esc(
+            x.producto_nombre
+           )}
+          </b>
+
+          ${
+           x.variante_nombre
+            ?`<small class="variantName">
+              Opción:
+              ${esc(
+               x.variante_nombre
+              )}
+             </small>`
+            :""
+          }
+
+          <small>
+           ${money(x.precio)}
+           c/u
+          </small>
+
+         </div>
+
+         <div class="controls">
+
+          <button
+           onclick="cambiarCantidad(
+            ${x.producto_id},
+            ${x.restaurante_id},
+            ${Number(
+             x.variante_id||0
+            )},
+            -1
+           )">
+           −
+          </button>
+
+          <b>
+           ${x.cantidad}
+          </b>
+
+          <button
+           onclick="cambiarCantidad(
+            ${x.producto_id},
+            ${x.restaurante_id},
+            ${Number(
+             x.variante_id||0
+            )},
+            1
+           )">
+           +
+          </button>
+
+          <button
+           class="del"
+           onclick="eliminar(
+            ${x.producto_id},
+            ${x.restaurante_id},
+            ${Number(
+             x.variante_id||0
+            )}
+           )">
+           ×
+          </button>
+
+         </div>
+
+        </div>
+
+       `
+      ).join("")}
+
+      <div class="localTotals">
+
+       <div>
+        Subtotal productos:
+        <b>
+         ${money(subtotal)}
+        </b>
+       </div>
+
+       <div>
+        Delivery:
+        <b>
+         ${money(
+          deliveryUnitario
+         )}
+        </b>
+       </div>
+
+       <div class="localTotal">
+        Total restaurante:
+        ${money(totalLocal)}
+       </div>
+
+      </div>
+
      </div>
 
-     <div class="itemInfo">
-      <b>${esc(x.producto_nombre)}</b>
+    `;
 
-      ${x.variante_nombre
-       ?`<small class="variantName">Opción: ${esc(x.variante_nombre)}</small>`
-       :""
-      }
+   }
+  ).join("");
 
-      <small>${money(x.precio)} c/u</small>
-     </div>
-
-     <div class="controls">
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)},-1)">−</button>
-
-      <b>${x.cantidad}</b>
-
-      <button onclick="cambiarCantidad(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)},1)">+</button>
-
-      <button class="del" onclick="eliminar(${x.producto_id},${x.restaurante_id},${Number(x.variante_id||0)})">×</button>
-     </div>
-    </div>
-   `).join("")}
-
-   <div class="localTotals">
-    <div>Subtotal productos: <b>${money(subtotal)}</b></div>
-    <div>Delivery: <b>${money(deliveryUnitario)}</b></div>
-    <div class="localTotal">
-     Total restaurante: ${money(totalLocal)}
-    </div>
-   </div>
-  </div>`;
- }).join("");
-
- const subtotalTotal=carrito.reduce(
-  (a,x)=>a+subtotalItem(x),0
- );
+ const subtotalTotal=
+  carrito.reduce(
+   (a,x)=>
+    a+
+    subtotalItem(x),
+   0
+  );
 
  const deliveryTotal=
-  grupos.length*deliveryUnitario;
+  grupos.length*
+  deliveryUnitario;
 
- const total=subtotalTotal+deliveryTotal;
+ const total=
+  subtotalTotal+
+  deliveryTotal;
 
  $("resumen").innerHTML=`
- <div class="money">
 
-  ${grupos.map(g=>`
-   <div class="summaryLocal">
-    <span>${esc(g.nombre)}</span>
-    <b>${money(subtotalGrupo(g))}</b>
+  <div class="money">
+
+   ${grupos.map(
+    g=>`
+
+     <div class="summaryLocal">
+
+      <span>
+       ${esc(g.nombre)}
+      </span>
+
+      <b>
+       ${money(
+        subtotalGrupo(g)
+       )}
+      </b>
+
+     </div>
+    `
+   ).join("")}
+
+   <div class="summaryDelivery">
+
+    <span>
+     Delivery
+     (${grupos.length}
+     ${
+      grupos.length===1?
+       "local":
+       "locales"
+     })
+    </span>
+
+    <b>
+     ${money(
+      deliveryTotal
+     )}
+    </b>
+
    </div>
-  `).join("")}
 
-  <div class="summaryDelivery">
-   <span>
-    Delivery (${grupos.length}
-    ${grupos.length===1?"local":"locales"})
-   </span>
-   <b>${money(deliveryTotal)}</b>
+   <div class="total">
+    Total:
+    ${money(total)}
+   </div>
+
   </div>
-
-  <div class="total">
-   Total: ${money(total)}
-  </div>
-
- </div>`;
+ `;
 
  actualizarAcceso();
 }
 
-/* CANTIDADES */
+/* =========================================================
+   CANTIDADES
+   ========================================================= */
+
 function cambiarCantidad(
  productoId,
  restauranteId,
  varianteId,
  cambio
 ){
- const i=carrito.findIndex(x=>
-  x.producto_id===productoId&&
-  x.restaurante_id===restauranteId&&
-  Number(x.variante_id||0)===Number(varianteId||0)
- );
 
- if(i<0)return;
+ const i=
+  carrito.findIndex(
+   x=>
+    x.producto_id===
+     productoId&&
+    x.restaurante_id===
+     restauranteId&&
+    Number(
+     x.variante_id||0
+    )===
+    Number(
+     varianteId||0
+    )
+  );
 
- carrito[i].cantidad+=cambio;
+ if(i<0)
+  return;
 
- if(carrito[i].cantidad<=0)
-  carrito.splice(i,1);
+ carrito[i].cantidad+=
+  cambio;
+
+ if(
+  carrito[i].cantidad<=0
+ )
+  carrito.splice(
+   i,
+   1
+  );
 
  guardarCarrito();
+
  render();
+
  guardarFormulario();
 }
 
@@ -659,37 +1344,70 @@ function eliminar(
  restauranteId,
  varianteId
 ){
- carrito=carrito.filter(x=>
-  !(
-   x.producto_id===productoId&&
-   x.restaurante_id===restauranteId&&
-   Number(x.variante_id||0)===Number(varianteId||0)
-  )
- );
+
+ carrito=
+  carrito.filter(
+   x=>!(
+    x.producto_id===
+     productoId&&
+    x.restaurante_id===
+     restauranteId&&
+    Number(
+     x.variante_id||0
+    )===
+    Number(
+     varianteId||0
+    )
+   )
+  );
 
  guardarCarrito();
+
  render();
+
  guardarFormulario();
 }
 
 function vaciarCarrito(){
- if(!carrito.length)return;
 
- if(!confirm("¿Vaciar todo el carrito?"))return;
+ if(!carrito.length)
+  return;
+
+ if(
+  !confirm(
+   "¿Vaciar todo el carrito?"
+  )
+ )
+  return;
 
  carrito=[];
+
  guardarCarrito();
+
  render();
+
  guardarFormulario();
 }
 
-/* UBICACIÓN */
-function renderUbicacion(){
- const box=$("direccionGuardada");
+/* =========================================================
+   UBICACIÓN
+   ========================================================= */
 
- if(ubicacion.lat!==null&&ubicacion.lng!==null){
+function renderUbicacion(){
+
+ const box=
+  $("direccionGuardada");
+
+ if(
+  ubicacion.lat!==null&&
+  ubicacion.lng!==null
+ ){
+
   box.innerHTML=`
-   <div class="locationTitle">Dirección</div>
+
+   <div class="locationTitle">
+    Dirección
+   </div>
 
    <div class="address">
     ${esc(
@@ -698,63 +1416,109 @@ function renderUbicacion(){
     )}
    </div>
 
-   <div id="locationStatus"
+   <div
+    id="locationStatus"
     class="locationStatus">
-    ${ubicacionCargando
-     ?"🔄 Buscando dirección..."
-     :"✅ Ubicación seleccionada"}
-   </div>`;
+
+    ${
+     ubicacionCargando?
+      "🔄 Buscando dirección...":
+      "✅ Ubicación seleccionada"
+    }
+
+   </div>
+
+  `;
+
  }else{
+
   box.innerHTML=`
-   <div class="locationTitle">Dirección</div>
+
+   <div class="locationTitle">
+    Dirección
+   </div>
+
    <div class="address">
     Todavía no has seleccionado una ubicación.
    </div>
 
-   <div id="locationStatus"
+   <div
+    id="locationStatus"
     class="locationStatus">
-    ${ubicacionCargando
-     ?"📍 Obteniendo ubicación..."
-     :""}
-   </div>`;
+
+    ${
+     ubicacionCargando?
+      "📍 Obteniendo ubicación...":
+      ""
+    }
+
+   </div>
+
+  `;
  }
 }
 
-async function obtenerDireccion(lat,lng){
+async function obtenerDireccion(
+ lat,
+ lng
+){
+
  try{
-  const r=await fetch(
-   `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
-   {
-    headers:{
-     Accept:"application/json"
+
+  const r=
+   await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=es`,
+    {
+     headers:{
+      Accept:
+       "application/json"
+     }
     }
-   }
+   );
+
+  if(!r.ok)
+   throw Error();
+
+  const d=
+   await r.json();
+
+  return(
+   d.display_name||
+   `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
   );
 
-  if(!r.ok)throw Error();
-
-  const d=await r.json();
-
-  return d.display_name||
-   `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
-
  }catch{
-  return `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
+
+  return(
+   `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`
+  );
+
  }
 }
 
-async function usarMiUbicacion(boton){
- if(!accesoPedido&&!(!configuracion.validacionClientes))
+async function usarMiUbicacion(
+ boton
+){
+
+ if(
+  !accesoPedido&&
+  !(!configuracion.validacionClientes)
+ )
   return;
 
- if(!navigator.geolocation){
+ if(
+  !navigator.geolocation
+ ){
+
   mostrarError(
    "Tu navegador no permite obtener la ubicación."
   );
+
   return;
  }
 
- if(boton)boton.disabled=true;
+ if(boton)
+  boton.disabled=true;
 
  ubicacionCargando=true;
 
@@ -764,20 +1528,26 @@ async function usarMiUbicacion(boton){
  );
 
  try{
-  const pos=await new Promise((resolve,reject)=>
-   navigator.geolocation.getCurrentPosition(
-    resolve,
-    reject,
-    {
-     enableHighAccuracy:true,
-     timeout:15000,
-     maximumAge:0
-    }
-   )
-  );
 
-  const lat=pos.coords.latitude;
-  const lng=pos.coords.longitude;
+  const pos=
+   await new Promise(
+    (resolve,reject)=>
+     navigator.geolocation.getCurrentPosition(
+      resolve,
+      reject,
+      {
+       enableHighAccuracy:true,
+       timeout:15000,
+       maximumAge:0
+      }
+     )
+   );
+
+  const lat=
+   pos.coords.latitude;
+
+  const lng=
+   pos.coords.longitude;
 
   ubicacion={
    lat,
@@ -788,7 +1558,10 @@ async function usarMiUbicacion(boton){
   renderUbicacion();
 
   const direccion=
-   await obtenerDireccion(lat,lng);
+   await obtenerDireccion(
+    lat,
+    lng
+   );
 
   ubicacion={
    lat,
@@ -799,6 +1572,7 @@ async function usarMiUbicacion(boton){
   ubicacionCargando=false;
 
   guardarFormulario();
+
   renderUbicacion();
 
   mostrarEstadoUbicacion(
@@ -807,9 +1581,11 @@ async function usarMiUbicacion(boton){
   );
 
  }catch(e){
+
   console.error(e);
 
   ubicacionCargando=false;
+
   renderUbicacion();
 
   mostrarEstadoUbicacion(
@@ -822,19 +1598,34 @@ async function usarMiUbicacion(boton){
   );
 
  }finally{
+
   if(boton)
    boton.disabled=
-    !(!configuracion.validacionClientes||accesoPedido);
+    !(
+     !configuracion.validacionClientes||
+     accesoPedido
+    );
+
  }
 }
 
-function moverMarcador(lat,lng){
- if(!map)return;
+function moverMarcador(
+ lat,
+ lng
+){
+
+ if(!map)
+  return;
 
  if(!marker)
-  marker=L.marker([lat,lng]).addTo(map);
+  marker=
+   L.marker(
+    [lat,lng]
+   ).addTo(map);
  else
-  marker.setLatLng([lat,lng]);
+  marker.setLatLng(
+   [lat,lng]
+  );
 
  ubicacionTemporal={
   lat,
@@ -844,126 +1635,196 @@ function moverMarcador(lat,lng){
 
  renderDireccionTemporal();
 
- obtenerDireccion(lat,lng).then(direccion=>{
-  if(
-   ubicacionTemporal.lat!==lat||
-   ubicacionTemporal.lng!==lng
-  )return;
+ obtenerDireccion(
+  lat,
+  lng
+ ).then(
+  direccion=>{
 
-  ubicacionTemporal.direccion=direccion;
+   if(
+    ubicacionTemporal.lat!==lat||
+    ubicacionTemporal.lng!==lng
+   )
+    return;
 
-  renderDireccionTemporal();
- });
+   ubicacionTemporal.direccion=
+    direccion;
+
+   renderDireccionTemporal();
+  }
+ );
 }
 
 function renderDireccionTemporal(){
- const box=$("direccionGuardada");
- const u=ubicacionTemporal;
 
- if(u.lat===null||u.lng===null)return;
+ const box=
+  $("direccionGuardada");
+
+ const u=
+  ubicacionTemporal;
+
+ if(
+  u.lat===null||
+  u.lng===null
+ )
+  return;
 
  box.innerHTML=`
-  <div class="locationTitle">Dirección</div>
+
+  <div class="locationTitle">
+   Dirección
+  </div>
 
   <div class="address">
+
    ${esc(
     u.direccion||
     "🔄 Buscando dirección..."
    )}
+
   </div>
 
-  <div id="locationStatus"
-   class="locationStatus ${u.direccion?"ok":"loading"}">
+  <div
+   id="locationStatus"
+   class="locationStatus ${
+    u.direccion?
+     "ok":
+     "loading"
+   }">
+
    ${
-    u.direccion
-     ?"✅ Dirección encontrada. Puedes aceptar esta ubicación."
-     :"🔄 Buscando dirección..."
+    u.direccion?
+     "✅ Dirección encontrada. Puedes aceptar esta ubicación.":
+     "🔄 Buscando dirección..."
    }
-  </div>`;
+
+  </div>
+ `;
 }
 
 function abrirMapa(){
- if(!configuracion.validacionClientes||accesoPedido){
 
-  $("mapWrap").style.display="block";
+ if(
+  !configuracion.validacionClientes||
+  accesoPedido
+ ){
+
+  $("mapWrap")
+   .style.display="block";
 
   mostrarEstadoUbicacion(
    "🗺️ Selecciona en el mapa el punto exacto de entrega.",
    "loading"
   );
 
-  setTimeout(()=>{
-   if(!map){
+  setTimeout(
+   ()=>{
+    if(!map){
 
-    map=L.map("map").setView(
-     ubicacion.lat!==null
-      ?[ubicacion.lat,ubicacion.lng]
-      :[-0.9538,-79.6528],
-     ubicacion.lat!==null?16:13
-    );
+     map=
+      L.map(
+       "map"
+      ).setView(
+       ubicacion.lat!==null?
+        [
+         ubicacion.lat,
+         ubicacion.lng
+        ]:
+        [
+         -0.9538,
+         -79.6528
+        ],
+       ubicacion.lat!==null?
+        16:
+        13
+      );
 
-    L.tileLayer(
-     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-     {
-      maxZoom:19,
-      attribution:"© OpenStreetMap"
-     }
-    ).addTo(map);
+     L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+       maxZoom:19,
+       attribution:
+        "© OpenStreetMap"
+      }
+     ).addTo(map);
 
-    map.on("click",e=>
-     moverMarcador(
-      e.latlng.lat,
-      e.latlng.lng
-     )
-    );
-
-   }else{
-
-    map.invalidateSize();
-
-    if(ubicacion.lat!==null)
-     map.setView(
-      [ubicacion.lat,ubicacion.lng],
-      16
+     map.on(
+      "click",
+      e=>
+       moverMarcador(
+        e.latlng.lat,
+        e.latlng.lng
+       )
      );
-   }
 
-   if(ubicacion.lat!==null)
-    moverMarcador(
-     ubicacion.lat,
-     ubicacion.lng
-    );
-   else{
-    const c=map.getCenter();
+    }else{
 
-    moverMarcador(
-     c.lat,
-     c.lng
-    );
-   }
+     map.invalidateSize();
 
-  },100);
+     if(ubicacion.lat!==null)
+      map.setView(
+       [
+        ubicacion.lat,
+        ubicacion.lng
+       ],
+       16
+      );
+
+    }
+
+    if(ubicacion.lat!==null){
+
+     moverMarcador(
+      ubicacion.lat,
+      ubicacion.lng
+     );
+
+    }else{
+
+     const c=
+      map.getCenter();
+
+     moverMarcador(
+      c.lat,
+      c.lng
+     );
+
+    }
+
+   },
+   100
+  );
  }
 }
 
 function aceptarMapa(){
- if(configuracion.validacionClientes&&!accesoPedido)
+
+ if(
+  configuracion.validacionClientes&&
+  !accesoPedido
+ )
   return;
 
  if(
   ubicacionTemporal.lat===null||
   ubicacionTemporal.lng===null
  ){
+
   mostrarError(
    "Selecciona una ubicación en el mapa."
   );
+
   return;
  }
 
- if(!ubicacionTemporal.direccion){
+ if(
+  !ubicacionTemporal.direccion
+ ){
+
   mostrarError(
    "Espera un momento mientras se obtiene la dirección."
   );
+
   return;
  }
 
@@ -974,6 +1835,7 @@ function aceptarMapa(){
  ubicacionCargando=false;
 
  guardarFormulario();
+
  renderUbicacion();
 
  mostrarEstadoUbicacion(
@@ -985,19 +1847,30 @@ function aceptarMapa(){
 }
 
 function cerrarMapa(){
- $("mapWrap").style.display="none";
+
+ $("mapWrap")
+  .style.display=
+  "none";
 }
 
-/* FACTURA */
-$("requiereFactura").addEventListener(
+/* =========================================================
+   FACTURA
+   ========================================================= */
+
+$("requiereFactura")
+.addEventListener(
  "change",
  ()=>{
-  $("datosFactura").classList.toggle(
-   "show",
-   $("requiereFactura").checked
-  );
+
+  $("datosFactura")
+   .classList
+   .toggle(
+    "show",
+    $("requiereFactura").checked
+   );
 
   guardarFormulario();
+
  }
 );
 
@@ -1009,28 +1882,50 @@ $("requiereFactura").addEventListener(
  "tipoDocumento",
  "numeroDocumento",
  "correoFactura"
-].forEach(id=>{
- $(id).addEventListener(
-  "input",
-  guardarFormulario
- );
+].forEach(
+ id=>{
 
- $(id).addEventListener(
-  "change",
-  guardarFormulario
- );
-});
+  $(id).addEventListener(
+   "input",
+   guardarFormulario
+  );
 
-/* VALIDACIÓN CLIENTE */
+  $(id).addEventListener(
+   "change",
+   guardarFormulario
+  );
+
+ }
+);
+
+/* =========================================================
+   VALIDACIÓN CLIENTE
+   ========================================================= */
+
 function programarValidacionCliente(){
- clearTimeout(timerCliente);
 
- if(!configuracion.validacionClientes){
+ clearTimeout(
+  timerCliente
+ );
+
+ /*
+  AQUÍ YA SE USA LA CONFIGURACIÓN
+  DEL DELIVERY
+ */
+ if(
+  !configuracion.validacionClientes
+ ){
+
   clienteActual=null;
   referenteValido=false;
   accesoPedido=true;
+
   actualizarAcceso();
-  $("campoReferido").classList.remove("show");
+
+  $("campoReferido")
+   .classList
+   .remove("show");
+
   return;
  }
 
@@ -1044,19 +1939,26 @@ function programarValidacionCliente(){
 
  bloquearPedido();
 
- $("campoReferido").classList.remove("show");
+ $("campoReferido")
+  .classList
+  .remove("show");
+
  mostrarEstadoReferente("");
 
  if(!telefono){
+
   mostrarEstadoCliente("");
+
   return;
  }
 
  if(telefono.length<7){
+
   mostrarEstadoCliente(
    "Ingresa un número de teléfono válido.",
    "error"
   );
+
   return;
  }
 
@@ -1065,16 +1967,24 @@ function programarValidacionCliente(){
   "loading"
  );
 
- const id=++validacionClienteId;
+ const id=
+  ++validacionClienteId;
 
- timerCliente=setTimeout(
-  ()=>validarClienteEnTiempoReal(id),
-  500
- );
+ timerCliente=
+  setTimeout(
+   ()=>validarClienteEnTiempoReal(id),
+   500
+  );
 }
 
-async function validarClienteEnTiempoReal(id){
- if(!configuracion.validacionClientes)return;
+async function validarClienteEnTiempoReal(
+ id
+){
+
+ if(
+  !configuracion.validacionClientes
+ )
+  return;
 
  const telefono=
   normalizarTelefono(
@@ -1084,24 +1994,36 @@ async function validarClienteEnTiempoReal(id){
  if(
   telefono.length<7||
   id!==validacionClienteId
- )return;
+ )
+  return;
 
  try{
-  const cliente=
-   await consultarCliente(telefono);
 
-  if(id!==validacionClienteId)return;
+  const cliente=
+   await consultarCliente(
+    telefono
+   );
+
+  if(
+   id!==validacionClienteId
+  )
+   return;
 
   const telefonoActual=
    normalizarTelefono(
     $("clienteTelefono").value
    );
 
-  if(telefono!==telefonoActual)return;
+  if(
+   telefono!==telefonoActual
+  )
+   return;
 
   if(cliente){
 
-   if(cliente.activo===false){
+   if(
+    cliente.activo===false
+   ){
 
     clienteActual=null;
     referenteValido=false;
@@ -1113,19 +2035,21 @@ async function validarClienteEnTiempoReal(id){
      "error"
     );
 
-    $("campoReferido").classList.remove(
-     "show"
-    );
+    $("campoReferido")
+     .classList
+     .remove("show");
 
     return;
    }
 
-   clienteActual=cliente;
+   clienteActual=
+    cliente;
+
    referenteValido=false;
 
-   $("campoReferido").classList.remove(
-    "show"
-   );
+   $("campoReferido")
+    .classList
+    .remove("show");
 
    mostrarEstadoCliente(
     "✅ Cliente registrado. Puedes continuar.",
@@ -1133,6 +2057,7 @@ async function validarClienteEnTiempoReal(id){
    );
 
    habilitarPedido();
+
    return;
   }
 
@@ -1141,7 +2066,9 @@ async function validarClienteEnTiempoReal(id){
 
   bloquearPedido();
 
-  $("campoReferido").classList.add("show");
+  $("campoReferido")
+   .classList
+   .add("show");
 
   mostrarEstadoCliente(
    "⚠️ Este número no está registrado. Necesitas un referente.",
@@ -1160,20 +2087,33 @@ async function validarClienteEnTiempoReal(id){
 
   bloquearPedido();
 
-  if(id===validacionClienteId)
+  if(
+   id===validacionClienteId
+  )
    mostrarEstadoCliente(
     "No se pudo verificar el cliente.",
     "error"
    );
+
  }
 }
 
-/* VALIDACIÓN REFERENTE */
-function programarValidacionReferente(){
- clearTimeout(timerReferente);
+/* =========================================================
+   REFERENTE
+   ========================================================= */
 
- if(!configuracion.validacionClientes){
+function programarValidacionReferente(){
+
+ clearTimeout(
+  timerReferente
+ );
+
+ if(
+  !configuracion.validacionClientes
+ ){
+
   referenteValido=false;
+
   return;
  }
 
@@ -1188,15 +2128,19 @@ function programarValidacionReferente(){
   );
 
  if(!telefono){
+
   mostrarEstadoReferente("");
+
   return;
  }
 
  if(telefono.length<7){
+
   mostrarEstadoReferente(
    "Ingresa un número válido.",
    "error"
   );
+
   return;
  }
 
@@ -1205,16 +2149,24 @@ function programarValidacionReferente(){
   "loading"
  );
 
- const id=++validacionReferenteId;
+ const id=
+  ++validacionReferenteId;
 
- timerReferente=setTimeout(
-  ()=>validarReferenteEnTiempoReal(id),
-  500
- );
+ timerReferente=
+  setTimeout(
+   ()=>validarReferenteEnTiempoReal(id),
+   500
+  );
 }
 
-async function validarReferenteEnTiempoReal(id){
- if(!configuracion.validacionClientes)return;
+async function validarReferenteEnTiempoReal(
+ id
+){
+
+ if(
+  !configuracion.validacionClientes
+ )
+  return;
 
  const telefono=
   normalizarTelefono(
@@ -1229,11 +2181,15 @@ async function validarReferenteEnTiempoReal(id){
  if(
   telefono.length<7||
   id!==validacionReferenteId
- )return;
+ )
+  return;
 
- if(telefono===telefonoCliente){
+ if(
+  telefono===telefonoCliente
+ ){
 
   referenteValido=false;
+
   bloquearPedido();
 
   mostrarEstadoReferente(
@@ -1247,20 +2203,29 @@ async function validarReferenteEnTiempoReal(id){
  try{
 
   const referente=
-   await consultarCliente(telefono);
+   await consultarCliente(
+    telefono
+   );
 
-  if(id!==validacionReferenteId)return;
+  if(
+   id!==validacionReferenteId
+  )
+   return;
 
   const telefonoActual=
    normalizarTelefono(
     $("telefonoReferente").value
    );
 
-  if(telefono!==telefonoActual)return;
+  if(
+   telefono!==telefonoActual
+  )
+   return;
 
   if(!referente){
 
    referenteValido=false;
+
    bloquearPedido();
 
    mostrarEstadoReferente(
@@ -1271,9 +2236,12 @@ async function validarReferenteEnTiempoReal(id){
    return;
   }
 
-  if(referente.activo===false){
+  if(
+   referente.activo===false
+  ){
 
    referenteValido=false;
+
    bloquearPedido();
 
    mostrarEstadoReferente(
@@ -1284,9 +2252,12 @@ async function validarReferenteEnTiempoReal(id){
    return;
   }
 
-  if(!referente.codigo_referido){
+  if(
+   !referente.codigo_referido
+  ){
 
    referenteValido=false;
+
    bloquearPedido();
 
    mostrarEstadoReferente(
@@ -1311,18 +2282,26 @@ async function validarReferenteEnTiempoReal(id){
   console.error(e);
 
   referenteValido=false;
+
   bloquearPedido();
 
-  if(id===validacionReferenteId)
+  if(
+   id===validacionReferenteId
+  )
    mostrarEstadoReferente(
     "No se pudo verificar el referente.",
     "error"
    );
+
  }
 }
 
-/* EVENTOS TELEFONO */
-$("clienteTelefono").addEventListener(
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+
+$("clienteTelefono")
+.addEventListener(
  "input",
  ()=>{
   guardarFormulario();
@@ -1330,7 +2309,8 @@ $("clienteTelefono").addEventListener(
  }
 );
 
-$("telefonoReferente").addEventListener(
+$("telefonoReferente")
+.addEventListener(
  "input",
  ()=>{
   guardarFormulario();
@@ -1338,39 +2318,64 @@ $("telefonoReferente").addEventListener(
  }
 );
 
-/* CONSULTA CLIENTE */
-async function consultarCliente(telefono){
+/* =========================================================
+   CONSULTAR CLIENTE
+   ========================================================= */
+
+async function consultarCliente(
+ telefono
+){
 
  const telefonoNormalizado=
-  normalizarTelefono(telefono);
+  normalizarTelefono(
+   telefono
+  );
 
- if(!telefonoNormalizado)return null;
+ if(!telefonoNormalizado)
+  return null;
 
- const r=await supabaseClient.rpc(
-  "buscar_cliente_por_telefono",
-  {
-   p_telefono:telefonoNormalizado
-  }
- );
+ const r=
+  await supabaseClient.rpc(
+   "buscar_cliente_por_telefono",
+   {
+    p_telefono:
+     telefonoNormalizado
+   }
+  );
 
- if(r.error)throw r.error;
+ if(r.error)
+  throw r.error;
 
- if(Array.isArray(r.data))
+ if(
+  Array.isArray(r.data)
+ )
   return r.data[0]||null;
 
  return r.data||null;
 }
 
-/* VALIDACIÓN FINAL */
+/* =========================================================
+   VALIDACIÓN FINAL
+   ========================================================= */
+
 async function validarCliente(){
 
- if(!configuracion.validacionClientes){
+ /*
+  DELIVERY SIN VALIDACIÓN
+ */
+ if(
+  !configuracion.validacionClientes
+ ){
+
   habilitarPedido();
+
   return true;
  }
 
  const nombre=
-  $("clienteNombre").value.trim();
+  $("clienteNombre")
+   .value
+   .trim();
 
  const telefono=
   normalizarTelefono(
@@ -1378,36 +2383,51 @@ async function validarCliente(){
   );
 
  if(!telefono){
+
   mostrarError(
    "Ingresa tu teléfono."
   );
+
   $("clienteTelefono").focus();
+
   return false;
  }
 
- if(telefono.length<7){
+ if(
+  telefono.length<7
+ ){
+
   mostrarError(
    "Ingresa un número de teléfono válido."
   );
+
   $("clienteTelefono").focus();
+
   return false;
  }
 
  try{
 
   const cliente=
-   await consultarCliente(telefono);
+   await consultarCliente(
+    telefono
+   );
 
   if(cliente){
 
-   if(cliente.activo===false){
+   if(
+    cliente.activo===false
+   ){
+
     mostrarError(
      "Este cliente está inactivo y no puede realizar pedidos."
     );
+
     return false;
    }
 
-   clienteActual=cliente;
+   clienteActual=
+    cliente;
 
    habilitarPedido();
 
@@ -1426,9 +2446,9 @@ async function validarCliente(){
 
   if(!telefonoReferente){
 
-   $("campoReferido").classList.add(
-    "show"
-   );
+   $("campoReferido")
+    .classList
+    .add("show");
 
    mostrarEstadoCliente(
     "⚠️ Este número no está registrado. Necesitas un referente.",
@@ -1444,7 +2464,10 @@ async function validarCliente(){
    return false;
   }
 
-  if(telefonoReferente===telefono){
+  if(
+   telefonoReferente===
+   telefono
+  ){
 
    mostrarEstadoReferente(
     "❌ No puedes referirte a ti mismo.",
@@ -1481,7 +2504,9 @@ async function validarCliente(){
    return false;
   }
 
-  if(referente.activo===false){
+  if(
+   referente.activo===false
+  ){
 
    mostrarEstadoReferente(
     "❌ El referente está inactivo.",
@@ -1497,7 +2522,9 @@ async function validarCliente(){
    return false;
   }
 
-  if(!referente.codigo_referido){
+  if(
+   !referente.codigo_referido
+  ){
 
    mostrarError(
     "El referente no tiene un código de referido válido."
@@ -1508,44 +2535,63 @@ async function validarCliente(){
 
   const codigoNuevo=
    "SR"+
-   Date.now().toString(36).toUpperCase()+
-   Math.floor(100+Math.random()*900);
+   Date.now()
+    .toString(36)
+    .toUpperCase()+
+   Math.floor(
+    100+
+    Math.random()*900
+   );
 
   const cr=
    await supabaseClient.rpc(
     "crear_cliente",
     {
-     p_nombre:nombre,
-     p_telefono:telefono,
-     p_codigo_referido:codigoNuevo,
-     p_codigo_referente:referente.codigo_referido
+     p_nombre:
+      nombre,
+
+     p_telefono:
+      telefono,
+
+     p_codigo_referido:
+      codigoNuevo,
+
+     p_codigo_referente:
+      referente.codigo_referido
     }
    );
 
-  if(cr.error)throw cr.error;
+  if(cr.error)
+   throw cr.error;
 
   let nuevoCliente=
-   Array.isArray(cr.data)
-    ?cr.data[0]||null
-    :cr.data||null;
+   Array.isArray(cr.data)?
+    cr.data[0]||
+    null:
+    cr.data||
+    null;
 
   if(!nuevoCliente)
    nuevoCliente=
-    await consultarCliente(telefono);
+    await consultarCliente(
+     telefono
+    );
 
   if(!nuevoCliente)
    throw Error(
     "El cliente fue registrado, pero no se pudo recuperar su información."
    );
 
-  clienteActual=nuevoCliente;
+  clienteActual=
+   nuevoCliente;
+
   referenteValido=false;
 
   habilitarPedido();
 
-  $("campoReferido").classList.remove(
-   "show"
-  );
+  $("campoReferido")
+   .classList
+   .remove("show");
 
   mostrarEstadoCliente(
    "✅ Cliente registrado correctamente. Puedes continuar.",
@@ -1563,36 +2609,60 @@ async function validarCliente(){
 
   mostrarError(
    "No se pudo validar el cliente: "+
-   (e.message||"Error desconocido")
+   (
+    e.message||
+    "Error desconocido"
+   )
   );
 
   return false;
  }
 }
 
-/* VALIDACIÓN GENERAL */
+/* =========================================================
+   VALIDACIÓN PEDIDO
+   ========================================================= */
+
 function validar(){
 
  if(!carrito.length){
+
   mostrarError(
    "El carrito está vacío."
   );
+
   return false;
  }
 
- if(!$("clienteNombre").value.trim()){
+ if(
+  !$("clienteNombre")
+   .value
+   .trim()
+ ){
+
   mostrarError(
    "Ingresa tu nombre."
   );
-  $("clienteNombre").focus();
+
+  $("clienteNombre")
+   .focus();
+
   return false;
  }
 
- if(!$("clienteTelefono").value.trim()){
+ if(
+  !$("clienteTelefono")
+   .value
+   .trim()
+ ){
+
   mostrarError(
    "Ingresa tu teléfono."
   );
-  $("clienteTelefono").focus();
+
+  $("clienteTelefono")
+   .focus();
+
   return false;
  }
 
@@ -1600,9 +2670,11 @@ function validar(){
   configuracion.validacionClientes&&
   !accesoPedido
  ){
+
   mostrarError(
    "Primero debes ingresar un teléfono registrado o un referente válido."
   );
+
   return false;
  }
 
@@ -1610,66 +2682,98 @@ function validar(){
   ubicacion.lat===null||
   ubicacion.lng===null
  ){
+
   mostrarError(
    "Selecciona tu ubicación de entrega."
   );
+
   return false;
  }
 
  if(ubicacionCargando){
+
   mostrarError(
    "Espera mientras se obtiene la dirección de entrega."
   );
+
   return false;
  }
 
- if($("requiereFactura").checked){
+ if(
+  $("requiereFactura")
+   .checked
+ ){
 
-  if(!$("numeroDocumento").value.trim()){
+  if(
+   !$("numeroDocumento")
+    .value
+    .trim()
+  ){
+
    mostrarError(
     "Ingresa tu cédula o RUC."
    );
+
    return false;
   }
 
-  if(!$("correoFactura").value.trim()){
+  if(
+   !$("correoFactura")
+    .value
+    .trim()
+  ){
+
    mostrarError(
     "Ingresa el correo para la factura."
    );
+
    return false;
   }
+
  }
 
  return true;
 }
 
-/* PEDIDO */
+/* =========================================================
+   REALIZAR PEDIDO
+   ========================================================= */
+
 async function realizarPedido(){
 
- if(!validar())return;
+ if(!validar())
+  return;
 
  const boton=
-  document.querySelector(".whatsapp");
+  document.querySelector(
+   ".whatsapp"
+  );
 
- if(boton)boton.disabled=true;
+ if(boton)
+  boton.disabled=true;
 
  try{
 
   /*
-   RECARGAMOS EL DELIVERY ANTES DE CREAR
-   EL PEDIDO PARA ASEGURAR QUE LA
-   INFORMACIÓN SEA LA ACTUAL.
+   ASEGURAR DELIVERY ACTUAL
   */
-  if(deliveryCodigo&&!deliveryActual)
+  if(
+   deliveryCodigo&&
+   !deliveryActual
+  )
    await cargarDelivery();
 
+  /*
+   VALIDACIÓN SEGÚN DELIVERY
+  */
   const clienteValido=
    !configuracion.validacionClientes||
    await validarCliente();
 
   if(!clienteValido){
 
-   if(boton)boton.disabled=false;
+   if(boton)
+    boton.disabled=false;
 
    return;
   }
@@ -1682,26 +2786,32 @@ async function realizarPedido(){
 
   const subtotalTotal=
    carrito.reduce(
-    (a,x)=>a+subtotalItem(x),
+    (a,x)=>
+     a+
+     subtotalItem(x),
     0
    );
 
   const deliveryUnitario=
    Number(
-    configuracion.tarifaDelivery||0
+    configuracion.tarifaDelivery||
+    0
    );
 
   const deliveryTotal=
-   grupos.length*deliveryUnitario;
+   grupos.length*
+   deliveryUnitario;
 
   const total=
-   subtotalTotal+deliveryTotal;
+   subtotalTotal+
+   deliveryTotal;
 
   /*
-   DATOS DEL DELIVERY
+   DATOS DELIVERY
   */
   const deliveryId=
-   deliveryActual?.id||null;
+   deliveryActual?.id||
+   null;
 
   const deliveryCodigoPedido=
    deliveryActual?.codigo||
@@ -1716,14 +2826,18 @@ async function realizarPedido(){
    PEDIDO
   */
   const pedido={
+
    numero,
 
    cliente_nombre:
-    $("clienteNombre").value.trim(),
+    $("clienteNombre")
+     .value
+     .trim(),
 
    cliente_telefono:
     normalizarTelefono(
-     $("clienteTelefono").value
+     $("clienteTelefono")
+      .value
     ),
 
    direccion:
@@ -1731,7 +2845,9 @@ async function realizarPedido(){
     `${ubicacion.lat}, ${ubicacion.lng}`,
 
    referencia:
-    $("referencia").value.trim()||
+    $("referencia")
+     .value
+     .trim()||
     null,
 
    total_productos:
@@ -1745,9 +2861,6 @@ async function realizarPedido(){
    estado:
     "Pedido recibido",
 
-   /*
-    NUEVOS CAMPOS MULTICLIENTE
-   */
    delivery_id:
     deliveryId,
 
@@ -1761,11 +2874,14 @@ async function realizarPedido(){
   const pr=
    await supabaseClient
     .from("pedidos")
-    .insert(pedido)
+    .insert(
+     pedido
+    )
     .select("id")
     .single();
 
-  if(pr.error)throw pr.error;
+  if(pr.error)
+   throw pr.error;
 
   const pedidoId=
    pr.data.id;
@@ -1773,7 +2889,7 @@ async function realizarPedido(){
   const carreras=[];
 
   /*
-   CREAR CARRERAS
+   CARRERAS
   */
   for(
    let i=0;
@@ -1781,12 +2897,14 @@ async function realizarPedido(){
    i++
   ){
 
-   const g=grupos[i];
+   const g=
+    grupos[i];
 
    const subtotal=
     subtotalGrupo(g);
 
    const carrera={
+
     pedido_id:
      pedidoId,
 
@@ -1802,16 +2920,20 @@ async function realizarPedido(){
      deliveryUnitario,
 
     total:
-     subtotal+deliveryUnitario,
+     subtotal+
+     deliveryUnitario,
 
     estado:
      "Pendiente de asignación"
+
    };
 
    const cr=
     await supabaseClient
      .from("carreras")
-     .insert(carrera)
+     .insert(
+      carrera
+     )
      .select("id")
      .single();
 
@@ -1829,39 +2951,52 @@ async function realizarPedido(){
   /*
    DETALLES
   */
-  for(const g of carreras){
+  for(
+   const g of
+   carreras
+  ){
 
    const detalles=
-    g.items.map(x=>({
-     carrera_id:
-      g.carrera_id,
+    g.items.map(
+     x=>({
 
-     producto_id:
-      x.producto_id,
+      carrera_id:
+       g.carrera_id,
 
-     producto_nombre:
-      x.producto_nombre,
+      producto_id:
+       x.producto_id,
 
-     precio_unitario:
-      Number(x.precio)||0,
+      producto_nombre:
+       x.producto_nombre,
 
-     cantidad:
-      Number(x.cantidad)||0,
+      precio_unitario:
+       Number(x.precio)||
+       0,
 
-     subtotal:
-      subtotalItem(x),
+      cantidad:
+       Number(x.cantidad)||
+       0,
 
-     variante_id:
-      x.variante_id||null,
+      subtotal:
+       subtotalItem(x),
 
-     variante_nombre:
-      x.variante_nombre||null
-    }));
+      variante_id:
+       x.variante_id||
+       null,
+
+      variante_nombre:
+       x.variante_nombre||
+       null
+
+     })
+    );
 
    const dr=
     await supabaseClient
      .from("detalle_carreras")
-     .insert(detalles);
+     .insert(
+      detalles
+     );
 
    if(dr.error)
     throw dr.error;
@@ -1876,135 +3011,206 @@ async function realizarPedido(){
    )}*%0A`;
 
   msg+=
-   `🧾 *Pedido:* ${encodeURIComponent(
-    numero
-   )}%0A`;
+   `🧾 *Pedido:* ${
+    encodeURIComponent(
+     numero
+    )
+   }%0A`;
 
   if(deliveryActual){
+
    msg+=
-    `🚚 *Delivery:* ${encodeURIComponent(
-     deliveryActual.nombre
-    )}%0A`;
+    `🚚 *Delivery:* ${
+     encodeURIComponent(
+      deliveryActual.nombre
+     )
+    }%0A`;
+
   }
 
   msg+=
-   `👤 *Cliente:* ${encodeURIComponent(
-    $("clienteNombre").value.trim()
-   )}%0A`;
-
-  msg+=
-   `📞 *Teléfono:* ${encodeURIComponent(
-    normalizarTelefono(
-     $("clienteTelefono").value
+   `👤 *Cliente:* ${
+    encodeURIComponent(
+     $("clienteNombre")
+      .value
+      .trim()
     )
-   )}%0A`;
+   }%0A`;
 
   msg+=
-   `📍 *Dirección:* ${encodeURIComponent(
-    ubicacion.direccion||
-    "Ubicación seleccionada"
-   )}%0A`;
+   `📞 *Teléfono:* ${
+    encodeURIComponent(
+     normalizarTelefono(
+      $("clienteTelefono")
+       .value
+     )
+    )
+   }%0A`;
 
-  if($("referencia").value.trim())
+  msg+=
+   `📍 *Dirección:* ${
+    encodeURIComponent(
+     ubicacion.direccion||
+     "Ubicación seleccionada"
+    )
+   }%0A`;
+
+  if(
+   $("referencia")
+    .value
+    .trim()
+  ){
+
    msg+=
-    `📝 *Referencia:* ${encodeURIComponent(
-     $("referencia").value.trim()
-    )}%0A`;
+    `📝 *Referencia:* ${
+     encodeURIComponent(
+      $("referencia")
+       .value
+       .trim()
+     )
+    }%0A`;
+
+  }
 
   msg+=
    `📌 *Ubicación:* https://www.google.com/maps?q=${ubicacion.lat},${ubicacion.lng}%0A`;
 
-  if($("requiereFactura").checked){
+  if(
+   $("requiereFactura").checked
+  ){
 
    msg+=
     `🧾 *Factura:* Sí%0A`;
 
    msg+=
-    `Documento: ${encodeURIComponent(
-     $("tipoDocumento").value.toUpperCase()
-    )} ${encodeURIComponent(
-     $("numeroDocumento").value.trim()
-    )}%0A`;
+    `Documento: ${
+     encodeURIComponent(
+      $("tipoDocumento")
+       .value
+       .toUpperCase()
+     )
+    } ${
+     encodeURIComponent(
+      $("numeroDocumento")
+       .value
+       .trim()
+     )
+    }%0A`;
 
    msg+=
-    `Correo: ${encodeURIComponent(
-     $("correoFactura").value.trim()
-    )}%0A`;
+    `Correo: ${
+     encodeURIComponent(
+      $("correoFactura")
+       .value
+       .trim()
+     )
+    }%0A`;
 
   }else{
 
    msg+=
     `🧾 *Factura:* No%0A`;
+
   }
 
   msg+=
    `%0A*DETALLE DEL PEDIDO*%0A`;
 
-  carreras.forEach(g=>{
-
-   msg+=
-    `%0A🏪 *${encodeURIComponent(
-     g.nombre
-    )}*%0A`;
-
-   g.items.forEach(x=>{
-
-    const sub=
-     subtotalItem(x);
+  carreras.forEach(
+   g=>{
 
     msg+=
-     `${x.cantidad} x ${encodeURIComponent(
-      x.producto_nombre
-     )}`;
+     `%0A🏪 *${
+      encodeURIComponent(
+       g.nombre
+      )
+     }*%0A`;
 
-    if(x.variante_nombre){
+    g.items.forEach(
+     x=>{
 
-     msg+=
-      ` — ${encodeURIComponent(
+      const sub=
+       subtotalItem(x);
+
+      msg+=
+       `${x.cantidad} x ${
+        encodeURIComponent(
+         x.producto_nombre
+        )
+       }`;
+
+      if(
        x.variante_nombre
-      )}`;
-    }
+      ){
+
+       msg+=
+        ` — ${
+         encodeURIComponent(
+          x.variante_nombre
+         )
+        }`;
+
+      }
+
+      msg+=
+       ` — ${
+        encodeURIComponent(
+         money(sub)
+        )
+       }%0A`;
+     }
+    );
 
     msg+=
-     ` — ${encodeURIComponent(
-      money(sub)
-     )}%0A`;
-   });
+     `Subtotal productos: ${
+      encodeURIComponent(
+       money(
+        g.subtotal
+       )
+      )
+     }%0A`;
 
-   msg+=
-    `Subtotal productos: ${encodeURIComponent(
-     money(g.subtotal)
-    )}%0A`;
+    msg+=
+     `Delivery: ${
+      encodeURIComponent(
+       money(
+        deliveryUnitario
+       )
+      )
+     }%0A`;
 
-   msg+=
-    `Delivery: ${encodeURIComponent(
-     money(deliveryUnitario)
-    )}%0A`;
-
-   msg+=
-    `Total restaurante: ${encodeURIComponent(
-     money(
-      g.subtotal+
-      deliveryUnitario
-     )
-    )}%0A`;
-  });
+    msg+=
+     `Total restaurante: ${
+      encodeURIComponent(
+       money(
+        g.subtotal+
+        deliveryUnitario
+       )
+      )
+     }%0A`;
+   }
+  );
 
   msg+=
-   `%0A💰 *TOTAL: ${encodeURIComponent(
-    money(total)
-   )}*`;
+   `%0A💰 *TOTAL: ${
+    encodeURIComponent(
+     money(total)
+    )
+   }*`;
 
   /*
-   WHATSAPP DESTINO
-   DELIVERY > GENERAL
+   WHATSAPP DEL DELIVERY
   */
   const wa=
    String(
     deliveryActual?.whatsapp||
     configuracion.whatsappNegocio||
     ""
-   ).replace(/\D/g,"");
+   )
+   .replace(
+    /\D/g,
+    ""
+   );
 
   if(!wa)
    throw Error(
@@ -2012,10 +3218,12 @@ async function realizarPedido(){
    );
 
   /*
-   LIMPIAR CARRITO
+   LIMPIAR
   */
   carrito=[];
+
   guardarCarrito();
+
   render();
 
   /*
@@ -2030,7 +3238,10 @@ async function realizarPedido(){
 
   mostrarError(
    "No se pudo registrar el pedido: "+
-   (e.message||"Error desconocido")
+   (
+    e.message||
+    "Error desconocido"
+   )
   );
 
   if(boton)
@@ -2040,38 +3251,91 @@ async function realizarPedido(){
 
 function generarNumeroPedido(){
 
- const f=new Date();
+ const f=
+  new Date();
 
- return `SR-${f.getFullYear()}${String(
-  f.getMonth()+1
- ).padStart(2,"0")}${String(
-  f.getDate()
- ).padStart(2,"0")}-${String(
-  f.getHours()
- ).padStart(2,"0")}${String(
-  f.getMinutes()
- ).padStart(2,"0")}${String(
-  f.getSeconds()
- ).padStart(2,"0")}`;
+ return `SR-${
+  f.getFullYear()
+ }${
+  String(
+   f.getMonth()+1
+  ).padStart(
+   2,
+   "0"
+  )
+ }${
+  String(
+   f.getDate()
+  ).padStart(
+   2,
+   "0"
+  )
+ }-${
+  String(
+   f.getHours()
+  ).padStart(
+   2,
+   "0"
+  )
+ }${
+  String(
+   f.getMinutes()
+  ).padStart(
+   2,
+   "0"
+  )
+ }${
+  String(
+   f.getSeconds()
+  ).padStart(
+   2,
+   "0"
+  )
+ }`;
+
 }
 
-/* INICIO */
+/* =========================================================
+   INICIO
+   ========================================================= */
+
 async function iniciar(){
 
+ /*
+  1. CARGAR CARRITO
+ */
  cargarCarrito();
 
- bloquearPedido();
-
- cargarFormulario();
-
- render();
-
+ /*
+  2. IDENTIFICAR DELIVERY
+ */
  await cargarDelivery();
 
+ /*
+  3. CARGAR CONFIGURACIÓN GENERAL
+     Y SOBRESCRIBIR CON DELIVERY
+ */
  await cargarConfiguracion();
+
+ /*
+  4. CARGAR FORMULARIO
+     YA CON LA REGLA DEL DELIVERY
+ */
+ cargarFormulario();
+
+ /*
+  5. MOSTRAR
+ */
+ render();
+
+ /*
+  6. ESTADO FINAL
+ */
+ actualizarAcceso();
 }
 
 iniciar();
+
 </script>
 </body>
 </html>
